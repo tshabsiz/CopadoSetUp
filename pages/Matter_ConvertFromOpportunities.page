@@ -1,0 +1,73 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+                                                           
+ *** CHANGE LOG ***
+ 
+ 18/09/2017 - PG    - Created VF page. 
+ 19/09/2017 - PG 	- Added wrapper table.
+ 
+-->  
+<apex:page standardController="Account" extensions="Matter_ConvertFromOpportunities" showHeader="true" sidebar="true"> 
+	
+	<!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+	<!-- HEADER -->
+	<apex:sectionHeader title="Create Deal from Opportunity" subtitle="{!objectRecord.Name}" />
+	
+	<apex:form >
+
+		<!-- PAGE BLOCK -->
+		<apex:pageBlock >
+
+			<!-- MESAGES -->
+			<apex:pageMessages />	
+
+			<!-- BUTTONS -->
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Create Deal from Selected" rendered="{!NOT(hasError)}" action="{!submitRecord}" />
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+			<!-- / BUTTONS -->
+
+			<!-- TABLE -->
+			<apex:pageBlockTable value="{!opportunityWrappers}" var="wrapperItem" rendered="{!NOT(hasError)}">
+
+				<apex:column headerValue="Selected">
+					<apex:inputCheckbox value="{!wrapperItem.selected}" styleClass="checkboxGroup" /> 
+				</apex:column>
+
+				<apex:column value="{!wrapperItem.record.Name}" />
+				<apex:column value="{!wrapperItem.record.RecordTypeId}" />
+				<apex:column value="{!wrapperItem.productName}" headerValue="Product" />
+				<apex:column value="{!wrapperItem.record.StageName}" />
+				<apex:column value="{!wrapperItem.record.Amount}" />
+				<apex:column value="{!wrapperItem.record.CloseDate}" />
+
+				<apex:column headerValue="Is Parent Opportunity">
+					<apex:outputText value="{!IF(wrapperItem.record.Is_Parent_Opportunity__c="Yes", '<b>Yes</b>', 'No')}" escape="false" />
+				</apex:column>
+
+			</apex:pageBlockTable>
+			<!-- / TABLE -->
+
+		</apex:pageBlock>
+		<!-- / PAGE BLOCK -->
+
+	</apex:form>
+
+	<!-- SCRIPTING -->
+    <script>
+	$(".checkboxGroup").change(function()
+	{
+		$(".checkboxGroup").prop('checked',false);
+		$(this).prop('checked',true);
+	});
+	</script>
+
+</apex:page>

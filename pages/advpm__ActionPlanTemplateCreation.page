@@ -1,0 +1,408 @@
+<apex:page id="editPage" tabStyle="advpm__ActionPlanTemplate__c" standardController="advpm__ActionPlanTemplate__c" extensions="advpm.ActionPlanTemplateCreationController" sidebar="false">
+<apex:outputPanel rendered="{!isLightning}">
+    <script type="text/javascript">
+        var ur = '{!URLFOR($Page.advpm__ActionPlanTemplateCreationSLDS,advpm__ActionPlanTemplate__c.Id,[id=advpm__ActionPlanTemplate__c.Id,clone=URLENCODE($CurrentPage.parameters.clone),templateId=URLENCODE($CurrentPage.parameters.templateId),refId=URLENCODE($CurrentPage.parameters.refId),refType=URLENCODE($CurrentPage.parameters.refType)])}';
+        if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToURL(ur, true);
+        }
+    </script>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!!isLightning}">
+    <script>
+    	var AP_ITSELF_TASK_DEPENDENCY	= '{!$Label.ap_ItselfDependencyError}';
+    	var AP_REMOVE_CYCLIC_DEPENDENCY = '{!$Label.ap_Error_Cyclic_Dependency_Found}';
+    	var AP_DAYS_AFTER_MSG			= "{!$Label.ap_days_after_msg}";
+    	var AP_TASKS_CONFIRM_MSG		= "{!$Label.ap_Confirm_Tasks_Deletion}";
+    </script>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!$Resource.advpm__ActionPlan_Utilities}" />
+	<apex:includeScript value="{!$Resource.advpm__ActionPlan_ActionPlanTemplateCreationScripts}"/>
+	<apex:stylesheet value="{!$Resource.advpm__ActionPlan_ActionPlanTemplateCreationStyles}"/>
+    <style type="text/css">
+    	.editPage .detailList .helpOrb {position:relative;right: 0px;}
+		.user_column { white-space:nowrap; }
+		.user_column_child { 
+			display:inline-block !important;
+		    *display:inline; /* for IE7*/
+		    *zoom:1;/* for IE7*/
+		    white-space:normal;
+    	}
+    	.task_input_short select { width:115px; }
+    	.task_input_short .lookupInput input { width:130px!important;vertical-align: top!important; }
+    	.user_column_child .userLookupFields select { width:134px!important; }
+.sortable th.actTypeCol			{	width:6%;	}
+.sortable th.subjectCol			{	width:14%;	}
+.sortable th.dependencyColumn	{	width:14%;	}
+.sortable th.daysCol			{	width:4%;	}
+.sortable th.startTimeCol		{	width:6%;	}
+.sortable th.durationCol		{	width:6%;	}
+.sortable th.assigned_to_field	{	width:10%;	}
+.sortable th.typeCol			{	width:8%;	}
+.sortable th.priorityCol 		{ 	width:8%;	}
+.sortable th.sendMailCol 		{ 	width:9%;	}
+.sortable th.reminderCol 		{ 	width:7%;	}
+.sortable th.commentsCol 		{ 	width:8%;	} 
+.taskTable td {padding: 3px 3px 2px 0px;}
+.taskTable th {vertical-align: bottom !important;}
+	</style>
+	<script type="text/javascript">
+    	$(function(){
+            initAssignedToLookups();
+        });
+    </script>
+	<script type="text/javascript">
+		function initAssignedToLookups() {
+			$( "div.user_column div.userLookupFields select[name$='userLookupFields']" ).each(function(i, elem) {
+				// a javascript object to collect the elements in each region
+		        var userLookupFields = {};
+				
+		        // iterate all of the options and collect them by region
+		        $('option', elem).each(function (i) {
+		            if (i === 0) {
+		                return; // skip the first element in the list
+		            }
+		            var oElement = $(this);
+		            var fieldGroupHeader = oElement.text().split('_');
+		
+		            // create an array entry for the region name if there is not one
+		            if (!userLookupFields[fieldGroupHeader[0]]) {
+		                userLookupFields[fieldGroupHeader[0]] = [];
+		            }
+		
+		            // add the item to the array for this region
+		            userLookupFields[fieldGroupHeader[0]].push(oElement);
+		        });
+		
+		        // iterate all of the names in the regions object
+		        for (var userLookupField in userLookupFields) {
+		
+		            // make sure the name did not come from the prototype
+		            if (userLookupFields.hasOwnProperty(userLookupField)) {
+		
+		                // turn the array of items into a single jQuery collection
+		                var groupElements = $(userLookupFields[userLookupField]).map(function () {
+		                    return this.toArray();
+		                });
+		
+		                // create the group and set the label
+		                var optgroup = $('<optgroup/>');
+		                optgroup.attr('label', userLookupField);
+		
+		                // wrap the option elements in an optgroup
+		                groupElements.wrapAll(optgroup);
+		
+		                // remove the region text from the label
+		                groupElements.each(function () {
+		                    $(this).text(function () {
+		                        return $(this).text().replace(userLookupField + '_', '');
+		                    });
+		                });
+		            }
+		        }
+			});
+	          			
+	        $( "div.task_input_short select[name$='_mlktp']" ).css('display','none').parent().parent().removeClass('requiredInput').css('display','inline-block').find('.requiredBlock').remove();
+	        var $select = $( "div.user_column select[name$='userType_mlktp']" );
+	      	$select.change(function() {
+	           	var a = $(this).val();
+	           	var $dv = $(this).parent().find('.task_input_short');
+	           	var $sel = $dv.find("select[name$='_mlktp']");
+	           	var $inp = $dv.find("input[name$='_lktp']");
+	           	if (a == 'SourceUserFields') {
+	           		$dv.css('display','none');
+	           		$sel.val( '' );
+	           		$inp.val( '' );
+	           		//$sel.change();
+	           		//$(this).parent().find('.task_input_short').css('display','none').find('select').val( '' ).change();
+	           		$(this).parent().parent().parent().find('.userLookupFields').css('display','inline-block');
+	           	}
+	           	else {
+	           		$dv.css('display','inline-block');
+	           		$sel.val( a );
+	           		$inp.val( a );
+	           		//$sel.change();
+	           		//$(this).parent().find('.task_input_short').css('display','inline-block').find('select').val( a ).change();
+	           		$(this).parent().parent().parent().find('.userLookupFields').css('display','none');
+	        	}
+	        });
+	    	$select.change();
+		}
+  	</script>
+    <apex:sectionHeader rendered="{!(actionPlanTemplate.Id != null)}" title="{!$Label.advpm__ap_actionplantemplates} {!$Label.advpm__ap_edit}" subtitle="{!actionPlanTemplate.Name}" help="{!URLFOR($Page.advpm__HelpActionPlanTemplate)}" />
+    <apex:sectionHeader rendered="{!!(actionPlanTemplate.Id != null)}" title="{!$Label.advpm__ap_actionplantemplates} {!$Label.advpm__ap_edit}" subtitle="{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan_template}" help="{!URLFOR($Page.advpm__HelpActionPlanTemplate)}" />
+    
+    <apex:form id="templateForm">
+        
+        <apex:outputPanel rendered="{!(actionPlanTemplate.Id != null)}">
+            <apex:inputHidden value="{!actionPlanTemplate.Id}" id="Id" />
+        </apex:outputPanel>
+        
+        <apex:pageBlock id="editBlock" title="{!$Label.advpm__ap_action_plan_template} {!$Label.advpm__ap_edit}" mode="edit">
+        
+            <apex:pageBlockButtons id="buttons" >
+                <apex:commandButton id="save" action="{!checkCycleDependent}" value="{!$Label.advpm__ap_save}"/>
+                <apex:commandButton id="cancel" action="{!cancelTemplate}" value="{!$Label.advpm__ap_cancel}" immediate="true"/>
+            </apex:pageBlockButtons>
+           
+            <!-- Information Section -->
+            <apex:pageBlockSection id="informationSection" title="{!$Label.advpm__ap_information}" columns="1">
+           
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.Name.label}" for="name" />
+					<apex:inputField required="true" id="name" value="{!actionPlanTemplate.Name}" style="width:300px"/>	
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Description__c.label}" for="description" />
+	                <apex:inputField id="description" value="{!actionPlanTemplate.advpm__Description__c}" style="width:300px"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Source_Object__c.label}" for="source_object" />
+	                <apex:outputPanel >
+	                	<apex:actionRegion >
+			                <apex:selectList id="source_object" value="{!actionPlanTemplate.advpm__Source_Object__c}" size="1" multiselect="false">
+			                	<apex:selectOption itemValue="" itemLabel="- None -" />
+			                	<apex:selectOption itemValue="Account" itemLabel="Account" />
+			                	<apex:selectOption itemValue="Contact" itemLabel="Contact" />
+			                	<apex:selectOption itemValue="advpm__Matter__c" itemLabel="Matter" />
+			                	<apex:actionSupport action="{!refreshUserLookupsFromSource}" event="onchange" rerender="op_datefields,userLookupFieldsPanel" status="sourceObjectStatus" />
+			                </apex:selectList>
+			                <apex:actionStatus id="sourceObjectStatus" startText="(loading...)" onstart="ActionPlanTemplateCreationScripts.showTasksListLoader();" onstop="ActionPlanTemplateCreationScripts.hideTasksListLoader();initAssignedToLookups();" />
+		                </apex:actionRegion>
+	                </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Start_Date_Source_Field__c.label}" for="start_date_field" />
+	                <apex:outputPanel id="op_datefields">
+		                <apex:selectList id="start_date_field" value="{!actionPlanTemplate.advpm__Start_Date_Source_Field__c}" size="1" multiselect="false">
+		                	<apex:selectOptions value="{!SourceObjectDateFieldsList}" />
+		                </apex:selectList>
+		            </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            <!-- End Information Section -->
+            
+            <!-- Tasks Section -->
+            <apex:pageBlockSection id="taskSection" title="{!$Label.advpm__ap_tasks}" columns="1"> 
+            
+                <apex:panelGrid columns="2">
+                    <apex:outputText >
+                    	<apex:inputCheckbox value="{!actionPlanTemplate.advpm__SkipWeekends__c}"  id="skipWeekendCheckbox" onclick="ActionPlanTemplateCreationScripts.checkSkipWeekend();" style="margin: 0px;"/>
+                    </apex:outputText>
+                    <apex:outputLabel value="{!$Label.advpm__ap_skipweekendswhen}" for="skipWeekendCheckbox" />
+                </apex:panelGrid>
+                
+                <apex:panelGrid columns="2" id="skipDayTable">
+                    <apex:outputText >{!$Label.advpm__ap_defaultweekendduedates}</apex:outputText> 
+                    <apex:outputText >
+                    	<apex:pageBlockSectionItem >
+                    		<apex:inputField value="{!actionPlanTemplate.advpm__SkipDay__c}" style="margin: -2px;" />
+                    	</apex:pageBlockSectionItem>
+                    </apex:outputText>
+                </apex:panelGrid>
+                
+                <br />                
+                
+                <apex:outputPanel id="taskList">
+                	<div>
+	                	<div id="tasksListLoader" style="display:none">
+	                		<div id="tasksListLoaderMessage" style="text-align:center">(loading...)</div>
+	                	</div>
+	                	<div>
+	                		<apex:pagemessages />
+                            <apex:variable var="tind" value="{!0}" />
+	                		<apex:dataTable value="{!TemplateTasks}" var="wrapTask" id="taskTable" columnClasses="first,actTypeCol,second,third,fourth,startTimeCol,durationCol,fifth,sixth,seventh,eighth" styleClass="taskTable">
+		
+		                        <apex:column id="columnOne" headerValue="" styleClass="first" style="padding-left:3px;">
+		                             <apex:commandLink rerender="taskList,taskStatus, informationSection" 
+		                             		immediate="{!wrapTask.isLast}" 
+		                             		action="{!removeTemplateTask}" 
+		                             		rendered="{!TemplateTasks.size > 1}"
+		                             		onclick="if (ActionPlanTemplateCreationScripts.confirmTaskDeletion_NEW('{!$Component.taskTable.dependent}','{!CEILING(wrapTask.task.advpm__taskIndex__c)}')) return false; ActionPlanTemplateCreationScripts.showTasksListLoader();"
+                    						oncomplete="initAssignedToLookups();showErrors();ActionPlanTemplateCreationScripts.checkReminderPicklists();ActionPlanTemplateCreationScripts.hideTasksListLoader();"
+                    						style="top: 3px;position: relative;"> 
+		                                 <img src="{!$Resource.ActionPlans_cross}" alt="{!$Label.ap_Remove} "/>
+		                                 <apex:param name="remove" value="{!CEILING(tind)}"/>
+		                                 <apex:param name="tindex" value="{!CEILING(wrapTask.task.advpm__taskIndex__c)}"/>
+		                              </apex:commandLink>
+                                      <apex:variable var="tind" value="{!(tind + 1)}" />
+		                        </apex:column>
+		                        
+		                        <apex:column style="padding-left:3px;" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Activity_Type__c.label}">
+		                        	<apex:pageBlockSectionItem id="activityTypeSection">
+		                        		<apex:inputField style="margin-left:0px;" id="activityType" required="true" value="{!wrapTask.task.advpm__Activity_Type__c}" onchange="javascript:ActionPlanTemplateCreationScripts.toggleEventFields(this.value,'{!$Component.taskTable.columnOne}');" />
+		                        	</apex:pageBlockSectionItem>
+		                        </apex:column>
+		                        
+		                        <apex:column headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Subject__c.label}" style="padding-left:3px;">
+		                        	<apex:pageBlockSectionItem id="subjectSection">
+		                        		<apex:inputField style="margin-left:0px;" id="subject" required="true" value="{!wrapTask.task.advpm__Subject__c}" />
+		                        	</apex:pageBlockSectionItem>
+		                        </apex:column>
+		                        
+		                        <apex:column rendered="{!IF(TemplateTaskSize > 1, true, false)}" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__APTTaskTemplate__c.label}">
+		                            <apex:selectList styleClass="dependent_{!CEILING(wrapTask.task.advpm__taskIndex__c)}" id="dependent" value="{!wrapTask.task.advpm__Dependent__c}" multiselect="false" size="1" style="max-width:140px;min-width:100px;" 
+		                            	 onchange="javascript:ActionPlanTemplateCreationScripts.checkDependent_NEW('.dependent_{!CEILING(wrapTask.task.advpm__taskIndex__c)}');">
+		                                <apex:selectOptions value="{!TemplateSubjectItems}" />
+		                            </apex:selectList>
+		                          <apex:inputHidden value="{!wrapTask.task.advpm__taskIndex__c}" id="theHiddenInput"/>
+		                        </apex:column>
+		                        
+		                        <apex:column style="padding-left:3px;" >
+		                   			<apex:facet name="header">
+										<div style="margin-right:8px;">Days Before<br/>or After<!-- <img class="helpOrb" title="{!$Label.ap_days_after_msg}" src="/s.gif"/> --></div>
+									</apex:facet>
+		                        
+		                        	<apex:pageBlockSectionItem >
+		                        		<apex:inputField required="true" value="{!wrapTask.task.advpm__DaysFromStart__c}" style="width:50px"/>
+		                       		</apex:pageBlockSectionItem>
+		                        </apex:column>
+		                        
+		                        <apex:column >
+		                        	<apex:facet name="header">Start<br/>Time</apex:facet>
+		                        	<apex:outputPanel id="startTimePanel" style="display:{!IF(wrapTask.task.advpm__Activity_Type__c=='Event','block','none')}">
+		                            
+		                           		<apex:selectList id="startTimePickList" size="1" value="{!wrapTask.task.advpm__Start_Time__c}" style="float:left;width:87px;">
+		                           			<apex:selectOptions value="{!actionPlanTemplates.hoursOption}" />
+		                           		</apex:selectList>
+		                           		
+									</apex:outputPanel>
+								</apex:column>
+								
+		                        <apex:column >
+		                        	<apex:facet name="header"><div style="margin-right:8px;">Duration<br/>(in minutes)</div></apex:facet>
+		                        	<apex:outputPanel id="durationPanel" style="display:{!IF(wrapTask.task.advpm__Activity_Type__c=='Event','block','none')}">
+		                            
+		                           		<apex:inputField id="duration" required="false" value="{!wrapTask.task.advpm__DurationInMinutes__c}" style="width:50px"/>
+		                           		
+									</apex:outputPanel>
+								</apex:column>
+								
+		                        <apex:column headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__User__c.label}">
+		                        	<!-- <apex:pageBlockSectionItem >
+		                        		<apex:inputField required="false" value="{!wrapTask.task.advpm__User__c}" />
+		                        	</apex:pageBlockSectionItem> -->
+		                        	<div class="user_column" style="">
+										<apex:outputPanel id="ownerRecordPanel" styleClass="user_column_child" layout="block" style="float: left;">
+		                             		<apex:outputPanel layout="block" styleClass="requiredInput" style="white-space: nowrap;">
+		                             			<div class="requiredBlock"></div>
+			                             		<apex:selectList id="userType_mlktp" value="{!wrapTask.task.advpm__User_Type__c}" size="1" multiselect="false" title="Assigned To Scope" style="vertical-align: top;">
+								                	<apex:selectOption itemValue="005" itemLabel="Specified User"  />
+								                	<apex:selectOption itemValue="CustomerSuccessUserLookup" itemLabel="Portal User" />
+								                	<apex:selectOption itemValue="SourceUserFields" itemLabel="All User Fields" />
+								                </apex:selectList>
+			                             		<apex:inputField value="{!wrapTask.task.advpm__User__c}"  styleClass="task_input_short" />
+			                             	</apex:outputPanel> 
+										</apex:outputPanel>
+										<apex:outputPanel styleClass="user_column_child" layout="block" id="userLookupFieldsPanel">
+		                             		<div class="userLookupFields">
+			                             		<apex:selectList id="userLookupFields" size="1" value="{!wrapTask.task.advpm__User_Source_Field__c}" title="User Lookup Fields">
+				                           			<apex:selectOptions value="{!relatedObjUserLookups}" />
+				                           		</apex:selectList>
+		                       		 		</div>
+	                       		 		</apex:outputPanel>
+                       		 		</div>
+		                        </apex:column>
+		                        
+		                        <apex:column headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Type__c.label}">
+		                        	<apex:outputPanel id="categoryPanel">
+		                        		<apex:inputField id="category" required="false" value="{!wrapTask.task.advpm__Type__c}"  style="width:90px"/>
+		                        	</apex:outputPanel>
+		                        </apex:column>
+		                        
+		                        <apex:column headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Priority__c.label}">
+		                        	<apex:outputPanel id="priorityPanel" style="white-space: nowrap;display:{!IF(wrapTask.task.advpm__Activity_Type__c=='Task','block','none')}" layout="block" styleClass="requiredInput">
+		                             	<div class="requiredBlock"></div>
+		                        		<apex:inputField id="priority" required="false" value="{!wrapTask.task.advpm__Priority__c}" style="margin-left:0px;" />
+		                        	</apex:outputPanel>
+		                        </apex:column>
+		                   
+		                        <apex:column >
+		                        	<apex:facet name="header">
+		                            	{!$ObjectType.APTTaskTemplate__c.fields.SendEmail__c.label} <br/>
+		                            	<a id="all" onclick="javascript:ActionPlanTemplateCreationScripts.checkEmail(1);" class="all-none">{!$Label.ap_All}</a> | 
+		                            	<a id="none" onclick="javascript:ActionPlanTemplateCreationScripts.checkEmail(0);" class="all-none">{!$Label.ap_None}</a>
+		                            </apex:facet>
+                                    <apex:pageBlockSectionItem id="emailSection">
+		                        	<apex:outputPanel style="display:{!IF(wrapTask.task.advpm__Activity_Type__c=='Task','block','none')}">
+		                        		<apex:inputField id="email" value="{!wrapTask.task.advpm__SendEmail__c}"/>
+		                        	</apex:outputPanel>
+                                    </apex:pageBlockSectionItem>
+		                        </apex:column>
+		                        
+		                        <apex:column rendered="{!displayReminder}"  headerClass="reminderTpl">
+		                        	<apex:facet name="header">
+		                        		{!$ObjectType.APTTaskTemplate__c.fields.Reminder__c.label} <br/>
+		                        		<a id="reminderAll" onclick="javascript:ActionPlanTemplateCreationScripts.checkReminder(1);" class="all-none">{!$Label.ap_All}</a> | 
+		                        		<a id="reminderNone" onclick="javascript:ActionPlanTemplateCreationScripts.checkReminder(0);" class="all-none">{!$Label.ap_None}</a>
+		                        	</apex:facet>
+			                       	<apex:pageBlockSectionItem id="reminderSection">
+			                       		<apex:inputField id="reminder" value="{!wrapTask.task.advpm__Reminder__c}" style="float:left;"/>
+			                       	</apex:pageBlockSectionItem>
+			                    </apex:column>
+		                       
+		                        <apex:column headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Comments__c.label}">
+		                        	<apex:outputPanel id="commentPanel" style="display:none">
+		                        		<div id="commentContainer">
+			                        		<div class="hd">
+			                        			<div class="hd-left">{!$Label.ap_Comments}</div>
+			                        			<div class="hd-right">
+			                        				<input class="btn" style="margin-bottom:1px;" type="button" onclick="javascript:ActionPlanTemplateCreationScripts.hideComments('{!$Component.taskTable.columnOne}');" title="Close" name="closeCommentPanel" value=" {!$Label.ap_Close} "/></div>
+			                        			</div>
+			                        		<div class="bd">
+			                        			<apex:inputField id="Comments" value="{!wrapTask.task.advpm__Comments__c}" onchange="document.getElementById('{!$Component.taskTable.columnOne}-commentLink').innerHTML= '...'"/>
+			                        		</div>
+		                        		</div>
+		                        	</apex:outputPanel>
+		                        	(<a id="{!$Component.taskTable.columnOne}-commentLink" onclick="javascript:ActionPlanTemplateCreationScripts.showComments('{!$Component.taskTable.columnOne}');" style="text-decoration:underline">
+		                        		<apex:outputText rendered="{!wrapTask.task.advpm__Comments__c != null}">...</apex:outputText><apex:outputText rendered="{!wrapTask.task.advpm__Comments__c == null}">{!$Label.advpm__ap_add}</apex:outputText>
+		                        	</a>)
+		                        </apex:column>
+		                        
+		                    </apex:dataTable>
+		            	</div>
+                    </div>
+                </apex:outputPanel>
+                
+                <apex:panelGrid columns="2">
+                    <apex:outputText >
+                    	<apex:commandLink action="{!addTemplateTask}" 
+                    			rerender="taskList, taskStatus, informationSection" 
+                    			status="taskStatus" 
+                    			style="font-weight:bold"
+                    			onclick="javascript:ActionPlanTemplateCreationScripts.showTasksListLoader();"
+                    			oncomplete="showErrors();ActionPlanTemplateCreationScripts.hideTasksListLoader();initAssignedToLookups();">
+	                        {!$Label.advpm__ap_addnewtask}
+	                        <apex:param name="add" value="1"/>
+                    	</apex:commandLink>
+                    </apex:outputText>
+                    <apex:outputText style="color:#cc0000 !important;">&nbsp;
+						<apex:actionStatus id="taskStatus">
+                    		<apex:facet name="start">
+                    			<apex:outputText value="(loading...)"/>
+                    		</apex:facet>
+                    		<apex:facet name="stop">
+                    			<apex:outputText value="{!$Label.advpm__ap_error}: {!ErrorMsg}" styleClass="errorMessage" rendered="{!(ErrorMsg != null)}"/>
+                    		</apex:facet>
+                    	</apex:actionStatus>
+                    </apex:outputText>
+                </apex:panelGrid>
+                
+            </apex:pageBlockSection>
+            <!-- End Tasks Section -->
+            
+            <div id="error" style="text-align:center">
+            	<span class="pbError">{!$Label.advpm__ap_errors_review_errors}</span>
+            </div>
+            
+        </apex:pageBlock>
+        <script type="text/javascript">
+        	ActionPlanTemplateCreationScripts.checkSkipWeekend();
+        	showErrors();
+    	</script>
+    </apex:form>
+</apex:outputPanel>
+</apex:page>

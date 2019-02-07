@@ -1,0 +1,17 @@
+<apex:component controller="evCalendarLinkGenerator" access="global">
+    
+    <apex:attribute name="inputDelegateId" type="String" description="ID of the delegate" assignTo="{!delegateId}" />    
+    <apex:attribute name="inputLinkText" type="String" description="The text to use if an icon is not provided." default="Add To Outlook" assignTo="{!linkText}" />
+    <apex:attribute name="inputLinkImage" type="String" description="The path to the icon." assignTo="{!linkImage}" />
+    
+    <apex:outputPanel layout="none" rendered="{!showImage}">
+        <apex:outputLink value="{!CalendarLink}" id="calendarIcon">
+            <apex:image url="{!linkImage}" />
+        </apex:outputLink>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!NOT(showImage)}">
+    	<apex:outputLink value="{!CalendarLink}" id="calendarLink">{!linkText}</apex:outputLink>
+    </apex:outputPanel>
+    
+</apex:component>

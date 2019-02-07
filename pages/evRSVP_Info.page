@@ -1,0 +1,34 @@
+<apex:page applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" standardStylesheets="false" controller="evRSVP_Controller" >
+    
+    <apex:composition template="evTemplateSocial">
+        
+        <apex:define name="title">
+            <title>RSVP | {!thisEvent.name}</title>
+        </apex:define>
+        
+        <apex:define name="body">
+            
+            <apex:form styleclass="form-horizontal" >
+                
+                <!-- BODY: Content -->
+                <h1>RSVP | {!thisEvent.name}</h1>
+                
+                <div class="well">
+                    <apex:outputPanel layout="none" rendered="{!thisDelegate.RSVP_Status__c == 'Accepted' || thisDelegate.RSVP_Status__c == 'Confirmed'}">
+                    	<i class="fa fa-check fa-2x fa-pull-left status-icon green" aria-hidden="true"></i>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!thisDelegate.RSVP_Status__c != 'Accepted'}">
+                    	<i class="fa fa-times fa-2x fa-pull-left status-icon red" aria-hidden="true"></i>
+                    </apex:outputPanel>
+                    <strong class="text-uppercase">{!thisDelegate.Registration_Status__c}:</strong> 
+                    Please note you have previously RSVPed for this event on {!thisDelegate.RSVP_Time__c}.<br/><br/>
+                    If you would like to change this please contact the event organiser by clicking <a href="mailto:{!thisEvent.SupportEmailAddress__c}">here</a>.
+                </div>
+
+                <!-- BODY: Content END -->
+                
+            </apex:form>
+            
+        </apex:define>
+    </apex:composition>  
+</apex:page>

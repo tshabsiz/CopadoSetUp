@@ -1,0 +1,18 @@
+<apex:page controller="evEmailBatchRunner_Controller">
+    <apex:sectionHeader title="Event System Admin"/>
+    <apex:form >  
+        <apex:pageMessages /> 
+        <br/>
+        
+        <apex:commandButton style="width:300px;" styleClass="btn btn-medium btn-primary" action="{!ScheduleEmailBatchJob}" value="Schedule Event Emails Hourly" /><br/>
+        
+        <br/>
+        <h2>
+            Usage Limits   
+        </h2>
+        <br/>
+        <br/>
+        You have made {!SimgleEmailsSent} email calls out of {!SingleEmailsLimit} allowed
+        <br/>
+    </apex:form>
+</apex:page>

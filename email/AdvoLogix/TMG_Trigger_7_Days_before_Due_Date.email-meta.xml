@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Trigger 7 Days before Due Date</name>
+    <style>freeForm</style>
+    <subject>Trigger {!Trigger__c.Name} will be due for {!Trigger__c.Deal__c} on {!Trigger__c.Due_Date__c}</subject>
+    <textOnly>Good day {!Trigger__c.Person_Responsible__c},
+
+
+Trigger  {!Trigger__c.Name} will be due for {!Trigger__c.Deal__c} on {!Trigger__c.Due_Date__c}
+
+
+Deal Name: {!Trigger__c.Deal__c}
+
+Agreement Name:{!Trigger__c.Agreement__c}
+
+Trigger Name:  {!Trigger__c.Name}
+
+Trigger Status: {!Watcher__c.Watcher_Status__c}
+
+Trigger Due Date: {!Trigger__c.Due_Date__c}
+
+
+Click on the below link to view the trigger:
+
+{!Trigger__c.Link}
+
+
+Kind regards,
+
+Transaction Management Group
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

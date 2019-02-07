@@ -1,0 +1,33 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_UploadDocumentController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:pageMessages id="pageMsg" />
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+            	border: 'none', 
+            	padding: '15px', 
+            	backgroundColor: '#000', 
+            	'-webkit-border-radius': '10px', 
+            	'-moz-border-radius': '10px', 
+            	opacity: .5, 
+            	color: '#fff' 
+        	} });" onstop="$.unblockUI();"/>
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!save}" status="processing" />
+				<apex:commandButton value="Cancel" action="{!Cancel}" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection columns="1">
+				<apex:inputFile accept="image/jpeg, image/png" value="{!Attachment.Body}" filename="{!Attachment.Name}" contentType="{!Attachment.ContentType}" />
+                <br/>
+                <apex:outputPanel rendered="{!fileType!='AncillaryCalculation' && fileType!='PricingAndReturns'}">
+                    
+                    <table>
+                        <tr><td>NB : Use below example when uploading an image</td></tr>
+                        <tr><td><apex:image height="400" url="{!$Resource.ProjectionModel}" /></td></tr>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

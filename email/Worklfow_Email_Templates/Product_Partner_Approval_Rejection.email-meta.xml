@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Requests approval/rejection from Product Partner</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Product Partner Approval/Rejection</name>
+    <style>freeForm</style>
+    <subject>Salesforce - Product Partner Acknowledgement: {!Opportunity.Name}</subject>
+    <textOnly>Dear {!Opportunity.ProductPartner__c}
+
+You have been identified as the Product Partner on {!Opportunity.Name} by {!Opportunity.OwnerFullName}.
+
+Please acknowledge this Opportunity by clicking on the Approve or Reject buttons on the Opportunity Page. Scroll to the bottom of the Opportunity page to perform this action.
+
+The Opportunity can be accessed by copying and pasting the below link in your Chrome Browser after you have logged on:
+{!Opportunity.Link}
+
+Please note that until you Approve (Acknowledge) or Reject this Opportunity it will be locked for further editing and will not appear in pipeline reports. To delegate your Approval action please add the Delegated User to the Delegated Approver field in your Profile settings and forward this email.
+
+The current Delegated Approver can be changed by copying and pasting the below link in your Chrome Browser after you have logged on:
+https://barclaysafrica.my.salesforce.com/ui/setup/personal/ApproverSettingsSetupPage?setupid=ApproverSettings&amp;retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DPersonalInfo
+
+For any issues please contact the Salesforce Support - Barclays Africa team.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

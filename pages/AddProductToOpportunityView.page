@@ -1,0 +1,432 @@
+<apex:page standardController="OpportunityLineItem" extensions="AddProductToOpportunityController" docType="html-5.0" lightningStylesheets="true" readOnly="true">
+
+    <style>
+            
+        .debtFinanceInformation .detailList:nth-child(1),
+        .debtFinanceInformation .detailList:nth-child(3) {
+            margin-bottom: 2em;
+        }
+        
+    </style>
+
+    <apex:form id="theForm" html-novalidate="novalidate">  
+        <apex:pageBlock id="addProductToOpportunity"> 
+            <apex:pageMessages />
+            <br/><br/>
+            <div align="center">
+                <apex:commandButton action="{!cancel}" immediate="true" value="Back to Opportunity"/>
+                <apex:commandButton id="editBtnTop" value="Edit" action="{!edit}" /> 
+            </div>
+            <apex:outputPanel id="selectProduct">
+                <table cellspacing="20px">
+                    <tr>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.Product2.Label}"/></td> 
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.Product_Level_2__c.Label}"/></td> 
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.Product_Level_3__c.Label}"/></td> 
+                    </tr>
+                    <tr>
+                        <td width="10%">
+                            <apex:selectList id="ProdList" value="{!product}" size="1" style="width:250px; height: 40px" disabled="true">
+                                <apex:selectOptions value="{!products}"/>
+                            </apex:selectList>
+                        </td>
+                        <td width="10%">
+                            <apex:selectList id="productsLevel2List" value="{!OpportunityLineItem.Product_Level_2__c}" size="1" style="width:250px; height: 40px" disabled="true">
+                                <apex:selectOptions value="{!productsLevel2}"/>
+                            </apex:selectList>
+                        </td>
+                        <td width="10%">
+                            <apex:selectList id="productsLevel3List" value="{!OpportunityLineItem.Product_Level_3__c}" size="1" style="width:250px; height: 40px" disabled="true">
+                                <apex:selectOptions value="{!productsLevel3}"/>
+                            </apex:selectList>
+                        </td>
+                        <td width="70%" align="right">
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.ProductPartner__c.Label}"/>
+                            <apex:outputField id="ProductPartnerOutputF" value="{!OpportunityLineItem.ProductPartner__c}"/>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <br/><br/>
+            <apex:outputPanel id="inputs">
+                     <table width="100%" cellspacing="15px">
+                     <tr>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Annualised_Income__c.Label}"/></td> 
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Balance__c.Label}"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}" />
+                            </apex:outputPanel>
+                        </td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Margin__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Estimated_Utilisation__c.Label}"/></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><apex:outputText id="annualisedIncomeOutputF" /></td>
+                        <td width="20%" style="text-align:center; font-size:18px;">=</td>
+                        <td width="1%" style="text-align:left; font-size:18px;">(</td>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                                <apex:outputField id="balanceInputF" value="{!OpportunityLineItem.Balance__c}" />
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                                <apex:outputField id="holdSizeInputF" value="{!OpportunityLineItem.Hold_Size__c}"/>
+                            </apex:outputPanel>
+                        </td>
+                        <td width="20%" style="text-align:center; font-size:18px;">x</td>
+                        <td><apex:outputField id="marginInputF" value="{!OpportunityLineItem.Margin__c}"/></td>
+                        <td width="20%" style="text-align:center; font-size:18px;">x</td>
+                        <td><apex:outputField id="estimatedUtilisationInputF" value="{!OpportunityLineItem.Estimated_Utilisation__c}"/></td>
+                        <td width="1%" style="text-align:left; font-size:18px;">)</td>
+                        
+                     </tr>
+                     <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Fees__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees_Period__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees__c.Label}"/></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td></td>
+                        <td width="2%" style="text-align:center; font-size:18px;">+</td>
+                        <td></td>
+                        
+                        <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                            <td><apex:outputField id="feesInputF" value="{!OpportunityLineItem.Fees__c}"/></td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                             <td><apex:outputField id="feesReadOnlyInputF" value="{!OpportunityLineItem.Fees__c}"/>
+                             </td>
+                        </apex:outputPanel>
+                        
+                        <td width="2%" style="text-align:center; font-size:18px;">+</td>
+                        <td><apex:outputField id="RecurringFeesPeriod" value="{!OpportunityLineItem.Recurring_Fees_Period__c}"/></td>
+                        <td></td>
+                        <td><apex:outputField id="RecurringFees" value="{!OpportunityLineItem.Recurring_Fees__c}"/></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Income_this_Year__c.Label}"/></td> 
+                        <td></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Gross_Margin__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Ftp__c.Label}"/></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><apex:outputText id="incomeThisYearOutputF" /></td>
+                        <td></td>
+                        <td></td>
+                        <td><apex:outputField id="grossMargin" value="{!OpportunityLineItem.Gross_Margin__c}"/></td>
+                        <td></td>
+                        <td><apex:outputField id="ftp" value="{!OpportunityLineItem.Ftp__c}"/></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+
+                     </table>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="transactionalInformation">
+                    <apex:pageblockSection title="{!$Label.lbl_TransactionalInformation}" columns="2" id="ti" rendered="{!productFamily != Debt}">
+                        <apex:outputField id="Volume" value="{!OpportunityLineItem.Volume__c}"/>
+                        <apex:outputField id="FeePerTransaction" value="{!OpportunityLineItem.Transaction_Value__c}"/>
+                        <apex:outputField value="{!OpportunityLineItem.Primary_Banking_Target__c}" id="PrimaryBanking" />
+                        <apex:outputField id="MonthlyValue" value="{!OpportunityLineItem.MonthlyValue__c}" />
+                        <apex:outputField id="FXSalesComment" value="{!OpportunityLineItem.FX_Sales_Comment__c}" rendered="{!isForeignExchange}"/>
+                    </apex:pageblockSection>
+                </apex:outputPanel>
+                <apex:outputPanel id="debtFinanceInformation" styleClass="debtFinanceInformation">
+                    <apex:pageBlock title="{!$Label.lbl_DebtFinanceInformation}" rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                        <apex:pageblockSection id="bondsSection" columns="2" rendered="{!ProductLevel3Name == 'Bonds - Local Currency'}">
+                        	<apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}" />
+                                <apex:outputField id="holdSizeInputF" value="{!OpportunityLineItem.Hold_Size__c}"/>
+                        	</apex:pageBlockSectionItem>    
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection id="grossMarginSection" columns="2" rendered="{!productFamily == Debt || isTrade || isWorkingCapital}">
+                            <apex:pageBlockSectionItem rendered="{!!isTrade &&!isWorkingCapital}">
+                                <span style="font-weight:bold">Term</span>
+                                <apex:outputpanel >
+                                    <apex:outputField id="termsYears" value="{!OpportunityLineItem.Terms_Years__c}" style="min-width:20px;max-width:60px"/>
+                                    <span style="font-weight:bold"> </span>
+                                    <apex:outputLabel style="font-weight:bold" value="Years"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Balance__c.Label}"/>
+                                <apex:outputField id="balanceInputF" styleClass="balanceInputF" value="{!OpportunityLineItem.Balance__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Rate_Type__c.Label}" />
+                                <apex:outputField id="ratetypeInputF" value="{!OpportunityLineItem.Rate_Type__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FundingRateType__c.Label}" />
+                                <apex:outputField id="fundingratetypeInputF" value="{!OpportunityLineItem.FundingRateType__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Base_Rate__c.Label}" />
+                                <apex:outputField id="baserateInputF" value="{!OpportunityLineItem.Base_Rate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FundingBaseRate__c.Label}" />
+                                <apex:outputField id="fundingbaserateInputF" value="{!OpportunityLineItem.FundingBaseRate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Loan_Profile__c.Label}" />
+                                <apex:outputField id="loanprofileInputF" value="{!OpportunityLineItem.Loan_Profile__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Facility_Type__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Facility_Type__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Compounding_Frequency__c.Label}"/>
+                                <apex:outputField id="compoundingFrequencyInputF" value="{!OpportunityLineItem.Compounding_Frequency__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RefinanceAmount__c.Label}"/>
+                                <apex:outputField id="refinanceAmountInputF" value="{!OpportunityLineItem.RefinanceAmount__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Loan_Profile__c.Label}" />
+                                <apex:outputField value="{!OpportunityLineItem.Loan_Profile__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Facilities_Off_Balance__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Facilities_Off_Balance__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Role_League__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Role_League__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.NewCapital__c.Label}"/>
+                                <apex:outputField id="newcapitalInputF" value="{!OpportunityLineItem.NewCapital__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.BulletPaymentDue__c.Label}"/>
+                                <apex:outputField id="BulletPaymentDueInputF" value="{!OpportunityLineItem.BulletPaymentDue__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LoanType__c.Label}" />
+                                <apex:outputField value="{!OpportunityLineItem.LoanType__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}"/>
+                            <apex:pageBlockSectionItem rendered="{!OpportunityLineItem.LoanType__c != NULL && OpportunityLineItem.LoanType__c == 'Refinance' && productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RefinanceIncreaseDecrease__c.Label}" />
+                                <apex:outputField value="{!OpportunityLineItem.RefinanceIncreaseDecrease__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Flexi__c.Label}"/>
+                                <apex:outputField id="FlexiInputF" value="{!OpportunityLineItem.Flexi__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.BulletAmount__c.Label}"/>
+                                <apex:outputField id="BulletAmountInputF" value="{!OpportunityLineItem.BulletAmount__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.SecondaryLoan__c.Label}"/>
+                                <apex:outputField id="SecondaryLoanInputF" value="{!OpportunityLineItem.SecondaryLoan__c}" />
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_UpfrontFees}" columns="2" id="pbs4" rendered="{!productFamily == Debt  || isWorkingCapital || isTrade}">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:outputField id="arrangingFee" value="{!OpportunityLineItem.Arranging_Fee__c}"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:outputField id="arrangingFeeDeferred" value="{!OpportunityLineItem.Arranging_Fee_Deferred__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Syndicated__c.Label}" />
+                                <apex:outputField value="{!OpportunityLineItem.Syndicated__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <span style="font-weight:bold" data-tooltip="{!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.inlineHelpText}">
+                                        {!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.Label}<span class="helpOrb"></span>
+                                </span>
+                                <apex:outputpanel >
+                                    <apex:outputField id="otherFees" value="{!OpportunityLineItem.Other_Fees__c}"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Other_Fees_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:outputField id="otherFeesDeferred" value="{!OpportunityLineItem.Other_Fees_Deferred__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Underwrite__c.Label}" />
+                                <apex:outputField value="{!OpportunityLineItem.Underwrite__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Committment_Fee__c.Label}" />
+                                <apex:outputField id="committmentFee" value="{!OpportunityLineItem.Committment_Fee__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Participation_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:outputField id="participationFee" value="{!OpportunityLineItem.Participation_Fee__c}"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Participation_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:outputField id="participationFeeDeferred" value="{!OpportunityLineItem.Participation_Fee_Deferred__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isCPF && !isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Fee_Recovery_Description__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Fee_Recovery_Description__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FlexiFee__c.Label}"/>
+                                <apex:outputField id="flexifeeInputF" value="{!OpportunityLineItem.FlexiFee__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Agency_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:outputField id="agencyFee" value="{!OpportunityLineItem.Agency_Fee__c}"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Agency_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:outputField id="agencyFeeDeferred" value="{!OpportunityLineItem.Agency_Fee_Deferred__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Annual_Facility_Fee__c.Label}" />
+                                <apex:outputField id="facilityFee" value="{!OpportunityLineItem.Annual_Facility_Fee__c}"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isWorkingCapital}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Unutilised_Facility_Fee__c.Label}" />
+                                <apex:outputField id="unutilisedfacilityFee" value="{!OpportunityLineItem.Unutilised_Facility_Fee__c}"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Co_ordination_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:outputField id="coordinationFee" value="{!OpportunityLineItem.Co_ordination_Fee__c}"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Coordination_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:outputField id="coordinationFeeDeferred" value="{!OpportunityLineItem.Coordination_Fee_Deferred__c}"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_RiskAndReturn}" columns="2" id="pbs5" rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}">
+                                <span style="font-weight:bold">Term</span>
+                                <apex:outputpanel >
+                                    <apex:outputField id="termsYears" value="{!OpportunityLineItem.Terms_Years__c}" style="min-width:20px;max-width:60px"/>
+                                    <span style="font-weight:bold"> </span>
+                                    <apex:outputLabel style="font-weight:bold" value="Years"/>  
+                                </apex:outputpanel>   
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RoRWA__c.Label}"/>
+                                <apex:outputField id="rorwaInputF" value="{!OpportunityLineItem.RoRWA__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RoRWA1stYear__c.Label}"/>
+                                <apex:outputField id="rorwa1styearInputF" value="{!OpportunityLineItem.RoRWA1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!(productFamily == Debt && !isCPF) || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RWA__c.Label}"/>
+                                <apex:outputField id="rwaInputF" value="{!OpportunityLineItem.RWA__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!(productFamily == Debt && !isCPF) || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RWA1stYear__c.Label}"/>
+                                <apex:outputField id="rwa1styearInputF" value="{!OpportunityLineItem.RWA1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LGD__c.Label}"/>
+                                <apex:outputField id="lgdInputF" value="{!OpportunityLineItem.LGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DTLGD__c.Label}"/>
+                                <apex:outputField id="dtlgdInputF" value="{!OpportunityLineItem.DTLGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DG_TTC__c.Label}"/>
+                                <apex:outputField id="dgttcInputF" value="{!OpportunityLineItem.DG_TTC__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.GLGD__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.GLGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Threshold__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Threshold__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || isCPF}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LTV__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.LTV__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && isCPF}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RORC__c.Label}"/>
+                                <apex:outputField id="rorcInputF" value="{!OpportunityLineItem.RORC__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RORC1stYear__c.Label}"/>
+                                <apex:outputField id="rorc1styearInputF" value="{!OpportunityLineItem.RORC1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Threshold__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.Threshold__c}" />
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_RPF_Pipeline_Calculator}" columns="2" id="pbs6" rendered="{!isRPF}">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DrawPercentageCurrentYear__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.DrawPercentageCurrentYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.StartDate__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.StartDate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DrawPercentageNextYear__c.Label}"/>
+                                <apex:outputField value="{!OpportunityLineItem.DrawPercentageNextYear__c}" />
+                            </apex:pageBlockSectionItem>
+                      </apex:pageblockSection>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="balanceAndIncome">
+                    <apex:pageblockSection title="{!$Label.lbl_BalanceAndIncome}" columns="1" id="pbs1" rendered="{!productFamily != Debt}">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.New_Facility_Balance__c.Label}" />
+                            <apex:outputText id="newFacilityBalanceOutputF" />
+                        </apex:pageBlockSectionItem>
+                        <apex:outputField id="existingFacilityBalance" value="{!OpportunityLineItem.Existing_Facility_Balance__c}" rendered="{!isExisting}"/>
+                        <apex:pageBlockSectionItem rendered="{!isExisting}">
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Net_Facility_Balance__c.Label}" />
+                            <apex:outputText id="netFacilityBalanceOutputF" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.New_Facility__c.Label}" />
+                            <apex:outputText id="newFalcilityOutputF" />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageblockSection>
+                </apex:outputPanel>
+            	<div align="center">
+                    <apex:commandButton action="{!cancel}" immediate="true" value="Back to Opportunity"/>
+                    <apex:commandButton id="editBtnBottom" value="Edit" action="{!edit}" /> 
+                </div>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

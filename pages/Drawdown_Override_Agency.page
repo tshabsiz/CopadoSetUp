@@ -1,0 +1,202 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 06/08/2017 - PG    - Create VF page.    
+ 12/03/2018 - TdB   - Agreement Limit optional (prevent Users from creating Drawdown and Agency with no Agreement Limit) 
+ 15/03/2018 - TdB	- Add Lender Portion approval process and validation for Drawdown Agency                                                          
+--> 
+<apex:page standardController="Drawdown__c" extensions="Drawdown_Override" tabStyle="Drawdown__c">
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+	<script>
+	function buttonDisable()
+	{
+		$("[id$='theSaveButton']").hide(); 
+	}
+
+	function buttonEnable()
+	{
+		$("[id$='theSaveButton']").show(); 
+	}
+	</script>
+    
+    <apex:actionStatus id="processStatus" onstart="buttonDisable()" onstop="buttonEnable()" />
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Drawdown Edit" subtitle="{! IF(drawdownObject.Id == null,'New Drawdown', drawdownObject.Name) }"/>
+    
+    <!-- FORM -->
+    <apex:form >
+        
+        <!-- ACITON FUNCTIONS -->
+        <apex:actionFunction name="ChangeLenderPortions" action="{!actionChangeLenderPortions}" rerender="lenderDetails"/>
+        
+        
+    <!-- PAGE BLOCK TABLE -->
+    <apex:pageBlock title="Drawdown Edit" mode="edit" id="thePage">
+
+        <!-- ERRORS   -->
+        <apex:pageMessages id="pageMessageId"/>
+        
+        <!-- BUTTONS -->
+        <apex:PageBlockButtons >
+            <apex:commandButton value="Save" action="{!saveRecord}" id="theSaveButton" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0 ,FALSE, TRUE)}"/>
+            <apex:commandButton value="Save and Submit for Approval" action="{!saveAndSubmitRecord}" id="theSaveAndApproveButton" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0 ,FALSE, IF(drawdownObject.Lender_Portion_Changed__c == TRUE, IF(drawdownObject.Approval_Status__c == NULL, TRUE, FALSE), FALSE))}"/>
+            <apex:commandButton value="Cancel" action="{!cancel}" />
+        </apex:PageBlockButtons>
+        <!-- / BUTTONS --> 
+        
+        <!-- SECTION  - INFORMATION -->
+        <apex:pageBlockSection title="Information" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}"> 
+            
+            <apex:inputField value="{!drawdownObject.Name}" required="true" />
+
+            <!-- CURRENCY -->
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel for="currencyField" value="Currency" />
+               <!-- <apex:actionRegion > -->
+                    <apex:outputField value="{!drawdownObject.CurrencyISOCode}"  id="currencyField">
+                      <!--  <apex:actionSupport event="onchange" action="{!actionUpdateBankDetails}" rerender="accName, accNum, accBank, accBranch, lenderDetails" /> -->
+                    </apex:outputField> 
+              <!--  </apex:actionRegion> -->
+            </apex:pageBlockSectionItem>
+            <!-- / CURRENCY -->
+
+             <!-- Agreement -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel for="agreementField" value="Agreement" />
+                <apex:actionRegion >
+                    <apex:inputField value="{!drawdownObject.Agreement__c}" required="true" id="agreementField">
+                        <apex:actionSupport event="onblur" action="{!actionUpdateLenderParties}" rerender="lenderDetails" status="processStatus"/>
+                    </apex:inputField> 
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <!-- / Agreement -->
+            
+            
+           <!-- <apex:inputField value="{!drawdownObject.Agreement__c}" required="true" /> -->
+            <apex:inputField value="{!drawdownObject.Interest_Period__c}" />
+            
+             <!-- Facility -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel for="facilityField" value="Facility" />
+                <apex:actionRegion >
+                    <apex:inputField value="{!drawdownObject.Facility__c}" id="facilityField">
+                        <apex:actionSupport event="onblur" action="{!actionUpdateLenderParties}" rerender="lenderDetails" status="processStatus"/>
+                    </apex:inputField> 
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <!-- / Facility -->
+            
+           <!-- <apex:inputField value="{!drawdownObject.Facility__c}"/> -->
+            <apex:inputField value="{!drawdownObject.Borrower__c}" required="true" />
+            
+             <!-- Facility Tranche -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel for="facilityTrancheField" value="Facility Tranche" />
+                <apex:actionRegion >
+                    <apex:inputField value="{!drawdownObject.Facility_Tranche__c}" id="facilityTrancheField">
+                        <apex:actionSupport event="onblur" action="{!actionUpdateLenderParties}" rerender="lenderDetails" status="processStatus"/>
+                    </apex:inputField> 
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <!-- / Facility Tranche -->
+            
+           <!-- <apex:inputField value="{!drawdownObject.Facility_Tranche__c}" /> -->
+             <apex:inputField value="{!drawdownObject.Period__c}" />
+            <apex:inputField value="{!drawdownObject.Interest_Type__c}" />
+            <apex:inputField value="{!drawdownObject.Status__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Our_Portion__c}" />
+            <apex:inputField value="{!drawdownObject.Supporting_Documentation_Uploaded__c}" />
+
+            <!-- ADVANCE AMOUNT -->
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel for="advanceAmount" value="Advance Amount" />
+                <apex:actionRegion >
+                    <apex:inputField value="{!drawdownObject.Advance_Amount__c}" required="true" id="advanceAmount">
+                        <apex:actionSupport event="onchange" action="{!actionUpdateLenders}" rerender="lenderDetails" status="processStatus"/>
+                    </apex:inputField> 
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <!-- / ADVANCE AMOUNT -->
+
+            <div></div>
+            <apex:inputField value="{!drawdownObject.Current_Utilisation__c}" required="true" />
+            <div></div>
+            <apex:inputField id="limitval" value="{!drawdownObject.Facility_Limit__c}" required="true" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - INFORMATION -->
+        
+        <!-- SECTION  - ACCOUNT DETAILS -->
+        <apex:pageBlockSection title="Account Details" id="accountDetails" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:outputField value="{!drawdownObject.Account_Name__c}" id="accName" />
+            <apex:outputField value="{!drawdownObject.Account_Number__c}" id="accNum" />
+            <apex:outputField value="{!drawdownObject.Account_Bank__c}" id="accBank" />
+            <apex:outputField value="{!drawdownObject.Account_Branch__c}" id="accBranch" />
+            <apex:inputField value="{!drawdownObject.SWIFT_ID__c}" />
+            <apex:inputField value="{!drawdownObject.Reference__c}" required="true" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - ACCOUNT DETAILS -->
+        
+        <!-- SECTION  - DATES -->
+        <apex:pageBlockSection title="Dates" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:inputField value="{!drawdownObject.Advance_Date__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Agent_Notice_Date__c}" />
+            <apex:inputField value="{!drawdownObject.Payment_Expected__c}" />
+            <apex:inputField value="{!drawdownObject.Request_Date__c}" required="true" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - DATES -->
+        
+       <apex:actionRegion > 
+        <!-- SECTION  - LENDERS -->
+        <apex:pageBlockSection title="Lender Portion Details" columns="1" id="lenderDetails" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">   
+
+            <apex:actionStatus id="actionProcess" startText=" Updating Record" />
+            
+            <!-- PAGE BLOCK TABLE -->
+            <apex:pageBlockTable value="{!lendersWrapper}" var="item" > 
+
+                <apex:column value="{!item.record.Agreement_Party__c}" rendered="{!IF(drawdownObject.Agreement__c != null && drawdownObject.Facility__c == null, True, False)}" />
+                <apex:column value="{!item.record.Facility_Party__c}" rendered="{!IF(drawdownObject.Facility__c != null && drawdownObject.Facility_Tranche__c == null, True, False)}"/>
+                <apex:column value="{!item.record.Tranche_Party__c}" rendered="{!IF(drawdownObject.Facility_Tranche__c != null, True, False)}"/>
+                <apex:column value="{!item.record.Responsible_Percentage__c}" />
+                <apex:column value="{!item.record.Responsible_Amount__c}" />
+                <apex:column headerValue="Committed Percentage" rendered="{!IF(drawdownObject.Lender_Portion_Changed__c == True, True, False)}">
+                    <apex:InputField style="width:100px" value="{!item.record.Committed_Responsible_Percentage__c}" />
+                </apex:column>
+                <apex:column headerValue="Committed Amount" rendered="{!IF(drawdownObject.Lender_Portion_Changed__c == True, True, False)}">
+                    <apex:InputField style="width:100px" value="{!item.record.Committed_Responsible_Amount__c}"/>
+                </apex:column>
+
+            </apex:pageBlockTable>
+            <!-- / PAGE BLOCK TABLE -->
+
+        </apex:pageBlockSection>
+        <!-- / SECTION  - LENDERS -->
+        
+       <!-- <apex:commandLink value="Change Lender Portions"  action="{!actionChangeLenderPortions}" reRender="lenderDetails" /> --> 
+       <apex:commandButton rendered="{!IF(drawdownObject.Lender_Portion_Changed__c == True, False, True)}" value="Change Lender Portions" reRender="lenderDetails" >
+          <apex:actionSupport immediate="true" event="onclick" action="{!actionChangeLenderPortions}"  status="processStatus"/> 
+           </apex:commandButton> 
+       </apex:actionRegion> 
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK TABLE -->
+    
+    </apex:form>
+    <!-- / FORM -->
+    
+</apex:page>

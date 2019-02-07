@@ -1,0 +1,40 @@
+<aura:component controller="ClientPlanFinancialsControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="securityId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+         
+         <aura:if isTrue="{!v.showProgressBar}">
+             <c:ProgressBarLightningMobile />
+            
+             <aura:set attribute="else">
+                 
+                 <div id="pageLabel">
+                    {!if(v.securityId == null, 'Add ', 'Edit ')} a client security
+                 </div>
+                
+                 <div id="wholePage">
+                    
+                     <ui:inputRichText aura:id="description" Label="Security description" value="{!v.sec.Security_Description__c}" width="100%"/>
+                     
+                     <div class="richtextWrapper">
+                         <ui:inputCurrency aura:id="value" label="Value" value="{!v.sec.Value__c}" />
+                         <span aura:id="valueError" class="toggle red">Decimal value required</span>
+                     </div>
+                         
+                     <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeSave}">Save</button>
+                    </div>
+                     
+                 </div>
+                
+             </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

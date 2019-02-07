@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>RN - CloudSmiths - QA questions with weightings related to a specific QA template</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Heading__c</fullName>
+        <description>RN - CloudSmiths - QA question heading</description>
+        <externalId>false</externalId>
+        <label>Heading</label>
+        <length>255</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>IsAuditRequirement__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths 
+Audit critical question</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Check this if this question is an audit critical question. Should an agent score zero (0) for this question the complete QA evaluation for that agent will fail.</inlineHelpText>
+        <label>Is Audit Requirement</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>QAQuestion__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Question</label>
+        <length>255</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>QATemplate__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>QA Template</label>
+        <referenceTo>Case_QA_Template__c</referenceTo>
+        <relationshipLabel>QA Questions</relationshipLabel>
+        <relationshipName>QA_Questions</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Weighting__c</fullName>
+        <defaultValue>0</defaultValue>
+        <description>RN - CloudSmiths - The weighting of the specific question</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The weighting of the specific question</inlineHelpText>
+        <label>Weighting</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Case QA Question</label>
+    <listViews>
+        <fullName>Detailed_View</fullName>
+        <columns>NAME</columns>
+        <columns>QATemplate__c</columns>
+        <columns>Heading__c</columns>
+        <columns>QAQuestion__c</columns>
+        <columns>Weighting__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Detailed View</label>
+    </listViews>
+    <nameField>
+        <displayFormat>QAQ-{000000000}</displayFormat>
+        <label>Case QA Question Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Case QA Questions</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

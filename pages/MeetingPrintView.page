@@ -1,0 +1,259 @@
+<apex:page standardController="Meeting__c" extensions="MeetingPrintViewController" applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" renderAs="pdf">
+    <head>
+        <title>Meeting of {!Meeting.Committee__r.Name}</title>
+    	<style>
+            div.title {
+                font-size: 28px;
+                font-weight: none;
+                color: #FF0000;
+                margin-bottom: 8px;
+            }
+            body {
+                font-family: sans-serif;
+                font-size: 90%;
+            }
+            @page {
+                size: A4 portrait; /* ISO/JIS A4 (210mmx297mm) */  
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-top: 20px;
+                margin-bottom: 50px;
+            }
+            table.grid {
+                margin: 0 0;
+                width: 100%;
+                max-width: inherit;
+                page-break-inside: avoid;
+                word-break: break-all;
+                font-size: 14px;
+                border-collapse: collapse;
+            }
+            table.grid tr {
+                margin: 0;
+            }
+            table.grid th {
+                margin: 0;
+                background-color: #666666;
+                color: #FFFFFF;
+                font-weight: bold;
+                vertical-align: top;
+                padding: 2px;
+                border-collapse: collapse;
+                border: 1px solid #D4D4D4;
+            }
+            table.grid td {
+                margin: 0;
+                vertical-align: top;
+                padding: 2px;
+                padding-left: 3px;
+            }
+            table.grid td.header {
+                background-color: #444444;
+                color: #FFFFFF;
+                font-weight: bold;
+            }
+            table.grid td.label {
+                font-weight: bold;
+                color: #FFFFFF;
+                padding: 4px;
+                background-color: #A9A9A9;
+                border-collapse: collapse;
+                border: 1px solid #D4D4D4;
+            }
+            table.grid td.field {
+                padding: 4px;
+                word-break: break-all;
+                background-color: #F7F7F7; 
+                border-collapse: collapse;
+                border: 1px solid #D4D4D4;
+            }
+    	</style>
+    </head>
+    <body>
+    	<div class="title">Meeting of {!Meeting.Committee__r.Name}</div>
+        <apex:outputPanel rendered="{!Meeting!=NULL}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" width="25%">Meeting Purpose</td>
+                    <td class="field">Management Committee created to manage and drive growth of the Global Clients Africa Business on the African Continent</td>
+                </tr>
+                <tr>
+                    <td class="label" width="25%">Owner</td>
+                    <td class="field"><apex:outputField value="{!Meeting.Owner.Name}"/></td>
+                </tr>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!PreviousSessions!=NULL && PreviousSessions.size > 0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" width="25%">Previous Sessions</td>
+                    <td/>
+                </tr>
+                <apex:repeat value="{!PreviousSessions}" var="Session">
+                    <tr>
+                        <td class="label">
+                            <apex:outputText value=" {!Session.Start__c}"/>            
+                        </td>
+                        <apex:repeat value="{!Session.Collaboration_Tasks__r}" var="action">
+                            <td class="field">
+                                <apex:outputText value="{!action.Name}"/>            
+                            </td>
+                            <td class="field">
+                                <apex:image url="{!IF(action.IsClosed__c,imageDoneURL,IF(action.Due_Date__c >= TODAY(),imageWarningURL,imageErrorURL))}" width="16" height="16"/>
+                            </td>
+                        </apex:repeat>
+                        <td/>
+                    </tr>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Meeting!=NULL}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="4">Current Session</td>
+                </tr>
+                <tr>
+                    <td class="label" width="25%">Commitee</td>
+                    <td class="field" width="25%"><apex:outputText value="{!Meeting.Committee__r.Name}"/></td>
+                    <td class="label" width="25%">Location</td>
+                    <td class="field" width="25%"><apex:outputText value="{!Meeting.Location__c}"/></td>
+                </tr>
+                <tr>
+                    <td class="label" width="25%">Subject</td>
+                    <td class="field" width="25%"><apex:outputText value="{!Meeting.Name}"/></td>
+                    <td class="label" width="25%">Time</td>
+                    <td class="field" width="25%">
+                        <apex:outputText value=" {!Meeting.Start__c}"/>
+                    </td>
+                </tr>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Meeting!=NULL && Meeting.Meeting_Attendees__r.size>0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="2">Attendees</td>
+                </tr>
+                <tr>
+                    <td class="label">Name</td>
+                	<td class="label">Present</td>
+                </tr>
+                <apex:repeat value="{!Meeting.Meeting_Attendees__r}" var="attendee">
+                    <tr>
+                        <td class="field"><apex:outputText value="{!attendee.Attendee__r.Name}"/></td>
+                        <td class="field"><apex:outputText value="{!IF(attendee.Present__c, 'Yes', 'No')}"/></td>
+                    </tr>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Agendas!=NULL && Agendas.size>0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="6">Minutes</td>
+                </tr>
+            	<tr>
+                    <td class="label">{!$ObjectType.Agenda__c.fields.Order__c.Label}</td>
+                	<td class="label">{!$ObjectType.Agenda__c.fields.Name.Label}</td>
+                    <td class="label">{!$ObjectType.Agenda__c.fields.Description__c.Label}</td>
+                	<td class="label">{!$ObjectType.Agenda__c.fields.Presenter__c.Label}</td>
+                    <td class="label">Duration</td>
+                	<td class="label">{!$ObjectType.Agenda__c.fields.Private__c.Label}</td>
+                </tr>
+                <apex:repeat value="{!Agendas}" var="agenda">
+                    <tr>
+                        <td class="field"><apex:outputText value="{!agenda.Order__c}"/></td>
+                        <td class="field"><apex:outputText value="{!agenda.Name}"/></td>
+                        <td class="field"><apex:outputText value="{!agenda.Description__c}"/></td>
+                        <td class="field"><apex:outputText value="{!agenda.Presenter__r.Name}"/></td>
+                        <td class="field"><apex:outputText value="{!agenda.Duration__c}"/></td>
+                        <td class="field"><apex:outputText value="{!IF(agenda.Private__c, 'Yes', 'No')}"/></td>
+                    </tr>
+                    <apex:repeat value="{!agenda.Notes}" var="note">
+                        <td class="field" colspan="2"><apex:outputText value="{!note.Title}"/></td>
+                        <td class="field" colspan="4"><apex:outputText value="{!note.Body}"/></td>
+                    </apex:repeat>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Actions!=NULL && Actions.size>0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="8">Actions</td>
+                </tr>
+            	<tr>
+                    <td class="label">{!$ObjectType.Action__c.fields.Name.Label}</td>
+                	<td class="label">{!$ObjectType.Action__c.fields.Comments__c.Label}</td>
+                    <td class="label">{!$ObjectType.Action__c.fields.Action_Owner__c.Label}</td>
+                    <td class="label">Assignees</td>
+                	<td class="label">{!$ObjectType.Action__c.fields.Start_Date__c.Label}</td>
+                    <td class="label">{!$ObjectType.Action__c.fields.Due_Date__c.Label}</td>
+                	<td class="label">{!$ObjectType.Action__c.fields.Status_Icon__c.Label}</td>
+                	<td class="label">{!$ObjectType.Action__c.fields.Priority__c.Label}</td>
+                </tr>
+                <apex:repeat value="{!Actions}" var="action">
+                    <tr>
+                        <td class="field"><apex:outputText value="{!action.Name}"/></td>
+                        <td class="field"><apex:outputText value="{!action.Comments__c}"/></td>
+                        <td class="field"><apex:outputText value="{!action.Action_Owner__r.Name}"/></td>
+                        <td class="field">
+                            <apex:repeat value="{!action.Assignments__r}" var="assignee">
+                                <apex:outputText value="{!assignee.Assigned_to__r.Name}" style="display:block;"/>
+                            </apex:repeat>
+                        </td>
+                        <td class="field"><apex:outputText value=" {!action.Start_Date__c}"/></td>
+                        <td class="field"><apex:outputText value=" {!action.Due_Date__c}"/></td>
+                        <td class="field" align="center"><apex:image url="{!IF(action.IsClosed__c,imageDoneURL,IF(action.Due_Date__c >= TODAY(),imageWarningURL,imageErrorURL))}" width="16" height="16"/></td>
+                        <td class="field"><apex:outputText value="{!action.Priority__c}"/></td>
+                    </tr>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Meeting!=NULL && Meeting.Information__r.size>0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="3">Information</td>
+                </tr>
+                <tr>
+                    <td class="label" width="10%">Name</td>
+                	<td class="label" width="25%">Topic</td>
+                    <td class="label" width="65%">Description</td>
+                </tr>
+                <apex:repeat value="{!Meeting.Information__r}" var="info">
+                    <tr>
+                        <td class="field" width="10%"><apex:outputText value="{!info.Name}"/></td>
+                        <td class="field" width="25%"><apex:outputText value="{!info.Topic__c}"/></td>
+                        <td class="field" width="65%"><apex:outputText value="{!info.Description__c}" escape="false"/></td>
+                    </tr>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!Meeting!=NULL && Meeting.Decisions_Questions__r.size>0}">
+            <table class="grid" style="width: 100%">
+                <tr>
+                    <td class="label" colspan="4">Decisions</td>
+                </tr>
+                <tr>
+                    <td class="label" width="10%">Name</td>
+                	<td class="label" width="37%">Description</td>
+                    <td class="label" width="37%">Resolution</td>
+                    <td class="label" width="16%">Agenda</td>
+                </tr>
+                <apex:repeat value="{!Meeting.Decisions_Questions__r}" var="decision">
+                    <tr>
+                        <td class="field" width="10%"><apex:outputText value="{!decision.Name}"/></td>
+                        <td class="field" width="37%"><apex:outputText value="{!decision.Description__c}"/></td>
+                        <td class="field" width="37%"><apex:outputText value="{!decision.Resolution__c}"/></td>
+                        <td class="field" width="16%"><apex:outputText value="{!decision.Agenda__r.Name}"/></td>
+                    </tr>
+                </apex:repeat>
+    		</table>
+            <br/>
+        </apex:outputPanel>
+    </body>
+</apex:page>

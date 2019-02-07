@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Client_Name_2__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Status__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$Product_Area__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Product__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Due_Date__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Matter__c.Agreements1__r.Conditions__r$RecordType</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Condition__c.Governance_Check</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>advpm__Matter__c.Agreements1__r.Conditions__r$Internal_Governance_Checks__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>EDD / Client Profile Forms</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>EDD Register</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Deal_with_Occurrences__c</reportType>
+    <scope>user</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>advpm__Matter__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

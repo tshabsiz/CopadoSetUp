@@ -1,0 +1,69 @@
+<apex:page controller="evEventCalendar_Controller" showHeader="true" sidebar="true" docType="html-5.0" >
+    
+    <title>Event Calendar</title>
+    
+    <body>
+        
+        <apex:form >
+            
+            <script>
+            function reloadcalendar() 
+            {
+                console.log('Reload cal function called');
+                //$('#calcontainer').load(document.URL +  ' #calcontainer');     // The function relodads the calendar
+            }
+            
+            function getCurrentView(){
+                var view = $('#calendar').fullCalendar('getView');
+                if (view.name == null) {
+                    var viewName = 'month';
+                }
+                else {
+                    var viewName = view.name;
+                }
+                var v = document.getElementById('{!$Component.userCalView}');
+                v.value = view.name;
+                FilterCourses();
+            }
+            
+            </script>
+
+            <apex:actionFunction name="FilterCourses" action="{!doFilterCourseList}"  reRender="componentContainer"/>
+            
+
+            
+            <!--<apex:actionFunction name="updateComponent" reRender="componentContainer"/>-->
+            <apex:inputHidden id="userCalView" value="{!userCurrentView}"/>
+            <div class="smithstrap">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-2 col-xs-offset-5">
+                            <br/>
+                            <apex:selectList size="1" styleClass="form-control" onchange="getCurrentView();" value="{!EventTypeSearchString}">
+                                <apex:selectOptions value="{!EventTypeSelectOptions}"/>
+                            </apex:selectList>
+                            <br/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-8 col-xs-offset-2">
+                            <apex:pageBlock title="Event Calendar">
+                                <apex:outputPanel id="componentContainer">
+                                    <c:evCalender id="trainingCalendarComponent" CourseIDToSelect=""
+                                                  EventTypeToSelect="{!EventTypeSearchString}"
+                                                  CourseTypeToSelect=""
+                                                  EventCityToSelect=""
+                                                  userCurrentView="{!userCurrentView}"
+                                                  ></c:evCalender>
+                                </apex:outputPanel> 
+                            </apex:pageBlock>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </apex:form>
+    </body>
+    
+    
+</apex:page>

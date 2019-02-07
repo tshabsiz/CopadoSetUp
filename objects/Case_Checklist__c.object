@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>RN - CloudSmiths - Checklist record saved by an agent against a specific case. VF page renders checklist questions dynamically from the case checklist template record for a specific business area. Updates are saved as metadata to this record and rendered by a VF page</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ChecklistFormName__c</fullName>
+        <externalId>false</externalId>
+        <formula>ChecklistTemplate__r.ChecklistName__c</formula>
+        <label>Checklist Form Name</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ChecklistTemplate__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Checklist Template</label>
+        <referenceTo>Case_Checklist_Template__c</referenceTo>
+        <relationshipLabel>Case Checklists</relationshipLabel>
+        <relationshipName>Case_Checklists</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>DateSubmitted__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Date Submitted</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>DateValidated__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Date Validated</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>RelatedCase__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Related Case</label>
+        <referenceTo>Case</referenceTo>
+        <relationshipLabel>Case Checklists</relationshipLabel>
+        <relationshipName>Case_Checklists</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SavedResults__c</fullName>
+        <description>RN - CloudSmiths - The checklist saved results as metadata. This will be rendered by a VF page when a user wants to view the saved results</description>
+        <externalId>false</externalId>
+        <label>Saved Results</label>
+        <length>131000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SubmittedBy__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Submitted By</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Case_Checklists</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Validate__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Validate</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>ValidatedBy__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Validated By</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Case_Checklists1</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Case Checklist</label>
+    <nameField>
+        <displayFormat>CHK-{000000000}</displayFormat>
+        <label>Case Checklist Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Case Checklists</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>View_Checklist</fullName>
+        <availability>online</availability>
+        <description>RN - CloudSmiths</description>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>View Checklist</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/support/console/39.0/integration.js&quot;)} 
+
+if(sforce.console.isInConsole()){ 
+sforce.console.openPrimaryTab(null, &apos;/apex/Case_Checklist_Form?id={!Case_Checklist__c.RelatedCaseId__c}&amp;templateId={!Case_Checklist__c.ChecklistTemplateId__c}&amp;readOnly=1&amp;recId={!Case_Checklist__c.Id}&apos;, true, &apos;{!Case_Checklist__c.OwnerFullName}&apos;, null); 
+}else { 
+window.parent.location.href=(&apos;/apex/Case_Checklist_Form?id={!Case_Checklist__c.RelatedCaseId__c}&amp;templateId={!Case_Checklist__c.ChecklistTemplateId__c}&amp;readOnly=1&amp;recId={!Case_Checklist__c.Id}&apos;); 
+}</url>
+    </webLinks>
+</CustomObject>

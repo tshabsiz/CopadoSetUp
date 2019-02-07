@@ -1,0 +1,166 @@
+<apex:page standardController="advpm__Participant__c" cache="true" tabstyle="advpm__Participant__c" sidebar="{!!isSF1}" showHeader="{!!isSF1}" standardStyleSheets="{!!isSF1}" extensions="advpm.ParticipantController" action="{!IF(!hasEditAccess,URLFOR($Page.InsufficientPrivileges,null,[recid=Participant__c.Id]),'')}">
+	<apex:outputPanel layout="inline" rendered="{!isSF1}">
+		<script type="text/javascript">
+			if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+				window.onload = function() {
+					sforce.one.navigateToURL('{!URLFOR($Page.ParticipantEditMobile,null,[src=URLENCODE('ParticipantEdit'),RecordType=$currentpage.parameters.RecordType,matid=Participant__c.Matter__c,id=Participant__c.Id,conid=JSINHTMLENCODE($CurrentPage.parameters.conid),accid=JSINHTMLENCODE($CurrentPage.parameters.accid),usrid=JSINHTMLENCODE($CurrentPage.parameters.usrid),gotoURL=IF(Participant__c.Id != null,URLENCODE('/'+Participant__c.Id),$currentpage.parameters.retURL)])}', true);
+				};
+			}
+		</script>
+		<div id="loading_cal_status" style="text-align:center;"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Loading...</span></div>
+	</apex:outputPanel>
+	<apex:outputPanel layout="inline" rendered="{!isLightning}">
+		<script type="text/javascript">
+			if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+				window.onload = function() {
+					sforce.one.navigateToURL('{!URLFOR($Page.ParticipantEditSLDS,null,[src=URLENCODE('ParticipantEdit'),RecordType=$currentpage.parameters.RecordType,additionalParams=JSINHTMLENCODE($CurrentPage.parameters.additionalParams),matid=Participant__c.Matter__c,id=Participant__c.Id,conid=JSINHTMLENCODE($CurrentPage.parameters.conid),accid=JSINHTMLENCODE($CurrentPage.parameters.accid),usrid=JSINHTMLENCODE($CurrentPage.parameters.usrid),gotoURL=IF(Participant__c.Id != null,URLENCODE('/'+Participant__c.Id),$currentpage.parameters.retURL)])}', true);
+				};
+			}
+		</script>
+	</apex:outputPanel>
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+    <script type="text/javascript">
+        toggleButtons('{!$Component.theForm}', false);
+    </script>
+	<apex:Form id="theForm" rendered="{!!isSF1 && !isLightning}">
+        <apex:sectionHeader title="Participant Edit" subtitle="{!IF(advpm__Participant__c.Id == '','New Participant',advpm__Participant__c.Name)}" />
+        <apex:pageblock id="Participantlist" title="Participant Edit" mode="edit">
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="both">
+                <apex:commandButton value="  Save  " action="{!saveParticipant}" styleClass="showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                <apex:commandButton value="  Cancel  " action="{!cancel}" immediate="true" styleClass="showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Information" id="accountSection" rendered="{!RecordTypeName == 'Account'}">
+                <apex:inputField value="{!advpm__Participant__c.advpm__Matter__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Name" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField id="fld_name_acc" value="{!advpm__Participant__c.Name}" required="false" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+                    <apex:outputLabel value="{!$ObjectType.advpm__Participant__c.fields.advpm__Account__c.label}" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:actionRegion >
+                            <apex:inputField value="{!advpm__Participant__c.advpm__Account__c}" required="true">
+                                <apex:actionSupport event="onchange" action="{!AccountChange}" rerender="fld_name_acc" 
+                                                    onsubmit="toggleButtons('{!$Component.theForm}', true)" oncomplete="toggleButtons('{!$Component.theForm}', false)" />
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!advpm__Participant__c.advpm__Account__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputField value="{!advpm__Participant__c.RecordTypeId}" />
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Responsible_Percentage__c}" />
+                <apex:pageBlockSectionItem />
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Billable_Account__c}" />
+                <!-- <apex:pageBlockSectionItem />
+                <apex:inputfield value="{!Participant__c.Primary_Client__c}" /> -->
+                <apex:pageBlockSectionItem />
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Information" id="contactSection" rendered="{!RecordTypeName == 'Contact'}">
+                <apex:inputField value="{!advpm__Participant__c.advpm__Matter__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Name" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField id="fld_name_con" value="{!advpm__Participant__c.Name}" required="false" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+                    <apex:outputLabel value="{!$ObjectType.advpm__Participant__c.fields.advpm__Contact__c.label}" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:actionRegion >
+                            <apex:inputField value="{!advpm__Participant__c.advpm__Contact__c}" required="true">
+                                <apex:actionSupport event="onchange" action="{!ContactChange}" rerender="fld_name_con" 
+                                                    onsubmit="toggleButtons('{!$Component.theForm}', true)" oncomplete="toggleButtons('{!$Component.theForm}', false)" />
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!advpm__Participant__c.advpm__Contact__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputField value="{!advpm__Participant__c.RecordTypeId}" />
+                <!-- <apex:inputfield value="{!Participant__c.Primary_Client__c}" />
+                <apex:pageBlockSectionItem /> -->
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Information" id="userSection" rendered="{!RecordTypeName == 'User'}">
+                <apex:inputField value="{!advpm__Participant__c.advpm__Matter__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Name" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField id="fld_name_usr" value="{!advpm__Participant__c.Name}" required="false" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+                    <apex:outputLabel value="{!$ObjectType.advpm__Participant__c.fields.advpm__Staff__c.label}" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:actionRegion >
+                            <apex:inputField value="{!advpm__Participant__c.advpm__Staff__c}" required="true">
+                                <apex:actionSupport event="onchange" action="{!StaffChange}" rerender="fld_name_usr" 
+                                                    onsubmit="toggleButtons('{!$Component.theForm}', true)" oncomplete="toggleButtons('{!$Component.theForm}', false)" />
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!advpm__Participant__c.advpm__Staff__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputField value="{!advpm__Participant__c.RecordTypeId}" />
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}" />
+                <apex:outputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Comment" columns="1">
+                <apex:inputfield value="{!advpm__Participant__c.advpm__Comment__c}" style="width:300px;height:80px;" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Account Information" columns="1" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Account.size > 0 && RecordTypeName == 'Account'}">
+                <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Account}" var="f">
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Contact Information" columns="1" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Contact.size > 0 && RecordTypeName == 'Contact'}">
+                <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Contact}" var="f">
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional User Information" columns="1" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_User.size > 0 && RecordTypeName == 'User'}">
+                <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_User}" var="f">
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Information" columns="1" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant.size > 0 && RecordTypeName != 'Account' && RecordTypeName != 'Contact' && RecordTypeName != 'User'}">
+                <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant}" var="f">
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+        </apex:pageblock>
+        <!-- Hidden fields for Visualforce recognition -->
+        <apex:inputField value="{!advpm__Participant__c.advpm__App_Managed__c}" rendered="false" />
+    </apex:Form>
+</apex:page>

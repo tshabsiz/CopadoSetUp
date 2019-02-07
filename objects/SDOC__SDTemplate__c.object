@@ -1,0 +1,1494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>S-Doc: Document template definitions that are available in the S-Doc Library</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>false</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>SDOC__Active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Once checked, this template is visible for new document creation. Do NOT delete or modify template once activated, as they are needed to display previously created documents correctly. Instead, make changes in clone and then mark this one inactive.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Once checked, this template is visible for new document creation. Do NOT delete or modify template once activated, as they are needed to display previously created documents correctly. Instead, make changes in clone and then mark this one inactive.</inlineHelpText>
+        <label>Available For Use</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Allow_Edit__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Allow Edit</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Base_Object__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Primary object this template will be used with. Fields available are based on this object.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Primary object this template will be used with. Fields available are based on this object.</inlineHelpText>
+        <label>Related To Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Account</fullName>
+                    <default>false</default>
+                    <label>Account</label>
+                </value>
+                <value>
+                    <fullName>Asset</fullName>
+                    <default>false</default>
+                    <label>Asset</label>
+                </value>
+                <value>
+                    <fullName>Campaign</fullName>
+                    <default>false</default>
+                    <label>Campaign</label>
+                </value>
+                <value>
+                    <fullName>Case</fullName>
+                    <default>false</default>
+                    <label>Case</label>
+                </value>
+                <value>
+                    <fullName>Contact</fullName>
+                    <default>false</default>
+                    <label>Contact</label>
+                </value>
+                <value>
+                    <fullName>Contract</fullName>
+                    <default>false</default>
+                    <label>Contract</label>
+                </value>
+                <value>
+                    <fullName>Event</fullName>
+                    <default>false</default>
+                    <label>Event</label>
+                </value>
+                <value>
+                    <fullName>Lead</fullName>
+                    <default>false</default>
+                    <label>Lead</label>
+                </value>
+                <value>
+                    <fullName>Opportunity</fullName>
+                    <default>true</default>
+                    <label>Opportunity</label>
+                </value>
+                <value>
+                    <fullName>Product2</fullName>
+                    <default>false</default>
+                    <label>Product2</label>
+                </value>
+                <value>
+                    <fullName>Solution</fullName>
+                    <default>false</default>
+                    <label>Solution</label>
+                </value>
+                <value>
+                    <fullName>Task</fullName>
+                    <default>false</default>
+                    <label>Task</label>
+                </value>
+                <value>
+                    <fullName>Call_report__c</fullName>
+                    <default>false</default>
+                    <label>Call_report__c</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__Base_Related_Object__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Use this field to automatically associate this document with a secondary parent object.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Attempts to associate document generated using this template with a second object (parent). For example, you can relate documents created from an Opportunity (the base object) to also appear in the related list for an Account (additional Relationship).</inlineHelpText>
+        <label>Additional Relationship</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Account</fullName>
+                    <default>false</default>
+                    <label>Account</label>
+                </value>
+                <value>
+                    <fullName>Contact</fullName>
+                    <default>false</default>
+                    <label>Contact</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__ContactRole__c</fullName>
+        <deprecated>false</deprecated>
+        <description>If you are using a custom junction object to the Contact object, this value specifies the relationship name to that object.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If you are using a custom junction object to the Contact object, this value specifies the relationship name to that object.</inlineHelpText>
+        <label>Contact Role Related Table</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__Create_Attachment_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Name of generated attachment</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Name of generated attachment</inlineHelpText>
+        <label>Auto Create Attachment Name</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Create_Attachment__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>By checking, an attachment will be created for each document that uses this template. Enabling this feature will consume more file storage space.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>By checking, an attachment will be created for each document that uses this template. Enabling this feature will consume more file storage space.</inlineHelpText>
+        <label>Auto Create Attachment</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Default__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Checking this box will make this template visible on initial load of document creation page based on the Object Type. Typically, you want to set this checkbox for the 10 most used templates for each object type.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Checking this box will make this template visible on initial load of document creation page based on the Object Type. Typically, you want to set this checkbox for the 10 most used templates for each object type.</inlineHelpText>
+        <label>Initially Visible</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Description__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Description of this document template. Optionally include any keywords, as this field along with the Name field are both searched during the document selection step.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Description of this document template. Optionally include any keywords, as this field along with the Name field are both searched during the document selection step.</inlineHelpText>
+        <label>Description</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Document_Category__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Document Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Agreement</fullName>
+                    <default>false</default>
+                    <label>Agreement</label>
+                </value>
+                <value>
+                    <fullName>Contract</fullName>
+                    <default>false</default>
+                    <label>Contract</label>
+                </value>
+                <value>
+                    <fullName>Correspondence</fullName>
+                    <default>false</default>
+                    <label>Correspondence</label>
+                </value>
+                <value>
+                    <fullName>Marketing</fullName>
+                    <default>false</default>
+                    <label>Marketing</label>
+                </value>
+                <value>
+                    <fullName>Quote</fullName>
+                    <default>false</default>
+                    <label>Quote</label>
+                </value>
+                <value>
+                    <fullName>Statement</fullName>
+                    <default>false</default>
+                    <label>Statement</label>
+                </value>
+                <value>
+                    <fullName>Invoice</fullName>
+                    <default>false</default>
+                    <label>Invoice</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_From_OrgWideAddressId__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email From Orgwide Address ID</label>
+        <length>80</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_From_OrgWideAddress_Only__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>All emails will only be sent from an org wide email address (emails cannot be sent from logged in users email address)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>All emails will only be sent from an org wide email address (emails cannot be sent from logged in users email address)</inlineHelpText>
+        <label>Email From: Show only Org-Wide Addresses</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_From_User_Override__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Shows a picklist that allows a user to select the email &quot;from&quot; address from the org-wide addresses.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Shows a picklist that allows a user to select the email &quot;from&quot; address from the org-wide addresses.</inlineHelpText>
+        <label>Email From: User can pick from address</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Lock_Body__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email Lock Body</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Lock_SendTo__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Prevents a user from changing the outbound emails send to address field.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Prevents a user from changing the outbound emails send to address field.</inlineHelpText>
+        <label>Lock SendTo Address</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Lock_Subject__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>If checked, this will prevent users from setting the outbound subject line of the email.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, this will prevent users from setting the outbound subject line of the email.</inlineHelpText>
+        <label>Lock Subject Line Field</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Lock_bcc__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email Lock bcc</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Lock_cc__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email Lock cc</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_ReturnToRecord__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Upon document generation, the user will be auto-forwarded back to the record detail page.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Upon document generation, the user will be auto-forwarded back to the record detail page.</inlineHelpText>
+        <label>Redirect Back To Record</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_SendTo__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Default Send To address</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Default Send To address</inlineHelpText>
+        <label>Email SendTo</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_Subject__c</fullName>
+        <deprecated>false</deprecated>
+        <description>For HTML templates that are used to produce the email content, this value will be placed in the outbound email subject line.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>For HTML templates that are used to produce the email content, this value will be placed in the outbound email subject line.</inlineHelpText>
+        <label>Email Subject</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_bcc__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email_bcc</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Email_cc__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Email_cc</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Enable_Detail_Reports__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>By checking, a child record will be created for each field value on every document created using this template. This will allow for reporting, but will require significantly more data storage.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>By checking, a child record will be created for each field value on every document created using this template. This will allow for reporting, but will require significantly more data storage.</inlineHelpText>
+        <label>Enable Detail Reports</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Footer2__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Footer2</label>
+        <length>131000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__FooterSame__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Use Same Footer for All Pages</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Footer__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Footer</label>
+        <length>131000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Format_Icon__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IMAGE(
+CASE(SDOC__Template_Format__c,
+&quot;XLS&quot;, &quot;/sfc/images/docicons/doctype_excel_16.png&quot;,
+&quot;DOC&quot;, &quot;/sfc/images/docicons/doctype_word_16.png&quot;,
+&quot;PDF&quot;, &quot;/sfc/images/docicons/doctype_pdf_16.png&quot;,
+&quot;HTML&quot;, &quot;/sfc/images/docicons/doctype_html_16.png&quot;,
+&quot;PPT&quot;, &quot;/sfc/images/docicons/doctype_ppt_16.png&quot;,
+&quot;&quot;),TEXT(SDOC__Template_Format__c ))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Format_Icon</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__GD_Enabled__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Enable Google Docs Upload. Check here if you want to allow users to upload this doc to Google docs. Your org must be properly configured for S-Docs to work with Google Docs (see documentation for setup steps)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Enable Google Docs Upload. Check here if you want to allow users to upload this doc to Google docs. Your org must be properly configured for S-Docs to work with Google Docs (see documentation for setup steps)</inlineHelpText>
+        <label>Google Docs Enabled</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Header2__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Header2</label>
+        <length>131000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__HeaderSame__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Use Same Header for All Pages</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Header__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Header</label>
+        <length>131000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__InclArticles__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Automatically Attach case articles to outbound email</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Automatically Attach case articles to outbound email</inlineHelpText>
+        <label>Auto-attach Case Articles</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Embed_Images__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>If checked, referenced images will be deep embedded (saved with) the document. Otherwise, images are linked to. Embedded images requires a user to click &apos;Yes&apos; when initially opening the document.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, referenced images will be deep embedded (saved with) the document. Otherwise, images are linked to. Embedded images requires a user to click &apos;Yes&apos; when initially opening the document.</inlineHelpText>
+        <label>MS Embed Images</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPFooter_BackGrndImgStyle__c</fullName>
+        <defaultValue>&quot;width:800px;height:158px;position:absolute;top:0;left:0;border:0;&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Definition used for the background image of the First Page Footer</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Definition used for the background image of the First Page Footer</inlineHelpText>
+        <label>MS First Page Footer BackImage Style</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPFooter_BackGrndImgUrl__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This image will be used for the background of the First Page Footer</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This image will be used for the background of the First Page Footer</inlineHelpText>
+        <label>MS First Page Footer Backgrnd Img Url</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPFooter_Content__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Content to appear on the First Page Footer</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Content to appear on the First Page Footer</inlineHelpText>
+        <label>MS First Page Footer Content</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPHeader_BackGrndImgStyle__c</fullName>
+        <defaultValue>&quot;width:800px;height:158px;position:absolute;top:0;left:0;border:0;&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Definition used for the background image of the First Page Header</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Definition used for the background image of the First Page Header</inlineHelpText>
+        <label>MS First Page Header BackImage Style</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPHeader_BackGrndImgUrl__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This image will be used for the background of the First Page Header</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This image will be used for the background of the First Page Header</inlineHelpText>
+        <label>MS First Page Header Backgrnd Img Url</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_FPHeader_Content__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Content to appear on the First Page Header</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Content to appear on the First Page Header</inlineHelpText>
+        <label>MS First Page Header Content</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Header_And_Footer_Definitions__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Header Footer Definitions</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Definition__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Definitions</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Footer_Margin__c</fullName>
+        <defaultValue>&quot;1.0&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Footer Margin</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Header_Margin__c</fullName>
+        <defaultValue>&quot;1.0&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Header Margin</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Height__c</fullName>
+        <defaultValue>&quot;11.0&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Height</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Margin_Left__c</fullName>
+        <defaultValue>&quot;1.0&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Margin Left</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Margin_Right__c</fullName>
+        <defaultValue>&quot;1.0&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Margin Right</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Page_Width__c</fullName>
+        <defaultValue>&quot;8.5&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>MS Page Width</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPFooter_BackGrndImgStyle__c</fullName>
+        <defaultValue>&quot;width:800px;height:158px;position:absolute;top:0;left:0;border:0;&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Definition used for the background image of the Remaining Page Footers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Definition used for the background image of the Remaining Page Footers</inlineHelpText>
+        <label>MS Second Page Footer BackImage Style</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPFooter_BackGrndImgUrl__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This image will be used for the background of all pages (except first) Footers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This image will be used for the background of all pages (except first) Footers</inlineHelpText>
+        <label>MS Second Page Footer Backgrnd Img Url</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPFooter_Content__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Content to appear on all pages (except first) Footers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Content to appear on all pages (except first) Footers</inlineHelpText>
+        <label>MS Second Page Footer Content</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPHeader_BackGrndImgStyle__c</fullName>
+        <defaultValue>&quot;width:800px;height:158px;position:absolute;top:0;left:0;border:0;&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Definition used for the background image of the Remaining Page Headers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Definition used for the background image of the Remaining Page Headers</inlineHelpText>
+        <label>MS Second Page Header BackImage Style</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPHeader_BackGrndImgUrl__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This image will be used for the background of all pages (except first) Headers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This image will be used for the background of all pages (except first) Headers</inlineHelpText>
+        <label>MS Second Page Header Backgrnd Img Url</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_SPHeader_Content__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Content to appear on all pages (except first) Headers</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Content to appear on all pages (except first) Headers</inlineHelpText>
+        <label>MS Second Page Header Content</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Unit_of_Measure__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Margins and Spacing Values are in this unit of measure.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Margins and Spacing Values are in this unit of measure.</inlineHelpText>
+        <label>MS Unit of Measure</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Inches</fullName>
+                    <default>true</default>
+                    <label>Inches</label>
+                </value>
+                <value>
+                    <fullName>Centimeters</fullName>
+                    <default>false</default>
+                    <label>Centimeters</label>
+                </value>
+                <value>
+                    <fullName>Pixels</fullName>
+                    <default>false</default>
+                    <label>Pixels</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__MS_Use_Advanced_Properties__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Enable MS header, footer and paproperty definitions</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Checking this box will enable Advanced MS Properties like Footer/Header Definitions and page properties. You should leave this unchecked for your existing S-Docs templates where you have defined this in the template body.</inlineHelpText>
+        <label>MS Use Advanced Properties</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Master_Template__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Master Template</label>
+        <referenceTo>SDOC__SDTemplate__c</referenceTo>
+        <relationshipLabel>Version History</relationshipLabel>
+        <relationshipName>S_Docs_Templates</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__PDF_Unicode__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>PDF Unicode</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__S3_Enabled__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Enable Amazon S3 Docs Upload. Check here if you want to allow users to upload this doc to Amazon S3.</inlineHelpText>
+        <label>Amazon S3 Enabled</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__SD_K__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>SD_K</label>
+        <length>175</length>
+        <maskChar>asterisk</maskChar>
+        <maskType>all</maskType>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>EncryptedText</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Show_Warning_Messages__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Show Warning Messages</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Tags__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Tags</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Task_Auto_Create__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task Auto Create</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Task_Due_Add_Business_Only__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task Due Add Business Only</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Task_Due_Add_Days__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task Due Add Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SDOC__Task_Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Task_Subject__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task Subject</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_CSS_XML__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template CSS</label>
+        <length>64000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_Format__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Output format of the generated documents. To support multiple formats, simply clone the template with a different Format field value.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Output format of the generated documents. To support multiple formats, simply clone the template with a different Format field value.</inlineHelpText>
+        <label>Template Format</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>PDF</fullName>
+                    <default>false</default>
+                    <label>PDF</label>
+                </value>
+                <value>
+                    <fullName>XLS</fullName>
+                    <default>false</default>
+                    <label>XLS</label>
+                </value>
+                <value>
+                    <fullName>DOC</fullName>
+                    <default>false</default>
+                    <label>DOC</label>
+                </value>
+                <value>
+                    <fullName>HTML</fullName>
+                    <default>false</default>
+                    <label>HTML</label>
+                </value>
+                <value>
+                    <fullName>PPT</fullName>
+                    <default>false</default>
+                    <label>PPT</label>
+                </value>
+                <value>
+                    <fullName>XML</fullName>
+                    <default>false</default>
+                    <label>XML</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML10__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML10</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML2__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML2</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML3__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML3</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML4__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML4</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML5__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML5</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML6__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML6</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML7__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML7</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML8__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML8</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML9__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TemplateXML9</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode10__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode10</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode2__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode2</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode3__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode3</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode4__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode4</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode5__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode5</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode6__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode6</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode7__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode7</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode8__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode8</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode9__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Template XML Encode9</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML_Encode__c</fullName>
+        <deprecated>false</deprecated>
+        <description>System field: Holds an encoded copy of the XML Field value</description>
+        <externalId>false</externalId>
+        <label>Template XML Encode</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Template_XML__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Enter static information that is specific to this Template such as the body of a letter or Terms and Conditions of an Agreement.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Enter static information that is specific to this Template such as the body of a letter or Terms and Conditions of an Agreement.</inlineHelpText>
+        <label>Template XML</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>50</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Terms_XML_Encode__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Terms_XML_Encode</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Terms_XML__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Terms and Conditions</description>
+        <externalId>false</externalId>
+        <label>Terms_XML</label>
+        <length>32000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>50</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SDOC__Unicode_Level__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Unicode Level</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Data</fullName>
+                    <default>false</default>
+                    <label>Data</label>
+                </value>
+                <value>
+                    <fullName>Strict</fullName>
+                    <default>false</default>
+                    <label>Strict</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__Version_History_Keep_Limit__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Limits the number of versions to keep in the &apos;Version History&apos; related list.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Limits the number of versions to keep in the &apos;Version History&apos; related list.</inlineHelpText>
+        <label>Version History Keep Limit</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Disable Version History</fullName>
+                    <default>false</default>
+                    <label>Disable Version History</label>
+                </value>
+                <value>
+                    <fullName>5</fullName>
+                    <default>true</default>
+                    <label>5</label>
+                </value>
+                <value>
+                    <fullName>10</fullName>
+                    <default>false</default>
+                    <label>10</label>
+                </value>
+                <value>
+                    <fullName>50</fullName>
+                    <default>false</default>
+                    <label>50</label>
+                </value>
+                <value>
+                    <fullName>100</fullName>
+                    <default>false</default>
+                    <label>100</label>
+                </value>
+                <value>
+                    <fullName>Unlimited</fullName>
+                    <default>false</default>
+                    <label>Unlimited</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SDOC__Version__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Use this field to track any internally used version number (or date) for this template. It only used for reference purposes.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Use this field to track any internally used version number (or date) for this template. It only used for reference purposes.</inlineHelpText>
+        <label>Document Version</label>
+        <length>30</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>SDoc Template</label>
+    <listViews>
+        <fullName>SDOC__All</fullName>
+        <columns>SDOC__Format_Icon__c</columns>
+        <columns>NAME</columns>
+        <columns>SDOC__Base_Object__c</columns>
+        <columns>SDOC__Version__c</columns>
+        <columns>SDOC__Active__c</columns>
+        <columns>SDOC__Default__c</columns>
+        <columns>SDOC__Create_Attachment__c</columns>
+        <columns>CREATEDBY_USER</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>SDOC__Master_Template__c</field>
+            <operation>equals</operation>
+        </filters>
+        <filters>
+            <field>SDOC__Active__c</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>All Active Templates</label>
+    </listViews>
+    <listViews>
+        <fullName>SDOC__All_Inactive_Templates</fullName>
+        <columns>SDOC__Format_Icon__c</columns>
+        <columns>NAME</columns>
+        <columns>SDOC__Base_Object__c</columns>
+        <columns>SDOC__Version__c</columns>
+        <columns>SDOC__Active__c</columns>
+        <columns>SDOC__Default__c</columns>
+        <columns>SDOC__Create_Attachment__c</columns>
+        <columns>CREATEDBY_USER</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>SDOC__Active__c</field>
+            <operation>equals</operation>
+            <value>0</value>
+        </filters>
+        <filters>
+            <field>SDOC__Master_Template__c</field>
+            <operation>equals</operation>
+        </filters>
+        <label>All Inactive Templates</label>
+    </listViews>
+    <listViews>
+        <fullName>SDOC__Archived_Templates</fullName>
+        <columns>SDOC__Format_Icon__c</columns>
+        <columns>NAME</columns>
+        <columns>SDOC__Base_Object__c</columns>
+        <columns>SDOC__Version__c</columns>
+        <columns>SDOC__Active__c</columns>
+        <columns>SDOC__Default__c</columns>
+        <columns>SDOC__Create_Attachment__c</columns>
+        <columns>CREATEDBY_USER</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>SDOC__Master_Template__c</field>
+            <operation>notEqual</operation>
+        </filters>
+        <label>Archived Templates</label>
+    </listViews>
+    <nameField>
+        <label>Template Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>S-Docs Templates</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>SDOC__Template_Format__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>SDOC__Base_Object__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>SDOC__Document_Category__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>SDOC__Description__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>SDOC__Active__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>SDOC__Create_Attachment__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CREATEDBY_USER</customTabListAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>SDOC__Edit_TemplateXML</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Template Editor</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/SDOC__SDTemplateEditor?id={!SDOC__SDTemplate__c.Id}&amp;Field=Template_XML__c</url>
+    </webLinks>
+    <webLinks>
+        <fullName>SDOC__SDClone</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Clone</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/SDOC__SDTemplateEditor?id={!SDOC__SDTemplate__c.Id}&amp;clone=1</url>
+    </webLinks>
+</CustomObject>

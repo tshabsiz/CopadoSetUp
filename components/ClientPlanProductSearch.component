@@ -1,0 +1,144 @@
+<apex:component controller="ClientPlanProductSearchController">
+    <apex:attribute name="identificator" type="String" description="unique identificator of this tautocomplete" required="true"/>
+    <apex:stylesheet value="{!URLFOR($Resource.tautocomplete, 'tautocomplete.css')}"/>
+    <apex:includeScript value="{!$Resource.tautocompleteBarclaysAfrica}"/>
+    <style type="text/css">
+        .acontainer {
+            width: 100%;
+        }
+
+        .acontainer input {
+            height: 36px;
+            border: 1px solid #d8dde6;
+            border-radius: 4px;
+        }
+        
+        #productSearchCmpWrapper table tbody tr {
+            cursor: pointer;
+        }
+        
+        .acontainer tr th:nth-child(1) {
+            display: none;
+        }
+        
+        .acontainer tr td:nth-child(2) {
+            display: none;
+        }
+        
+        .awhite .selected td {
+            color: black;
+            background-color: white;
+        }
+        
+        .awhite tbody tr:hover {
+            color: #fff !important;
+            background-color: #0097cf !important;
+        }
+        
+        .inputfocus {
+            margin: 0px !important;
+        }
+
+        .highlightedSearchTerm {
+            background-color: #00FFFF;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var selectedProductLevelAndId = '';
+        var selectedProductName = '';
+
+        $('document').ready(function() {
+
+            //ClientPlanProductSearchController.getAllProductsJson(function(resultJson) {
+            ClientPlanProductSearchController.getAllProductsCompleteJson(function(resultJson) {
+
+                var identificator = "{!identificator}";
+                var result = JSON.parse(resultJson);
+                
+                var productsData = [];
+                for (var i = 0; i < result.length; i++) {
+
+                    if (typeof result[i].Product_Level_2__r === 'undefined' ||
+                        typeof result[i].Product_Level_2__r.Product__r === 'undefined') {
+
+                        continue;
+                    }
+
+                    //OLD Structure of Product
+                    //0: lvl3 Id    (IF SELECTED, THIS IS THE ID)
+                    //1: lvl3 name  (IF SELECTED, THIS IS THE VALUE)
+                    //2: lvl1 Name  (Value of first column)
+                    //3: lvl2 name  (Value of second column)
+                    //4: lvl3 name  (Value of 3rd column)
+                    /*
+                    var product = {
+                        "0":  result[i].Id,
+                        "1" : result[i].Name,
+                        "2" : result[i].Product_Level_2__r.Product__r.Name,
+                        "3" : result[i].Product_Level_2__r.Name,
+                        "4" : result[i].Name
+                    };
+                    */
+
+                    //NEW Structure of Product
+                    //0: empty      (IF SELECTED, THIS IS THE ID - dynamically populated on Click)
+                    //1: empty      (IF SELECTED, THIS IS THE VALUE - dynamically popuated on Click)
+                    //2: lvl1 ID    (ID of first column)
+                    //3: lvl1 Name  (Value of first column)
+                    //4: lvl2 ID    (ID of second column)
+                    //5: lvl2 name  (Value of second column)
+                    //6: lvl3 ID    (ID of 3rd column)
+                    //7: lvl3 name  (Value of 3rd column)
+                    var product = {
+                        "0":  '',
+                        "1" : '',
+                        "2" : result[i].Product_Level_2__r.Product__r.Id,
+                        "3" : result[i].Product_Level_2__r.Product__r.Name,
+                        "4" : result[i].Product_Level_2__r.Id,
+                        "5" : result[i].Product_Level_2__r.Name,
+                        "6" : result[i].Id,
+                        "7" : result[i].Name
+                    };
+
+                    productsData.push(product);
+                }
+
+                var myData = $("." + identificator + " #productSearchCmpInput").tautocomplete({
+                    columns: ['Product ID', 'Product Name', 'ID1', 'Product - Level 1', 'ID2', 'Product - Level 2', 'ID3', 'Product - Level 3'],
+                    hide: [false, false, false, true, false, true, false, true],
+                    theme: "white",
+                    highlight: "highlightedSearchTerm",
+                    delay: 200,
+                    norecord: "No Records Found",
+                    onchange: function () {
+                        selectedProductLevelAndId = myData.id();
+                        selectedProductName = myData.text();
+                        $("." + identificator).trigger("productChanged", [selectedProductLevelAndId, selectedProductName]);
+                    },
+                    data: function () {    
+                        var filterData = [];
+                        var term = myData.searchdata();
+                        
+                        var searchData = eval("/" + term + "/gi");
+    
+                        $.each(productsData, function (i, v) {
+                            if (v[7].search(new RegExp(searchData)) != -1 || v[5].search(new RegExp(searchData)) != -1 ||
+                                v[3].search(new RegExp(searchData)) != -1) {
+                                filterData.push(v);
+                            }
+                        });
+                        return filterData;
+                    }
+                });
+                
+                $("." + identificator).trigger("productSelectorCreated");
+            }, 
+            {escape: false});
+            
+        });
+    </script>
+    <div id="productSearchCmpWrapper" class="{!identificator}">
+        <input id="productSearchCmpInput" class="slds-input" type="text" />
+    </div>
+</apex:component>

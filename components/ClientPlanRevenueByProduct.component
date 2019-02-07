@@ -1,0 +1,391 @@
+<apex:component controller="ClientPlanRevenueByProductController" allowDML="true">
+	<apex:attribute name="PanelIdToRefresh" description="What panel to refresh on Save"  assignTo="{!refreshElement}" type="String" required="true"/>
+	<apex:pageMessages ></apex:pageMessages>
+	<style>
+		#RevenueByProductTable input.currency {
+			/*width: 200px !important;*/
+			text-align: right;
+		}
+		#RevenueByProductTable input.prob {
+			width: 50px !important;
+			text-align: right;
+		}
+		#RevenueByProductTable td.checkbox {
+			text-align: center;
+		}
+		#RevenueByProductTable td.sum {
+			text-align: right;
+		}
+		#RevenueByProductTable tr.totals {
+			background-color: #EEEEEE;
+		}
+	</style>
+	<h3 class="marginTop3em">
+		<apex:outputText value="{!$Label.lbl_RevenuesByProduct}"/>
+		<apex:outputText value="{!' - ' + $Label.lbl_RelationshipCurrency + ': ' + accountCurrency}" rendered="{!accountCurrency != null}"/>
+	</h3>
+	<h3 class="marginTop3em"></h3>
+	<apex:form >
+		<table class="slds-table slds-table--bordered" id="RevenueByProductTable">
+			<thead>
+				<tr class="slds-text-heading--label">
+					<td>&nbsp;</td>
+					<td class="checkbox">{!$Label.lbl_RevenuesByProductIncludedRoRwa}</td>
+					<td>{!$Label.lbl_RevenuesByProductLast12M}</td>
+                    <td>{!$Label.lbl_RWA}</td>
+					<td>{!$Label.lbl_RevenuesByProductNext12M}</td>
+					<td>{!$Label.lbl_RevenuesByProductNext12MProb}</td>
+					<td>{!$Label.lbl_RevenuesByProductNext1224M}</td>
+					<td>{!$Label.lbl_RevenuesByProductNext1224MProb}</td>
+				</tr>
+			</thead>
+			<tbody>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductAssetSales}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_AssetSalesFinance__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_AssetSalesFinance__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_AssetSalesFinance__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_AssetSalesFinance__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_AssetSalesFinance__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_AssetSalesFinance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_AssetSalesFinance__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_AssetSalesFinance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_AssetSalesFinance__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductAvgDepBal}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_AverageDepositBalance__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.H12_AverageDepositBalance__c}" /></td>
+                    <td><apex:inputField styleClass="currency" value="{!revByProd.RWA_AverageDepositBalance__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_AverageDepositBalance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_AverageDepositBalance__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_AverageDepositBalance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_AverageDepositBalance__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductCommercialPropertyFinance}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_CommercialPropertyFinance__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_CommercialPropertyFinance__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_CommercialPropertyFinance__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_CommercialPropertyFinance__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_CommercialPropertyFinance__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_CommercialPropertyFinance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_CommercialPropertyFinance__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_CommercialPropertyFinance__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_CommercialPropertyFinance__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductDebt}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Debt__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Debt__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Debt__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Debt__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Debt__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Debt__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Debt__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Debt__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Debt__c}" /></td>
+				</tr>
+				<tr>
+					<td>{!$Label.lbl_RevenuesByProductDeposits}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Deposits__c}" /></td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Deposits__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Deposits__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Deposits__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Deposits__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Deposits__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Deposits__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Deposits__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Deposits__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductEquities}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Equities__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Equities__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Equities__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Equities__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Equities__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Equities__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Equities__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Equities__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Equities__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductFixedIncome}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_FixedIncome__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_FixedIncome__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_FixedIncome__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_FixedIncome__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_FixedIncome__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_FixedIncome__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_FixedIncome__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_FixedIncome__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_FixedIncome__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductFX}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_FX__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_FX__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_FX__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_FX__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_FX__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_FX__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_FX__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_FX__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_FX__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductOtherMA}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_OtherMADCMECM__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherMADCMECM__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherMADCMECM__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherMADCMECM__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherMADCMECM__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_OtherMADCMECM__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_OtherMADCMECM__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_OtherMADCMECM__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_OtherMADCMECM__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductOtherRBB}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_OtherRBBWealth__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherRBBWealth__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherRBBWealth__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherRBBWealth__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherRBBWealth__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_OtherRBBWealth__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_OtherRBBWealth__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_OtherRBBWealth__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_OtherRBBWealth__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductOtherTrade}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_OtherTrade__c}" /></td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherTrade__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_OtherTrade__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherTrade__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_OtherTrade__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_OtherTrade__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_OtherTrade__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_OtherTrade__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_OtherTrade__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductPassive}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Passive__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Passive__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Passive__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Passive__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Passive__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Passive__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Passive__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Passive__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Passive__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductPrimeServices}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_PrimeServices__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_PrimeServices__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_PrimeServices__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_PrimeServices__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_PrimeServices__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_PrimeServices__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_PrimeServices__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_PrimeServices__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_PrimeServices__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductPrivateEquity}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_PrivateEquity__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_PrivateEquity__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_PrivateEquity__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_PrivateEquity__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_PrivateEquity__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_PrivateEquity__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_PrivateEquity__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_PrivateEquity__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_PrivateEquity__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductTrade}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Trade__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Trade__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Trade__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Trade__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Trade__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Trade__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Trade__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Trade__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Trade__c}" /></td>
+				</tr>
+				<tr>
+					<td>{!$Label.lbl_RevenuesByProductTransProd}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_TransactionProducts__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_TransactionProducts__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_TransactionProducts__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_TransactionProducts__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_TransactionProducts__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_TransactionProducts__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_TransactionProducts__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_TransactionProducts__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_TransactionProducts__c}" /></td>
+				</tr>
+				<!--<tr>
+					<td>{!$Label.lbl_RevenuesByProductDerivatives}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Derivatives__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.H12_Derivatives__c}" /></td>
+                    <td><apex:inputField styleClass="currency" value="{!revByProd.RWA_Derivatives__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Derivatives__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Derivatives__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Derivatives__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Derivatives__c}" /></td>
+				</tr>-->
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductTreasury}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_Treasury__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Treasury__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_Treasury__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Treasury__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_Treasury__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_Treasury__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_Treasury__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_Treasury__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_Treasury__c}" /></td>
+				</tr>
+                <tr>
+					<td>{!$Label.lbl_RevenuesByProductWorkingCapital}</td>
+					<td class="checkbox"><apex:inputField styleClass="checkbox" value="{!revByProd.rorwa_WorkingCapital__c}" /></td>
+					<td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_WorkingCapital__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.H12_WorkingCapital__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+                    <td>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_WorkingCapital__c}" html-disabled="true" rendered="{!PulledFromMyMI}"/>
+                        <apex:inputField styleClass="currency" value="{!revByProd.RWA_WorkingCapital__c}" rendered="{!!PulledFromMyMI}"/>
+                    </td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F12_WorkingCapital__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F12P_WorkingCapital__c}" /></td>
+					<td><apex:inputField styleClass="currency" value="{!revByProd.F24_WorkingCapital__c}" /></td>
+					<td><apex:inputField styleClass="prob" value="{!revByProd.F24P_WorkingCapital__c}" /></td>
+				</tr>
+				<tr>
+                    <td colspan="8">
+						<div class="alignRight">
+                            <apex:commandButton action="{!clearLastPulledFromMyMIDate}" value="{!$Label.lbl_ManualMyMI}" onComplete="endLoading();" status="ManualMyMIEntryStatus" reRender="{!refreshElement}" rendered="{!revByProd.LastPulledfromMyMI__c!=NULL}" styleClass="slds-button slds-button--brand slds-button--small"/>&nbsp;
+							<apex:commandButton action="{!pullFromMyMI}" value="{!$Label.lbl_PullFromMyMI}" onComplete="endLoading();" status="pullingFromMyMIStatus" reRender="{!refreshElement}" styleClass="slds-button slds-button--brand slds-button--small" title="{!$Label.lbl_PullFromMyMITooltip & IF(revByProd.LastPulledfromMyMI__c!=NULL,'. Last pulled at ' + LEFT(TEXT(revByProd.LastPulledfromMyMI__c),19),'')}" alt="{!$Label.lbl_PullFromMyMITooltip & IF(revByProd.LastPulledfromMyMI__c!=NULL,'. Last pulled at ' + LEFT(TEXT(revByProd.LastPulledfromMyMI__c),19),'')}" rendered="{!CIBKey!=NULL}"/>&nbsp;
+                            <apex:commandButton action="{!save}" value="{!$Label.lbl_Save}" onComplete="endLoading();" status="actionStatus" reRender="{!refreshElement}" styleClass="slds-button slds-button--brand slds-button--small"/>
+						</div>
+					</td>
+				</tr>
+				<tr class="totals">
+					<td colspan="2">{!$Label.lbl_RevenuesByProductTotalCon}</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_H12_Contribution__c}" /></td>
+                    <td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F12_Contribution__c}" /></td>
+					<td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F24_Contribution__c}" /></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr class="totals">
+					<td colspan="2">{!$Label.lbl_RevenuesByProductTotalNonLenCon}</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_H12_Non_Lending_Contrib__c}" /></td>
+                    <td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F12_Non_Lending_Contrib__c}" /></td>
+					<td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F24_Non_Lending_Contrib__c}" /></td>
+					<td>&nbsp;</td>
+				</tr>							
+				<tr class="totals">
+					<td colspan="4">{!$Label.lbl_RevenuesByProductTotalConWei}</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F12_Contrib_Weighted__c}" /></td>
+					<td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F24_Contrib_Weighted__c}" /></td>
+					<td>&nbsp;</td>
+				</tr>									
+				<tr class="totals">
+					<td colspan="4">{!$Label.lbl_RevenuesByProductTotalNonLenConWei}</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F12_Non_Lendng_Contrib_Weighted__c}" /></td>
+					<td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.Tot_F24_Non_Lendng_Contrib_Weighted__c}" /></td>
+					<td>&nbsp;</td>
+				</tr>
+                <tr class="totals">
+					<td colspan="2">{!$Label.lbl_DerivativesLegacyTotals}</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.H12_Derivatives__c}" /></td>
+                    <td>&nbsp;</td>
+                    <td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.F12_Derivatives__c}" /></td>
+					<td>&nbsp;</td>
+					<td class="sum"><apex:outputField styleClass="currency" value="{!revByProd.F24_Derivatives__c}" /></td>
+					<td>&nbsp;</td>
+				</tr>
+			</tbody>			
+		</table>
+		<apex:actionStatus id="actionStatus" onStart="startLoading('{!$Label.lbl_Saving}');" />
+        <apex:actionStatus id="pullingFromMyMIStatus" onStart="startLoading('{!$Label.lbl_PullingFromMyMI}');" />
+        <apex:actionStatus id="ManualMyMIEntryStatus" onStart="startLoading('{!$Label.lbl_ManualMyMIEntry}');" />
+	</apex:form>
+</apex:component>

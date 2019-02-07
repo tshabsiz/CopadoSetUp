@@ -1,0 +1,235 @@
+<apex:component controller="evCalendarComp_Controller"   >
+    
+    <!--
+	CHANGES
+	17-10-07	DH	Remove code to hide previous button when in the past - need ot be able to navigate to completed events also
+					Set value of "end" in a loop of results
+	-->
+    
+    <apex:attribute name="EventTypeToSelect" 					type="String" description="Type of Event being selected" />
+    <apex:attribute name="EventCityToSelect" 					type="String" description="Event City for Event being selected" /> 
+    <apex:attribute name="CourseTypeToSelect" 					type="ID" description="Type of course for  Event being selected" />
+    <apex:attribute name="CourseIDToSelect" 					type="ID" description="ID of course for Event being selected" />
+    <apex:attribute name="userCurrentView" 		 				type="String" description="Current view selected by User" />
+    <head>
+        <apex:stylesheet value="{!$Resource.smithstrap}" /> <!-- Bootstrap CSS -->
+        <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css" /> <!-- fullcalendar -->
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" /> <!-- Font Awesome -->
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" />
+        <apex:includeScript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"/>
+        <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.16.0/moment.min.js" /> <!-- fullcalendar -->
+        <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js" /> <!-- fullcalendar -->
+    </head>
+    <script>
+    $(document).ready(function testcal() {
+        
+        $('#calendar').fullCalendar({
+            defaultView: '{!userCurrentView}',
+            eventLimit: true,
+            weekends: true,
+            customButtons: {
+                newEvent: {
+                    text: '+ New Event',
+                    click: function() {
+                        window.location.href = '/setup/ui/recordtypeselect.jsp?ent=01I24000001pOGE&retURL=%2Fa5C%2Fo&save_new_url=%2Fa5C%2Fe%3FretURL%3D%252Fa5C%252Fo';
+                    }
+                }
+            },
+            header: {
+                left: 'prev,next today newEvent',
+                center: 'title',
+                right: 'month,basicWeek,listMonth'
+            },
+            loading: function (bool) {
+                console.log('events are being rendered'); // Add your script to show loading
+                document.getElementById("cal-loader").style.display = "block";
+                //document.getElementById("calendar").style.display = "none";
+            },
+            viewRender: function(currentView){
+                var dateToday = moment();
+                console.log("dateToday" + dateToday);
+                console.log("current view " + currentView.name);
+                var userCurrentView = currentView.name;
+                //getCurrentView(userCurrentView);
+                /*
+                if (dateToday >= currentView.start && dateToday <= currentView.end) {
+                    $(".fc-prev-button").addClass('hidden'); 
+                }
+                else {
+                    $(".fc-prev-button").removeClass('hidden'); 
+                }
+                */
+            },
+            eventRender: function (event, element) {
+                element.find('span.fc-title').html(element.find('span.fc-title').text());
+                element.find('.fc-list-item-title a').html(element.find('.fc-list-item-title a').text());
+            },
+            eventAfterAllRender: function (view) {
+                console.log('all events are rendered');// remove your loading
+                //document.getElementById("cal-loader").style.display = "none";
+                //document.getElementById("calendar").style.display = "block";
+            },
+            dayClick: function(date, jsEvent, view) {
+                //UPDATE URL WHEN CHANGING ORGS
+                window.location.href = '/a5C/e?retURL=%2Fa5C%2Fo&RecordType=01224000000scgR&ent=01I24000001pOGE&00N2400000JX1sb=' + convertDate(date.format());
+            },
+            events : function(start,end,timezone,callback)
+            {
+                //alert('Cal Event occured' );
+                //document.getElementById("cal-loader").style.display = "block";
+                //document.getElementById("calendar").style.display = "none";
+                console.log('Call remote action');
+                console.log(' var start :  '+ start);
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.evCalendarComp_Controller.getEvents}', 
+                    '{!$CurrentPage.parameters.id}',
+                    getEpochMillis(start),
+                    getEpochMillis(end), 
+                    '{!EventTypeToSelect}',
+                    '{!CourseTypeToSelect}',
+                    '{!CourseIDToSelect}',
+                    '{!EventCityToSelect}',
+                    function(result, event)
+                    {
+                        if(result[0]) 
+                        {
+                            //window.alert('Cal Remote Function Finished' );
+                            console.log('result[0] :'+ result[0]);  
+                            console.log('result[0].start :'+ result[0].start);  
+                            console.log('result[0].Eventend :'+result[0].Eventend); 
+                            result[0].end = result[0].Eventend; 
+                            console.log('result[0].end :'+result[0].end); 
+                            
+                           for (i = 0; i < result.length; i++) { 
+                               result[i].end = result[i].Eventend;
+                           }	
+                            
+                            console.log('event.status ' + event.status );
+                            
+                            if(event.status)
+                            {       
+                                
+                                callback(result);                    
+                            }
+                        } 
+                        document.getElementById("cal-loader").style.display = "none";
+                    }, 
+                    {escape: true}
+                )
+                
+            },//7,
+            eventBackgroundColor: '#006991',
+            displayEventTime: false,
+            eventClick:  function(event, jsEvent, view) {  
+                console.log( event);  
+                console.log(event.detailData.courseUrl);
+                $('#modalTitle').html(event.title);
+                $('#modalDescription').html(event.description);
+                $('#modalDate').html('<strong>Date:</strong> ' + moment(event.start).format('D MMMM YYYY') + ' to ' + moment(event.Eventend).format('D MMMM YYYY'));
+                $('#modalDuration').html('<strong>Duration:</strong> ' + event.detailData.duration);
+                $('#modalStart').html('<strong>Start Time:</strong> ' + event.startTime);
+                $('#modalEnd').html('<strong>End Time:</strong> ' + event.endTime); 
+                if(event.courseType !== 'Webinar') {
+                    $('#modalVenue').html('<strong>Venue:</strong> ' + event.venue);
+                    $('#modalAddress').html('<strong>Address:</strong> ' + event.address);
+                }
+                if(event.space == 'hidden') {
+                    $('#modfooter').attr('class',event.space);
+                }
+                $('#modalTrainer').html('<strong>Delivered By:</strong> <img src="'+ event.detailData.trainer_avatar + '" style="width: 40px; height: 40px;" class="trainer-thumbnail">' + event.detailData.trainer_name);
+                $('#courseUrl').attr('href',event.detailData.course_url);
+                $('#eventUrl').attr('href',event.detailData.event_url);
+                $('#CalendarModal').modal();
+                return false;
+            }
+            
+        })
+        
+    });
+    
+    function getEpochMillis(dateStr)
+    {
+        console.log(new Date().getTime()); 
+        console.log(' Date string : '+dateStr); 
+        console.log('getEpochMillis :  dateStr : ' + dateStr);
+        var d = new Date(dateStr.format());
+        console.log('d.getTime()/1000 : ' + d.getTime()/1000);
+        return d.getTime()/1000;
+    }    
+    </script>
+    <style>
+        .overlay {
+        
+        height: 100%;
+        width: 100%;
+        position: fixed; /* Stay in place */
+        z-index: 1000; /* Sit on top */
+        left: 0;
+        top: 0;
+        color: white;
+        background-color: rgb(0,0,0); /* Black fallback color */
+        background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+        overflow-x: hidden; /* Disable horizontal scroll */
+        transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+        }  
+        
+        span.fc-title {
+            color: #FFF;
+            font-size: 12px;
+        }
+        
+        .fc-content {
+        	cursor: pointer;
+        }
+        
+        .smithstrap .modal {
+            top: 20%;
+            width: 400px;
+            margin: auto;
+        }
+        
+        .fc-newEvent-button {
+        	font-weight: bold !important;
+        }
+        
+    </style>
+    
+    <div class="smithstrap">
+        
+        <div id="CalendarModal" class="modal fade"> 
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> <span class="sr-only">close</span></button>
+                        <h4 id="modalTitle" class="modal-title"></h4>
+                    </div>
+                    <div id="modalBody" class="modal-body">
+                        <div id="modalDescription"></div>
+                        <div class="mgtb20">
+                            <div id="modalDate"></div>
+                            <div id="modalDuration"></div>
+                            <div id="modalStart"></div>
+                            <div id="modalEnd"></div>
+                            <div id="modalVenue"></div>
+                            <div id="modalAddress"></div>
+                        </div> 
+                        
+                    </div>
+                    <div id="modfooter" class="modal-footer">
+                        <a class="btn btn-primary" id="eventUrl">Open Event</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="cal-loader" class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                Loading...
+            </div>
+        </div>
+        
+        <div id="calendar"></div>
+        
+    </div>
+    
+</apex:component>

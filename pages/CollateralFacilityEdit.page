@@ -1,0 +1,45 @@
+<apex:page standardController="Collateral_Facility__c" extensions="CollateralFacilityExtension" tabStyle="Collateral_Facility__c" >
+        <apex:sectionHeader title="Collateral Facility Edit" subtitle="New Collateral Facility" rendered="{!Collateral_Facility__c.Id == null }" help="https://help.salesforce.com" />
+    <apex:sectionHeader title="Collateral Facility Edit" subtitle="{!Collateral_Facility__c.name}" rendered="{!Collateral_Facility__c.Id != null }" help="https://help.salesforce.com" />
+    <apex:form >
+            <style>
+          .stopText {color:red;}
+   </style>
+        <apex:pageBlock title="Collateral Facility Edit" mode="edit">
+            <apex:outputpanel id="t5">
+            	<apex:pageMessages />
+            </apex:outputpanel>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save" oncomplete="CallWebService_JS()" />
+                 <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS" status="acmSaveStatus"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" />
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection collapsible="false" title="Information" columns="2">
+                
+                <apex:outputField rendered="{!Collateral_Facility__c.Name != null }" value="{!Collateral_Facility__c.Name}"/>
+                <apex:outputField rendered="{!Collateral_Facility__c.OwnerId != null }" value="{!Collateral_Facility__c.OwnerId}"/>
+                
+                
+                <apex:inputField required="true" value="{!Collateral_Facility__c.Collateral__c}"/>
+                
+                                
+                <apex:inputField value="{!Collateral_Facility__c.CurrencyIsoCode}" >
+                </apex:inputField>
+                
+                <apex:inputField required="true" value="{!Collateral_Facility__c.Facility_Client__c}" >
+                   <apex:actionSupport event="onchange" action="{!GetAndCreateFacilities}" rerender="t5" status="counterStatus" />
+                </apex:inputField>
+                
+                <apex:inputField value="{!Collateral_Facility__c.Active__c}"/>
+               
+                
+                <apex:inputField value="{!Collateral_Facility__c.ACMFacility__c}"/>
+ 
+                 <span></span>
+                <apex:actionStatus id="counterStatus"  startText=" (Looking up facilities for Clients...)"/>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

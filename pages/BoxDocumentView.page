@@ -1,0 +1,36 @@
+<apex:page controller="BoxDocumentDetailController" tabStyle="BoxDocument__c" showHeader="false" sidebar="false" >
+    <head>
+        <style type="text/css">
+            .custom-block-button {
+            min-width: 75px;
+            }
+            .pbHeader {
+            background-color: #bf0202 !important;
+            color:white !important;         
+            font-size:115% !important;
+            padding: 10px 6px 10px 6px !important;
+            }
+            .fieldOutput{
+            font-weight:bold;
+            }
+           
+        </style>
+    </head>
+    <apex:form >
+        <apex:pageBlock title="Box Documents">
+            <apex:facet name="header"><b>Box Documents View</b></apex:facet>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >                
+                <apex:outputField value="{! boxDocument.Name}"/>
+                <apex:outputField value="{! boxDocument.Type__c}"/>
+                <apex:outputField value="{! boxDocument.Status__c}"/>
+                <apex:outputField value="{! boxDocument.Box_Location__c}"/>
+                <apex:outputField value="{! boxDocument.ParentName__c}"/>
+                <apex:outputField value="{! boxDocument.Expiry_Date__c}"/>
+      	 		<apex:outputField value="{! boxDocument.PII__c}"/>
+            </apex:pageBlockSection>           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <help><!-- Systematic field which is updated weekly and reflects the total number of hours logged by the timekeeper for the prior week. --></help>
+        <label><!-- Last Weeks Quota (Hours) --></label>
+        <name>Last_Weeks_Quota_Hours__c</name>
+    </fields>
+    <fields>
+        <label><!-- Line Manager --></label>
+        <name>Line_Manager__c</name>
+        <relationshipLabel><!-- Timekeepers (Line Manager) --></relationshipLabel>
+    </fields>
+    <fields>
+        <help><!-- The date of when the weekly quota value was last updated by the system. --></help>
+        <label><!-- Quota Last Updated --></label>
+        <name>Quota_Last_Updated__c</name>
+    </fields>
+    <fields>
+        <label><!-- Salesforce User Alias --></label>
+        <name>Salesforce_User_Alias__c</name>
+    </fields>
+    <fields>
+        <help><!-- Should this timekeeper be tracked against the weekly quota?  This is used for missing time notifications. --></help>
+        <label><!-- Weekly Quota Notification --></label>
+        <name>Weekly_Quota_Notification__c</name>
+    </fields>
+    <fields>
+        <label><!-- Alias --></label>
+        <name>advpm__Alias__c</name>
+    </fields>
+    <fields>
+        <label><!-- External Resource --></label>
+        <name>advpm__External_Resource__c</name>
+        <relationshipLabel><!-- Timekeepers --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Initials --></label>
+        <name>advpm__Initials__c</name>
+    </fields>
+    <fields>
+        <label><!-- Role --></label>
+        <name>advpm__Role__c</name>
+        <picklistValues>
+            <masterLabel>AS - Associate</masterLabel>
+            <translation><!-- AS - Associate --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>LA - Legal Assistant</masterLabel>
+            <translation><!-- LA - Legal Assistant --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>OC - Of Counsel</masterLabel>
+            <translation><!-- OC - Of Counsel --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>OT - Other Timekeeper</masterLabel>
+            <translation><!-- OT - Other Timekeeper --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>PT - Partner</masterLabel>
+            <translation><!-- PT - Partner --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Staff --></label>
+        <name>advpm__Staff__c</name>
+        <relationshipLabel><!-- Timekeepers (Staff) --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Type --></label>
+        <name>advpm__Type__c</name>
+        <picklistValues>
+            <masterLabel>Annually</masterLabel>
+            <translation><!-- Annually --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Monthly</masterLabel>
+            <translation><!-- Monthly --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Quarterly</masterLabel>
+            <translation><!-- Quarterly --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Use Fiscal Year --></label>
+        <name>advpm__Use_Fiscal_Year__c</name>
+    </fields>
+    <validationRules>
+        <errorMessage><!-- Both &apos;Staff&apos; and &apos;External Resource&apos; cannot be provided. --></errorMessage>
+        <name>advpm__Staff_AND_External_Resource_Verify</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Either &apos;Staff&apos; or &apos;External Resource&apos; must be provided. --></errorMessage>
+        <name>advpm__Staff_OR_External_Resource_Is_Required</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Manage_Quota --></label>
+        <name>advpm__Manage_Quota</name>
+    </webLinks>
+</CustomObjectTranslation>

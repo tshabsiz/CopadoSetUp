@@ -1,0 +1,94 @@
+<apex:page controller="Matter_AgreementTemplate" action="{!actionEntryHandler}"> 
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    
+    <!-- CUSTOM CSS -->
+    <style type="text/css">
+    .pageDescription {
+        white-space: nowrap !important;
+    }
+    .pbSubheader{
+        background-color: green !important;
+        border-color: none !important;
+    }
+    .valign {
+        vertical-align: cent !important;
+    }
+    .center {
+        text-align: center !important;
+    }
+    
+    .greenText {
+        color: green !important;
+    }
+    
+    .headerRow a:link {
+        color: blue !important;
+        font-size: 10px;
+    }
+    
+    .headerRow a:visited {
+        color: green !important;
+        font-size: 10px;
+    }
+
+    .headerRow a:hover {
+        color: hotpink !important;
+        font-size: 10px;
+    }
+    
+    input[type=checkbox] {
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+    
+    a:active {
+        color: blue;
+    }
+    </style>
+    <!-- / CUSTOM CSS -->
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Deal Agreements" subtitle="Conditions With Problems" />
+    
+    <!-- FORM -->
+    <apex:form >
+        
+        <!-- PAGE BLOCK-->
+        <apex:pageBlock title="Below Conditions Not Updated" rendered="{!NOT(pageHasError)}" mode="detail">
+            
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Done" action="{!actionCancel}"/>
+            </apex:pageBlockButtons>
+            
+            <!-- PAGE BLOCK TABLE -->
+            <apex:pageBlockTable value="{!conditionSaveWrappers}" var="saveItem">
+                
+                <apex:column >
+                    <apex:facet name="header">Agreement Name</apex:facet>
+                    <a href="{!URLFOR($Action.Agreement__c.View, saveItem.condition.Agreement__c)}" target="_blank"><apex:outputField value="{!saveItem.condition.Agreement__c}" /></a>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">Condition Name</apex:facet>
+                    <a href="{!URLFOR($Action.Condition__c.View, saveItem.condition.Id)}" target="_blank"><apex:outputField value="{!saveItem.condition.Name}" /></a>
+                </apex:column>
+                <apex:column value="{!saveItem.condition.RecordTypeId}" />
+                <apex:column >
+                    <apex:facet name="header">Error Description</apex:facet>
+                    <apex:repeat value="{!saveItem.errors}" var="errorItem">
+                        <apex:outputText escape="false" value="{!errorItem}" />
+                    </apex:repeat>
+                </apex:column>
+                
+            </apex:pageBlockTable>
+            <!-- / PAGE BLOCK TABLE -->
+            
+        </apex:pageBlock>
+        <!-- / PAGE BLOCK-->
+    
+    </apex:form>
+    <!-- / FORM -->
+
+</apex:page>

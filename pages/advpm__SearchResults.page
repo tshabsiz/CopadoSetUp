@@ -1,0 +1,172 @@
+<apex:page controller="advpm.SearchController" readOnly="true" cache="true" tabStyle="advpm__Matter__c" title="{!JSINHTMLENCODE($ObjectType[parentObjApiName].labelPlural)} - {!recName}">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Migrate, 'js/jquery-migrate-1.2.1.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/css/jquery.dataTables.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/js/jquery.dataTables.min.js')}" />
+    <script type="text/javascript">
+        var recId = '{!JSINHTMLENCODE(recId)}';
+        var recName = '{!JSINHTMLENCODE(recName)}';
+        var parentObj = '{!JSINHTMLENCODE(parentObjApiName)}';
+        var parentObjLabel = '{!JSINHTMLENCODE(LOWER($ObjectType[parentObjApiName].label))}';
+        var searchTextParam = '{!JSINHTMLENCODE($CurrentPage.parameters.stsr)}';
+        var srchOnly = '{!JSINHTMLENCODE($CurrentPage.parameters.srch_only)}';
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+    </script>
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__Matter_Search, 'css/matter-global-search-styles.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__Matter_Search, 'js/matter-global-search-results-util.js')}" />
+	
+	<apex:outputPanel layout="none" rendered="{!isLightning}">
+		<c:includeSLDS />
+		<style type="text/css">
+			.slds #search-result {margin-left:24px;margin-right:24px;}
+			.slds #search-result .bPageBlock {border-top: 1px solid #eaeaea!important;}
+			.slds #search-container > div {margin-left: 24px;}
+			.slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 8px!important;}
+			.search-result-tables .apexp .bPageBlock.apexDefaultPageBlock .pbBody {margin-bottom: 35px!important;}
+			body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {border-bottom: 1px solid #eaeaea;}
+   			.slds .pbBody table.slds-table tr.headerRow:first-child th {border-top-width: 1px;}
+			.slds .slds-page-header {margin-bottom: 10px;}
+			.bPageBlock .pbHeader>table>tbody>tr>td {padding-left: 8px;}
+			.bPageBlock .pbTitle {width:40%;}
+		</style>
+	</apex:outputPanel>
+	
+    <apex:form id="theForm" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:sectionHeader subtitle="Search Results" title="{!recName}" rendered="{!!isLightning}" />
+        <apex:outputPanel layout="none" rendered="{!!isSF1 && !isLightning}">&#171;<apex:outputLink value="/{!JSINHTMLENCODE(recId)}">Back to {!JSINHTMLENCODE(LOWER($ObjectType[parentObjApiName].label))}</apex:outputLink><br /><br /></apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!isLightning}">
+        	<c:slds_pageheader pageHeaderType="BREADCRUMBS"
+								headerTitle="Search Results" 
+								parentEntity="{!JSINHTMLENCODE($ObjectType[parentObjApiName].labelPlural)}" 
+								parentEntityLink="{!$ObjectType.advpm__Matter__c.keyPrefix}" 
+								parentRecordName="{!recName}" 
+								parentRecordID="{!JSINHTMLENCODE(recId)}"	/>
+		</apex:outputPanel>
+        <div style="display:inline;" id="search-container">
+            <div class="{!IF(isLightning,'slds-button-group','')} input-append searchContainer pull-left">
+                <input id="searchText" class="span3" type="text" placeholder="Enter your search text here..." style="{!IF(isLightning,'height:inherit;width:250px;','height:16px;')}" />
+                <button id="searchBtn" class="btn-adv btn-adv-warning btn-adv-small {!IF(isLightning,'slds-button slds-button--brand','')}" type="button" style="margin-top:0px;">Search</button>
+            </div>
+            <div class="searchMoreOptions pull-left" id="searchMoreOptions" style="{!IF(JSINHTMLENCODE($CurrentPage.parameters.srch_only)!='','display:none','')}">
+                <span id="searchMoreOptionsText"></span>
+                <a href="javascript:void(0);" id="searchMoreOptionsLink">Options...</a>                                
+            </div>
+        </div>
+        <br />
+        <apex:variable var="matchesFound" value="{!0}" />
+        <div id="search-result">
+        	<!-- 
+        		 Some Code Saving bug requires this block to exist otherwise Visualforce Markup Saving Shows Error Message:
+				 
+				 Save error: Incorrect parameter type for subscript. Expected Text, received SetValue
+        	-->
+            <apex:pageBlock mode="maindetail" title="{!JSINHTMLENCODE($ObjectType[$CurrentPage.parameters.stob].label)}" rendered="false">
+                <apex:repeat value="{!searchParentObj.sObjList}" var="sObj">
+                    <apex:pageBlockSection showHeader="false" columns="2">
+                        <apex:outputField value="{!sObj[parentObjNameField]}" />
+                        <apex:repeat value="{!parentFieldsToShow}" var="f">
+                            <apex:outputField value="{!sObj[f]}" />
+                        </apex:repeat>
+                    </apex:pageBlockSection>
+                </apex:repeat>
+            </apex:pageBlock>
+            <!-- Error Block Save Code End Here -->
+            
+            <apex:pageBlock mode="{!IF(isLightning,'detail','maindetail')}" title="{!JSINHTMLENCODE($ObjectType[$CurrentPage.parameters.stob].label)}">
+            	<apex:pageBlockSection showHeader="false" columns="2">
+            		<apex:repeat value="{!searchParentObj.sObjList}" var="sObjPName">
+                        <apex:outputField value="{!sObjPName[parentObjNameField]}" />
+	                </apex:repeat>
+	            	<apex:repeat value="{!parentObjSplitMap}" var="mp">
+	            		<apex:repeat value="{!parentObjSplitMap[mp]}" var="mpSplit">
+		            		<apex:repeat value="{!mpSplit.sObjList}" var="sObjP">
+		                        <apex:repeat value="{!parentObjFieldsToShowMap[mp]}" var="fd">
+	                        		<apex:outputField value="{!sObjP[fd]}" />
+	                        	</apex:repeat>
+		                	</apex:repeat>
+		                	<apex:outputPanel layout="block" rendered="{!parentObjSplitMap[mp].errorMsg != 'NO-ERROR'}" styleClass="searchErrorContainer">
+		                    	<apex:pageMessage summary="{!parentObjSplitMap[mp].errorMsg}" severity="error" strength="1" />
+		                	</apex:outputPanel>
+		            	</apex:repeat>
+		           	</apex:repeat>
+	        	</apex:pageBlockSection>
+            </apex:pageBlock>
+            <div id="search-result-related-objects" class="search-result-tables">
+	            <apex:repeat value="{!searchObjectsList}" var="searchObj">
+	                <apex:pageBlock mode="detail" rendered="{!searchObj.sObjList.size > 0 || searchObj.sObjList_secondary.size > 0 || searchObj.errorMsg != 'NO-ERROR'}" id="table_block">
+	                    <apex:facet name="header">
+	                        <table border="0" cellpadding="0" cellspacing="0">
+	                            <tbody><tr>
+	                                <td class="pbTitle"><h2 class="mainTitle" data-title="{!searchObj.objectLabel}">{!searchObj.objectLabel}</h2></td>
+	                                <td >&nbsp;</td>
+	                            </tr></tbody>
+	                        </table>
+	                    </apex:facet>
+	                    <apex:pageBlockTable value="{!searchObj.sObjList}" var="sObjR" styleClass="dataTable slds-table" rendered="{!searchObj.sObjList.size > 0}">
+	                        <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" headerValue="{!$ObjectType[searchObj.objectName].fields[searchObj.objectNameField].label}">
+	                            <apex:outputLink value="/{!sObjR.Id}">{!sObjR[searchObj.objectNameField]}</apex:outputLink>
+	                            <apex:variable var="matchesFound" value="{!1}" />
+	                        </apex:column>
+	                        <apex:repeat value="{!searchObj.fieldsToShow}" var="f">
+	                            <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" value="{!sObjR[f]}" styleClass="slds-cell-wrap">
+	                            	<apex:facet name="header">{!searchObj.searchFieldLabels[f]}</apex:facet>
+	                            </apex:column>
+	                        </apex:repeat>
+	                    </apex:pageBlockTable>
+	                    <apex:pageBlockTable value="{!searchObj.sObjList_secondary}" var="sObjSec" styleClass="dataTableContentNotes displayNone slds-table" rendered="{!searchObj.sObjList_secondary.size > 0}">
+	                        <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" headerValue="{!$ObjectType[searchObj.objectName].fields[searchObj.objectNameField].label}">
+	                            <apex:outputLink value="/{!sObjSec.Id}">{!sObjSec[searchObj.objectNameField]}</apex:outputLink>
+	                            <apex:variable var="matchesFound" value="{!1}" />
+	                        </apex:column>
+	                        <apex:repeat value="{!searchObj.fieldsToShow}" var="f">
+	                            <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+	                            	<apex:facet name="header">{!searchObj.searchFieldLabels[f]}</apex:facet>
+	                            	<span class="slds-cell-wrap">
+		                            	<c:BlobToData blobDataVal="{!sObjSec['VersionData']}" rendered="{!f=='Body'}" />
+		                            	<apex:outputField value="{!sObjSec[f]}" rendered="{!f!='Body' && f!='ParentId'}" />
+	                            	</span>
+	                            </apex:column>
+	                        </apex:repeat>
+	                    </apex:pageBlockTable>
+	                    <apex:outputPanel layout="block" rendered="{!searchObj.errorMsg != 'NO-ERROR'}" styleClass="searchErrorContainer">
+	                        <apex:pageMessage summary="{!searchObj.errorMsg}" severity="error" strength="1" />
+	                    </apex:outputPanel>
+	                    <apex:outputPanel layout="block" rendered="{!searchObj.sObjList.size > 0 && !isLightning}"><br /><br /></apex:outputPanel>
+	                </apex:pageBlock>
+	            </apex:repeat>
+	    	</div>
+        </div>
+        <apex:outputPanel layout="block" styleClass="noMatchesContainer" style="{!IF(matchesFound == 0,'','display:none')}">
+            <apex:pageMessage summary="No related records found" severity="warning" strength="1" />
+        </apex:outputPanel>
+        <apex:pageMessages />
+        <div style="display:none;" id="search-objects">
+            <table border="0" class="search-options {!IF(isLightning,'slds','')}" cellspacing="0" cellpadding="0">
+                <apex:repeat value="{!searchObjectsList}" var="v">
+                    <tr><td><apex:inputCheckbox styleClass="sr-{!IF(v.objectName=='Task' && v.objectLabel=='Emails','Email',IF(v.objectName=='Task' && v.objectLabel=='Calls','Call',v.objectName))}" value="{!v.selected}" /></td>
+                        <td><apex:outputLabel value="{!v.objectLabel}" onclick="$j('.sr-{!IF(v.objectName=='Task' && v.objectLabel=='Emails','Email',IF(v.objectName=='Task' && v.objectLabel=='Calls','Call',v.objectName))}').prop('checked',!$j('.sr-{!IF(v.objectName=='Task' && v.objectLabel=='Emails','Email',IF(v.objectName=='Task' && v.objectLabel=='Calls','Call',v.objectName))}').prop('checked'));" /></td></tr>
+                </apex:repeat>
+            </table>
+            <p align="center" class="{!IF(isLightning,'slds','')}"><button id="saveSearchBtn" class="btn-adv btn-adv-warning btn-adv-mini btn-search {!IF(isLightning,'slds-button slds-button--brand','')}" type="button" onclick="toggleSaveSearchButton(false);doSaveOptions(); return false;">Save &amp; Search</button><button class="btn-adv btn-adv-mini {!IF(isLightning,'slds-button slds-button--neutral','')}" onclick="d.hide(); return false;">Cancel</button></p>
+        </div>
+        <!-- <table border="0" style="display:none;">
+            <tr>
+                <td><strong>objectLabel</strong></td>
+                <td><strong>objectName</strong></td>
+                <td><strong>objectNameField</strong></td>
+                <td><strong>relatedFields</strong></td>
+                <td><strong>searchFields</strong></td>
+            </tr>
+            <apex:repeat value="{!searchObjectsList}" var="v">
+                <tr>
+                    <td valign="top">{!v.objectLabel}</td>
+                    <td valign="top">{!v.objectName}</td>
+                    <td valign="top">{!v.objectNameField}</td>
+                    <td valign="top">{!v.relatedFields}</td>
+                    <td valign="top">{!v.searchFields}</td>
+                </tr>
+                <tr><td colspan="5"><pre>{!v.query}</pre></td></tr>
+            </apex:repeat>
+        </table> -->
+    </apex:form>
+</apex:page>

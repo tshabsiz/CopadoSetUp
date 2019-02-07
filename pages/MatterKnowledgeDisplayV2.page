@@ -1,0 +1,735 @@
+<apex:page standardController="advpm__Matter__c" extensions="KnowledgeHandlerV2" sidebar="false" tabStyle="advpm__Matter__c" standardStylesheets="true"  >
+ 
+ <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+ <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+
+
+ 
+ <style type="text/css">
+ 
+ /* Tooltip container */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        /** border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 300px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+
+        /* Position the tooltip text */
+        position: absolute;
+        z-index: 999;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+
+        /* Fade in tooltip */
+        opacity: 0;
+        transition: opacity 1s;
+    }
+
+    /* Tooltip arrow */
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+  </style>   
+    
+ 
+ <script type="text/javascript">
+ var toggled = false;
+
+  $( document ).ready(function() {
+      $("[id$=legalStatus]").prop("disabled",true);
+      $("[id$=status]").prop("disabled",true);
+  });
+
+ var j$ = jQuery.noConflict();
+   
+   j$(document).ready(function(){
+        $("#toggle_menu").hide();
+        
+        j$("#button").click(function(){
+                 
+            if(toggled) {
+                toggled=false;
+                $("#toggle_menu").animate({width: "0%"}, "fast");
+                $("#main_container").animate({width: "100%"}, "fast");
+                $("#toggle_menu").hide();
+                $("#button").attr('value', 'Show Knowledge Search'); 
+            }else {
+                toggled=true;
+                    
+                    $("#toggle_menu").animate({width: "30%"}, "fast");
+                    $("#main_container").animate({width: "70%"}, "fast"); 
+                    $("#toggle_menu").show();
+                    $("#button").attr('value', 'Hide Knowledge Search');                 
+            }
+    })});
+ </script>
+ 
+ 
+ <script>
+ // window.onload = prepareForm();
+ 
+ 
+ 
+ function AddRiskType() {
+     if(document.getElementById('{!$Component.form1.LitPb.generalPBS.RiskType}').style.display == 'none'){
+           
+           document.getElementById('{!$Component.form1.LitPb.generalPBS.RiskType}').style.display = 'block';
+           
+          // document.getElementById('{!$Component.form1.LitPb.generalPBS.RiskType}').style.display = 'block';
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.generalPBS.RiskType}').style.display = 'none';
+       }
+  }
+  
+  function ClearfinData() {
+      if(document.getElementById('{!$Component.form1.LitPb.financialSection.ClaimI}').disabled  == false){
+           
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ClaimI}').disabled = true;
+       
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ClaimI}').disabled  = false;
+        
+       }
+       
+      if(document.getElementById('{!$Component.form1.LitPb.financialSection.ReasonableI}').style.display == 'none'){         
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ReasonableI}').style.display = 'block';      
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ReasonableI}').style.display = 'none';       
+       }
+       
+       if(document.getElementById('{!$Component.form1.LitPb.financialSection.RemI}').style.display == 'none'){
+           
+           document.getElementById('{!$Component.form1.LitPb.financialSection.RemI}').style.display = 'block';      
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.financialSection.RemI}').style.display = 'none';       
+       }
+        
+       if(document.getElementById('{!$Component.form1.LitPb.financialSection.SecV}').style.display == 'none'){
+           
+           document.getElementById('{!$Component.form1.LitPb.financialSection.SecV}').style.display = 'block';      
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.financialSection.SecV}').style.display = 'none';       
+       }
+       if(document.getElementById('{!$Component.form1.LitPb.financialSection.ProbA}').style.display == 'none'){
+           
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ProbA}').style.display = 'block';      
+       }
+       else{
+           document.getElementById('{!$Component.form1.LitPb.financialSection.ProbA}').style.display = 'none';       
+       }
+       
+  }
+  
+   
+ </script>
+ 
+ 
+ <style type="text/css">
+
+body { box-sizing: border-box; }
+body *, body *:before, body *:after { box-sizing: inherit; }
+
+#inline_container {width: 100%;}
+#toggle_menu {width: 0%; display: inline-block; float: right;  }
+#main_container {width:100%;  display: inline-block; float: left;}
+
+
+
+ </style>
+
+ <!--
+ <button onclick='document.getElementById("Matter").classList.toggle("search")'>Hide/Show Search</button>
+ -->
+ <body>
+ 
+ 
+ 
+ <table width="100%"><tr><td align="right"><input type="button" id="button" value="Show Knowledge Search" /></td></tr></table>
+ <div id="inline_container"> 
+ 
+ 
+ <apex:form id="form1">
+
+
+     <!--<apex:actionFunction name="actionParticipantControl" action="{!actionClearParticipantControl}" reRender="pariticpantControls, allParticipants" />-->
+
+     <apex:pageMessages id="errors" />
+  <apex:sectionHeader subtitle="Matter/Deal Edit" title="New Matter/Deal"/>
+  
+  <div id="main_container">
+  
+  <table width="100%" border="0" >
+  <tr>
+  <td  >
+  <apex:outputpanel rendered="{!strRecordTypeName='Litigation Matter'}">
+ <apex:pageBlock title="Matter" mode="edit" id="LitPb" >
+  <apex:pageBlockButtons >
+   <!-- oncomplete="boxrequest();" -->
+   <apex:actionFunction name="boxaction" action="{!createBox1}" />
+   
+   <apex:commandButton value="Save" action="{!Save}" rendered="{!showBox}" id="saveButton"  /> 
+   
+       <apex:commandButton value="Cancel" action="{!Cancel}" rendered="{!showCancel}"  />
+       <apex:commandButton action="{!CreateBox}" value="Add Documents" rendered="{!showDocuments}"  /> 
+   
+  </apex:pageBlockButtons>
+  
+ 
+   <apex:outputPanel id="boxPanel2" rendered="{!showBox}">
+      
+                <apex:iframe src="{!boxEmbedURL}" frameborder="false" rendered="{!showBox}"/>
+            
+        </apex:outputPanel>
+
+  <apex:outputpanel rendered="{!NOT(showBox)}"> 
+  
+    <apex:pageBlockSection title="General Information" columns="2" id="GIPBS">
+  
+  <apex:pageBlockSectionItem >
+  <apex:outputLabel >Matter</apex:outputLabel> 
+    <apex:actionRegion >
+              <apex:inputField value="{!Matter.name}"  id="Name2" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}"  />
+              </apex:inputField>
+    </apex:actionRegion>
+   </apex:pageBlockSectionItem> 
+   
+    <apex:actionRegion immediate="true" >    
+    <apex:commandButton value="Check Related" action="{!searchDupes}" immediate="true" reRender="relatedSection" > 
+    <!--
+                    <apex:actionSupport reRender="relatedSection" event="onclick" immediate="true" />
+    -->
+     
+                </apex:commandButton>
+    </apex:actionRegion>      
+    </apex:pageBlockSection>
+    
+    <apex:outputPanel id="relatedSection" rendered="{!NOT(showBox)}">
+                <apex:pageBlockSection title="Related Matters" columns="1" collapsible="false" rendered="{!showDuplicates}">
+                    
+                        <apex:dataTable value="{!potentialDuplicates}" var="dup" rules="all" cellspacing="10px" width="100%" styleClass="border">
+                            <apex:column headerValue="Related" styleClass="center white" headerClass="center">
+                                <apex:inputCheckbox value="{!dup.isRelated}" />
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['Name'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputLink value="/{!dup.matter.Id}">
+                                    {!dup.matter.Name}
+                                </apex:outputLink>
+                            </apex:column>                      
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['OwnerId'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.OwnerId}" />
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['advpm__Description__c'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.advpm__Description__c}" />
+                            </apex:column>                      
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['Business_Unit_Cluster_Segment__c'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.Business_Unit_Cluster_Segment__c}" />
+                            </apex:column>
+                        </apex:dataTable>
+                    
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+      <apex:pageBlockSection title="General Information" columns="2" id="generalPBS">
+      
+          
+        
+          
+          <apex:inputField value="{!Matter.advpm__Engagement_Date__c}"/>
+          
+          <apex:inputField value="{!Matter.Reputational_Risk__c}" onclick="AddRiskType();"/>
+          
+         
+         <apex:inputField value="{!Matter.Cost_Centre__c}" required="true" />
+         <apex:inputField value="{!Matter.Reputational_Risk_Type__c}" style="display: none" id="RiskType"  />
+         <apex:inputField value="{!Matter.Customer_account_number_policy_number__c}"/>        
+         <apex:inputField value="{!Matter.Client_Branch_code__c}"/>
+         <apex:inputField value="{!Matter.Jurisdiction__c}"/>
+            
+            <apex:inputField value="{!Matter.Litigation_Status__c}" required="true"/>
+            
+            
+            
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel >Matter Summary</apex:outputLabel>  
+          <apex:actionRegion >
+              <apex:inputField value="{!Matter.advpm__Description__c}"  id="Summary" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>
+         </apex:actionRegion>
+         </apex:pageBlockSectionItem>
+
+        <apex:inputField label="Status" value="{!Matter.advpm__Status__c}" id="status"/>
+        <apex:outputField label="Owner Name" value="{!Matter.Owner.Name}"/>
+
+          <apex:inlineEditSupport event="ondblClick"
+                        showOnEdit="saveButton,cancelButton" hideOnEdit="editButton" />
+
+       <!--     <apex:inputField value="{!Matter.Total_Claim_Percentage__c}"/> -->
+                     
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Categories & Records Management" columns="1" collapsible="false" id="LitCat" >
+          <apex:pageBlockSectionItem >
+  <apex:outputLabel >Matter Type</apex:outputLabel>  
+          <apex:actionRegion >
+              <apex:inputField value="{!Matter.Matter_Type__c}"  id="Type" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onchange" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>
+         </apex:actionRegion>
+         </apex:pageBlockSectionItem> 
+         
+         <apex:pageBlockSectionItem >
+  <apex:outputLabel >Category</apex:outputLabel>  
+          
+         <apex:actionRegion >
+              <apex:inputField value="{!Matter.Category__c}"  id="Category" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onchange" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>
+         </apex:actionRegion>
+          </apex:pageBlockSectionItem>
+            <apex:inputField value="{!Matter.Subcategory__c}" required="true"/>
+            <apex:inputField value="{!Matter.advpm__Legal_Hold__c}"/>
+        </apex:pageBlockSection>
+        
+        
+        <apex:pageBlockSection title="Claim Value Information" columns="2" id="financialSection">
+           
+                <apex:inputField value="{!Matter.Claim_By_Against_Barclays__c}" style="disabled:false"  id="ClaimI" required="True" />
+                
+           
+                <apex:inputField value="{!Matter.Financial_Value_Unknown__c}"  id="Finval" onchange="ClearfinData();">
+                 
+                    <apex:actionfunction name="RunRefresh" action="{!clearFinancial}"/>
+                 
+                </apex:inputField>
+               
+                
+                <apex:inputField value="{!Matter.Remote__c}"  id="RemI" />
+               
+                <apex:inputField value="{!Matter.CurrencyIsoCode}" />
+                <apex:inputField value="{!Matter.Reasonably_Possible__c}"  id="ReasonableI"/>
+                
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:outputField value="{!Matter.Probable_Approved__c}"  />
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!Matter.Probable_For_Approval__c}" id="ProbA" > 
+                   <!-- <apex:actionSupport reRender="financialSection" event="onchange" action="{!claimTypeChange}"/> -->
+                 </apex:inputField>   
+                
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!Matter.Securitization_value__c}" id="SecV"  />
+                
+
+          </apex:pageBlockSection>
+        
+          
+        <apex:pageBlockSection title="Status History" columns="2" id="LitStatus">
+          <apex:inputField value="{!Matter.Current_Status__c}" style="width: 100%;" required="true" />
+          <apex:pageBlockSectionItem >
+  <apex:outputLabel >Notes</apex:outputLabel>  
+          <apex:actionRegion >
+              <apex:inputField value="{!Matter.Notes__c}"  id="Notes" style="width: 100%;"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>
+          </apex:actionRegion>
+        </apex:pageBlockSectionItem> 
+          
+          <apex:inputField value="{!Matter.Previous_current_status__c}" style="width: 100%;" />
+          <apex:inputField value="{!Matter.Review_Frequency_days__c}" />
+          
+        </apex:pageBlockSection>
+        
+      <apex:outputPanel rendered="{!showClosure}">
+        <apex:pageBlockSection title="Closure" columns="2">
+          <apex:inputField value="{!Matter.Disposition_Type__c}"/>
+          <apex:inputField value="{!Matter.advpm__Projected_Date_Of_Closure__c}"/>
+          <apex:inputField value="{!Matter.Disposition_Description__c}"/><br/>
+          <apex:inputField value="{!Matter.Positive_Outcome_Before_All_Costs__c }"/><br/>
+          <apex:inputField value="{!Matter.Negative_Outcome_Before_All_Costs__c}"/><br/>
+          <apex:inputField value="{!Matter.TotalDispositionAmount__c}"/><br/>
+          <apex:inputField value="{!Matter.Percentage__c}"/><br/>                 
+          <apex:inputField value="{!Matter.Costs_Awarded_Against_Barclays__c}"/><br/>
+          <apex:inputField value="{!Matter.Costs_Actually_Recovered__c}"/><br/>
+          
+        </apex:pageBlockSection>
+      </apex:outputPanel> 
+      </apex:outputPanel>
+  
+
+      </apex:pageBlock>
+   <apex:outputpanel rendered="{!NOT(showBox)}">
+
+       <apex:actionRegion immediate="false">
+
+      <apex:pageBlock title="Participants" id="participantSection" mode="edit" > <!-- rendered="{!NOT(showBox)}" -->
+              <apex:pageBlockSection columns="1"  collapsible="false">
+                  <apex:selectList id="participantTypeSelect" value="{!selectedType}" size="1" label="Participant Types">
+                      <apex:selectOptions value="{!ParticipantTypes}"  />
+                      <apex:actionSupport event="onchange" action="{!actionClearParticipantControl}" reRender="pariticpantControls" />
+                  </apex:selectList>
+              </apex:pageBlockSection>
+
+          <apex:outputPanel id="pariticpantControls">
+              <apex:pageBlockSection columns="1"  collapsible="false">
+                  <apex:inputField value="{!participantControl.advpm__Staff__c}" rendered="{!showUser}"/>
+                  <apex:inputField value="{!participantControl.advpm__Contact__c}" rendered="{!showContact}"/>
+              </apex:pageBlockSection>
+
+              <apex:pageBlockSection columns="1"  collapsible="false">
+                  <apex:inputField value="{!participantControl.advpm__Role__c}" />
+              </apex:pageBlockSection>
+
+              <apex:pageBlockSection columns="1" title="Comment" collapsible="false">
+                  <apex:inputField value="{!participantControl.advpm__Comment__c}" style="width: 308px; height: 68px;" />
+              </apex:pageBlockSection>
+          </apex:outputPanel>
+
+          <apex:pageBlockTable value="{!participants}" var="part" id="allParticipants" style="margin-top:10px" >
+              <apex:column value="{!part.RecordTypeId}" />
+              <apex:column value="{!part.advpm__Staff__c}" />
+              <apex:column value="{!part.advpm__Contact__c}" />
+              <apex:column value="{!part.advpm__Role__c}" />
+              <apex:column value="{!part.advpm__Comment__c}" />
+          </apex:pageBlockTable>
+
+          <apex:pageBlockButtons location="bottom">
+              <apex:commandButton value="+ Participant" action="{!addParticipant}" reRender="allParticipants" oncomplete="autofocus(); " >
+                 <!-- <apex:actionSupport reRender="participantSection" event="onclick" oncomplete="autofocus();" />-->
+              </apex:commandButton>
+              <apex:commandButton value="- Participant" action="{!removeParticipant}" reRender="allParticipants" oncomplete="autofocus();" >
+                  <apex:actionSupport reRender="participantSection" event="onclick" />
+              </apex:commandButton>
+          </apex:pageBlockButtons>
+
+
+
+          <!--
+
+          <apex:variable var="i" value="{!1}"/>
+                <apex:repeat value="{!participants}" var="p">
+                        <apex:pageBlockSection columns="1"  collapsible="false" title="Participant {!i} Information" >
+                            <apex:inputField value="{!p.advpm__Staff__c}" required="true" />
+                            <apex:inputField value="{!p.advpm__Role__c}" />
+                        </apex:pageBlockSection>
+
+
+                        <apex:pageBlockSection columns="1" title="Comment" collapsible="false">
+                            <apex:inputField value="{!p.advpm__Comment__c}" style="width: 308px; height: 68px;" />
+                        </apex:pageBlockSection>
+                        <hr/>
+                        <apex:variable var="i" value="{!i + 1}"/>
+                </apex:repeat>
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="+ Participant" action="{!addParticipant}"  immediate="true" reRender="participantSection" oncomplete="autofocus();" >
+                      <!--  <apex:actionSupport reRender="participantSection"
+                       event="onclick" oncomplete="autofocus();" /> -->
+                    <!-- </apex:commandButton>
+                    <apex:commandButton value="- Participant" action="{!removeParticipant}" immediate="true" reRender="participantSection" oncomplete="autofocus();" >
+                    <!--    <apex:actionSupport reRender="participantSection" event="onclick" /> -->
+                    <!--</apex:commandButton>
+                </apex:pageBlockButtons>-->
+            </apex:pageBlock>
+       </apex:actionRegion>
+
+       
+      <apex:pageBlock title="Business Unit Claims" id="claimSection" mode="edit"> <!-- rendered="{!NOT(showBox)}" -->
+                <apex:variable var="j" value="{!1}"/> 
+                
+                 <apex:repeat value="{!claims}"   var="c" > 
+                    
+                    <apex:pageBlockSection columns="2" collapsible="false" title="Business Unit {!j}">
+                        <apex:inputField value="{!c.Business_Unit__c}"  required="true"/>
+                        <apex:inputField value="{!c.Portion_of_Claim__c}" />
+                    </apex:pageBlockSection>
+                    <hr/>
+                    <apex:variable var="j" value="{!j + 1}"/>                                       
+                 </apex:repeat> 
+                
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="+ Business Unit" action="{!addClaim}"  immediate="true"  reRender="claimSection"> 
+                      
+                    <!--    <apex:actionSupport reRender="claimSection" event="onclick" /> -->
+                    </apex:commandButton>
+                    
+                    <apex:commandButton value="- Business Unit" action="{!removeClaim}" immediate="true"  reRender="claimSection">
+                   <!--     <apex:actionSupport reRender="claimSection" event="onclick" /> -->
+                    </apex:commandButton>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+      
+               
+   <table width="100%"><tr><td align="center">
+   <apex:commandButton action="{!createBox}" value="Add Documents" rendered="{!NOT(showDocuments)}" oncomplete="boxaction();"  />
+  <apex:commandButton value="Cancel" action="{!Cancel}" rendered="{!NOT(showCancel)}"  />
+  <!--
+   <apex:commandButton action="{!createBox}" value="Add Documents" rendered="{!NOT(showDocuments)}"/>      
+   -->
+   
+   </td></tr></table>
+
+       </apex:outputpanel>
+      
+ </apex:outputpanel>
+ 
+ <apex:outputpanel rendered="{!strRecordTypeName='Legal'}">
+    <apex:pageBlock title="Matter" mode="edit" id="LegalPB">
+      <apex:pageBlockButtons >
+  <!-- oncomplete="boxrequest();" -->
+  <apex:commandButton value="Save" action="{!Save}"  /> <apex:commandButton value="Cancel" action="{!Cancel}"  />
+  </apex:pageBlockButtons>
+      <apex:pageBlockSection title="General Matter Information" columns="2" id="LegalPBS">
+      <!-- -->  
+        <apex:pageBlockSectionItem >
+  <apex:outputLabel >Matter</apex:outputLabel> 
+          <apex:actionRegion >
+         
+              <apex:inputField value="{!Matter.name}"  id="Name1" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>
+              
+          </apex:actionRegion>
+         </apex:pageBlockSectionItem> 
+         
+          <apex:inputField value="{!Matter.Lead_Lawyer_Office__c}"/>
+          
+        <apex:pageBlockSectionItem >
+  <apex:outputLabel >Business Unit</apex:outputLabel>   
+          <apex:actionRegion >
+              <apex:inputField value="{!Matter.Business_Unit_Cluster_Segment__c}"  id="BusinessUnit" required="true"> <!-- onkeyup="doSearch();" -->
+                  <apex:actionSupport event="onchange" rerender="results"  action="{!runContactSearch}" />
+              </apex:inputField>    
+         </apex:actionRegion>
+         </apex:pageBlockSectionItem> 
+         
+         <apex:inputField value="{!Matter.advpm__Status__c}" id="legalStatus"/>
+         <apex:inputField value="{!Matter.Jurisdiction__c}"/>
+          <apex:inputField value="{!Matter.Date_of_Closure__c}"/>
+          <apex:inputField value="{!Matter.Start_Date__c}" required="true"/>
+          <apex:outputText ></apex:outputText>
+          <apex:inputField value="{!Matter.Notes__c}"/>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Client Detail" columns="2">
+          <apex:inputField value="{!Matter.advpm__Primary_Account__c}"/>
+          <apex:inputField value="{!Matter.advpm__Primary_Contact__c}"/>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Additional Details" columns="2">
+          <apex:outputField value="{!Matter.RecordType.Name}"/>
+          <apex:inputField value="{!Matter.advpm__Legal_Hold__c}"/>
+        </apex:pageBlockSection>
+      </apex:pageBlock>
+      </apex:outputpanel>
+  </td>
+  </tr>
+  </table>
+  </div>
+  
+  <div id="toggle_menu">     
+  <table width="100%">
+  <tr>
+  <td width="30%" valign="top">
+  
+  
+  <apex:actionRegion >
+      <table width="100%">
+      <tr><td height="100%">
+          
+  
+                  <tr>  
+                    <td width="200" valign="top">
+                 
+                      <apex:pageBlock title="Search Knowledge" >
+                 
+                 <!--
+                      <script type="text/javascript">
+                      
+                      function ChoseSearch() {
+                     
+                          if({!strRecordTypeName='Legal'}){
+                              
+                              doSearch();
+                          }
+                          else{
+                            doSearch1();                        
+                          }
+                      
+                      }
+                      
+                      function doSearch() {
+                        
+                        searchServer(
+                          document.getElementById("Description").value,
+                          document.getElementById('{!$Component.form1.LegalPB.LegalPBS.Name1}').value,
+                          document.getElementById('{!$Component.form1.LegalPB.LegalPBS.BusinessUnit}').value       
+                          );
+                      }
+                      function doSearch1() {
+                    
+                        searchServer2(
+                          document.getElementById("Description").value,
+                          document.getElementById('{!$Component.form1.LitPb.GIPBS.Name2}').value,
+                          document.getElementById('{!$Component.form1.LitPb.generalPBS.Summary}').value,
+                          document.getElementById('{!$Component.form1.LitPb.LitCat.Type}').value,
+                          document.getElementById('{!$Component.form1.LitPb.LitCat.Category}').value,   
+                          document.getElementById('{!$Component.form1.LitPb.LitStatus.Notes}').value   
+                                   
+                          );
+                      }
+                      </script> 
+                 
+                      <apex:actionFunction name="searchServer" action="{!runContactSearch}" rerender="results,debug,errors">
+                          <apex:param name="Description" value="" />                      
+                          <apex:param name="Name1" value="" />
+                          <apex:param name="BusinessUnit" value="" />                                                 
+                      </apex:actionFunction>
+                      
+                      <apex:actionFunction name="searchServer2" action="{!runContactSearch}" rerender="results,debug,errors">
+                          <apex:param name="Description" value="" />                      
+                          <apex:param name="Name2" value="" />
+                          <apex:param name="Summary" value="" />
+                          <apex:param name="Type" value="" />
+                          <apex:param name="Category" value="" />
+                           <apex:param name="Notes" value="" />                           
+                      </apex:actionFunction>
+                      
+                    -->
+                      
+                      <table cellpadding="2" cellspacing="2">
+                      <tr>
+                      
+                        <td style="font-weight:bold;">Type search criteria<br/><br/>
+                      
+                          <apex:inputtext value="{!Description }"  > <!-- onkeyup="doSearch();" -->
+                              <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}" />
+                          </apex:inputtext>              
+                      
+                   
+                        </td>
+                      </tr>
+                      
+                      
+                      
+                      </table>
+                 
+                      </apex:pageBlock>
+                 
+                    </td>
+                    </tr>
+                    <tr>
+                    <td valign="top" height="200">
+                 
+                    <apex:pageBlock mode="edit" id="results">
+                 
+                        <apex:pageBlockTable value="{!lst_CaseDisplay }" var="cv" >
+                 
+                            
+          
+                            <apex:column >
+                               
+                                <apex:facet name="header">
+                                    <apex:commandLink value="Title" >
+                                        <apex:param name="sortField" value="lastName" />
+                                    </apex:commandLink>
+                                </apex:facet>
+                              <div class="tooltip">
+                              
+                                  <a target="_blank" href="/{!cv.CasId}">{!cv.CasSubject}</a>
+                                  <span class="tooltiptext">Description: {!cv.CasDescription}</span>
+                              </div>
+                  
+                                 
+                            </apex:column>
+                          
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:commandLink value="Select" >
+                                        <apex:param name="sortField" value="Select" />
+                                    </apex:commandLink>
+                                </apex:facet>
+                                <apex:inputCheckbox value="{!cv.CasSelect}" />
+                            </apex:column>
+                            
+                      </apex:pageBlockTable>      
+                 
+                    </apex:pageBlock>
+                 
+                    </td>
+                  </tr>
+  
+       
+         </td>
+        </tr>
+         </table>
+     </apex:actionRegion>
+     
+     
+     
+     </td>
+    </tr>
+ </table>
+ 
+ </div>
+ 
+  </apex:form>
+ 
+ </div>
+ </body>
+ 
+</apex:page>
+
+
+
+       <!--
+           <apex:repeat var="cv" value="{!contentVersions}">
+           
+               
+             
+               {!cv.FileType}
+               {!cv.Owner.Name}
+               {!cv.VersionNumber}
+               
+      
+       <!--
+        <apex:iframe src="https://barclaysafrica--tmgleap.cs88.my.salesforce.com/0699E0000008fVq&output=embed" scrolling="true" id="theIframe"/>
+       -->

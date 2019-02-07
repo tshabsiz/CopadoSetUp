@@ -1,0 +1,10 @@
+<apex:page standardController="advpm__Export_Template__c" tabStyle="advpm__Export_Template__c" extensions="advpm.ExportTemplateController">
+<apex:form >
+	<apex:outputField value="{!advpm__Export_Template__c.advpm__Related_Object__c}" rendered="false" />
+	<apex:outputField value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" rendered="false" />
+	<apex:outputPanel style="width:100%" id="apexTree">
+		<c:ApexTree selectable="false" ObjectName="{!advpm__Export_Template__c.advpm__Related_Object__c}" value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" containerHeight="500" />
+        <apex:outputText value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" id="selectedValueDisplay" rendered="false" />
+	</apex:outputPanel>
+</apex:form>
+</apex:page>

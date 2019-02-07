@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>advpm__AdvoLogix</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>advpm__AdvoLogix</fullName>
+        <fields>Name</fields>
+        <fields>advpm__Matter1__c</fields>
+        <fields>advpm__Relationship__c</fields>
+        <fields>advpm__Matter2__c</fields>
+        <fields>advpm__Reciprocal_Relationship__c</fields>
+        <fields>OwnerId</fields>
+        <label>AdvoLogix</label>
+    </compactLayouts>
+    <customHelpPage>advpm__HelpCrossReferenceMatterRelationships</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>advpm__Matter1_Legal_Hold__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( advpm__Matter1__r.advpm__Legal_Hold__c , &quot;Yes&quot;, &quot;No&quot; )</formula>
+        <label>Matter1 Legal Hold</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter1__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Cross Reference Matters</relationshipLabel>
+        <relationshipName>Cross_Reference_Matters1</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter2_Legal_Hold__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( advpm__Matter2__r.advpm__Legal_Hold__c , &quot;Yes&quot;, &quot;No&quot; )</formula>
+        <label>Matter2 Legal Hold</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter2__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Cross Reference Matters (Not Used)</relationshipLabel>
+        <relationshipName>Cross_Reference_Matters2</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>advpm__Matter1__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Matter</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Parent_Relationship__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Parent Relationship</label>
+        <referenceTo>advpm__Cross_Reference_Matter__c</referenceTo>
+        <relationshipLabel>Cross Reference Matters</relationshipLabel>
+        <relationshipName>Cross_Reference_Matters</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Reciprocal_Relationship__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Reciprocal Relationship</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>advpm__Relationship__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Parent Of</fullName>
+                    <default>false</default>
+                    <label>Parent Of</label>
+                </value>
+                <value>
+                    <fullName>Child Of</fullName>
+                    <default>false</default>
+                    <label>Child Of</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Parent Of</controllingFieldValue>
+                <valueName>Child Of</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Child Of</controllingFieldValue>
+                <valueName>Parent Of</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Relationship__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Relationship</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Parent Of</fullName>
+                    <default>false</default>
+                    <label>Parent Of</label>
+                </value>
+                <value>
+                    <fullName>Child Of</fullName>
+                    <default>false</default>
+                    <label>Child Of</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Cross Reference Matter</label>
+    <listViews>
+        <fullName>advpm__All</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Matter1__c</columns>
+        <columns>advpm__Matter2__c</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Parent_Relationship__c</columns>
+        <columns>advpm__Relationship__c</columns>
+        <columns>advpm__Reciprocal_Relationship__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>RM-{000000}</displayFormat>
+        <label>#</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Cross Reference Matters</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>advpm__Matter__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Relationship__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Matter2__c</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Matter__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Relationship__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Matter2__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Matter__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Relationship__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Matter2__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>advpm__Matter__c</searchFilterFields>
+        <searchFilterFields>advpm__Relationship__c</searchFilterFields>
+        <searchFilterFields>advpm__Matter2__c</searchFilterFields>
+        <searchResultsAdditionalFields>advpm__Matter__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Relationship__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Matter2__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

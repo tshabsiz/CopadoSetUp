@@ -1,0 +1,128 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.MatterChartsController" title="Matter Charts" cache="true" readOnly="true"
+            showHeader="{!IF(JSINHTMLENCODE($CurrentPage.parameters.nohead)=='1','false','true')}" sidebar="{!IF(JSINHTMLENCODE($CurrentPage.parameters.nohead)=='1','false','true')}">
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'js/bootstrap.2.3.2.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap.2.3.2.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_BlockUI, 'blockui/jquery.blockUI.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_BlockUI, 'blockui/block.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_NiceScroll, 'jquery.nicescroll.min.js')}" />
+    
+    <style type="text/css">
+        .chartTitle {
+            color: #000000;
+            font-size: 1.6em;
+            font-weight: normal;
+            margin-bottom: 0;
+            margin-top: 9px;
+            text-align: center;
+        }
+        .chartContainer {
+            width:100%;
+            /*max-height:650px;*/
+            overflow:hidden;
+            white-space: normal;
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        $j.getDocHeight = function(){
+            return Math.max(
+                $j(document).height(),
+                $j(window).height(),
+                /* For opera: */
+                document.documentElement.clientHeight
+            );
+        };
+        
+        $j(document).ready(function(){
+            loadCharts();
+        });
+        
+        function resizeHeight()
+        {
+            try {
+                if (typeof parent.AdjustIframeHeight == 'function') {
+                    var ht = $j.getDocHeight() + 40;
+                    //if (ht < 650)
+                        //ht = 650;
+                    parent.AdjustIframeHeight( ht, "chart_iframe_panel" );
+                }
+            } catch(err){}
+        }
+        function blockChartsUI()
+        {
+            $j.blockUI({ 
+                message: '<div ><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Please wait! Charts are loading...</span></div>', 
+                css: { padding: '10px' } 
+            });
+        }
+        function unblockChartsUI()
+        {
+            $j.unblockUI();
+        }
+    </script>
+    <apex:form >
+        <apex:actionFunction name="loadCharts" action="{!init_Charts}" rerender="chartsContainer" status="showLoading" oncomplete="resizeHeight()" />
+        <apex:actionStatus id="showLoading" onstop="try {if (typeof parent.unblockTaskUI == 'function') { parent.unblockTaskUI(); }} catch(err){}" /><!-- onstart="blockChartsUI();" onstop="unblockChartsUI();"  -->
+        <apex:pageMessages />
+        
+        <div class="chartContainer">
+            <apex:outputPanel layout="block" id="chartsContainer">
+                <script type="text/javascript">
+                    var dataArray = new Array();
+                    <apex:repeat value="{!TimeByTimekeeperData}" var="dt">
+                        {!dt}
+                    </apex:repeat>
+                </script>
+                <apex:outputPanel styleClass="chartTitle" style="float:left;" rendered="{!showTasksChart}">
+                    <center>Tasks By Status</center>
+                    <apex:chart height="250" width="400" data="{!TaskStatusData}">
+                        <apex:pieSeries dataField="data" labelField="name">
+                            <apex:chartTips height="30" width="180"/>
+                        </apex:pieSeries>
+                        <apex:legend position="right"/>
+                    </apex:chart>
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="chartTitle" style="float:left;" rendered="{!showParticipantsChart}">
+                    <center>Participants By Role</center>
+                    <apex:chart height="250" width="400" data="{!ParticipantsByRoleData}">
+                        <apex:pieSeries dataField="data" labelField="name">
+                            <apex:chartTips height="30" width="180"/>
+                        </apex:pieSeries>
+                        <apex:legend position="right"/>
+                    </apex:chart>
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="chartTitle" style="float:left;" rendered="{!showTimekeeperChart}">
+                    <center>Time By Timekeepers This Year</center>
+                    <apex:chart height="300" width="400" data="dataArray">
+                        <apex:axis type="Numeric" position="left" fields="{!fieldName}"  title="Time (in Hours)" grid="true"/>
+                        <apex:axis type="Category" position="bottom" fields="name"  title="">
+                            <apex:chartLabel rotate="315"/>
+                        </apex:axis>
+                        <apex:barSeries title="{!yFieldTitle}" orientation="vertical" axis="left" xField="name" yField="{!yField}" stacked="true">
+                            <apex:chartTips height="30" width="180"/>
+                        </apex:barSeries>
+                        <apex:legend position="bottom"/>
+                    </apex:chart>
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="chartTitle" style="float:left;" rendered="{!showBudgetChart}">
+                    <center>Budget vs Actual</center>
+                    <apex:chart height="300" width="400" data="{!BudgetsData}">
+                        <apex:axis type="Numeric" position="left" fields="data2" title="Amount" grid="true" />
+                        <apex:axis type="Category" position="bottom" fields="name" title="">
+                            <apex:chartLabel rotate="315"/>
+                        </apex:axis>
+                        <apex:barSeries orientation="vertical" axis="left" xField="name" yField="data2">
+                            <apex:chartTips height="30" width="180"/>
+                        </apex:barSeries>
+                    </apex:chart>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </div>
+    </apex:form>
+</apex:page>

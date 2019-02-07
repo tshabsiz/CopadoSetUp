@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_36554820</developerName>
+        <masterLabel>Portfolio Retail</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <sourceColumnName>Case.Queue__c</sourceColumnName>
+        <useOther>false</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT Mr Price</sourceValue>
+            </sourceValues>
+            <value>Michelle Crous Mr P Coastal</value>
+        </values>
+    </buckets>
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_2177618</developerName>
+        <masterLabel>Portfolio Retailers</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <sourceColumnName>Case.Queue__c</sourceColumnName>
+        <useOther>false</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT Mr Price</sourceValue>
+            </sourceValues>
+            <value>Michelle Crouse MrP Coastal</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT WC 1</sourceValue>
+            </sourceValues>
+            <value>Marie Oliver Coastal</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT WC 4</sourceValue>
+            </sourceValues>
+            <value>Nazeemah Isaacs Coastal</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT WC 2</sourceValue>
+            </sourceValues>
+            <value>Melilissa Jafta Coastal</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp CPT WC 5</sourceValue>
+            </sourceValues>
+            <value>Cleo Mbanya Coastal</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp PTA Retail 1</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>RSC Corp PTA Telecoms 2</sourceValue>
+            </sourceValues>
+            <value>Siphiwe Mazibuko Inalnd</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>RSC Corp PTA Retail 2</sourceValue>
+            </sourceValues>
+            <value>Antionette McKenzie Inland</value>
+        </values>
+    </buckets>
+    <columns>
+        <field>OWNER</field>
+    </columns>
+    <columns>
+        <field>ORIGIN</field>
+    </columns>
+    <columns>
+        <field>Case.Department__c</field>
+    </columns>
+    <columns>
+        <field>RECORDTYPE</field>
+    </columns>
+    <columns>
+        <field>Case.Team__c</field>
+    </columns>
+    <columns>
+        <field>Case.Email_Status__c</field>
+    </columns>
+    <columns>
+        <field>Case.Service_Type__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Case.Number_of_Requests__c</field>
+    </columns>
+    <columns>
+        <field>STATUS</field>
+    </columns>
+    <columns>
+        <field>SUBJECT</field>
+    </columns>
+    <columns>
+        <field>Case.Channel__c</field>
+    </columns>
+    <columns>
+        <field>AGE</field>
+    </columns>
+    <columns>
+        <field>OPEN</field>
+    </columns>
+    <columns>
+        <field>CLOSED</field>
+    </columns>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>BucketField_36554820</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>SUBJECT</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notContain</operator>
+            <value>test</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>RECORDTYPE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Case.CSC_Default_Support_Cases,Case.CSC_Manual_Cases</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.Department__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>RSCS Corporate CPT,RSC Corporate CPT,RSCS Corporate CPT &amp; PTA,RSC Corporate PTA,RSCS Corporate PTA</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.Queue__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>RSC Corp CPT Mr Price,RSC Corp CPT WC 1,RSC Corp CPT WC 2,RSC Corp CPT WC 4,RSC Corp CPT WC 5,RSC Corp PTA Retail 1,RSC Corp PTA Retail 2,RSC Corp PTA Telecoms 2</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>STATUS</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>Closed Duplicate</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <aggregateType>Sum</aggregateType>
+        <dateGranularity>Day</dateGranularity>
+        <field>Case.Queue__c</field>
+        <sortByName>Case.Number_of_Requests__c</sortByName>
+        <sortOrder>Desc</sortOrder>
+        <sortType>Aggregate</sortType>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_2177618</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <aggregateType>Sum</aggregateType>
+        <dateGranularity>Month</dateGranularity>
+        <field>CREATED_DATEONLY</field>
+        <sortByName>Case.Number_of_Requests__c</sortByName>
+        <sortOrder>Desc</sortOrder>
+        <sortType>Aggregate</sortType>
+    </groupingsDown>
+    <name>RETAIL CORP Reg RSC Vol..</name>
+    <params>
+        <name>units</name>
+        <value>d</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CaseList</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATEONLY</dateColumn>
+        <interval>INTERVAL_THISMONTH</interval>
+    </timeFrameFilter>
+</Report>

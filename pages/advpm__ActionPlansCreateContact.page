@@ -1,0 +1,43 @@
+<apex:page standardController="Contact" tabStyle="Contact" extensions="advpm.ActionPlanSelectController" recordSetVar="allrecords">
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning && hasMessages}">    
+        <apex:sectionHeader title="{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan}" subtitle="{!$Label.advpm__ap_selectapt}" help="{!URLFOR($Page.advpm__HelpActionPlanTemplate)}" />
+    </apex:outputPanel>
+    
+    <apex:slds rendered="{!isLightning && hasMessages}" />
+    
+    <apex:outputPanel layout="block" rendered="{!isLightning && hasMessages}">
+        <c:slds_pageheader pageHeaderType="RECORD"
+                            headerTitle="{!$ObjectType[JSINHTMLENCODE(refType)].label}"
+                            headerSubTitle="{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan}" />
+        <style type="text/css">
+            .message .messageTable tr td:first-child {width:40px;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:pageMessages />
+    
+    <apex:outputPanel layout="inline" rendered="{!!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            window.onload = function() {
+                window.top.location = '{!URLFOR($Page.advpm__ActionPlanSelect,null,[refId=JSENCODE(refId),retURL=JSENCODE($CurrentPage.parameters.retURL)])}';
+            };
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="inline" rendered="{!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                window.onload = function() {
+                    sforce.one.navigateToURL('{!URLFOR($Page.advpm__ActionPlanSelect,null,[refId=JSENCODE(refId),gotoURL=JSENCODE($CurrentPage.parameters.retURL)])}', false);
+                };
+            }
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form rendered="{!hasMessages}">
+        <center>
+            <apex:commandButton action="{!cancel}" value="  Go Back  " immediate="true" styleClass="slds-button slds-button--neutral" />
+        </center>
+    </apex:form>
+    
+</apex:page>

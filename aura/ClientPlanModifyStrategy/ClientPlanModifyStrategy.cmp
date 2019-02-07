@@ -1,0 +1,42 @@
+<aura:component controller="ClientPlanStrategyControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="false" />
+    <aura:attribute name="strategyId" type="Id" required="false" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    {!if(v.strategyId != null, 'EDIT CLIENT STRATEGY', 'ADD CLIENT STRATEGY')}
+                </div>
+                
+                <div id="wholePage">
+                    <aura:if isTrue="{!v.strategy != null || v.strategyId == null}">
+                        
+                        <ui:inputText aura:id="name" label="Strategy name" value="{!v.strategy.Name}" class="marginBottom1em"/>
+                        
+                    	<!--
+                        <ui:inputRichText aura:id="clientStrategy" label="Client strategy" value="{!v.strategy.Client_Strategy__c}"/>
+                        
+                        <ui:inputRichText aura:id="bankStrategy" label="Bank strategy" value="{!v.strategy.Bank_Strategy__c}" />
+                        -->
+                        <div id="buttonsWrapper">
+                            <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                            <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModify}">Save</button>
+                        </div>
+                        
+                    </aura:if>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

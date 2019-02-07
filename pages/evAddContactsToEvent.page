@@ -1,0 +1,184 @@
+<!-- Rudolf Niehaus - 2017-08-05 - Page for custom contact list view button-->
+<apex:page standardController="Contact" extensions="evAddContactsToEventExt" recordSetVar="contacts" action="{!showEvent}">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <style>
+            #wrapper {
+            width: 100%;
+            margin: 0 auto;
+            }
+            #leftcolumn, #rightcolumn {
+            border: 1px solid white;
+            float: left;
+            min-height: 450px;
+            color: white;
+            }
+            #leftcolumn {
+            width:50%;
+            }
+            #rightcolumn {
+            width:50%;
+            }
+        </style>
+    </head>
+    <apex:messages ></apex:messages>
+    <div id="wrapper">
+        <div id="leftcolumn">
+            <apex:form id="frmA" >
+                <div class="slds">
+                    <div class="slds-form--stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Event</label>
+                            <div class="slds-form-element__control">
+                                <apex:selectList size="1" value="{!selectedEvent}" id="selectLst" styleclass="slds-select" onchange="refresh();">
+                                    <apex:selectOptions value="{!eventOptions}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="slds-form--stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Event Member</label>
+                            <div class="slds-form-element__control">
+                                <apex:selectList size="1" value="{!selectedHost}" id="selectLstHost" styleclass="slds-select" onchange="refreshHostList();">
+                                    <apex:selectOptions value="{!hostOptions}"/>
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="slds-form-element slds-float--left">
+                        <button id="btnconfirm" class="slds-button slds-button--brand" type="button" onclick="confirm();" >
+                            Confirm
+                        </button>
+                        <button id="btncancel" class="slds-button slds-button--brand" type="button" onclick="cancel();" >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <apex:actionFunction action="{!addToEvent}" name="addContacts" />
+                <apex:actionFunction action="{!cancel}" name="cancelTask" />
+                <br/>
+                <br/>
+                <br/>
+                 <apex:outputPanel id="yrender">
+                <div class="slds">
+                    
+                    <div class="slds-scrollable--x" id="contactlist">
+                        
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                            <span class="slds-assistive-text">info</span>
+                            <span class="slds-icon_container slds-icon-utility-user slds-m-right_x-small" title="Description of icon when needed">
+                                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#user"></use>
+                                </svg>
+                            </span>
+                            <h2>Selected Contacts</h2> 
+                        </div>
+                        <table width="100%" id="contlist" class="slds-table slds-table--bordered ">
+                            <tr class="slds-text-heading--label">
+                                <th class="slds-cell-shrink">Add To Event?</th>
+                                <th class="slds-cell-shrink">First Name</th>
+                                <th class="slds-cell-shrink">Last Name</th>
+                            </tr>
+                            <apex:repeat value="{!lstAWrapper}" var="rc" >
+                                <tr class="slds-hint-parent">
+                                    <td class="slds-cell-shrink" data-label="Select Row">
+                                        <label class="slds-checkbox">
+                                            <apex:inputCheckbox value="{!rc.IsChecked}" />
+                                            <span class="slds-checkbox--faux"></span>
+                                        </label>
+                                    </td>
+                                    <td class="slds-cell-shrink"><apex:outputField value="{!rc.wContact.FirstName}" /></td>
+                                    <td class="slds-cell-shrink"><apex:outputField value="{!rc.wContact.LastName}" /></td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </div>
+                </div>
+                </apex:outputPanel>
+                <br/>
+                <div class="slds-form--stacked">
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                        <span class="slds-assistive-text">info</span>
+                        <span class="slds-icon_container slds-icon-utility-user slds-m-right_x-small" title="Description of icon when needed">
+                            <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#user"></use>
+                            </svg>
+                        </span>
+                        <h2>Existing Delegates for selected Event and Host</h2>
+                    </div>
+                </div>
+                <apex:outputPanel id="xrender">
+                <div class="slds">
+                    <div class="slds-scrollable--x" id="dellist">
+                        <table width="100%" id="existdel" class="slds-table slds-table--bordered ">
+                            <tr class="slds-text-heading--label">
+                                <th class="slds-cell-shrink">Invitation Status</th>
+                                <th class="slds-cell-shrink">First Name</th>
+                                <th class="slds-cell-shrink">Last Name</th>
+                            </tr>
+                            <apex:repeat value="{!existingDelegates}" var="ex" id="exdel">
+                                <tr class="slds-hint-parent">
+                                    <td class="slds-cell-shrink"><apex:outputField value="{!ex.Invitation_Status__c}"/></td>
+                                    <td class="slds-cell-shrink"><apex:outputField value="{!ex.Contact__r.FirstName}"/></td>
+                                    <td class="slds-cell-shrink"><apex:outputField value="{!ex.Contact__r.LastName}" /></td>
+                                </tr>
+                            </apex:repeat> 
+                        </table>
+                    </div>
+                </div>
+                    <input type="hidden" value="{!isNumbersOk}" id="maxdel"/>
+                    <input type="hidden" value="{!selectedNumbers}" id="smax"/>
+                    <input type="hidden" value="{!allowedNumbers}" id="amax"/>
+                    <input type="hidden" value="{!existingNumbers}" id="exmax"/>
+                </apex:outputPanel>
+                <apex:actionFunction action="{!refreshLists}" name="refreshLists" reRender="selectLstHost,xrender,yrender" onComplete="enableButtons();"/>
+                <apex:actionFunction action="{!newHostList}" name="hostLists" reRender="yrender,xrender,selectLstHost" onComplete="enableButtons();"/> 
+            </apex:form>
+        </div>
+    </div>
+    <script>
+
+    checkNumbers();
+    
+    
+    function confirm(){
+        addContacts();
+    };
+    function cancel(){
+        cancelTask();
+    };
+    function refresh(){
+        
+        document.getElementById('btnconfirm').disabled = true;
+        document.getElementById('btncancel').disabled = true;
+        refreshLists();        
+    };
+    function refreshHostList(){
+       
+        document.getElementById('btnconfirm').disabled = true;
+        document.getElementById('btncancel').disabled = true;
+        hostLists();        
+    };
+    function enableButtons(){
+        checkNumbers();
+       document.getElementById('btnconfirm').disabled = false;
+       document.getElementById('btncancel').disabled = false;
+    };
+    
+    function checkNumbers(){
+        var maxval = document.getElementById('maxdel');
+        var aval = document.getElementById('amax');
+        var sval = document.getElementById('smax');
+        var exval = document.getElementById('exmax');
+        
+        if(maxval.value == 'false'){
+            alert('You have reached the maximum number of allowed (' + aval.value + ') proposed delegates for this seleted Event and Host. Current delegates (' + exval.value + ') Selected delegates (' + sval.value + ')');
+            //window.history.go(-1);
+        }
+    };
+    
+    </script>
+</apex:page>

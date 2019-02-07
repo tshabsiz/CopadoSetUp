@@ -1,0 +1,140 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+  
+ *** CHANGE LOG ***
+ 
+  14/03/2018 - PG    - Create VF page. 
+
+-->
+<apex:page standardController="External_Collaboration_Request__c" extensions="External_Collaboration_Request_Override" showHeader="true" sidebar="true"> 
+	
+	<!-- PAGE HEADER -->
+	<apex:sectionHeader title="External Collaboration Request Edit" subtitle="New External Collaboration Request" />  
+
+	<!-- FORM -->
+	<apex:form >
+
+		<!-- PAGE BLOCK -->
+		<apex:pageBlock title="External Collaboration Request Edit" mode="edit"> 
+
+			<!-- BUTTONS -->
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!actionSave}" />
+			</apex:pageBlockButtons>
+
+			<!-- ERROR MESSAGES -->
+			<apex:outputPanel id="errorMsg" layout="none">
+				<apex:pageMessages />
+			</apex:outputPanel>
+
+			<!-- PAGE BLOCK SECTION -->
+			<apex:pageBlockSection title="Request Details">
+
+				<apex:inputField value="{!externalCollaborationRequest.Folder_Name__c}" required="true" />
+				<apex:inputField value="{!externalCollaborationRequest.Access_Level__c}" required="true" />
+				<apex:inputField value="{!externalCollaborationRequest.Access_Valid_Until__c}" required="true" />
+
+			</apex:pageBlockSection>
+			<!-- / PAGE BLOCK SECTION -->
+
+			<!-- PAGE BLOCK SECTION -->
+			<apex:pageBlockSection title="Select Deal Participants That Require Access" columns="1">
+
+				<apex:pageBlockTable value="{!participantsWrapper}" var="wrapperItem" id="participantTable">
+					<apex:column headerValue="Selected">
+						<apex:inputCheckbox value="{!wrapperItem.selected}" />
+					</apex:column>
+					<apex:column headerValue="Participant">
+						<apex:outputField value="{!wrapperItem.record.Name}" /> 
+					</apex:column>
+					<apex:column headerValue="Role">
+						<apex:outputField value="{!wrapperItem.record.advpm__Role__c}" /> 
+					</apex:column>
+					<apex:column headerValue="Participant Type">
+						<apex:outputField value="{!wrapperItem.record.RecordTypeId}" />  
+					</apex:column>
+				</apex:pageBlockTable>
+
+			</apex:pageBlockSection>
+			<!-- / PAGE BLOCK SECTION -->
+
+			<!-- ACTION REGION -->
+			<apex:actionRegion id="controlsRegion" immediate="true">
+
+					<!-- ACTION FUNCTION -->
+					<apex:actionFunction name="changeControls" action="{!clearMemberControl}" reRender="memberControls" />
+
+					<!-- PAGE BLOCK SECTION -->
+					<apex:pageBlockSection title="Additional Users or Contact That Require Access" columns="1" id="memberControls"> 	
+
+							<!-- ADDITIONAL MEMBER TYPE -->
+							<apex:selectList label="Member Type" value="{!selectedMemberType}" size="1" onchange="changeControls();">
+								<apex:selectOptions value="{!MemberTypes}" />
+							</apex:selectList>
+
+							<!-- SIMULATE USER LOOKUP FIELD -->
+							<apex:inputField id="additionalUser" value="{!memberLookupControl.advpm__Staff__c}" rendered="{!memberControl == 'User'}" /> 
+
+							<!-- SIMULATE CONTACT LOOKUP FIELD -->
+							<apex:inputField id="additionalContact" value="{!memberLookupControl.advpm__Contact__c}" rendered="{!memberControl == 'Contact'}" />
+
+							<!-- BUTTON -->
+							<apex:pageBlockSectionItem >
+								<div>&nbsp;</div>
+								<apex:commandButton value="Add Member" action="{!addMember}" reRender="memberControls, memberMain" oncomplete="changeControls();" />
+							</apex:pageBlockSectionItem>
+
+					</apex:pageBlockSection>
+					<!-- / PAGE BLOCK SECTION -->
+
+			</apex:actionRegion>
+			<!-- / ACTION REGION -->
+
+			<!-- PAGE BLOCK SECTION -->
+			<apex:pageBlockSection columns="1" id="memberMain">
+
+				<!-- COUNTER -->
+				<apex:variable var="counter" value="{!-1}" />
+
+				<!-- TABLE -->
+				<apex:pageBlockTable value="{!membersWrapper}" var="wrapperItem" id="memberTable"> 
+
+					<apex:column headerValue="Action">
+						
+						<!-- INCREMENT COUNTER -->
+						<apex:variable var="counter" value="{!counter+1}"/> 
+
+						<!-- REMOVE ACTION -->
+						<apex:commandLink value="Remove" action="{!removeMember}" reRender="memberMain">
+							<apex:param name="removeIndex" value="{!counter}" />
+						</apex:commandLink>
+
+					</apex:column>
+
+					<apex:column headerValue="Full Name">
+						<apex:outputField value="{!wrapperItem.Contact__c}" rendered="{!wrapperItem.Member_Type__c == 'Contact'}" />   
+						<apex:outputField value="{!wrapperItem.User__c}" rendered="{!wrapperItem.Member_Type__c == 'User'}" /> 
+					</apex:column>
+
+					<apex:column headerValue="Member Type">
+						<apex:outputField value="{!wrapperItem.Member_Type__c}" />    
+					</apex:column>
+
+				</apex:pageBlockTable>
+				<!-- / TABLE -->
+
+			</apex:pageBlockSection>
+			<!-- / PAGE BLOCK SECTION --> 
+
+		</apex:pageBlock>
+		<!-- / PAGE BLOCK -->
+
+	</apex:form>
+	<!-- / FORM -->
+
+</apex:page>

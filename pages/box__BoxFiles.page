@@ -1,0 +1,10 @@
+<apex:page controller="box.BoxFilesController" action="{!buildBoxUrl}">
+
+    <apex:stylesheet value="{!URLFOR($Resource.box__BoxEmbed, 'BoxEmbed/style.css')}"/>
+
+    <apex:variable var="isClassic" value="{!AND($User.UIThemeDisplayed != 'Theme4d', $User.UIThemeDisplayed != 'Theme4t')}" />
+
+    <apex:iframe id="classicBoxFiles" rendered="{!isClassic}" src="{!embedWidgetUrl}" html-allowfullscreen="true" html-webkitallowfullscreen="true" html-msallowfullscreen="true" />
+    <apex:iframe id="lightningBoxFiles" rendered="{!NOT(isClassic)}" src="{!embedWidgetUrl}" html-allowfullscreen="true" html-webkitallowfullscreen="true" html-msallowfullscreen="true" />
+
+</apex:page>

@@ -1,0 +1,96 @@
+<apex:page controller="box.BOXSectionController" action="{!accessTokenRequest}" showHeader="false" sidebar="false" standardStylesheets="false">
+
+    <apex:stylesheet value="{!URLFOR($Resource.box__BoxStyle, 'BoxStyles/style.css')}"/>
+
+    <head>
+        <script type="text/javascript">
+            function getParentURL() {
+                document.getElementById("{!$Component.formId.theHiddenInput}").value = document.referrer;
+            }
+
+            function handleClick(input) {
+                // show the loading bar
+                document.getElementById("loader").classList.remove("hidden");
+
+                // disable the button so no double-clicks
+                setTimeout(function() {
+                    document.getElementById(input.id).disabled = 'disabled';
+                }, 50);
+            }
+        </script>
+    </head>
+
+    <div class="container">
+
+        <apex:form id="formId">
+
+            <div class="header">
+                <div class="header-logo-container">
+                    <h1><apex:image styleClass="header-logo" url="{!URLFOR($Resource.box__BoxStyle, 'BoxStyles/images/box-blue-logo.svg')}" height="27px" alt="Box logo" /></h1>
+                </div>
+            </div>
+
+            <div id="loader" class="hidden loader"></div>
+
+            <apex:pageblock rendered="{!showLoginButton}">
+                <div class="outer-modal">
+                    <div class="inner-modal">
+                        <h2 class="title">Login to Grant Access to Box</h2>
+                        <p class="paragraph">Link your Box account to Salesforce to easily manage files between records.</p>
+                        <div class="button-container"> 
+                            <apex:commandButton styleClass="button primary-button" value="Login" action="{!getAuthorizationCode}" />
+                        </div>
+                        <div id="button-container">
+                            <apex:commandButton styleClass="button secondary-button" value="Sign Up" onclick="window.open('https://app.box.com/pricing/'); return false" />
+                        </div>
+                    </div>
+                </div>
+            </apex:pageblock>
+
+            <apex:outputPanel rendered="{!NOT(showErrorMessage)}">
+                <apex:pageblock id="addContentPanel" rendered="{!showCreateFolder}">
+                    <apex:pageMessages />
+                    <div class="outer-modal">
+                        <div class="inner-modal">
+                            <h2 class="title">Create New Folder for this Record</h2>
+                            <p class="paragraph">To upload content to Box for this {!objectLabel}, create a folder for this record.</p>
+                            <div class="button-container">
+                                <apex:commandButton id="createFolder" styleClass="button primary-button" onclick="getParentURL(); handleClick(this);" action="{!createFolder}" value="Create Folder"/>
+                            </div>
+                        </div>
+                    </div>
+                </apex:pageblock>
+            </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!NOT(showErrorMessage)}">
+                <apex:pageblock id="showContentPanel" rendered="{!showCollaborateMe}">
+                    <apex:pageMessages />
+                    <div class="outer-modal">
+                        <div class="inner-modal">
+                            <h2 class="title">Join Folder to Access</h2>
+                            <p class="paragraph">To view the contents of this folder, you must be added as a collaborator.</p>
+                            <div class="button-container">
+                                <apex:commandButton id="joinFolder" styleClass="button primary-button" onclick="getParentURL(); handleClick(this);" action="{!collaborateMe}" value="Join Folder"/>
+                            </div>
+                        </div>
+                    </div>
+                </apex:pageblock>
+            </apex:outputPanel>
+
+            <apex:pageblock rendered="{!showErrorMessage}">
+                <apex:pageMessages />
+                <div class="outer-modal">
+                    <div class="inner-modal">
+                        <h2 class="title">Sorry, there was an issue with processing this request.</h2>
+                        <p class="paragraph">{!errormessage}</p>
+                    </div>
+                </div>
+            </apex:pageblock>
+
+            <apex:inputHidden value="{!urlStr}" id="theHiddenInput"/>
+
+        </apex:form>
+
+    </div>
+
+</apex:page>

@@ -1,0 +1,272 @@
+<apex:page controller="MatterHandler_CaseConvert" tabStyle="Case" action="{!filesfromBox}">
+  
+  <style type="text/css">
+ 
+ /* Tooltip container */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        /** border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 300px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+
+        /* Position the tooltip text */
+        position: absolute;
+        z-index: 999;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+
+        /* Fade in tooltip */
+        opacity: 0;
+        transition: opacity 1s;
+    }
+
+    /* Tooltip arrow */
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+  </style>   
+    
+ 
+ <script type="text/javascript">
+ var toggled = false;
+
+ var j$ = jQuery.noConflict();
+   
+   j$(document).ready(function(){
+        $("#toggle_menu").hide();
+        
+        j$("#button").click(function(){
+                 
+            if(toggled) {
+                toggled=false;
+                $("#toggle_menu").animate({width: "0%"}, "fast");
+                $("#main_container").animate({width: "100%"}, "fast");
+                $("#toggle_menu").hide();
+                $("#button").attr('value', 'Show Knowledge Search'); 
+            }else {
+                toggled=true;
+                    
+                    $("#toggle_menu").animate({width: "30%"}, "fast");
+                    $("#main_container").animate({width: "70%"}, "fast"); 
+                    $("#toggle_menu").show();
+                    $("#button").attr('value', 'Hide Knowledge Search');                 
+            }
+    })});
+ </script>
+ 
+ <script>
+ // window.onload = prepareForm();
+
+ function AddRiskType() {
+                       
+                    
+                       
+       if(document.getElementById('{!$Component.j_id0:form1:j_id30:j_id53.RiskType}').style.display == 'none'){
+           
+           document.getElementById('{!$Component.j_id0:form1:j_id30:j_id53.RiskType}').style.display = 'block';
+           
+          // document.getElementById('{!$Component.j_id0:form1:j_id30:j_id53.RiskType}').style.display = 'block';
+       }
+       else{
+           document.getElementById('{!$Component.j_id0:form1:j_id30:j_id53.RiskType}').style.display = 'none';
+       }
+          
+                       
+  }
+ </script>
+ 
+  <apex:form >
+  <script type="text/javascript">
+  
+  function AddTag(TagA) {
+      
+   alert(document.getElementById(TagA).value);
+ // document.getElementById('{!$Component.SuggTags}').value =  document.getElementById(TagA).value;
+  
+  
+     /*
+      searchServer(
+            document.getElementById(TagA).value,                                        
+      );
+     */ 
+   }
+  </script> 
+  <!--
+  <apex:actionFunction name="searchServer" action="{!AddTags}" >
+                          <apex:param name="tag" value="" />                                                                       
+     </apex:actionFunction>
+  -->
+
+  <table width="80%"><tr><td>
+  <apex:pageBlock title="Case" mode="edit" >
+   <apex:pageBlockButtons >
+  <!-- action="{!Cancel}"  -->
+
+   <apex:commandButton value="Next" action="{!ConvertMatterToCase}"/> <apex:commandButton value="Cancel"  action="{!Cancel}" immediate="true"  />
+  </apex:pageBlockButtons>
+  
+      <apex:pageMessages id="errors" />
+      <apex:sectionHeader subtitle="Case Edit" title="New Case"/>
+      <apex:pageBlockSection title="Case Information" > </apex:pageBlockSection> 
+      <table width="100%">
+        <tr><td >
+        <b><apex:outputText >Knowledge piece Title</apex:outputText></b>
+        </td><td>
+          <apex:inputField required="true" label="Knowledge piece Title"  value="{!MatterCase.Subject}"/> <br/><br/>  
+          </td>
+      </tr>
+      <tr>
+      <td >
+        <b><apex:outputText >Description of intended use</apex:outputText></b>
+        </td>
+          <td >
+          
+            <div class="tooltip">   
+                <apex:inputField required="true" label="Description of intended use"  value="{!MatterCase.Description}" style="width:500px; height:100px"/> <br/><br/>
+                <span class="tooltiptext">indicate the expected use of the information e.g. To be used as precedent in Tax litigation cases</span>
+            </div>
+          </td>
+      </tr>
+      <tr>
+      <td >
+        <b><apex:outputText >Suggested Tags</apex:outputText></b>
+        </td>
+          
+      <td >
+          <apex:inputField required="true" label="Suggested Tags" id="SuggTags" value="{!MatterCase.SuggestedTags__c}" style="width:500px; height:100px" /> <br/><br/>      
+          </td>
+      </tr>
+      <tr>
+      <td >
+        <b><apex:outputText >Suggested Library</apex:outputText></b>
+        </td>
+          <td >
+             <apex:inputField required="true" label="Suggested Library"  value="{!MatterCase.SuggestedLibrary__c}"/><br/><br/>
+           </td>
+       </tr>
+
+      <tr>
+          <td >
+              <b><apex:outputText >Review Frequency (Months)</apex:outputText></b>
+          </td>
+
+          <td >
+              <apex:inputField required="true" label="Review Frequency"  value="{!MatterCase.Review_frequency__c}"/><br/><br/>
+          </td>
+      </tr>
+
+      <tr>
+          <td >
+              <b><apex:outputText >Reviewer</apex:outputText></b>
+          </td>
+
+          <td >
+              <apex:inputField required="true" label="Reviewer"  value="{!MatterCase.Content_Reviewer__c}"/><br/><br/>
+          </td>
+      </tr>
+
+      <tr>
+          <td >
+              <b><apex:outputText >Previous Review Date</apex:outputText></b>
+          </td>
+
+          <td >
+              <apex:inputField required="true" label="Previous Review Date"  value="{!MatterCase.Previous_Review_Date__c}"/><br/><br/>
+          </td>
+      </tr>
+
+      <tr>
+          <td >
+              <b><apex:outputText >Legal Division</apex:outputText></b>
+          </td>
+
+          <td >
+              <apex:inputField required="true" label="Legal Division"  value="{!MatterCase.LegalDivision__c}"/><br/><br/>
+          </td>
+      </tr>
+
+      <tr>
+          <td >
+              <b><apex:outputText >Legal Business Area</apex:outputText></b>
+          </td>
+
+          <td >
+              <apex:inputField required="true" label="Legal Business Area"  value="{!MatterCase.LegalBusinessArea__c}"/><br/><br/>
+          </td>
+      </tr>
+
+       <tr>
+       <td >
+        <b><apex:outputText >Attach Matter to Case:</apex:outputText></b>
+        </td>
+          <td >
+             <apex:inputCheckbox label="Attach Matter to Case:"  value="{!AddMatter}"/><br/><br/>    
+           </td>
+       </tr>
+       
+       <tr><td></td></tr>
+       
+        </table>
+         
+               
+          
+          
+          <table width="100%" border="1" style="border-collapse: collapse;">
+          <tr style="background-color:#99ccff;"><td>File Name</td><td>Description</td><td>Url</td><td>Select for Case</td></tr>
+          <apex:repeat value="{!LstBoxFiles}" var="t" >
+          <tr>
+           <td><apex:outputText value="{!t.fileName}" /> </td>
+           <td><apex:outputText value="{!t.fileDescription}" /></td>
+           <td><apex:outputText value="{!t.fileUrl}" /></td>
+           <td><apex:inputCheckbox value="{!t.Selectfile}" /></td>
+           </tr>
+           </apex:repeat>
+         </table> 
+         </apex:pageBlock> 
+  </td>
+  
+  <td>
+        
+        <!-- Add Tags: To come...
+        <apex:repeat value="{!lstTagSelect}" var="t" >  
+         
+          <apex:outputLabel id="tagx" onclick="AddTag('{!$Component.tagf}')" value="{!t.tags}" ></apex:outputLabel> <br/>
+         
+          <apex:outputLabel id="tagf" onclick="AddTag(tagf)" value="{!t.tags}" ></apex:outputLabel> <br/>
+            
+          </apex:repeat>
+        -->
+  </td>
+  </tr>
+  </table>
+  
+  <br/>
+       
+       
+  </apex:form>
+  
+</apex:page>

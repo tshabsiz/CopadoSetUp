@@ -1,0 +1,70 @@
+<!--
+ - Created by Kyle Alexander on 2018/02/15.
+ -->
+
+<apex:page id="LegalPerformanceQuestionnaire" StandardController="Legal_Performance_Questionnaire__c" extensions="LegalPerformanceQuest_Cont" sidebar="true" doctype="html-5.0">
+    <body>
+        <apex:form id="QuestionnaireForm">
+            <apex:sectionHeader title="Legal Performance Questionnaire"/>
+
+            <apex:pageBlock mode="edit" id="thePageBlock" title="Legal Performance Questionnaire Edit">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveQuestionnaire}" />
+                    <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Law Firm" for="lawFirmName" />
+                            <apex:inputField value="{!legal_performance_quest.LawFirm__c}" id="lawFirmName" required="true"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="External Legal Counsel Name" for="extLegalCounsName" />
+                            <apex:inputField value="{!legal_performance_quest.ExternalLegalCounselName__c}" id="extLegalCounsName"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Date" for="date" />
+                            <apex:inputField value="{!legal_performance_quest.Date__c}" id="date" required="true"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Jurisdiction" for="jurisdiction" />
+                            <apex:inputField value="{!legal_performance_quest.Jurisdiction__c}" id="jurisdiction"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Rating" for="rating" />
+                            <apex:inputField value="{!legal_performance_quest.Rating__c}" id="rating" required="true"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Required Legal Advice/Work" for="reqLegalAdviceWork" />
+                            <apex:inputField value="{!legal_performance_quest.RequiredLegalAdviceWork__c}" id="reqLegalAdviceWork" required="true"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Comments" for="comments" />
+                            <apex:inputField value="{!legal_performance_quest.Comments__c}" id="comments" style="width:90%; height:80px"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Matter" for="matter" />
+                            <apex:inputField value="{!legal_performance_quest.Matter__c}" id="matter"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Matter Spend Document" for="matSpendDoc" />
+                            <apex:inputField value="{!legal_performance_quest.MatterSpendDocument__c}" id="matSpendDoc"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                </apex:pageBlockSection>
+
+            </apex:pageBlock>
+        </apex:form>
+    </body>
+</apex:page>

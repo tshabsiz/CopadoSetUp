@@ -1,0 +1,44 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="lscCaseQAExt">
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="recordId" type="String" /> 
+    <aura:attribute name="qaList" type="object[]" />
+    <aura:attribute name="qaId" type="String" /> 
+    <aura:attribute name="chkList" type="object[]" />
+    <aura:attribute name="chkId" type="String" /> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+     <div style="padding: 15px;">
+        <lightning:tabset class="tabs">
+            <lightning:tab label="Checklists" >
+                <lightning:select aura:id="checkSelect" name="selectCheck" label="Select a Checklist" required="true" onchange="{!c.setChkValue}">
+                    <option value="">-- None --</option>
+                    <aura:iteration items="{!v.chkList}" var="t">
+                        <option value="{!t.Id}" text="{!t.ChecklistName__c}" />
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:tab>
+            <lightning:tab label="QA Forms">
+                 <lightning:select aura:id="qaSelect" name="selectQA" label="Select a QA Form" required="true" onchange="{!c.setQAValue}">
+                    <option value="">-- None --</option>
+                    <aura:iteration items="{!v.qaList}" var="t">
+                        <option value="{!t.Id}" text="{!t.QAName__c}"></option>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:tab>
+        </lightning:tabset>
+    </div>
+</aura:component>

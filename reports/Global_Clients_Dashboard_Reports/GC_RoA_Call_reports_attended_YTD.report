@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_70366735</developerName>
+        <masterLabel>Coverage Hub</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>Call_Report__c.Attendees__r$Barclays_Attendee__c.Hub__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <value>SA Inland LLC / Midcorp</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Public Sector South Africa</sourceValue>
+            </sourceValues>
+            <value>SA Public Sector</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Global Clients Banks</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Global Clients GDO</sourceValue>
+            </sourceValues>
+            <value>Global Clients</value>
+        </values>
+        <values>
+            <value>SA Financial Services</value>
+        </values>
+        <values>
+            <value>SA Coastal</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumnStacked</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>Call_Report__c.Attendees__r$Barclays_Attendee__c.Hub__c</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_BOTTOM</location>
+        <secondaryGroupingColumn>Call_Report__c.Attendees__r$Barclays_Attendee__c</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>Call_Report__c$Name</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Owner</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Meeting_Date__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Type__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Meeting_Reason__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Relationship__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team_Role__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team_Role__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>Coverage Banker(RM),Leadership</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Call_Report__c.Attendees__r$Barclays_Attendee__c.Region__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>RoA</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c.Hub__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>GC RoA Call reports attended YTD</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Call_Reports_with_Owner_Region__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Call_Report__c$Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_CURY</interval>
+    </timeFrameFilter>
+</Report>

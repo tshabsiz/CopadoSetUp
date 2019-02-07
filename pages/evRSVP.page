@@ -1,0 +1,601 @@
+<apex:page applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" controller="evRSVP_Controller" action="{!HandleResponse}" >
+    
+    <!-- DP: Update mandotory field names in html placedolders as ALL options do not exist. Field and controller to be updated first. 
+2017-08-22  DH  Remove Delegate Type - not applicable to RSVP process
+Move email to first position as it must be completed first.  Plus other re-ordering
+
+TODO: Use Javascript to validate the email address
+
+DP: Added Transport required field and showTransportInfo JS function 
+
+-->
+    
+    
+    
+    <apex:composition template="evTemplate{!thisEvent.theme__r.Template__c}">
+        
+        <apex:define name="title"> 
+            <title>RSVP | {!thisEvent.name}</title>
+        </apex:define>
+        
+        <apex:define name="body"> 
+            
+            <apex:form html-data-toggle="validator" html-role="form" styleclass="form-horizontal" >
+                <!-- BODY: Content -->
+                
+                <h1 class="event-title">RSVP | {!thisEvent.name}</h1>
+                <br/>
+                <b>{! thisEvent.venue__r.name }</b>
+                <br/>
+                <apex:outputField value="{!thisEvent.venue__r.address__c }"/>
+                
+                <apex:pageMessages ></apex:pageMessages>
+                
+                <apex:outputPanel rendered="{!thisDelegate.Registration_Status__c == 'Pending'}">
+                    
+                    <!-- Stop booking after RSVP Date -->
+                    <apex:outputPanel rendered="{!IF(thisEvent.RSVP_Date__c == null, false, thisEvent.RSVP_Date__c < TODAY())}">
+                        <div class="page-section">
+                            <p><strong>Please note:</strong> This invitation has expired. </p>
+                        </div>  
+                    </apex:outputPanel>
+                    
+                    <!-- Allow booking before or on RSVP Date -->
+                    <apex:outputPanel rendered="{!IF(thisEvent.RSVP_Date__c == null, true, thisEvent.RSVP_Date__c >= TODAY())}">
+                        
+                        <apex:outputPanel rendered="{!thisEvent.RSVPInformation__c != ''}">
+                            <br/><br/>
+                            <apex:outputText escape="false" value="{!thisEvent.RSVPInformation__c}" />
+                            <br/>
+                        </apex:outputPanel>
+                        <form class="form-horizontal">
+                            
+                            <apex:pageMessages /> 
+                            
+                            <apex:outputPanel rendered="{!HasErrorsLevel1}">
+                                <div class="alert alert-danger">
+                                    {!ErrorsLevel1}
+                                </div>
+                            </apex:outputPanel>
+                            <br/>
+                            
+                            <div class="form-group has-feedback">
+                                <label class="control-label col-sm-3" >Email</label>
+                                <div class="col-sm-9">
+                                    <apex:inputText value="{!thisDelegate.email__c}" styleClass="form-control" required="{!IF(FIND('Delegate Email', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                    html-placeholder="Email {!IF(FIND('Delegate Email', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputEmailAddress"
+                                                    html-pattern="[^@]+@[^@]+\.[a-zA-Z]{2,}" html-data-error="Please enter a valid email address"
+                                                    />
+                                    <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                    <div class="help-block with-errors v-err"></div>
+                                </div>
+                            </div>
+                            
+                            <apex:outputpanel rendered="{!FIND('Name', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >First Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.first_name__c}" disabled="true" styleClass="form-control" required="{!IF(FIND('Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="First Name {!IF(FIND('Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputFirstName"
+                                                        html-data-required-error="First Name is required" 
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Last Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.last_name__c}" disabled="true" styleClass="form-control" required="{!IF(FIND('Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="Last Name {!IF(FIND('Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}"  id="inputLastName"
+                                                        html-data-required-error="Last Name is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel> 
+                            
+                            <apex:outputpanel rendered="{!FIND('ID Number', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">ID Number</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.id__C}"  styleClass="form-control" required="{!IF(FIND('ID Number', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="ID {!IF(FIND('ID Number', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputId"
+                                                        html-data-required-error="ID Number is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Company', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Company Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Company__c}" styleClass="form-control" required="{!IF(FIND('Company', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="Company Name {!IF(FIND('Company', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputCompanyName"
+                                                        html-data-required-error="Company name is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Job Title', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Job Title</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.title__c}"  styleClass="form-control" required="{!IF(FIND('Job Title', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Job Title {!IF(FIND('Job Title', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputtitle"
+                                                        html-data-required-error="Job Title is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Industry', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Industry</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Industry__C}"  styleClass="form-control" required="{!IF(FIND('Industry', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="ID {!IF(FIND('Industry', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputIndustry"
+                                                        html-data-required-error="Industry is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div> 
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Address', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Address</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Address__c}"  styleClass="form-control" required="{!IF(FIND('Address', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Address {!IF(FIND('Address', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputAddress"
+                                                        html-data-required-error="Address is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Postal Code', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Postal Code</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Postal_Code__c}"  styleClass="form-control" required="{!IF(FIND('Postal Code', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Postal Code {!IF(FIND('Postal Code', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputPostalCode"
+                                                        html-data-required-error="Postal Code is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Mobile', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Mobile</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.mobile__c}" styleClass="form-control" required="{!IF(FIND('Mobile', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Mobile {!IF(FIND('Mobile', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputMobilePhone"
+                                                        html-data-required-error="Mobile is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Phone', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Phone</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Phone__c}"  styleClass="form-control" required="{!IF(FIND('Phone', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Phone {!IF(FIND('Phone', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputPhone"
+                                                        html-data-required-error="Phone is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Age', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Age</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.age__c}"  styleClass="form-control" required="{!IF(FIND('Age', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Age {!IF(FIND('Age', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}"
+                                                        html-data-required-error="Age is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Gender', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Gender</label>
+                                    <div class="col-sm-9">
+                                        <apex:selectList html-data-required-error="Gender is required" required="{!IF(FIND('Gender', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" value="{!thisDelegate.Gender__C}"  styleClass="form-control"  size="1" >
+                                            <apex:selectOptions value="{!Eventgendertypes}"/>
+                                        </apex:selectList>
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div> 
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Identification Type', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Identification Type</label>
+                                    <div class="col-sm-9">
+                                        <apex:selectList html-data-required-error="Identification Type is required" required="{!IF(FIND('Identification Type', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" value="{!thisDelegate.Type_of_Identification__c}"  styleClass="form-control"  size="1" >
+                                            <apex:selectOptions value="{!IdentificationTypes}"/>
+                                        </apex:selectList>
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Nationality', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Nationality</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputfield value="{!thisDelegate.Nationality__c}"  styleClass="form-control" required="{!IF(FIND('Nationality', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"  
+                                                         html-placeholder="Nationality {!IF(FIND('Nationality', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}"
+                                                         html-data-required-error="Nationality is required"
+                                                         />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Country Of Residence', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Country Of Residence</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputField value="{!thisDelegate.Country_Of_Residence__c}"  styleClass="form-control" required="{!IF(FIND('Country Of Residence', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"  
+                                                         html-placeholder="Country Of Residence {!IF(FIND('Country Of Residence', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}"
+                                                         html-data-required-error="Country Of Residence is required"
+                                                         />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Salutation', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Salutation</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputField value="{!thisDelegate.Salutation__c}"  styleClass="form-control" required="{!IF(FIND('Salutation', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                         html-placeholder="Salutation {!IF(FIND('Salutation', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputSalutation"
+                                                         html-data-required-error="Salutation is required"
+                                                         />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Assistant Name', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Alternate Contact Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Assistant_Name__c}"  styleClass="form-control" required="{!IF(FIND('Assistant Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="Alternate Contact Name {!IF(FIND('Assistant Name', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputAssistantName"
+                                                        html-data-required-error="Assistant Name is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Assistant Email', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Alternate Contact Email</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Assistant_Email__c}"  styleClass="form-control" required="{!IF(FIND('Assistant Email', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="Alternate Contact Email {!IF(FIND('Assistant Email', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputAssistantEmail"
+                                                        html-pattern="[^@]+@[^@]+\.[a-zA-Z]{2,}" html-data-error="Please enter a valid email address"
+                                                        html-data-required-error="Assistant Email is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Assistant Phone Number', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Alternate Contact Phone Number</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Assistant_Phone_Number__c}"  styleClass="form-control" required="{!IF(FIND('Assistant Phone Number', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" 
+                                                        html-placeholder="Alternate Contact Phone Number {!IF(FIND('Assistant Phone Number', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputAssistantPhoneNumber"
+                                                        html-data-required-error="Assistant Phone Number is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Medical Details', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Medical Details</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Medical_Aid_Name__c}"  styleClass="form-control" required="{!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Medical Aid Name {!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputMedicalAidName"/>
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span> 
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3 hidden-xs" for="inputPhone">&nbsp;</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Medical_Aid_No__c}"  styleClass="form-control" required="{!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Medical Aid no {!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputMedicalAidNo"
+                                                        html-data-required-error="Medical Aid Number is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3 hidden-xs" for="inputPhone">&nbsp;</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Main_Member_Name__c}"  styleClass="form-control" required="{!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Medical Aid Main Member {!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputMainMemberName"
+                                                        html-data-required-error="Medical Aid Main Member is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span> 
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3 hidden-xs" for="inputPhone">&nbsp;</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Medical_Conditions__c}" styleClass="form-control" required="{!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Medical Conditions {!IF(FIND('Medical Details', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputMedicalConditions"
+                                                        html-data-required-error="Medical Conditions is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span> 
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Emergency Contact', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" for="inputPhone">Emergency Contact</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Emergency_Contact_Name__c}"  styleClass="form-control" required="{!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Emergency Contact Name {!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputEmergencyContactName"
+                                                        html-data-required-error="Emergency Contact is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3 hidden-xs" for="inputPhone">&nbsp;</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Emergency_Contact_Relationship__c}"  styleClass="form-control" required="{!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Emergency Contact Relationship {!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputEmergencyContactRelationship"
+                                                        html-data-required-error="Emergency Contact Relationship is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span> 
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3 hidden-xs" for="inputPhone">&nbsp;</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!thisDelegate.Emergency_Contact_Tel__c}"  styleClass="form-control" required="{!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}"
+                                                        html-placeholder="Emergency Contact Phone {!IF(FIND('Emergency Contact', thisEvent.Booking_confirmation_mandatory_fields__c )>0, '', '(optional)')}" id="inputEmergencyContactTel"
+                                                        html-data-required-error="Emergency Contact Phone is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span> 
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Dietary Requirements', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3" >Dietary Requirements</label>
+                                    <div class="col-sm-9">
+                                        <apex:selectList html-data-required-error="Dietary Requirements is required" required="{!IF(FIND('Dietary Requirements', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" value="{!thisDelegate.Dietary_Requirement__c}"  styleClass="form-control"  size="1" >
+                                            <apex:selectOptions value="{!DietOptions}"/>
+                                        </apex:selectList>
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>  
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div> 
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!FIND('Transport Required', thisEvent.Booking_Confirmation_Fields__c )>0}">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" >Transport Required</label>
+                                    <div class="col-sm-9">
+                                        <div class="checkbox">
+                                            <label>
+                                                <apex:inputcheckbox id="transport" value="{!thisDelegate.Transport_Required__c}" onchange="showTransportInfo(this)" />
+                                            </label>
+                                        </div>
+                                        <div id="transportInfo" style="display:none">
+                                            <div class="well well-sm">
+                                                <apex:outputText value="{!thisEvent.Transport_Information__c}" escape="false" ></apex:outputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!sessionWrapperList.size > 0}">
+                                <br/>
+                                <b>Please select one or more of the Event Days/Sessions listed below</b>
+                                <apex:repeat value="{!sessionWrapperList}" var="sessionWrapper">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3" >{!sessionWrapper.session.name}</label> 
+                                        <div class="col-sm-9">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <apex:inputcheckbox id="sessions" value="{!sessionWrapper.selected}" onchange="sessionsInfo(this)" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </apex:repeat>
+                            </apex:outputpanel>
+                            
+                            
+                            <div class="page-section">
+                                <label>
+                                    <apex:inputcheckbox value="{!accept1}"/>&nbsp;
+                                    I confirm to have read and understood the the terms laid out in the <a data-toggle="modal" data-target="#privacy">website privacy policy*</a>. 
+                                </label>
+                                
+                                <div class="btn-row">
+                                    <apex:commandButton action="{!ConfirmAccept}" styleclass="btn btn-primary" value="Confirm"/>
+                                    &nbsp; If you no longer wish to attend click 
+                                    <a href="{!$Site.BaseURL}/evDecline?delid={!thisDelegate.Id}&rsvp=No">here</a>.
+                                </div>
+                                
+                                <small><strong>Please note:</strong> This invitation is valid until
+                                    <apex:outputText value="{0,date, MMMM d', 'yyyy}">
+                                        <apex:param value="{!thisEvent.RSVP_Date__c}" /> 
+                                    </apex:outputText>
+                                </small>
+                            </div>
+                            
+                            <!-- Privacy Modal -->
+                            <div class="modal fade" id="privacy" tabindex="-1" role="dialog" >
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">Website Privacy Policy</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <apex:outputText value="{!thisevent.Terms_and_Conditions__r.Website_Privacy_Policy__c}" escape="false" ></apex:outputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </form>
+                        
+                        <br/>   
+                        
+                    </apex:outputPanel>
+                    
+                    
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="MultiContact" rendered="{!thisDelegate.Registration_Status__c == 'Accepted' || thisDelegate.Registration_Status__c == 'Confirmed'}">
+                    <div class="page-section">
+                        <p>Thank you for accepting, we look forward to seeing you at the event. </p>
+                        <c:evCalendarLinkGenerator inputDelegateId="{!thisDelegate.id}" inputLinkText="Click here" inputLinkImage="https://absa1--c.eu15.content.force.com/servlet/servlet.ImageServer?id=0151p000006z0xU&oid=00D24000000JOMz&lastMod=1546854748000"></c:evCalendarLinkGenerator> 
+                    </div>
+                    <apex:outputPanel rendered="{!thisEvent.Allow_Partners__c == true && PartnersInserted ==  true}" >
+                         <p>Thank you for registering your partners. </p>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!thisEvent.Allow_Partners__c == true && PartnersInserted ==  false && thisDelegate.Maximum_Number_Of_Partners__c != null && thisDelegate.Maximum_Number_Of_Partners__c > 0}" ><!--- -->
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Please supply partner details if they will be joining you</h4>
+                                 <apex:datatable styleclass="table table-condensed" value="{!listOfPartnerDelegates}" var="DelRec">
+                                   <!-- <apex:column style="text-Align:left;" headervalue="Action" >
+                                        <apex:commandButton value="X"   styleClass="btn btn-{!Color}" immediate="true" action="{!RemoveRow}" rerender="MultiContact">
+                                            <apex:param value="{!var}" name="SelectedIndex" assignTo="{!SelectedIndex}"/>
+                                        </apex:commandButton>
+                                        
+                                        <apex:commandButton value="Add Row"   styleClass="btn btn-{!Color}" immediate="true" action="{!AddPartnerRow}" rerender="MultiContact"/>
+                                    </apex:column>-->
+                                    <apex:column style="text-Align:left;"  headervalue="First Name">
+                                        <div class="control-group">                                             
+                                            <div class="controls">
+                                                <apex:inputField style="color:black"  styleClass="form-control"  value="{!DelRec.first_Name__c}" />
+                                            </div>
+                                        </div>
+                                    </apex:column>
+                                    
+                                    <apex:column style="text-Align:left;"   headervalue="Last Name">
+                                        <div class="control-group">                                             
+                                            <div class="controls">
+                                                <apex:inputText style="color:black"  styleClass="form-control"   value="{!DelRec.Last_Name__c}" />
+                                            </div>
+                                        </div>
+                                    </apex:column>
+                                    <apex:column style="text-Align:left;"   headervalue="Email">
+                                        <div class="control-group">                                             
+                                            <div class="controls">
+                                                <apex:inputField style="color:black"  styleClass="form-control"  value="{!DelRec.Email__c}" />
+                                            </div>
+                                        </div>
+                                    </apex:column>
+                                    <apex:column style="text-Align:left;"  headervalue="Type">
+                                        <div class="control-group">                                             
+                                            <div class="controls">
+                                                <apex:inputField style="color:black"  styleClass="form-control"  value="{!DelRec.partner_type__c}" />
+                                            </div>
+                                        </div>
+                                    </apex:column>
+                                     <apex:column rendered="{!FIND('Dietary Requirements', thisEvent.Booking_Confirmation_Fields__c )>0}" headervalue="Dietary Requirements">
+                                         <div class="control-group">                                             
+                                            <div class="controls">
+                                               <apex:selectList html-data-required-error="Dietary Requirements is required" required="{!IF(FIND('Dietary Requirements', thisEvent.Booking_confirmation_mandatory_fields__c )>0, 'true', 'false')}" value="{!DelRec.Dietary_Requirement__c}"  styleClass="form-control"  size="1" >
+                                                     <apex:selectOptions value="{!DietOptions}"/>
+                                                 </apex:selectList>
+                                            </div>
+                                        </div>
+                                     </apex:column>
+                                </apex:datatable>
+                                <apex:commandButton action="{!InsertPartnerDelegates}" styleclass="btn btn-primary" value="Confirm"/>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!thisDelegate.Registration_Status__c == 'Declined'}">
+                    <div class="page-section">
+                        <p>Thank you for your response, we hope to see you at the next one. </p>
+                        <p>If you would like to attend click <apex:commandLink action="{!CancelDecline}" value="here"/>.</p>
+                    </div>
+                </apex:outputPanel>
+                
+            </apex:form>
+            
+        </apex:define>
+    </apex:composition> 
+    
+    <script>
+    function showTransportInfo(input) 
+    {
+        if(input.checked) 
+        {
+            document.getElementById('transportInfo').style.display = 'block';
+        }
+        else 
+        {
+            document.getElementById('transportInfo').style.display = 'none';
+        }
+    }
+    </script>
+    
+</apex:page>

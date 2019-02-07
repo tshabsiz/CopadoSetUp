@@ -1,0 +1,80 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="lscLinkCaseExt" >
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="caseNr" type="String" />
+    <aura:attribute name="caseSub" type="String" />
+    <aura:attribute name="relatedCaseList" type="Object[]" />
+    <aura:attribute name="relatedCaseId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <center style="z-index:99">
+        <lightning:spinner aura:id="TheSpinner" class="slds-hide" variant="brand" size="large"/>
+    </center>
+      <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <tr class="slds-text-title_caps">
+            <th></th>
+            <th>
+                <div class="slds-truncate" title="Case Number">Case Number</div>
+            </th>
+             <th>
+                <div class="slds-truncate" title="Subject">Subject</div>
+            </th>
+            <th>
+                <div class="slds-truncate" title="Case Owner">Case Owner</div>
+            </th>
+            <th>
+                <div class="slds-truncate" title="Status">Status</div>
+            </th>
+        </tr>
+        <aura:iteration var="ca" items="{!v.relatedCaseList}" >
+            <tr>
+                <td>
+                    <ui:inputRadio text="{!ca.Id}" name="relc" change="{!c.logId}" />
+                </td>
+                <td>
+                <a href="#" style="cursor: pointer">
+                    <ui:outputText value="{!ca.CaseNumber}" title="{!ca.Id}" click="{!c.openNewTab}" />
+                </a>
+            	</td>
+                <td>
+                    <div class="tooltip">
+                    <a href="#" style="cursor: help;" title="{!ca.Id}">{!ca.Subject}</a>
+                    <div id="pop">
+                            <table width="50%">
+                                <tr><td width="50%" style="font-size:10pt;font-weight:bold">{!ca.CaseNumber}</td><td  width="50%" >&nbsp;</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">Account</td><td style="font-size:8pt;" width="50%">{!ca.Account.Name}</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">From Address</td><td style="font-size:8pt;" width="50%">{!ca.Email_From_Address__c}</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">Owner</td><td style="font-size:8pt;" width="50%">{!ca.Owner.Name}</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">Service Type</td><td style="font-size:8pt;" width="50%">{!ca.Service_Type__c}</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">Service Category</td><td style="font-size:8pt;" width="50%">{!ca.Service_Category__c}</td></tr>
+                                <tr><td width="50%" style="font-size:8pt;font-weight:bold">Date Created</td><td style="font-size:8pt;" width="50%">{!ca.CreatedDate}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <ui:outputText value="{!ca.Owner.Name}" />
+                </td>
+                <td>
+                    <ui:outputText value="{!ca.Status}" />
+                </td>
+            </tr>
+        </aura:iteration>
+    </table>
+    <lightning:layout horizontalAlign="end">
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:input label="Case Number" name="cnumber" value="{!v.caseNr}"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:input label="Subject" name="csubject" value="{!v.caseSub}"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button label="Search" onclick="{!c.clickSearch}" variant="brand" class="slds-m-top--medium"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button label="Reset" onclick="{!c.doInit}" variant="brand" class="slds-m-top--medium"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                 <lightning:button label="Link" onclick="{!c.clickLink}" variant="brand" class="slds-m-top--medium"/>
+            </lightning:layoutItem>
+     </lightning:layout>
+</aura:component>

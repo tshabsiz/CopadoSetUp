@@ -1,0 +1,63 @@
+<apex:page standardController="Legal_Quote_Request__c" extensions="Legal_Quote_Request_RelatedList" tabStyle="Legal_Quote_Request__c"> 
+    
+    <style>
+        .formSpacing {
+            margin-top: 20px; !important;
+        }
+    </style>
+   
+    <!-- FORM -->
+    <apex:form id="relatedListForm" styleClass="formSpacing">
+        
+    <script>
+    function submitForApproval(passedURL)
+    {
+        if(passedURL)
+        {
+            window.top.location.href = passedURL;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    </script>
+        
+    <!-- PAGE BLOCK -->
+    <apex:pageBlock title="Legal Quotes">
+        
+        <apex:actionFunction name="setupRedirect" action="{!setupRedirect}" oncomplete="submitForApproval('{!redirectURL}'); return false;" rerender="fakeresults" />
+        
+        <!-- BUTTONS -->
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton value="Submit Selected For Approval" onclick="setupRedirect(); return false;" />
+        </apex:pageBlockButtons>
+        
+        <!-- NO RECORDS MESSAGE -->
+        <apex:outputText value="No records to display" rendered="{!legalQuotesWrapper.size == 0}" />
+        
+        <!-- TABLE -->
+        <apex:pageBlockTable value="{!legalQuotesWrapper}" var="relatedItem" rendered="{!legalQuotesWrapper.size > 0}">
+            <apex:column >
+                <apex:facet name="header">Select</apex:facet>
+                <apex:inputCheckbox value="{!relatedItem.selected}" />
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Legal Quote #</apex:facet>
+                <apex:outputLink value="{!URLFOR($Action.Legal_Quote__c.View, relatedItem.legalQuote.Id)}" target="_top">{!relatedItem.legalQuote.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column value="{!relatedItem.legalQuote.Law_Firm__c}" />
+            <apex:column value="{!relatedItem.legalQuote.Contact__c}" />
+            <apex:column value="{!relatedItem.legalQuote.External_Counsel_Name__c}" />
+            <apex:column value="{!relatedItem.legalQuote.CreatedDate}" />
+            <apex:column value="{!relatedItem.legalQuote.Status__c}" />
+        </apex:pageBlockTable>
+        <!-- TABLE END -->
+
+    </apex:pageBlock>
+    <!-- PAGE BLOCK END -->
+    
+    </apex:form>
+    <!-- FORM END -->
+
+</apex:page>

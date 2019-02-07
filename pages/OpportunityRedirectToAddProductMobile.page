@@ -1,0 +1,21 @@
+<apex:page standardController="Opportunity">
+<apex:form >
+        <apex:outputPanel id="redirectPanel" >
+            <apex:outputText rendered="{!(NOT(Opportunity.HasOpportunityLineItem))}">
+                <script type="text/javascript">
+                  	if((typeof sforce != 'undefined') && (sforce != null)) { 
+                  		sforce.one.navigateToURL('/apex/AddProductToOpportunity?oppId={!Opportunity.Id}');
+                  	}
+                </script>
+            </apex:outputText>
+            <apex:outputText rendered="{!Opportunity.HasOpportunityLineItem}">
+                <script type="text/javascript">
+                    alert('Product already exists.');
+                	if((typeof sforce != 'undefined') && (sforce != null)) { 
+                    	sforce.one.navigateToSObject('{!Opportunity.Id}');
+                  	}
+                </script>
+            </apex:outputText>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

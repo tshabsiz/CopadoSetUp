@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_24439085</developerName>
+        <masterLabel>Coverage Hub</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>User.Hub__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <value>SA Inland LLC / Midcorp</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Public Sector South Africa</sourceValue>
+            </sourceValues>
+            <value>SA Public Sector</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Global Clients Banks</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Global Clients GDO</sourceValue>
+            </sourceValues>
+            <value>Global Clients</value>
+        </values>
+        <values>
+            <value>SA Financial Services</value>
+        </values>
+        <values>
+            <value>SA Coastal</value>
+        </values>
+    </buckets>
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_91941163</developerName>
+        <masterLabel>Profile Type</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>User.Business_Area__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>Banking</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Cash Management</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Commercial Property Finance</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Coverage</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Global Finance</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Markets</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Trade</sourceValue>
+            </sourceValues>
+            <value>Front Office</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumnGrouped</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>User.Team__c</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_TOP</location>
+        <secondaryGroupingColumn>FULL_NAME</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>User.Business_Area__c</field>
+    </columns>
+    <columns>
+        <field>FIRST_NAME</field>
+    </columns>
+    <columns>
+        <field>LAST_NAME</field>
+    </columns>
+    <columns>
+        <field>EMAIL</field>
+    </columns>
+    <columns>
+        <field>User.Last_Login_Date__c</field>
+    </columns>
+    <columns>
+        <field>User.Hub__c</field>
+    </columns>
+    <columns>
+        <field>User.Team_Role__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>PROFILE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>standard,private</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>LAST_LOGIN</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>LAST_N_DAYS:30</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>User.Hub__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Banking</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>ADDRESS_COUNTRY_CODE</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>User.Team__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>FULL_NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>xNot logged in last 30 days - Banking</name>
+    <params>
+        <name>active</name>
+        <value>active</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>User</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>LAST_LOGIN</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

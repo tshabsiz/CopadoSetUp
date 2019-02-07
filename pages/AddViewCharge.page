@@ -1,0 +1,85 @@
+<apex:page standardController="Case" extensions="AddViewCharge_Ext">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <style>
+            
+            
+        </style>
+        <head>
+            <apex:slds />
+            <script type="text/javascript">
+            function DeleteItem(CRID) {
+                alert('testing');
+                //DeleteItem(CRID);
+            }
+            </script>
+        </head>
+        <apex:form id="form">
+           
+                <div class="slds-scope" >
+                     
+           <apex:pageBlock id="MainPageBlock">
+               
+               <script type="text/javascript">
+         j$ = jQuery.noConflict();
+        j$(document).ready(function () {
+            j$('[id$=ChargeTable]').DataTable( {
+                "bSort" : false,
+                "bPaginate": false,
+                "bFilter": false,
+                "bInfo": false,
+                "scrollY": 400,
+                "scrollX": true
+            } );
+        });  
+            </script>
+               <div>
+                   <apex:commandButton action="{!addnewLine}" styleClass="slds-button slds-button--brand" value="New Charge"/>
+                   <apex:commandButton action="{!SaveUpdates}" styleClass="slds-button slds-button--brand" value="Save/Update" reRender="MainPageBlock"/>
+                   <apex:commandButton action="{!LockCharges}" rendered="{!!currentCase.Charge_Locked__c}" styleClass="slds-button slds-button--brand" value="Approved"/>
+                   <apex:commandButton action="{!unlock}" rendered="{!isSystemAdmin}" styleClass="slds-button slds-button--brand" value="Unlock"/>
+               </div>
+                              <apex:pageMessages />
+
+               <apex:pageBlockTable id="ChargeTable" value="{!chargeWrapperList}" styleClass="slds-table slds-table_bordered slds-table_cell-buffer slds-text-title_caps" var="chargeWrapper">
+                   <apex:column width="100px" headerValue="Charge Account No" styleClass="">
+                       <apex:inputField value="{!chargeWrapper.charge.Charge_Account_No__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="Charge Amount">
+                       <apex:inputField value="{!chargeWrapper.charge.Charge_Amount__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="Transaction Code">
+                       <apex:inputField value="{!chargeWrapper.charge.Transaction_Code__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="Corp code">
+                   <apex:inputField value="{!chargeWrapper.charge.Corp_Code__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="Cost Centre">
+                   <apex:inputField value="{!chargeWrapper.charge.Cost_Centre__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="CR Ref"> 
+                   <apex:inputField value="{!chargeWrapper.charge.CR_Ref__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="DR Ref">
+                   <apex:inputField value="{!chargeWrapper.charge.DR_Ref__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="CR Account No">
+                       <apex:inputField value="{!chargeWrapper.charge.CR_Account_No__c}"/>
+                   </apex:column>
+                   <apex:column headerValue="Effective Date">
+                   <apex:inputField value="{!chargeWrapper.charge.Effective_Date__c}"/>
+                   </apex:column>
+                    <apex:column headerValue="Action">
+                       <apex:commandButton value="Delete" reRender="MainPageBlock" id="deleteLink" styleClass="slds-button slds-button--brand" action="{!DeleteItem}">
+                          <apex:param value="{!chargeWrapper.index}" name="CRID" assignTo="{!CRID}"/>
+                        </apex:commandButton>
+                   </apex:column>
+            </apex:pageBlockTable>
+                    </apex:pageBlock>
+                    
+            </div>
+        </apex:form>
+        
+    </html>
+</apex:page>

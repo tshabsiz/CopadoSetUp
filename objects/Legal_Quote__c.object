@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Box_Document_Link__c</fullName>
+        <description>The link for the shared box link for this quote</description>
+        <externalId>false</externalId>
+        <label>Box Document Link</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Box_Webhook__c</fullName>
+        <description>To hold the id of the webhook</description>
+        <externalId>false</externalId>
+        <label>Box Webhook</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Contact.AccountId</field>
+                <operation>equals</operation>
+                <valueField>Contact.AccountId</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Contact</referenceTo>
+        <relationshipName>Legal_Quotes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>External_Counsel_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>External Counsel (Name)</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>InvoiceReceived__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Law firm has uploaded an invoice - When a document is sent from a law firm to the link (BOX) provided for invoices the user must get a notification.</description>
+        <externalId>false</externalId>
+        <label>Invoice Received</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Invoice_Received_Box_Link__c</fullName>
+        <externalId>false</externalId>
+        <label>Invoice Received Box Link</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Invoice_Received_WebhookId__c</fullName>
+        <externalId>false</externalId>
+        <label>Invoice Received WebhookId</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Law_Firm__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <inlineHelpText>Law Firm, External Legal Counsel</inlineHelpText>
+        <label>Law Firm</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipName>Legal_Quotes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Legal_Quote_Request__c</fullName>
+        <externalId>false</externalId>
+        <label>Legal Quote Request</label>
+        <referenceTo>Legal_Quote_Request__c</referenceTo>
+        <relationshipName>Legal_Quotes</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Motivation_Comments__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Provide any comments or motivation regarding this Legal Quote submission.</inlineHelpText>
+        <label>Motivation / Comments</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Panel_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Panel Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>On Panel</fullName>
+                    <default>true</default>
+                    <label>On Panel</label>
+                </value>
+                <value>
+                    <fullName>Off Panel</fullName>
+                    <default>false</default>
+                    <label>Off Panel</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Quote_Amount_Rollup__c</fullName>
+        <externalId>false</externalId>
+        <label>Quote Amount</label>
+        <summarizedField>Legal_Quote_Item__c.Fee_Excl_VAT__c</summarizedField>
+        <summaryForeignKey>Legal_Quote_Item__c.Legal_Quote__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Quote_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Quote Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Quote_Approver__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The individual that legal quotes approvals will be routed to.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The individual that legal quotes approvals will be routed to.</inlineHelpText>
+        <label>Quote Approver</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Legal_Quotes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Quote_Recieved__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Quote Received</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Request_for_Service__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Request for Service</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Requested</fullName>
+                    <default>false</default>
+                    <label>Requested</label>
+                </value>
+                <value>
+                    <fullName>Pending Approval</fullName>
+                    <default>false</default>
+                    <label>Pending Approval</label>
+                </value>
+                <value>
+                    <fullName>Approved</fullName>
+                    <default>false</default>
+                    <label>Approved</label>
+                </value>
+                <value>
+                    <fullName>Rejected</fullName>
+                    <default>false</default>
+                    <label>Rejected</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Supplier_Box_Webhook__c</fullName>
+        <externalId>false</externalId>
+        <label>Supplier_Box_Webhook</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>LEAP - Legal Quote Amount Lock</label>
+    <nameField>
+        <displayFormat>Q-{000000}</displayFormat>
+        <label>Legal Quote #</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Legal Quotes</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Legal_Quote</fullName>
+        <active>true</active>
+        <label>Legal Quote</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Legal_Quote_Locked</fullName>
+        <active>true</active>
+        <label>Legal Quote (Locked)</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Litigation_Quote</fullName>
+        <active>true</active>
+        <label>Litigation Quote</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Litigation_Quote_Locked</fullName>
+        <active>true</active>
+        <label>Litigation Quote (Locked)</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Off_Panel_Quote</fullName>
+        <active>true</active>
+        <label>Off Panel Quote</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Off_Panel_Quote_Locked</fullName>
+        <active>true</active>
+        <label>Off Panel Quote (Locked)</label>
+        <picklistValues>
+            <picklist>Panel_Type__c</picklist>
+            <values>
+                <fullName>Off Panel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>On Panel</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Approval</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Law_Firm__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Legal_Quote_Request__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Status__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Contact__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>External_Counsel_Name__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Law_Firm__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Legal_Quote_Request__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Contact__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>External_Counsel_Name__c</lookupPhoneDialogsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Ensure_Law_Firm_on_Legal_Quote_is_valid</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(
+RecordType.DeveloperName = &quot;Off Panel Quote&quot;, Law_Firm__r.RecordType.DeveloperName  = &quot;On/Off Panel Law Firm&quot;, 
+Law_Firm__r.Approved__c = true)</errorConditionFormula>
+        <errorDisplayField>Law_Firm__c</errorDisplayField>
+        <errorMessage>Ensure that the Law Firm is an Off Panel Law Firm</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Lock_Quote_Amount_Once_Approved</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND (ISCHANGED (Quote_Amount__c ), 
+ISPICKVAL( Status__c , &apos;Approved&apos;))</errorConditionFormula>
+        <errorDisplayField>Quote_Amount__c</errorDisplayField>
+        <errorMessage>Quote amount not editable for an approved legal quote.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Only_one_requested_service_allowed</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(ISCHANGED( Request_for_Service__c),Request_for_Service__c, Legal_Quote_Request__r.Requested_Services__c=1)</errorConditionFormula>
+        <errorDisplayField>Request_for_Service__c</errorDisplayField>
+        <errorMessage>Only one requested service allowed - There is already another Legal Quote that has been requested.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>RFS_must_remain_blank_unless_Approved</fullName>
+        <active>true</active>
+        <description>Request for Service must not be checked unless Status = Approved.</description>
+        <errorConditionFormula>AND( Request_for_Service__c , NOT(ISPICKVAL(Status__c, &apos;Approved&apos;)))</errorConditionFormula>
+        <errorDisplayField>Request_for_Service__c</errorDisplayField>
+        <errorMessage>A quote has to have an Approved status in order to select Request for Service</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Add_Law_Firm</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Add Law Firm</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>{!URLFOR($Action.Legal_Quote__c.New,null,[&apos;CF00N9E000000nJcW&apos;=&apos;Legal_Quote_Request__c.Name&apos;,&apos;CF00N9E000000nJcW_lkid&apos;=&apos;Legal_Quote_Request__c.Id&apos;])}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Submit_Selected_For_Approval</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Submit Selected For Approval</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+        <url>var ids = {!GETRECORDIDS($ObjectType.Legal_Quote__c)};
+if(ids.length) 
+{ 
+window.location = &apos;/apex/legal_quote_request_submit_approval?parentRecord={!Legal_Quote_Request__c.Id}&amp;selectedRecords=&apos;+ids.join(&apos;|&apos;);
+} 
+else 
+{ 
+alert(&apos;Select one or more Records&apos;); 
+}</url>
+    </webLinks>
+</CustomObject>

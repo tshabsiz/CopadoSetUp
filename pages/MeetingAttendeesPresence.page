@@ -1,0 +1,19 @@
+<apex:page standardController="Meeting__c" extensions="MeetingAttendeesPresence_Controller">
+	<apex:form >
+	<apex:pageBlock title="Meeting Attendees Presence">
+        <apex:pageMessages id="pageMsg"/>
+		<apex:pageBlockButtons >
+			<apex:commandButton action="{!save}" value="Update" rendered="{!isAttendeesNotEmpty}"/>
+            <apex:commandButton action="{!cancel}" value="Cancel" />
+		</apex:pageBlockButtons>
+
+        <apex:pageBlockTable value="{!attendees}" var="attendee" rendered="{!isAttendeesNotEmpty}">
+
+            <apex:column value="{!attendee.Attendee__c}"/> 
+            <apex:column headerValue="{!$ObjectType.Meeting_Attendee__c.fields.Present__c.Label}"><apex:inputField value="{!attendee.Present__c}"/></apex:column>
+
+        </apex:pageBlockTable> 
+
+    </apex:pageBlock> 
+    </apex:form>
+</apex:page>

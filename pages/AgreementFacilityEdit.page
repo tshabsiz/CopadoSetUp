@@ -1,0 +1,76 @@
+<apex:page action="{!GetFacility}" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Facility__c" extensions="FacilityControllerExtension" tabStyle="Facility__c">   
+    <apex:sectionHeader title="Facility Edit" subtitle="New Facility" rendered="{!Facility__c.Name == null }" help="https://help.salesforce.com" />
+    <apex:sectionHeader title="Facility Edit" subtitle="{!Facility__c.name}" rendered="{!Facility__c.Name != null }" help="https://help.salesforce.com" />
+    <apex:form >
+        <apex:pageBlock title="Facility Edit" mode="edit">
+
+            <apex:outputpanel id="t5">
+                <apex:pageMessages />
+            </apex:outputpanel>
+            
+            <apex:pageBlockButtons >
+                <apex:outputpanel id="CommandButton">
+                    <apex:commandButton action="{!save}" value="Save" />
+                    <apex:commandButton action="{!cancel}" value="Cancel" />
+                </apex:outputpanel>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Information" columns="2">
+                                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Relationship"/>
+                    <apex:actionRegion >
+                        
+                        <apex:inputField value="{!Facility__c.Agreement_Account__c}">
+                            <apex:actionSupport action="{!GetFacility}" event="onchange" reRender="t5"  /> 
+                        </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!Facility__c.Agreement__r.OwnerId}"/>
+                                
+                <apex:inputField required="true" value="{!Facility__c.Agreement__c}"/>
+                
+                
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Facility Information" columns="2">
+                <apex:inputField required="true" value="{!Facility__c.Name}"/>
+                <apex:inputField required="true" value="{!Facility__c.Status__c}"/>
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Related ACM Facility"/> 
+                    <apex:actionRegion >
+                        <apex:inputField value="{!Facility__c.ACMFacility__c}" >
+                            <apex:actionSupport action="{!UpdateFacilityFields}" event="onchange" reRender="amount, currency,AvstartDate,ExDate "  />  
+                        </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField required="true" value="{!Facility__c.Repayment_Profile_Type__c}"/>
+                <apex:inputField required="true" value="{!Facility__c.Facility_Type__c}"/>
+                                
+                <apex:inputField required="true" value="{!Facility__c.Tenure_Period__c}" />
+                
+
+            
+                
+                <apex:inputField id="amount"  value="{!Facility__c.Facility_Limit__c}" required="true"/> 
+                <span></span>
+                                <apex:inputField id="currency" value="{!Facility__c.CurrencyIsoCode}"/>
+
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Facility Dates" columns="2">
+                <apex:inputField id="AvstartDate"  value="{!Facility__c.Availability_Start_Date__c}"/>
+                <apex:inputField id="ExDate"  value="{!Facility__c.Expiry_Date__c}"/>
+                <apex:inputField value="{!Facility__c.Availability_Period__c}"/>
+                <apex:inputField value="{!Facility__c.Signature_Date__c}"/>
+                <apex:inputField value="{!Facility__c.Availability__c}"/>
+                
+                
+            </apex:pageBlockSection>
+            
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

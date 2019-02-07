@@ -1,0 +1,109 @@
+<apex:component controller="ClientPlanACMProductSearchController">
+    <apex:attribute name="identifier" type="String" description="unique identifier of this tautocomplete" required="true"/>
+    <apex:stylesheet value="{!URLFOR($Resource.tautocomplete, 'tautocomplete.css')}"/>
+    <apex:includeScript value="{!$Resource.tautocompleteBarclaysAfrica}"/>
+    <style type="text/css">
+        .acontainer {
+            width: 100%;
+        }
+
+        .acontainer input {
+            height: 36px;
+            border: 1px solid #d8dde6;
+            border-radius: 4px;
+        }
+        
+        #productSearchCmpWrapper table tbody tr {
+            cursor: pointer;
+        }
+        
+        .acontainer tr th:nth-child(1) {
+            display: none;
+        }
+        
+        .acontainer tr td:nth-child(2) {
+            display: none;
+        }
+        
+        .awhite .selected td {
+            color: black;
+            background-color: white;
+        }
+        
+        .awhite tbody tr:hover {
+            color: #fff !important;
+            background-color: #0097cf !important;
+        }
+        
+        .inputfocus {
+            margin: 0px !important;
+        }
+
+        .highlightedSearchTerm {
+            background-color: #00FFFF;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var selectedProductName = '';
+
+        $('document').ready(function() {
+
+            ClientPlanACMProductSearchController.getAllACMProductsJson(function(resultJson) {
+
+                var identifier = "{!identifier}";
+                var result = JSON.parse(resultJson);
+                
+                var productsData = [];
+                for (var i = 0; i < result.length; i++) {
+
+                    if (typeof result[i].ProductName__c === 'undefined') {
+                        continue;
+                    }
+
+                    var product = {
+                        "0":  '',
+                        "1" : '',
+                        "2" : result[i].Id,
+                        "3" : result[i].ProductName__c
+                    };
+
+                    productsData.push(product);
+                }
+
+                var myData = $("." + identifier + " #productSearchCmpInput").tautocomplete({
+                    columns: ['Product ID', 'ACM Product Name','ID1','Product Name'],
+                    hide: [false, false, false, true],
+                    theme: "white",
+                    highlight: "highlightedSearchTerm",
+                    delay: 200,
+                    norecord: "No Records Found",
+                    onchange: function () {
+                        selectedProductName = myData.text();
+                        $("." + identifier).trigger("productChanged", [selectedProductName]);
+                    },
+                    data: function () {    
+                        var filterData = [];
+                        var term = myData.searchdata();
+                        
+                        var searchData = eval("/" + term + "/gi");
+    
+                        $.each(productsData, function (i, v) {
+                            if (v[3].search(new RegExp(searchData)) != -1) {
+                                filterData.push(v);
+                            }
+                        });
+                        return filterData;
+                    }
+                });
+                
+                $("." + identifier).trigger("productSelectorCreated");
+            }, 
+            {escape: false});
+            
+        });
+    </script>
+    <div id="productSearchCmpWrapper" class="{!identifier}">
+        <input id="productSearchCmpInput" class="slds-input" type="text" />
+    </div>
+</apex:component>

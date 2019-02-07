@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>true</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Award_Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Award Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Status__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Retained</fullName>
+                    <default>false</default>
+                    <label>Retained</label>
+                </value>
+                <value>
+                    <fullName>Not Retained</fullName>
+                    <default>false</default>
+                    <label>Not Retained</label>
+                </value>
+                <value>
+                    <fullName>Acquired</fullName>
+                    <default>false</default>
+                    <label>Acquired</label>
+                </value>
+                <value>
+                    <fullName>Not Acquired</fullName>
+                    <default>false</default>
+                    <label>Not Acquired</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Awarded</controllingFieldValue>
+                <valueName>Retained</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Awarded</controllingFieldValue>
+                <valueName>Not Retained</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Awarded</controllingFieldValue>
+                <valueName>Acquired</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Awarded</controllingFieldValue>
+                <valueName>Not Acquired</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Compliance__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Compliance checker</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Tenders3</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Current_Banks__c</fullName>
+        <externalId>false</externalId>
+        <label>Current Banks</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Absa Bank</fullName>
+                    <default>false</default>
+                    <label>Absa Bank</label>
+                </value>
+                <value>
+                    <fullName>African Bank Limited</fullName>
+                    <default>false</default>
+                    <label>African Bank Limited</label>
+                </value>
+                <value>
+                    <fullName>First National Bank</fullName>
+                    <default>false</default>
+                    <label>First National Bank</label>
+                </value>
+                <value>
+                    <fullName>FirstRand Bank</fullName>
+                    <default>false</default>
+                    <label>FirstRand Bank</label>
+                </value>
+                <value>
+                    <fullName>Nedbank Limited</fullName>
+                    <default>false</default>
+                    <label>Nedbank Limited</label>
+                </value>
+                <value>
+                    <fullName>Standard Bank of South Africa</fullName>
+                    <default>false</default>
+                    <label>Standard Bank of South Africa</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Due_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Award Due Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Estimated_income_value__c</fullName>
+        <externalId>false</externalId>
+        <label>Estimated income  value</label>
+        <precision>12</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Executive__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship Executive</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Tenders1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Global__c</fullName>
+        <externalId>false</externalId>
+        <label>Global</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Opportunity_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Opportunity Name</label>
+        <referenceTo>Opportunity</referenceTo>
+        <relationshipLabel>Tenders</relationshipLabel>
+        <relationshipName>Tenders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Organisation_In_Salesforce__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship Name</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Tenders</relationshipLabel>
+        <relationshipName>Tenders</relationshipName>
+        <required>true</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Province__c</fullName>
+        <externalId>false</externalId>
+        <label>Province</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Eastern Cape</fullName>
+                    <default>false</default>
+                    <label>Eastern Cape</label>
+                </value>
+                <value>
+                    <fullName>Free State</fullName>
+                    <default>false</default>
+                    <label>Free State</label>
+                </value>
+                <value>
+                    <fullName>Gauteng</fullName>
+                    <default>false</default>
+                    <label>Gauteng</label>
+                </value>
+                <value>
+                    <fullName>KwaZulu-Natal</fullName>
+                    <default>false</default>
+                    <label>KwaZulu-Natal</label>
+                </value>
+                <value>
+                    <fullName>Limpopo</fullName>
+                    <default>false</default>
+                    <label>Limpopo</label>
+                </value>
+                <value>
+                    <fullName>Mpumalanga</fullName>
+                    <default>false</default>
+                    <label>Mpumalanga</label>
+                </value>
+                <value>
+                    <fullName>Northern Cape</fullName>
+                    <default>false</default>
+                    <label>Northern Cape</label>
+                </value>
+                <value>
+                    <fullName>North West</fullName>
+                    <default>false</default>
+                    <label>North West</label>
+                </value>
+                <value>
+                    <fullName>Western Cape</fullName>
+                    <default>false</default>
+                    <label>Western Cape</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Reader__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Proof Reader</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Tenders2</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Reason_For_Disqualification__c</fullName>
+        <externalId>false</externalId>
+        <label>Reason For Disqualification</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Sector__c</fullName>
+        <externalId>false</externalId>
+        <label>Sector</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Agri</fullName>
+                    <default>false</default>
+                    <label>Agri</label>
+                </value>
+                <value>
+                    <fullName>All sectors</fullName>
+                    <default>false</default>
+                    <label>All sectors</label>
+                </value>
+                <value>
+                    <fullName>Botswana</fullName>
+                    <default>false</default>
+                    <label>Botswana</label>
+                </value>
+                <value>
+                    <fullName>GDO</fullName>
+                    <default>false</default>
+                    <label>GDO</label>
+                </value>
+                <value>
+                    <fullName>Ghana</fullName>
+                    <default>false</default>
+                    <label>Ghana</label>
+                </value>
+                <value>
+                    <fullName>Global Corporate</fullName>
+                    <default>false</default>
+                    <label>Global Corporate</label>
+                </value>
+                <value>
+                    <fullName>Kenya</fullName>
+                    <default>false</default>
+                    <label>Kenya</label>
+                </value>
+                <value>
+                    <fullName>Mauritius</fullName>
+                    <default>false</default>
+                    <label>Mauritius</label>
+                </value>
+                <value>
+                    <fullName>Mid Corporate</fullName>
+                    <default>false</default>
+                    <label>Mid Corporate</label>
+                </value>
+                <value>
+                    <fullName>Mozambique</fullName>
+                    <default>false</default>
+                    <label>Mozambique</label>
+                </value>
+                <value>
+                    <fullName>Public Sector</fullName>
+                    <default>false</default>
+                    <label>Public Sector</label>
+                </value>
+                <value>
+                    <fullName>Retail</fullName>
+                    <default>false</default>
+                    <label>Retail</label>
+                </value>
+                <value>
+                    <fullName>SA</fullName>
+                    <default>false</default>
+                    <label>SA</label>
+                </value>
+                <value>
+                    <fullName>Seychelles</fullName>
+                    <default>false</default>
+                    <label>Seychelles</label>
+                </value>
+                <value>
+                    <fullName>Tanzania</fullName>
+                    <default>false</default>
+                    <label>Tanzania</label>
+                </value>
+                <value>
+                    <fullName>Telecoms</fullName>
+                    <default>false</default>
+                    <label>Telecoms</label>
+                </value>
+                <value>
+                    <fullName>Uganda</fullName>
+                    <default>false</default>
+                    <label>Uganda</label>
+                </value>
+                <value>
+                    <fullName>Zambia</fullName>
+                    <default>false</default>
+                    <label>Zambia</label>
+                </value>
+                <value>
+                    <fullName>Zimbabwe</fullName>
+                    <default>false</default>
+                    <label>Zimbabwe</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Segment__c</fullName>
+        <externalId>false</externalId>
+        <label>Segment</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Business Banking</fullName>
+                    <default>false</default>
+                    <label>Business Banking</label>
+                </value>
+                <value>
+                    <fullName>CIBW</fullName>
+                    <default>false</default>
+                    <label>CIBW</label>
+                </value>
+                <value>
+                    <fullName>Financial Institution</fullName>
+                    <default>false</default>
+                    <label>Financial Institution</label>
+                </value>
+                <value>
+                    <fullName>Global Corporate</fullName>
+                    <default>false</default>
+                    <label>Global Corporate</label>
+                </value>
+                <value>
+                    <fullName>Global Development Organisation (GDO)</fullName>
+                    <default>false</default>
+                    <label>Global Development Organisation (GDO)</label>
+                </value>
+                <value>
+                    <fullName>Large Local Corporate</fullName>
+                    <default>false</default>
+                    <label>Large Local Corporate</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Public Sector</fullName>
+                    <default>false</default>
+                    <label>Public Sector</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Specialist__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Responsible Tender Specialist</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Tenders</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Open</fullName>
+                    <default>true</default>
+                    <label>Open</label>
+                </value>
+                <value>
+                    <fullName>Pipeline</fullName>
+                    <default>false</default>
+                    <label>Pipeline</label>
+                </value>
+                <value>
+                    <fullName>Bid Submitted</fullName>
+                    <default>false</default>
+                    <label>Bid Submitted</label>
+                </value>
+                <value>
+                    <fullName>Awaiting Award</fullName>
+                    <default>false</default>
+                    <label>Awaiting Award</label>
+                </value>
+                <value>
+                    <fullName>Awarded</fullName>
+                    <default>false</default>
+                    <label>Awarded</label>
+                </value>
+                <value>
+                    <fullName>Not Awarded</fullName>
+                    <default>false</default>
+                    <label>Not Awarded</label>
+                </value>
+                <value>
+                    <fullName>Withdrawn</fullName>
+                    <default>false</default>
+                    <label>Withdrawn</label>
+                </value>
+                <value>
+                    <fullName>Disqualified</fullName>
+                    <default>false</default>
+                    <label>Disqualified</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Submission_Due_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Submission Due Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Tender_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Tender Description</label>
+        <required>true</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>CAF RFP</fullName>
+                    <default>false</default>
+                    <label>CAF RFP</label>
+                </value>
+                <value>
+                    <fullName>Card acquiring</fullName>
+                    <default>false</default>
+                    <label>Card acquiring</label>
+                </value>
+                <value>
+                    <fullName>Card Issuing</fullName>
+                    <default>false</default>
+                    <label>Card Issuing</label>
+                </value>
+                <value>
+                    <fullName>CIT RFP</fullName>
+                    <default>false</default>
+                    <label>CIT RFP</label>
+                </value>
+                <value>
+                    <fullName>Debt Sponsorship</fullName>
+                    <default>false</default>
+                    <label>Debt Sponsorship</label>
+                </value>
+                <value>
+                    <fullName>Investment Advisory</fullName>
+                    <default>false</default>
+                    <label>Investment Advisory</label>
+                </value>
+                <value>
+                    <fullName>Lead Manager</fullName>
+                    <default>false</default>
+                    <label>Lead Manager</label>
+                </value>
+                <value>
+                    <fullName>Loan RFP</fullName>
+                    <default>false</default>
+                    <label>Loan RFP</label>
+                </value>
+                <value>
+                    <fullName>Presentation following the RFP</fullName>
+                    <default>false</default>
+                    <label>Presentation following the RFP</label>
+                </value>
+                <value>
+                    <fullName>Proactive Proposal</fullName>
+                    <default>false</default>
+                    <label>Proactive Proposal</label>
+                </value>
+                <value>
+                    <fullName>Supplier Finance</fullName>
+                    <default>false</default>
+                    <label>Supplier Finance</label>
+                </value>
+                <value>
+                    <fullName>Transactional Banking RFP</fullName>
+                    <default>false</default>
+                    <label>Transactional Banking RFP</label>
+                </value>
+                <value>
+                    <fullName>ZAR Clearing</fullName>
+                    <default>false</default>
+                    <label>ZAR Clearing</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Tender_Type__c</fullName>
+        <description>This Picklist defines the type of tender is being Proposed</description>
+        <externalId>false</externalId>
+        <label>Tender Type</label>
+        <required>true</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Presentation</fullName>
+                    <default>false</default>
+                    <label>Presentation</label>
+                </value>
+                <value>
+                    <fullName>Proactive Proposal</fullName>
+                    <default>false</default>
+                    <label>Proactive Proposal</label>
+                </value>
+                <value>
+                    <fullName>RFI</fullName>
+                    <default>false</default>
+                    <label>RFI</label>
+                </value>
+                <value>
+                    <fullName>RFP</fullName>
+                    <default>false</default>
+                    <label>RFP</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Tender</label>
+    <listViews>
+        <fullName>All_Open_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Open</value>
+        </filters>
+        <label>All Open Tenders</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Pipeline_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Pipeline</value>
+        </filters>
+        <label>All Pipeline Tenders</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Submitted_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Bid Submitted</value>
+        </filters>
+        <label>All Submitted Tenders</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Tender</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Tender</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Tenders_Not_Awarded</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Not Awarded</value>
+        </filters>
+        <label>All Tenders Not Awarded</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Withdrawn_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Withdrawn</value>
+        </filters>
+        <label>All Withdrawn Tenders</label>
+    </listViews>
+    <listViews>
+        <fullName>My_Awaiting_Award_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Mine</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Awaiting Award</value>
+        </filters>
+        <label>My Awaiting Award Tenders</label>
+    </listViews>
+    <listViews>
+        <fullName>My_Disqualified_Tenders</fullName>
+        <columns>NAME</columns>
+        <columns>Organisation_In_Salesforce__c</columns>
+        <columns>Status__c</columns>
+        <columns>Tender_Type__c</columns>
+        <columns>Submission_Due_Date__c</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>OWNER.LAST_NAME</columns>
+        <filterScope>Mine</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Disqualified</value>
+        </filters>
+        <label>My Disqualified Tenders</label>
+    </listViews>
+    <nameField>
+        <displayFormat>T- {0000}</displayFormat>
+        <label>Tender ID</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Tenders</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Organisation_In_Salesforce__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Tender_Type__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Sector__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Province__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Due_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Executive__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Specialist__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Private</sharingModel>
+    <validationRules>
+        <fullName>Description_Validation</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND (ISPICKVAL( Tender_Description__c , &quot;Other&quot;), ISBLANK( Description__c  ) )</errorConditionFormula>
+        <errorDisplayField>Description__c</errorDisplayField>
+        <errorMessage>Please enter a description for the tender type</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Disqualified_Validator</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND ( ISPICKVAL( Status__c , &apos;Disqualified&apos;), ISBLANK( Reason_For_Disqualification__c ))</errorConditionFormula>
+        <errorDisplayField>Reason_For_Disqualification__c</errorDisplayField>
+        <errorMessage>Please enter a reason for tender disqualification</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_Validator</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND (ISPICKVAL(Status__c, &quot;Awarded&quot;), ISBLANK(  Due_Date__c  ) )</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>Please enter a tender reward due date</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Status_Validator</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND ( ISPICKVAL( Status__c , &apos;Awarded&apos;), ISBLANK(   TEXT(Award_Status__c)   ))</errorConditionFormula>
+        <errorDisplayField>Award_Status__c</errorDisplayField>
+        <errorMessage>Please enter an award status</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

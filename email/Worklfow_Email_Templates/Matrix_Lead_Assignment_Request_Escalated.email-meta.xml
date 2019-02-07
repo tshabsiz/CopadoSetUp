@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Mervyn Pillay  and Zaheer ,receive a notification if 5 days has lapse after the initial Lead Assignment Request was sent</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Matrix Lead Assignment Request Escalated</name>
+    <style>freeForm</style>
+    <subject>Lead Assignment Request has not yet been approved</subject>
+    <textOnly>Dear Mervyn Pillay
+
+The following Lead Assignment Request still awaits approval by {!Matrix_Lead__c.Sector_Head__c}.
+
+{!Matrix_Lead__c.OwnerFullName} has requested an approval for the following :{!Matrix_Lead__c.Company_Name__c}.
+
+Please approve or decline by following this link: {!Matrix_Lead__c.Link}
+
+If you decline, please provide {!Matrix_Lead__c.OwnerFullName} with a reason.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

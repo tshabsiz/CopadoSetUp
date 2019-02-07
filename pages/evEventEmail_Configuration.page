@@ -1,0 +1,176 @@
+<apex:page standardcontroller="EM_Event_Email_Configuration__c" extensions="evEventEmailConfig_Controller">
+    <apex:slds />
+    <apex:sectionHeader title="Event Email Schedule"     />
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageblock > 
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!dosave}" value="Save" />
+                <apex:commandButton action="{!delete}"  value="Delete"/>
+                <apex:commandButton action="{!cancel}"  value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" > 
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Label:"/>
+                    <apex:inputField required="true" value="{!record.Label__c}"   id="label"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Schedule Code:"/>
+                    <apex:inputField required="true" value="{!record.name}"   id="name"/>
+                </apex:pageBlockSectionItem>
+                
+                 <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Active?"/>
+                    <apex:inputcheckbox label="" value="{!record.Active__c}"/>
+                </apex:pageBlockSectionItem>
+                
+           </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="1" title="Schedule"> 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Start Sending:" />
+                    <apex:outputPanel layout="block">
+                        <apex:inputText value="{!record.Start_Days__c}"/> &nbsp; day(s) &nbsp;
+                        <apex:inputField value="{!record.Start_Before_After__c}"/>
+                    </apex:outputPanel> 
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Stop Sending: "/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:inputText value="{!record.Stop_Days__c}"/> &nbsp; day(s) &nbsp;
+                        <apex:inputField value="{!record.Stop_Before_After__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+
+<!-- DH remove until the code is updated to use these two fields               
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Only send between these times: "/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:inputfield value="{!record.Start_Send_Time__c}" /> &nbsp; and &nbsp;
+                        <apex:inputfield value="{!record.Stop_Send_Time__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+-->
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="2" title="Content"> 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Email Template:"/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:selectList value="{!record.Email_Template__c}" size="1" id="templateid">
+                            <apex:selectOptions value="{!templates}"/>
+                        </apex:selectList> 
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    
+                    <apex:outputLabel value="Email Setup:"/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:inputField value="{!record.Email_Setup__c}" /> 
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    
+                    <apex:outputLabel value="Send From (Organization Wide Email Address):"/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:selectList value="{!record.Send_From__c}" size="1" >
+                            <apex:selectOptions value="{!orgWideAddresses}"/>
+                        </apex:selectList>  
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    
+                    <apex:outputLabel value="SMS Text:"/>
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:inputField value="{!record.SMS_Text__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Delegate Selection Criteria"> 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Survey Status:"/> 
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputfield required="true" value="{!record.Survey_Status__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>    
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Delegate Type"/> 
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputfield required="true" value="{!record.Delegate_Type__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Delegate Attendance Status:"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Delegate_Attendance_Status__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Delegate Invitation Status:"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Delegate_Invitation_Status__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Delegate Registration Status:"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Delegate_Registration_Status__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Delegate RSVP Status:"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Delegate_RSVP_Status__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>                 
+                
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="2" title="Attachments"> 
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Attach Delegate Schedule"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Attach_Delegate_Schedule__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>  
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Attach Speaker Schedule"/>
+                    <apex:outputPanel layout="block">
+                        <apex:outputPanel layout="block"/>
+                        <apex:inputfield value="{!record.Attach_Speaker_Schedule__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>  
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection columns="2" title="Select a Delegate to test email"> 
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Specific Delegate Only:"/> 
+                    <apex:outputPanel styleClass="requiredBlock" layout="block">
+                        <apex:inputfield value="{!record.Delegate__c}" />
+                    </apex:outputPanel> 
+                </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>   	
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

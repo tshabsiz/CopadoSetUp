@@ -1,0 +1,192 @@
+<apex:page applyBodyTag="false" showHeader="false" sidebar="false" standardController="Delegate__c" extensions="evDelegateScheduleExtension_Controller" renderAs="pdf">
+    
+    <head>
+        <style type="text/css" media="print">
+            @page {
+            size: A4 portrait;
+            margin: 120px 30px 150px 30px; /*top right bottom left*/
+            
+            @top-center {
+            content: element(header);
+            }
+            @bottom-center {
+            content: element(footer);
+            }
+            }
+            body{
+            font-family: Arial, Helvetica, Verdana, Geneva, sans-serif;
+            }
+            h1,h2,h3,p,table,span{
+            font-family: Arial, Helvetica, Verdana, Geneva, sans-serif;
+            }
+            div.header {
+            padding: 5px;
+            margin: 0px 10px 0px 10px; /*top right bottom left*/
+            position: running(header);
+            }
+            div.footer {
+            padding: 5px;
+            margin: 0px 10px 0px 10px; /*top right bottom left*/
+            position: running(footer);
+            }
+            .pagenumber:before {
+            content: counter(page);
+            }
+            .pagecount:before {
+            content: counter(pages);
+            }
+            .page-break {
+            page-break-after:always;
+            }
+            .page-break-avoid {
+            page-break-after:avoid;
+            }
+            div.page-content {
+            margin: 0px;
+            }
+            
+            .page-content {
+            font-family: Arial;
+            }
+            
+            .ev-details {
+            text-align: center;
+            margin-bottom: 30px;
+            }
+            
+            .del-acc {
+            	font-size: 28px;
+            	font-weight: bold;
+            	margin-bottom: 20px;
+            	display: block;
+            }
+            
+            .ev-name {
+            	font-size: 20px;
+            	font-weight: bold;
+            	margin-bottom: 20px;
+            	display: block;
+            }
+            
+            .ev-ven {
+                font-size: 17px;
+                font-weight: bold;
+                margin-bottom: 0px;
+                display: block;
+            }
+            
+            .ev-date {
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 20px;
+                display: block;
+            }
+            
+            .disclaimer {
+                font-size: 13px;
+                font-weight: bold;
+            	font-style: italic;
+            }
+            
+            .time {
+                font-size: 13px;
+                font-weight: bold;
+            }
+            
+            .ds-table {
+            	font-size:14px;
+            }
+            
+            .ds-table td, .ds-table th {
+            padding: 10px 5px;
+            }
+            
+            .ds-table th {
+            background-color: #ec2027;
+            color: white;
+            }
+            
+            .border-btm {
+            	border-bottom: 1pt solid black;
+            }
+            
+        </style>
+    </head>
+    
+    
+    <div class="header">
+        <apex:image value="{!agendaConfig.Agenda_Logo__c}" />
+        <!--
+        <apex:image value="data:image/png;base64,{!cv2}"/>
+		-->
+    </div>
+    
+    <div class="footer">
+        <p class="disclaimer">Please Note: This schedule is subject to change. All participants must check in every day at the One-on-One Desk.</p>
+        <p class="time">
+            <apex:outputText value="{0,date,EEEE MMMM d, yyyy}">
+                <apex:param value="{!TODAY()}" />
+            </apex:outputText>
+        </p>
+    </div> 
+    
+    <div class="page-content">
+        
+        <div class="ev-details">
+            <span class="del-acc">{!Delegate__c.Account__r.Name}</span>
+            <span class="ev-name">{!event.Name}</span>
+            <span class="ev-ven">{!event.Venue__r.Name} - {!event.Venue__r.Address__c}</span>
+            <span class="ev-date">                           
+                <apex:outputText value="{0,date,EEEE MMMM d, yyyy}">
+                    <apex:param value="{!event.Start_Date__c}" />
+                </apex:outputText>
+                &nbsp;-&nbsp;
+                <apex:outputText value="{0,date,EEEE MMMM d, yyyy}">
+                    <apex:param value="{!event.End_Date__c}" />
+                </apex:outputText>
+            </span>
+        </div>
+        <apex:outputPanel layout="none" rendered="{!hasBooking == false}">
+            You are not not booked for any sessions.
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!hasBooking}">
+            <table class="ds-table" cellspacing="0">
+                <tr>
+                    <th width="100">Time</th>
+                    <th width="130">Location</th>
+                    <th width="150">Participating Company</th>
+                    <th width="160">Participant</th>
+                    <th width="120">Meeting Type</th>
+                </tr>
+                <apex:repeat var="day" value="{!groups}">
+                    <apex:repeat var="session" rows="1" value="{!day.sessions}">
+                    <tr>
+                        <td colspan="5" class="border-btm">
+                            <strong>{!day.GroupedVal}</strong>
+                        </td>
+                    </tr>
+                    </apex:repeat>
+                    <apex:repeat var="session" value="{!day.sessions}">
+                        <apex:outputPanel layout="none" rendered="{!session.Session_Bookings__r.size > 0}">
+                            <apex:repeat var="sb" value="{!session.Session_Bookings__r}">
+                                <tr>
+                                    <td class="border-btm">{!sb.Session__r.Start_Time_Text__c} - {!sb.Session__r.End_Time_Text__c}</td>
+                                    <td class="border-btm">{!sb.Session__r.Room__r.Name}</td>
+                                    <td class="border-btm">{!sb.Session__r.Participating_Company__r.Name}</td>
+                                    <td class="border-btm">{!sb.Delegate__r.Contact__r.Name}</td>
+                                    <td class="border-btm">{!sb.Session__r.Type__c}</td>
+                                </tr>
+                            </apex:repeat>
+                        </apex:outputPanel>
+                    </apex:repeat>
+                </apex:repeat>
+            </table>
+        </apex:outputPanel>
+        
+    </div>
+    
+    <div style="page-break-before:always;">
+        <apex:outputText escape="false" value="{!agendaConfig.Disclaimer__c}"></apex:outputText>
+    </div>
+
+</apex:page>

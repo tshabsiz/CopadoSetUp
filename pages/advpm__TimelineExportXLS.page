@@ -1,0 +1,35 @@
+<apex:page controller="advpm.TimelineExportController" cache="true" contentType="application/x-excel#timelineExport.xls" showHeader="false" sidebar="false" readOnly="true" title="Timeline (Excel Export)"><html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+		<c:includeSLDS />
+		<style type="text/css">
+			body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+			body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+			.slds {font-family: "Salesforce Sans", Arial, sans-serif;}
+		</style>
+	</apex:outputPanel>
+</head>
+<body class="slds">
+	<apex:dataTable value="{!tLines}" var="t" styleClass="list slds-table">
+	    <apex:column width="140px" headerValue="Date" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+	        <apex:outputLink value="/{!t.t_id}" rendered="{!t.t_showDateOnly}"><apex:outputField value="{!t.t_proxydate.ActivityDate}" /></apex:outputLink>
+	        <apex:outputLink value="/{!t.t_id}" rendered="{!!t.t_showDateOnly}"><apex:outputField value="{!t.t_proxydate.StartDateTime}" /></apex:outputLink>
+	    </apex:column>
+	    <apex:column value="{!t.t_type}" width="110px" headerValue="Type" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+	    </apex:column>
+	    <apex:column headerValue="Title" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+	        <apex:outputPanel layout="none" rendered="{!t.t_isRichText}"><apex:outputField value="{!t.t_title_proxy.advpm__Details__c}" /></apex:outputPanel>
+	        <apex:outputText rendered="{!!t.t_isRichText}" value="{!t.t_title}" />
+	    </apex:column>
+	    <apex:column headerValue="Status" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+	        <apex:outputPanel layout="none" rendered="{!t.t_isRichText}"><apex:outputField value="{!t.t_status_proxy.advpm__Details__c}" /></apex:outputPanel>
+	        <apex:outputText rendered="{!!t.t_isRichText}" value="{!t.t_status}" />
+	    </apex:column>
+	    <apex:column headerValue="User" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+	        <apex:outputLink value="/{!t.t_userid}">{!t.t_username}</apex:outputLink>
+	    </apex:column>
+	</apex:dataTable>
+</body>
+</html>
+</apex:page>

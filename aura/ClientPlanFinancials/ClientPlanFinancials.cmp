@@ -1,0 +1,470 @@
+<aura:component controller="ClientPlanFinancialsControllerMobile">
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <ltng:require scripts="/resource/jquery_1_11" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <c:ClientPlanHeader tabId="3" planId="{!v.planId}"/>
+                
+                <div id="wholePage">
+                    <div class="sectionLabel" onclick="{!c.onClientRatingLabelClicked}">
+                        <span class="slds-align-middle">Client rating</span>
+                        <div aura:id="clientRatingMenu" class="slds-dropdown-trigger slds-float--right toggle">
+                            <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li class="slds-dropdown__item" onclick="{!c.onEditClientRatingClicked}">
+                                        <a href="javascript:void(0)" role="menuitem">
+                                            <p class="slds-truncate">Edit</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clientRating" aura:id="clientRating" class="toggle">
+                        <ul class="slds-list--vertical slds-has-dividers--bottom-space slds-has-selection">
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">TFL</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="tfl" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.TFL__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">FAIS status</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="faisStatus" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.FAIS_Status__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Last review date</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="lastReviewDate" class="slds-truncate slds-list__item">
+                                                <ui:outputDate value="{!v.clientPlan.Last_Review_Date__c}"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Clients year end</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="financialYearEnd" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.Financial_Year_End__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Date of last Audited financial statements</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="latestAudited" class="slds-truncate slds-list__item">
+                                                <ui:outputDate value="{!v.clientPlan.Latest_Audited_Financial_Statement__c}"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sectionLabel" onclick="{!c.onClientFinancialsLabelClicked}">
+                        <span class="slds-align-middle">Financial information</span>
+                        <div aura:id="clientFinancialsMenu" class="slds-dropdown-trigger slds-float--right toggle">
+                            <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li class="slds-dropdown__item" onclick="{!c.onAddFinancialsClicked}">
+                                        <a href="javascript:void(0)" role="menuitem">
+                                            <p class="slds-truncate">Add year</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clientFinancials" aura:id="clientFinancials" class="toggle">
+                        <aura:iteration items="{!v.clientFinancialsData}" var="f">
+                            <div id="{!f.Id}" class="slds-tile slds-hint-parent item" onclick="{!c.onFinancialsClicked}">
+                                <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                    <p class="slds-tile__title slds-truncate">{!f.Year__c}</p>
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button slds-button--icon-container" onclick="return false;">
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li class="slds-dropdown__item" onclick="{!c.onEditFinancialsClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Edit</p>
+                                                    </a>
+                                                </li>
+                                                <li class="slds-dropdown__item" onclick="{!c.onRemoveFinancialsClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Remove</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">TURNOVER</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Turnover__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">TOTAL ASSETS</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Total_Assets__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">NET ASSET VALUE</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Net_Asset_Value__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">TOTAL INTEREST BEARING DEBT</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Total_Interest_Bearing_Debt__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">CASH GENERATED BY OPERATIONS</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Cash_Generated_by_Operations__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">EBITDA</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.EBITDA__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">EBIT</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.EBIT__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">ROE</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                {!f.ROE__c}{!if(f.ROE__c != null, '%', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">ROA</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                {!f.ROA__c}{!if(f.ROA__c != null, '%', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">DEBT EQUITY</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                {!f.Debt_Equity__c}{!if(f.Debt_Equity__c != null, '%', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">CURRENT RATIO</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                {!f.Current_Ratio__c}{!if(f.Current_Ratio__c != null, '%', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">EPS</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.EPS__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="financialsBody toggle marginBottom05">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">INTEREST COVER RATIO</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                {!f.Interest_Cover_Ratio__c}{!if(f.Interest_Cover_Ratio__c != null, '%', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                    
+                    <div class="sectionLabel" onclick="{!c.onFacilitiesLabelClicked}">
+                        <span class="slds-align-middle">Total facilities breakdown schedule</span>
+                    </div>
+                    <div id="facilities" aura:id="facilities" class="toggle">
+                        
+                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate item">
+                            <p class="slds-tile__title slds-truncate">ABSA / Barclays facilities</p>
+                            
+                            <button class="slds-button slds-button--icon-border" onclick="{!c.onAddAbsaFacilityClicked}">
+                                <c:SVG class="slds-button__icon"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                            </button>
+                        </div>
+                        <aura:iteration items="{!v.absaFacilities}" var="f">
+                            <div id="{!f.Id}" class="slds-tile slds-hint-parent item" onclick="{!c.onFacilityClicked}">
+                                <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                    <p class="slds-tile__title slds-truncate">{!f.Product_Level_3__r.Name}</p>
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button slds-button--icon-container" onclick="return false;">
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li class="slds-dropdown__item" onclick="{!c.onEditAbsaFacilityClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Edit</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="facilityBody toggle marginBottom15">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">Limit</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Limit__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">Utilisation</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Utilisation__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        
+                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate item marginTop2">
+                            <p class="slds-tile__title slds-truncate">Other bank facilities</p>
+                            
+                            <button class="slds-button slds-button--icon-border" onclick="{!c.onAddOtherFacilityClicked}">
+                                <c:SVG class="slds-button__icon"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                            </button>
+                        </div>
+                        <aura:iteration items="{!v.otherFacilities}" var="f">
+                            <div id="{!f.Id}" class="slds-tile slds-hint-parent item" onclick="{!c.onFacilityClicked}">
+                                <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                    <p class="slds-tile__title slds-truncate">{!f.Product_Level_3__r.Name}</p>
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button slds-button--icon-container" onclick="return false;">
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li class="slds-dropdown__item" onclick="{!c.onEditOtherFacilityClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Edit</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="facilityBody toggle marginBottom15">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">Bank</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">{!f.Bank__c}</p>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">Limit</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!f.Limit__c}" currencyCode="{!f.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        
+                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate item marginTop2">
+                            <p class="slds-tile__title slds-truncate">Security currently held by ABSA / Barclays</p>
+                            
+                            <button class="slds-button slds-button--icon-border" onclick="{!c.onAddSecurityClicked}">
+                                <c:SVG class="slds-button__icon"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                            </button>
+                        </div>
+                        <aura:iteration items="{!v.security}" var="s">
+                            <div id="{!s.Id}" class="slds-tile slds-hint-parent item" onclick="{!c.onFacilityClicked}">
+                                <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                    <p class="slds-tile__title slds-truncate">
+                                        <div class="richtextEditorWrapper">
+                                            <ui:outputRichText value="{!s.Security_Description__c}" />
+                                        </div>
+                                    </p>
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button slds-button--icon-container" onclick="return false;">
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li class="slds-dropdown__item" onclick="{!c.onEditSecurityClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Edit</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="facilityBody toggle marginBottom15">
+                                    <div class="slds-tile slds-hint-parent borderTop">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <p class="slds-tile__title slds-truncate">Value</p>
+                                        </div>
+                                        <div class="slds-tile__detail slds-text-body--small">
+                                            <p class="slds-truncate">
+                                                <ui:outputCurrency value="{!s.Value__c}" currencyCode="{!s.CurrencyIsoCode}"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+	
+</aura:component>

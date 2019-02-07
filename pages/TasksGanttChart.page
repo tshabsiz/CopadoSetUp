@@ -1,0 +1,195 @@
+<apex:page controller="TasksGanttChartController" showHeader="true" sidebar="false" docType="html-5.0">
+	<apex:stylesheet value="{!URLFOR($Resource.jsgantt, 'jsgantt.css')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jsgantt, 'jsgantt.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.autocomplete, 'jquery.autocomplete.min.js')}"/>
+
+	<style>
+		.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+		.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+		.autocomplete-selected { background: #F0F0F0; }
+		.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+		.autocomplete-group { padding: 2px 5px; }
+		.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+		.label-top {
+			display: block;
+			margin-bottom: 12px;
+			font-weight: bold;
+		}
+		.input-text {
+			width: 50%;
+		}
+		.span-checkbox {
+			margin-right: 24px;
+		}
+	</style>
+
+<apex:form >
+	<apex:pageBlock id="GanttChart">
+
+		<input type="text" name="selProgramId" id="selProgramId" hidden="true"/>
+
+		<table cellspacing="12px" id="filters" width="100%">
+			<tr>
+				<td width="50%">
+					<label class="label-top" for="autocompleteProgram">{!$ObjectType.Program__c.Label}</label>
+					<input class="input-text" type="text" id="autocompleteProgram"/>
+				</td>
+				<td>
+					<label class="label-top" for="autocompleteInitiative">{!$ObjectType.Initiative__c.Label}</label>
+					<input class="input-text" type="text" id="autocompleteInitiative"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label class="label-top" for="">Status</label>
+					<span class="span-checkbox">
+						<label for="planned">Planned</label>
+						<input type="checkbox" name="planned" id="planned" checked="true" />
+					</span>
+					<span class="span-checkbox">
+						<label for="inprogress">In Progress</label>
+						<input type="checkbox" name="inprogress" id="inprogress" checked="true" />
+					</span>
+					<span class="span-checkbox">
+						<label for="complete">Complete</label>
+						<input type="checkbox" name="complete" id="complete" />
+					</span>
+					<span class="span-checkbox">
+						<label for="cancelled">Cancelled</label>
+						<input type="checkbox" name="cancelled" id="cancelled" />
+					</span>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+
+		<div style="position:relative" class="gantt" id="GanttChartDIV">
+		<script>
+
+			var g = new JSGantt.GanttChart('g',document.getElementById('GanttChartDIV'), 'day');
+			g.setShowRes(0); // Show/Hide Responsible (0/1)
+			g.setShowDur(1); // Show/Hide Duration (0/1)
+			g.setShowComp(0); // Show/Hide % Complete(0/1)
+			g.setFormatArr("day","week","month") 
+
+			$('#planned').change(function(){
+				if($('#selProgramId').val()){
+					drawChartForProgram($('#selProgramId').val());
+				} 
+			});
+			$('#inprogress').change(function(){
+				if($('#selProgramId').val()){
+					drawChartForProgram($('#selProgramId').val());
+				} 
+			});
+			$('#complete').change(function(){
+				if($('#selProgramId').val()){
+					drawChartForProgram($('#selProgramId').val());
+				} 
+			});
+			$('#cancelled').change(function(){
+				if($('#selProgramId').val()){
+					drawChartForProgram($('#selProgramId').val());
+				} 
+			});
+
+			window.onload = getAutocompleteOptions();
+			function getAutocompleteOptions(){
+				getAllPrograms();
+				getAllInitiatives();
+			}
+
+			function getAllPrograms() {
+				Visualforce.remoting.Manager.invokeAction(
+                	'{!$RemoteAction.TasksGanttChartController.getAllPrograms}',
+               		function(result, event) {
+                 		var programs = JSON.parse(result);
+                  		$('#autocompleteProgram').autocomplete({
+							lookup: programs,
+							onSelect: function (suggestion) {
+								$('#autocompleteInitiative').val("");
+								$('#selProgramId').val(suggestion.data);
+								drawChartForProgram(suggestion.data);
+							}
+						});
+                 	},
+                 	{ escape: false }
+            	);
+			}
+
+			function getAllInitiatives() {
+				Visualforce.remoting.Manager.invokeAction(
+                	'{!$RemoteAction.TasksGanttChartController.getAllInitiatives}',
+               		function(result, event) {
+                 		var initiatives = JSON.parse(result);
+                  		$('#autocompleteInitiative').autocomplete({
+							lookup: initiatives,
+							onSelect: function (suggestion) {
+								$('#autocompleteProgram').val("");
+								$('#selProgramId').val("");
+								drawChartForInitiative(suggestion.data);
+							}
+						});
+                 	},
+                 	{ escape: false }
+            	);
+			}
+
+			function drawChartForProgram(programId){
+ 				if(g) {
+ 					g.cleanTaskList();
+ 					var isPlannedSel = $('#planned').prop("checked");
+ 					var isInProgressSel = $('#inprogress').prop("checked");
+ 					var isCompleteSel = $('#complete').prop("checked");
+ 					var isCancelledSel = $('#cancelled').prop("checked");
+ 					Visualforce.remoting.Manager.invokeAction(
+                		'{!$RemoteAction.TasksGanttChartController.getGanttChartDataForProgram}',
+               			programId, isPlannedSel, isInProgressSel, isCompleteSel, isCancelledSel,
+               			function(result, event) {
+                			if(result.length > 0){
+                 				var arrayElements = JSON.parse(result);
+                  				for (var i = 0; i < arrayElements.length; i++) {
+									var el = arrayElements[i];
+									g.AddTaskItem(new JSGantt.TaskItem(el.pID, el.pName, el.pStart,  el.pEnd, el.pColor, el.pLink, 0, '', 0, el.pGroup, el.pParent, 1));
+								}
+							}
+							g.Draw();   
+							g.DrawDependencies();
+                 		},
+                 		{ escape: false }
+            		);
+				} else{
+					alert("not defined");
+				}
+			}
+
+			function drawChartForInitiative(initiativeId){
+ 				if(g) {
+ 					g.cleanTaskList();
+ 					Visualforce.remoting.Manager.invokeAction(
+                		'{!$RemoteAction.TasksGanttChartController.getGanttChartDataForInitiative}',
+               			initiativeId,
+               			function(result, event) {
+                			if(result.length > 0){
+                 				var arrayElements = JSON.parse(result);
+                  				for (var i = 0; i < arrayElements.length; i++) {
+									var el = arrayElements[i];
+									g.AddTaskItem(new JSGantt.TaskItem(el.pID, el.pName, el.pStart,  el.pEnd, el.pColor, el.pLink, 0, '', 0, el.pGroup, el.pParent, 1));
+								}
+							}
+							g.Draw();   
+							g.DrawDependencies();
+                 		},
+                 		{ escape: false }
+            		);
+				} else{
+					alert("not defined");
+				}
+			}
+
+		</script>
+		</div>
+	</apex:pageBlock>
+</apex:form>
+</apex:page>

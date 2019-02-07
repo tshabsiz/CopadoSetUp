@@ -1,0 +1,36 @@
+<apex:page standardController="advpm__Timekeeper__c" extensions="advpm.TimekeeperQuotaController" tabStyle="advpm__Timekeeper__c" showHeader="false">
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_TableScroll, 'jquery.tableScroll/jquery.tablescroll.js')}" />
+<style type="text/css">
+	body .pbBody table.addQuota tr th, body .pbBody table.addQuota tr td {
+	    border: 0px solid #EDEDED;
+	}
+	.Custom15Tab .secondaryPalette, .individualPalette .Custom15Block .secondaryPalette {
+		background-color: transparent !important;
+		border-color: transparent !important;
+	}
+</style>
+<script type="text/javascript">
+	$j = jQuery.noConflict();
+   	$j(document).ready(function(){
+		$j('.quota-table').tableScroll({height:180,containerClass:'pbBody'});
+	});
+</script>
+<apex:dataTable style="width:100%;" value="{!Quotas}" var="q" id="tbQuotas" styleClass="list quota-table" headerClass="headerRow" rowClasses="dataRow even,dataRow odd" columnClasses="dataCell">
+	<apex:column headerValue="Type">
+		<apex:outputField value="{!advpm__Timekeeper__c.advpm__Type__c}" />
+	</apex:column>
+	<apex:column headerValue="Name">
+		<apex:outputField value="{!q.Name}" />
+	</apex:column>
+	<apex:column headerValue="Start Date">
+		<apex:outputField value="{!q.advpm__Start_Date__c}" />
+	</apex:column>
+	<apex:column headerValue="End Date">
+		<apex:outputField value="{!q.advpm__End_Date__c}" />
+	</apex:column>
+	<apex:column headerValue="Hours">
+		<apex:outputField value="{!q.advpm__Hours__c}" />
+	</apex:column>
+</apex:dataTable>
+</apex:page>

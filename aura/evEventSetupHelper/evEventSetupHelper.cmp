@@ -1,0 +1,109 @@
+<!--
+    @author Deshan Pillay
+    @date 17/07/2018
+    @description This component is used to display the event setup status.
+-->
+
+<aura:component controller="evEventSetupHelper_Controller" implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+    
+    <aura:handler name="init" action="{!c.getEventRecord}" value="{!this}" access="global" />
+    <aura:handler event="force:refreshView" action="{!c.getEventRecord}" />
+    <aura:attribute name="event" type="Event__c"/>
+    
+    <lightning:card>
+        
+        <div class="slds-p-horizontal_small">
+            
+            <h2 class="header-title-container">
+                <span class="slds-text-heading--small slds-truncate" title="Event Setup Helper">
+                    Event Setup Assistant
+                </span>
+            </h2>
+            
+            <div class="slds-m-top_medium">
+                
+                <div class="slds-media slds-media_center slds-m-bottom_medium">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!v.event.Event_Team_Members_Count__c > 1}">
+                            <lightning:icon class="ev-setup-complete" iconName="action:approval" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.event.Event_Team_Members_Count__c == 1}">
+                            <lightning:icon class="ev-setup-partial" iconName="action:question_post_action" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.event.Event_Team_Members_Count__c == 0}">
+                            <lightning:icon class="ev-setup-incomplete" iconName="action:close" size="small" />
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>Event Team Members</p>
+                    </div>
+                </div>
+                
+                <div class="slds-media slds-media_center slds-m-bottom_medium">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!and(and(v.event.Theme__c != null, v.event.Event_Configuration__c != null), v.event.Terms_and_Conditions__c != null)}">
+                            <lightning:icon class="ev-setup-complete" iconName="action:approval" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!and(and(v.event.Theme__c == null, v.event.Event_Configuration__c == null), v.event.Terms_and_Conditions__c == null)}">
+                            <lightning:icon class="ev-setup-incomplete" iconName="action:close" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!or(or(v.event.Theme__c != null, v.event.Event_Configuration__c != null), v.event.Terms_and_Conditions__c != null)}">
+                            <aura:if isTrue="{!or(or(v.event.Theme__c == null, v.event.Event_Configuration__c == null), v.event.Terms_and_Conditions__c == null)}">
+                                <lightning:icon class="ev-setup-partial" iconName="action:question_post_action" size="small" />
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>Link Event Configurations</p>
+                    </div>
+                </div>
+
+                <div class="slds-media slds-media_center slds-m-bottom_medium">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!v.event.Venue__c != null}">
+                            <lightning:icon class="ev-setup-complete" iconName="action:approval" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.event.Venue__c == null}">
+                            <lightning:icon class="ev-setup-incomplete" iconName="action:close" size="small" />
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>Add Venue</p>
+                    </div>
+                </div>
+                
+                <div class="slds-media slds-media_center slds-m-bottom_medium">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!v.event.Event_Email_Schedule_Count__c > 0}">
+                            <lightning:icon class="ev-setup-complete" iconName="action:approval" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.event.Event_Email_Schedule_Count__c == 0}">
+                            <lightning:icon class="ev-setup-incomplete" iconName="action:close" size="small" />
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>Create Email Schedule</p>
+                    </div>
+                </div>
+
+                <div class="slds-media slds-media_center slds-m-bottom_medium">
+                    <div class="slds-media__figure">
+                        <aura:if isTrue="{!v.event.Delegates_Invited_Count__c > 0}">
+                            <lightning:icon class="ev-setup-complete" iconName="action:approval" size="small" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.event.Delegates_Invited_Count__c == 0}">
+                            <lightning:icon class="ev-setup-incomplete" iconName="action:close" size="small" />
+                        </aura:if>
+                    </div>
+                    <div class="slds-media__body">
+                        <p>Invite Delegates</p>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+    </lightning:card>
+    
+</aura:component>

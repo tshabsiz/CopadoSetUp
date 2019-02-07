@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Auto email alerts to the L &amp; WC team when an SA opportunity is created when any of the following products have been linked</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Liquidity And Working Capital Alert</name>
+    <style>freeForm</style>
+    <subject>A transactional banking deal has been added : {!Opportunity.Name}</subject>
+    <textOnly>Dear Team
+
+{!Opportunity.Name} has been loaded on to Salesforce.
+
+Stage : {!Opportunity.StageName}
+
+CloseDate : {!Opportunity.CloseDate}
+
+Annualized Income : {!Opportunity.Annualised_Income__c}
+
+Product Level 1 : {!Opportunity.ProductList__c}
+
+Product Level 2 : {!Opportunity.ProductLevel2List__c}
+
+Product Level 3 : {!Opportunity.ProductLevel3List__c}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

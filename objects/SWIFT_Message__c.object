@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>RN - CloudSmiths 
+Object stores new and updated SWIFT Messages related to a Payments Case</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Answers__c</fullName>
+        <externalId>false</externalId>
+        <label>Answers</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>ApproveMessage__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Approved</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Approver__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Approver</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>SWIFT_Messages</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>BusinessEntity__c</fullName>
+        <defaultValue>&quot;IBCCARE&quot;</defaultValue>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Business Entity</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case__c</fullName>
+        <description>RN - CloudSmiths - Related payments case</description>
+        <externalId>false</externalId>
+        <label>Case</label>
+        <referenceTo>Case</referenceTo>
+        <relationshipLabel>SWIFT Messages</relationshipLabel>
+        <relationshipName>SWIFT_Messages</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>DateOfOriginalMessage__c</fullName>
+        <description>Date of the original message</description>
+        <externalId>false</externalId>
+        <label>Date of Original Message</label>
+        <length>20</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DestinationAddress__c</fullName>
+        <externalId>false</externalId>
+        <label>Destination Address</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>GBPReference__c</fullName>
+        <description>RN - GBP Ref from the parent Case record</description>
+        <externalId>false</externalId>
+        <formula>Case__r.SWIFT_GBP_Reference__c</formula>
+        <label>ABSA Reference</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>IsOriginalMessage__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths - indicator that this was the original query message</description>
+        <externalId>false</externalId>
+        <label>Is Original Message</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>MT_the_Original_Message__c</fullName>
+        <externalId>false</externalId>
+        <label>MT &amp; the Original Message</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>MessageFlowDirection__c</fullName>
+        <description>RN - CloudSmiths - Indicator that shows if a message came in via the SF API or was sent out via the Meridian API from SF</description>
+        <externalId>false</externalId>
+        <label>Message Flow Direction</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>In</fullName>
+                    <default>false</default>
+                    <label>In</label>
+                </value>
+                <value>
+                    <fullName>Out</fullName>
+                    <default>false</default>
+                    <label>Out</label>
+                </value>
+                <value>
+                    <fullName>Undefined</fullName>
+                    <default>true</default>
+                    <label>Undefined</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>MessageType__c</fullName>
+        <externalId>false</externalId>
+        <label>Message Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>192</fullName>
+                    <default>false</default>
+                    <label>192</label>
+                </value>
+                <value>
+                    <fullName>195</fullName>
+                    <default>false</default>
+                    <label>195</label>
+                </value>
+                <value>
+                    <fullName>196</fullName>
+                    <default>false</default>
+                    <label>196</label>
+                </value>
+                <value>
+                    <fullName>199</fullName>
+                    <default>false</default>
+                    <label>199</label>
+                </value>
+                <value>
+                    <fullName>292</fullName>
+                    <default>false</default>
+                    <label>292</label>
+                </value>
+                <value>
+                    <fullName>295</fullName>
+                    <default>false</default>
+                    <label>295</label>
+                </value>
+                <value>
+                    <fullName>296</fullName>
+                    <default>false</default>
+                    <label>296</label>
+                </value>
+                <value>
+                    <fullName>299</fullName>
+                    <default>false</default>
+                    <label>299</label>
+                </value>
+                <value>
+                    <fullName>999</fullName>
+                    <default>false</default>
+                    <label>999</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Message__c</fullName>
+        <externalId>false</externalId>
+        <formula>&quot;{1:&quot; + Sender_Address__c + &quot;}&quot; + BR() + &quot;{2:&quot; + DestinationAddress__c + &quot;}&quot; + BR() + &quot;{20:&quot; + TransactionReference__c + &quot;}&quot; + BR() + &quot;{21:&quot; + RelatedReference__c + &quot;}&quot; + BR() + &quot;{76:&quot; + Answers__c + &quot;}&quot; + BR() + &quot;{79:&quot; + Narrative__c + &quot;}&quot;</formula>
+        <label>Message</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Narrative_OriginalMsg__c</fullName>
+        <externalId>false</externalId>
+        <label>Narrative OriginalMsg</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Narrative__c</fullName>
+        <externalId>false</externalId>
+        <label>Narrative</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>OriginalMessage__c</fullName>
+        <externalId>false</externalId>
+        <label>Original Message</label>
+        <length>100000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>OriginalSWIFTId__c</fullName>
+        <externalId>false</externalId>
+        <formula>Case__r.SWIFTId__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Original SWIFT Id</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>PaymentMessage__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Payment Message</label>
+        <length>100000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Queries__c</fullName>
+        <externalId>false</externalId>
+        <label>Queries</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>QueryMessage__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Query Message</label>
+        <length>100000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>RejectMessage__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Rejected</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>RelatedReference__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Related Reference</label>
+        <length>16</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SWIFTMessage__c</fullName>
+        <description>RN - New SWIFT messages sent from SF</description>
+        <externalId>false</externalId>
+        <label>SWIFT Message</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Sender_Address__c</fullName>
+        <defaultValue>&quot;ABSAZAJ0AXXX&quot;</defaultValue>
+        <externalId>false</externalId>
+        <label>Sender Address</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>StatusUpdate__c</fullName>
+        <description>RN - CloudSmiths - Successes or failure and message response from Meridian when pushing SWIFT messages out from SF</description>
+        <externalId>false</externalId>
+        <label>Status Update</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>TransactionReference__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Transaction Reference</label>
+        <length>16</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ValidApprovers__c</fullName>
+        <externalId>false</externalId>
+        <label>Valid Approvers</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>SWIFT Message</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>Case__c</columns>
+        <columns>NAME</columns>
+        <columns>MessageType__c</columns>
+        <columns>Sender_Address__c</columns>
+        <columns>TransactionReference__c</columns>
+        <columns>QueryMessage__c</columns>
+        <columns>RelatedReference__c</columns>
+        <columns>CREATED_DATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>MessageFlowDirection__c</field>
+            <operation>equals</operation>
+            <value>Out</value>
+        </filters>
+        <label>All</label>
+        <sharedTo>
+            <group>Payment_Queues</group>
+        </sharedTo>
+    </listViews>
+    <listViews>
+        <fullName>X1_Awaiting_Approval</fullName>
+        <columns>NAME</columns>
+        <columns>BusinessEntity__c</columns>
+        <columns>GBPReference__c</columns>
+        <columns>Sender_Address__c</columns>
+        <columns>MessageType__c</columns>
+        <columns>RelatedReference__c</columns>
+        <columns>TransactionReference__c</columns>
+        <columns>DestinationAddress__c</columns>
+        <columns>Narrative__c</columns>
+        <columns>Queries__c</columns>
+        <columns>QueryMessage__c</columns>
+        <columns>Approver__c</columns>
+        <columns>ApproveMessage__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RECORDTYPE</field>
+            <operation>equals</operation>
+            <value>SWIFT_Message__c.SWIFT_Outbound</value>
+        </filters>
+        <filters>
+            <field>ApproveMessage__c</field>
+            <operation>equals</operation>
+            <value>0</value>
+        </filters>
+        <filters>
+            <field>RejectMessage__c</field>
+            <operation>equals</operation>
+            <value>0</value>
+        </filters>
+        <label>1. Awaiting Approval</label>
+        <sharedTo>
+            <group>Payment_Queues</group>
+        </sharedTo>
+    </listViews>
+    <listViews>
+        <fullName>X2_Approved</fullName>
+        <columns>NAME</columns>
+        <columns>GBPReference__c</columns>
+        <columns>Sender_Address__c</columns>
+        <columns>MessageType__c</columns>
+        <columns>Message__c</columns>
+        <columns>RelatedReference__c</columns>
+        <columns>TransactionReference__c</columns>
+        <columns>DestinationAddress__c</columns>
+        <columns>Narrative__c</columns>
+        <columns>Queries__c</columns>
+        <columns>QueryMessage__c</columns>
+        <columns>Approver__c</columns>
+        <columns>ApproveMessage__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>ApproveMessage__c</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>2. Approved</label>
+    </listViews>
+    <listViews>
+        <fullName>X3_Rejected</fullName>
+        <columns>NAME</columns>
+        <columns>GBPReference__c</columns>
+        <columns>Sender_Address__c</columns>
+        <columns>MessageType__c</columns>
+        <columns>RelatedReference__c</columns>
+        <columns>TransactionReference__c</columns>
+        <columns>DestinationAddress__c</columns>
+        <columns>Narrative__c</columns>
+        <columns>Answers__c</columns>
+        <columns>QueryMessage__c</columns>
+        <columns>Queries__c</columns>
+        <columns>Approver__c</columns>
+        <columns>RejectMessage__c</columns>
+        <columns>ApproveMessage__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RejectMessage__c</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>3. Rejected</label>
+        <sharedTo>
+            <group>Payment_Queues</group>
+        </sharedTo>
+    </listViews>
+    <nameField>
+        <displayFormat>{0000000000}</displayFormat>
+        <label>Message Id</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>SWIFT Messages</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>SWIFT_Inbound</fullName>
+        <active>true</active>
+        <description>Read Only record type</description>
+        <label>SWIFT Inbound</label>
+        <picklistValues>
+            <picklist>MessageFlowDirection__c</picklist>
+            <values>
+                <fullName>In</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Out</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Undefined</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>MessageType__c</picklist>
+            <values>
+                <fullName>192</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>195</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>196</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>199</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>292</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>295</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>296</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>299</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>999</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>SWIFT_Outbound</fullName>
+        <active>true</active>
+        <description>Record type for outbound messages</description>
+        <label>SWIFT Outbound</label>
+        <picklistValues>
+            <picklist>MessageFlowDirection__c</picklist>
+            <values>
+                <fullName>In</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Out</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Undefined</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>MessageType__c</picklist>
+            <values>
+                <fullName>192</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>195</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>196</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>199</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>292</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>295</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>296</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>299</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>999</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Approve_Message</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Approve Message</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/40.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/40.0/apex.js&quot;)}
+
+var msg = new sforce.SObject(&quot;SWIFT_Message__c&quot;); 
+msg.Id = &apos;{!SWIFT_Message__c.Id}&apos;;
+
+//alert(&apos;{!SWIFT_Message__c.ApproverId__c}&apos; + &apos; : &apos; + &apos;{!$User.Id}&apos;);
+
+var validApprovers = &apos;{!SWIFT_Message__c.ValidApprovers__c}&apos;;
+
+if(!validApprovers.includes(&apos;{!$User.Email}&apos;)){
+
+alert(&apos;You are NOT the valid Approver for this SWIFT message&apos;);
+
+}else{
+
+if(&apos;{!SWIFT_Message__c.ApproveMessage__c}&apos;==&apos;true&apos;){
+
+alert(&apos;You cannot Approve a message already Approved before&apos;);
+
+}else{
+
+msg.ApproveMessage__c = true;
+msg.RejectMessage__c = false;
+msg.Approver__c = &apos;{!$User.Id}&apos;;
+
+var result = sforce.connection.update([msg]);
+
+if (result[0].success == &apos;true&apos;){
+
+window.location.reload(); 
+
+}else{ 
+
+alert(result[0].errors.message); 
+
+}
+
+}
+
+}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Reject_Message</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Reject Message</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/40.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/40.0/apex.js&quot;)}
+
+var msg = new sforce.SObject(&quot;SWIFT_Message__c&quot;); 
+msg.Id = &apos;{!SWIFT_Message__c.Id}&apos;;
+
+var validApprovers = &apos;{!SWIFT_Message__c.ValidApprovers__c}&apos;;
+
+if(!validApprovers.includes(&apos;{!$User.Email}&apos;)){
+
+alert(&apos;You are NOT the valid Approver for this SWIFT message&apos;);
+
+}else{
+
+if(&apos;{!SWIFT_Message__c.ApproveMessage__c}&apos;==&apos;true&apos;){
+
+alert(&apos;You cannot Reject a message already Approved before&apos;);
+
+}else{
+
+msg.RejectMessage__c = true;
+
+var result = sforce.connection.update([msg]);
+
+if (result[0].success == &apos;true&apos;){
+
+window.location.reload(); 
+
+}else{ 
+
+alert(result[0].errors.message); 
+
+}
+
+}
+
+}</url>
+    </webLinks>
+</CustomObject>

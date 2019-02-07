@@ -1,0 +1,184 @@
+<apex:page showHeader="true" sidebar="true" controller="Matter_Override_Litigation_Controller" >
+    <apex:stylesheet value="{!URLFOR($Resource.box__BoxEmbed, 'BoxEmbed/style.css')}"/>
+    <style>
+        .center
+        {
+            text-align: center;         
+        }
+        .border
+        {
+            border: 2px;
+        }
+        .white
+        {
+            background-color: white;
+        }
+    </style>
+    <apex:form >
+        <apex:actionFunction name="boxaction" action="{!createBox}" />
+        <apex:sectionHeader subtitle="New Matter/Deal" title="Matter/Deal Edit" />
+        <apex:pageMessages />
+        <apex:pageBlock title="Matter/Deal Edit" mode="edit">
+
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Add Documents" oncomplete="boxaction();" rendered="{!NOT(showBox)}"/>
+                <apex:commandButton action="{!done}" value="Save" rendered="{!showBox}" />
+                <apex:commandButton action="{!cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+
+            <apex:outputPanel id="boxPanel">
+                <apex:pageBlock title="Documents" mode="edit" rendered="{!showBox}">
+                    <apex:iframe src="https://absasfdc.app.box.com/embed_widget/files/0/f/{!boxFolderId}?view=list&sort=date&direction=ASC&theme=gray" frameborder="false"/>
+                </apex:pageBlock>
+            </apex:outputPanel>
+
+            <apex:pageBlockSection title="Name" columns="2" collapsible="false" rendered="{!NOT(showBox)}">         
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Name" />
+                    <apex:inputText value="{!matterRec.Name}" id="Name" />
+                </apex:pageBlockSectionItem>    
+                <apex:commandButton value="Check Related" action="{!searchDupes}" >
+                    <apex:actionSupport reRender="relatedSection" event="onclick" />
+                </apex:commandButton>           
+            </apex:pageBlockSection>
+
+            <apex:outputPanel id="relatedSection" rendered="{!NOT(showBox)}">
+                <apex:pageBlockSection title="Related Matters" columns="1" collapsible="false" rendered="{!showDuplicates}">
+                    
+                        <apex:dataTable value="{!potentialDuplicates}" var="dup" rules="all" cellspacing="10px" width="100%" styleClass="border">
+                            <apex:column headerValue="Related" styleClass="center white" headerClass="center">
+                                <apex:inputCheckbox value="{!dup.isRelated}" />
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['Name'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputLink value="/{!dup.matter.Id}">
+                                    {!dup.matter.Name}
+                                </apex:outputLink>
+                            </apex:column>                      
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['OwnerId'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.OwnerId}" />
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['advpm__Description__c'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.advpm__Description__c}" />
+                            </apex:column>                      
+                            <apex:column headerValue="{!$ObjectType.advpm__Matter__c.fields['Business_Unit_Cluster_Segment__c'].Label}" styleClass="center white" headerClass="center">
+                                <apex:outputField value="{!dup.matter.Business_Unit_Cluster_Segment__c}" />
+                            </apex:column>
+                        </apex:dataTable>
+                    
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:pageBlockSection title="General Information" columns="2" collapsible="false" rendered="{!NOT(showBox)}">
+
+                <apex:inputField value="{!matterRec.advpm__Engagement_Date__c}" />
+                <apex:inputField value="{!matterRec.Reputational_Risk__c}" />
+                <apex:inputField value="{!matterRec.Cost_Centre__c}" />
+                <apex:inputField value="{!matterRec.Customer_account_number_policy_number__c}" />
+                <apex:inputField value="{!matterRec.Client_Branch_code__c}" />
+                <apex:inputField value="{!matterRec.Jurisdiction__c}" />
+                <apex:inputField value="{!matterRec.Litigation_Status__c}" />
+                <apex:outputField value="{!matterRec.OwnerId}" />
+                <apex:inputField value="{!matterRec.advpm__Description__c}" style="width: 263px;" />    
+
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Categories & Records Management" columns="1" collapsible="false" rendered="{!NOT(showBox)}">
+
+                <apex:inputField value="{!matterRec.Matter_Type__c}" onchange="doSearch1();" id="Type" />
+                <apex:inputField value="{!matterRec.Category__c}" onchange="doSearch1();" id="Category" />
+                <apex:inputField value="{!matterRec.advpm__Legal_Hold__c}" />
+
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Claim Value Information" columns="2" collapsible="false" id="financialSection" rendered="{!NOT(showBox)}">
+
+                <apex:inputField value="{!matterRec.Claim_By_Against_Barclays__c}" rendered="{!NOT(matterRec.Financial_Value_Unknown__c)}">
+                    <apex:actionSupport reRender="financialSection" event="onchange" action="{!claimTypeChange}"/>
+                </apex:inputField>
+                <apex:outputField value="{!matterRec.Claim_By_Against_Barclays__c}" rendered="{!matterRec.Financial_Value_Unknown__c}" />
+                <apex:inputField value="{!matterRec.Financial_Value_Unknown__c}" >
+                    <apex:actionSupport reRender="financialSection" event="onchange" action="{!clearFinancial}"/>
+                </apex:inputField>
+
+                <apex:inputField value="{!matterRec.Remote__c}" rendered="{!NOT(matterRec.Financial_Value_Unknown__c)}" />
+                <apex:outputField value="{!matterRec.Remote__c}" rendered="{!matterRec.Financial_Value_Unknown__c}" />
+                <apex:inputField value="{!matterRec.CurrencyIsoCode}" />
+                <apex:inputField value="{!matterRec.Reasonably_Possible__c}" rendered="{!NOT(matterRec.Financial_Value_Unknown__c)}" />
+                <apex:outputField value="{!matterRec.Reasonably_Possible__c}" rendered="{!matterRec.Financial_Value_Unknown__c}" />
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:outputField value="{!matterRec.Probable_Approved__c}" />
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!matterRec.Probable_For_Approval__c}" rendered="{!NOT(matterRec.Financial_Value_Unknown__c)}" >
+                    <apex:actionSupport reRender="financialSection" event="onchange" action="{!claimTypeChange}"/>
+                 </apex:inputField>   
+                <apex:outputField value="{!matterRec.Probable_For_Approval__c}" rendered="{!matterRec.Financial_Value_Unknown__c}" />
+
+                <apex:pageBlockSectionItem >
+                    <!-- Blank -->
+                </apex:pageBlockSectionItem>
+
+                <apex:inputField value="{!matterRec.Securitization_value__c}" rendered="{!NOT(matterRec.Financial_Value_Unknown__c)}" />
+                <apex:outputField value="{!matterRec.Securitization_value__c}" rendered="{!matterRec.Financial_Value_Unknown__c}" />
+
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Status" columns="2" collapsible="false" rendered="{!NOT(showBox)}">
+
+                <apex:inputField value="{!matterRec.Current_Status__c}" style="width: 473px;" />
+                <apex:inputField value="{!matterRec.Notes__c}" style="width: 473px;" />
+                <apex:inputField value="{!matterRec.Previous_current_status__c}" style="width: 473px;" />
+
+            </apex:pageBlockSection>
+
+            <apex:pageBlock title="Participants" id="participantSection" mode="edit" rendered="{!NOT(showBox)}">
+                <apex:variable var="i" value="{!1}"/> 
+                <apex:repeat value="{!participants}" var="p">
+                    <apex:sectionHeader title="Participant {!i}" />
+                    <apex:pageBlockSection columns="1" title="Information" collapsible="false">
+                        <apex:inputField value="{!p.advpm__Staff__c}" required="true" />
+                        <apex:inputField value="{!p.advpm__Role__c}" />
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection columns="1" title="Comment" collapsible="false">
+                        <apex:inputField value="{!p.advpm__Comment__c}" style="width: 308px; height: 68px;" />
+                    </apex:pageBlockSection>
+                    <hr/>
+                    <apex:variable var="i" value="{!i + 1}"/>                                       
+                </apex:repeat>
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="+ Participant" action="{!addParticipant}"  >
+                        <apex:actionSupport reRender="participantSection" event="onclick" oncomplete="autofocus();" />
+                    </apex:commandButton>
+                    <apex:commandButton value="- Participant" action="{!removeParticipant}" immediate="true" >
+                        <apex:actionSupport reRender="participantSection" event="onclick" />
+                    </apex:commandButton>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+
+            <apex:pageBlock title="Business Unit Claims" id="claimSection" mode="edit" rendered="{!NOT(showBox)}">
+                <apex:variable var="j" value="{!1}"/> 
+                <apex:repeat value="{!claims}" var="c">
+                    <apex:sectionHeader title="Business Unit {!j}" />
+                    <apex:pageBlockSection columns="2" collapsible="false">
+                        <apex:inputField value="{!c.Business_Unit__c}" />
+                        <apex:inputField value="{!c.Portion_of_Claim__c}" />
+                    </apex:pageBlockSection>
+                    <hr/>
+                    <apex:variable var="j" value="{!j + 1}"/>                                       
+                </apex:repeat>
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="+ Business Unit" action="{!addClaim}" >
+                        <apex:actionSupport reRender="claimSection" event="onclick" />
+                    </apex:commandButton>
+                    <apex:commandButton value="- Business Unit" action="{!removeClaim}" immediate="true" >
+                        <apex:actionSupport reRender="claimSection" event="onclick" />
+                    </apex:commandButton>
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

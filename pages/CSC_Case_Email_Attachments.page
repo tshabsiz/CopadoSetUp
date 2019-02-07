@@ -1,0 +1,44 @@
+<apex:page standardController="Case" extensions="CSC_Inbox_Email_View_Cont" showHeader="false" sidebar="False" standardStylesheets="true">
+       <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <!--<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />-->
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+        </head>
+    <apex:includeScript value="/support/console/35.0/integration.js"/>
+  
+     <div class="slds">
+    <table width="100%" class="slds-table slds-table--bordered" >
+        <apex:repeat var="a" value="{!att}">
+            <tr class="slds-hint-parent slds-is-selected">
+                <td class="slds-cell-shrink" >
+                	<apex:outputLink value="{!URLFOR($Action.Attachment.Download, a.Id)}" onclick="attSubTab('{!a.Id}','{!a.Name}');">{!a.Name}</apex:outputLink>
+                </td>
+            </tr>
+    	</apex:repeat>
+    </table>
+    </div>
+           <script type="text/javascript">
+           var attId;
+           var fileName;
+           function attSubTab(id, fname) {
+               attId = id;
+               fileName = fname;
+               sforce.console.getFocusedPrimaryTabId(primaryTabId);
+           }
+           var primaryTabId = function primaryTabId(result) {
+               sforce.console.openSubtab(result.id , '/servlet/servlet.FileDownload?file=' + attId, true, fileName, null);
+           };
+           
+           var cId;
+           var cnr;
+           function caseSubTab(id,nr) {
+               cId = id;
+               cnr = nr;
+               sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+           }
+           var primaryTabId2 = function primaryTabId2(result) {
+               sforce.console.openSubtab(result.id , '/' + cId, true, cnr, null);
+           };
+           </script>
+    </html>
+</apex:page>

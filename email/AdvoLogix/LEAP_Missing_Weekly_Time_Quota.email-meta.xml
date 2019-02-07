@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Missing Weekly Time Quota</name>
+    <style>freeForm</style>
+    <subject>Time Notification - Missing Weekly Time Entries Quota</subject>
+    <textOnly>Dear {!advpm__Timekeeper__c.advpm__Staff__c},
+
+Our records indicate that you entered {!advpm__Timekeeper__c.Last_Weeks_Quota_Hours__c} hours for Time last week.
+
+The minimum requirement for time entries is 35 hours a week. To ensure you are compliant with the time capture requirements you should go back into Time and enter at least the minimum requirement for the week.
+
+Please note that you can only enter time 2 weeks either side of the current date so any changes for last week should be made during this week.
+
+Here is the link to access the portal:
+https://barclaysafrica.my.salesforce.com/apex/timesheetentries?date=
+
+Please do not reply to this email as responses will not be monitored.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

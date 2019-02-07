@@ -1,0 +1,345 @@
+<apex:page controller="Case_QA_Form_Controller" sidebar="false" showHeader="false" standardStylesheets="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:includeScript value="/support/console/40.0/integration.js" />
+        <script src="../../soap/ajax/40.0/connection.js" type="text/javascript" >
+        </script>
+        <script src="../../soap/ajax/40.0/apex.js" type="text/javascript" >
+        </script>
+        <style>
+        .search_box{
+           position:absolute;
+           left: 18%;
+           backgound:#FFFFFF; 
+        }
+        </style>
+    </head>
+    <apex:form id="qaForm" >
+        <apex:pageMessages ></apex:pageMessages>
+         <div style="right:0;position:fixed;z-index:99;" id="btndiv">
+             <button style="vertical-align: middle;" type="button" id="btn1" onclick="resetScore();" >
+                Reset All
+            </button>
+            <button style="vertical-align: middle;" type="button" id="btn2" onclick="updateMetaData();" >
+                Save QA
+            </button>
+        </div>
+        <table class="slds-table slds-table_bordered" width="100%" id="theData">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" width="75%">
+                             <apex:outputLabel value="Agent Name"/>
+                            <c:Typeahead style="width:40%;height:40px;" searchBoxId="userSearchBox" object="User" primaryField="Name" secondaryField="" 
+                            searchScope="NAME" placeholder="{!agentName}" minSearchLength="3" 
+                            destinationForSelectedId="userId" destinationForSelectedValue="userName" stealFocus="false" /> 
+                            <input type="hidden" name="userId" id="userId" value="{!agentId}"/>   
+                            <input type="hidden" name="userName" id="userName" value="{!agentName}"/>
+                        </th>
+                        <th scope="col" width="5%">
+                            <div class="slds-truncate" title=""></div>
+                        </th>
+                        <th scope="col" width="5%">
+                            <apex:outputLabel value="{!currentAgentName}" style="color:white;height:15px;border-radius:3px;background-color:rgb(0, 112, 210);" />
+                            <div class="slds-truncate" title="" id="redraw" >
+                                <input value="" readOnly="true" id="theScore" style="height:40px;width:30%;padding:10px 10px;border-radius: 5px;border-color: #d8dde6;"/>
+                                <input value="{!wtotal}" id="wtotal" type="hidden" />
+                                <input value="{!currentAgentName}" id="cagent" type="hidden" />
+                            </div>
+                        </th>
+                        <th scope="col" width="5%">
+                            <div class="slds-truncate" title=""></div>
+                        </th>
+                        <th scope="col" width="10%">
+                            <div class="slds-truncate" title=""></div>
+                        </th>
+                    </tr>
+                </thead>
+            <apex:repeat value="{!wFormStructure}" var="head">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" width="70%">
+                            <div style="font-weight: bold;font-size: large;" title="Heading">{!head.heading}</div>
+                        </th>
+                        <th scope="col" width="5%">
+                            <div class="slds-truncate" title=""></div>
+                        </th>
+                        <th scope="col" width="20%">
+                            <div class="slds-truncate" title="">Agent Score</div>
+                        </th>
+                        <th scope="col" width="5%">
+                            <div class="slds-truncate" title="">Weighting</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!head.questions}" var="val">
+                        <tr>
+                            <td data-label="question" >
+                                <div title="question">{!val.question.QAQuestion__c}</div>
+                            </td>
+                            <td>
+                                 <apex:outputLabel rendered="{!val.question.IsAuditRequirement__c}" value="Audit" style="color:black;height:10px;border-radius:3px;background-color:red;font-weight: bold;font-size:small;" />
+                            </td>
+                            <td data-label="selection" >
+                                <fieldset class="slds-form-element" id="{!val.question}">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-radio_button-group">
+                                            <span class="slds-button slds-radio_button">
+                                                <input type="radio" name="{!val.questionId}" id="yes" value="Yes" title="{!val.isCheckedYes}" placeholder="{!val.question.Weighting__c}" onchange="calculateScore();"/>
+                                                <label class="slds-radio_button__label" for="yes">
+                                                    <span class="slds-radio_faux">Yes</span>
+                                                </label>
+                                            </span>
+                                            <span class="slds-button slds-radio_button">
+                                                <input type="radio" name="{!val.questionId}" id="no-{!val.question.IsAuditRequirement__c}" value="No" title="{!val.isCheckedNo}" placeholder="{!val.question.Weighting__c}" onchange="calculateScore();"/>
+                                                <label class="slds-radio_button__label" for="no">
+                                                    <span class="slds-radio_faux">No</span>
+                                                </label>
+                                            </span>
+                                            <span class="slds-button slds-radio_button">
+                                                <input type="radio" name="{!val.questionId}" id="na" value="NA" title="{!val.isCheckedNA}" placeholder="{!val.question.Weighting__c}" onchange="calculateScore();"/>
+                                                <label class="slds-radio_button__label" for="na">
+                                                    <span class="slds-radio_faux">N/A</span>
+                                                </label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </td>
+                            <td data-label="selection" >
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="textid2"></label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="textid2" class="slds-input" value="{!val.question.Weighting__c}" disabled="disabled" readonly="readonly" />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </apex:repeat>
+        </table>
+          <input value="{!qaId}" id="qaid" type="hidden" />
+          <input type="hidden" id="readonly" value="{!makeReadOnly}" />
+    </apex:form>
+    <script type="text/javascript">
+    
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    var failedAudit = false;
+    var currentScore = 0;
+    var yesCount = 0;
+    var naCount = 0;
+    var wtotal = document.getElementById('wtotal').value;
+    var totalWithOutNA = 0;
+    var auditQA = false;
+    //check all radio buttons previously saved and disable if readonly param were detected
+    //also calculate the current score total
+    var radios = document.getElementsByTagName('input');
+    
+    for(var i=0; radios[i]; ++i){
+        if(radios[i].type == 'radio'){
+            
+            if(radios[i].title == 'checked'){
+               radios[i].checked = true;
+                
+                //calculate the current score total 
+                if(radios[i].value == 'Yes'){
+                    yesCount = parseInt(yesCount) + parseInt(radios[i].placeholder);
+                }else if(radios[i].value == 'NA'){
+                    naCount = parseInt(naCount) + parseInt(radios[i].placeholder); 
+                }else if(radios[i].value == 'No'){
+                    //check if this is a NO for an Audit question. Then the agent scores zero for the comoplete QA
+                    var searchStr = radios[i].id;
+                    if(searchStr.indexOf('true') >= 0){
+                        auditQA = true;
+                    }
+                 }
+            }
+            
+            if(document.getElementById('readonly').value == 'true'){
+                radios[i].disabled = true;
+            }
+        }
+    }
+
+    currentScore = parseInt(yesCount); 
+    
+    if(!auditQA){
+        totalWithOutNA = (parseInt(wtotal) - parseInt(naCount));
+    }
+    
+    document.getElementById('theScore').value = Math.ceil(percent(currentScore, totalWithOutNA)) + '%'; 
+    
+    var saveButton = document.getElementById('btn1');
+    saveButton.style.background = '#0070d2';
+    saveButton.style.borderColor = '#0070d2';
+    saveButton.style.font = '13.3333px Arial';
+    saveButton.style.color = 'white';
+    saveButton.style.borderRadius = '4px';
+    saveButton.style.padding = '10px 10px 10px 10px';
+    saveButton.style.cursor = 'pointer';
+    saveButton.disabled = false;  
+    var resetBtn = document.getElementById('btn2');
+    resetBtn.style.background = '#0070d2';
+    resetBtn.style.borderColor = '#0070d2';
+    resetBtn.style.font = '13.3333px Arial';
+    resetBtn.style.color = 'white';
+    resetBtn.style.borderRadius = '4px';
+    resetBtn.style.padding = '10px 10px 10px 10px';
+    resetBtn.style.cursor = 'pointer';
+    resetBtn.disabled = false;
+     
+    //disable buttons
+    if(document.getElementById('readonly').value == 'true'){
+       document.getElementById('userSearchBox').disabled = true;
+       resetBtn.disabled = true;
+       saveButton.disabled = true;
+    }
+    
+    function calculateScore(){
+        
+            //alert(e.value + ':' + audit);
+        
+        var radios = document.getElementsByTagName('input');
+        currentScore = 0;
+        yesCount = 0;
+        naCount = 0;
+        totalWithOutNA = 0
+        auditQ = false;
+        
+        for(var i=0; radios[i]; ++i){
+            
+            if(radios[i].type == 'radio'){
+                
+                if(radios[i].checked){
+                    //calculate the current score total 
+                   if(radios[i].value == 'Yes'){
+                       yesCount = parseInt(yesCount) + parseInt(radios[i].placeholder);
+                   }else if(radios[i].value == 'NA'){
+                       naCount = parseInt(naCount) + parseInt(radios[i].placeholder); 
+                   }else if(radios[i].value == 'No'){
+                       //check if this is a NO for an Audit question. Then the agent scores zero for the comoplete QA
+                       var searchStr = radios[i].id;
+                       if(searchStr.indexOf('true') >= 0){
+                           auditQ = true;
+                       }
+                   }
+                }
+            }
+        }
+        
+        currentScore = parseInt(yesCount);
+        
+        if(!auditQ){
+            totalWithOutNA = (parseInt(wtotal) - parseInt(naCount));
+        }else{
+        	failedAudit = true;
+        }
+        
+        document.getElementById('theScore').value = Math.ceil(percent(currentScore, totalWithOutNA)) + '%'; 
+     
+    };
+    function resetScore(){
+        if(document.getElementById('readonly').value == 'true'){
+            alert('This form is read-only. You cannot reset the current selection');
+            return null;
+        }    
+        currentScore = 0;
+        totalWithOutNA = 0;
+        
+        var radios = document.getElementsByTagName('input');
+    
+        for(var i=0; radios[i]; ++i){
+            if(radios[i].type == 'radio'){
+                if(radios[i].value == 'Yes'){
+                    radios[i].checked = true;
+                    currentScore = parseInt(currentScore) + parseInt(radios[i].placeholder);
+                }
+            }
+        }
+    
+        document.getElementById('theScore').value = Math.ceil(percent(currentScore, wtotal)) + '%';
+    };
+    
+    function percent(topVal, btmVal) {
+        if(parseInt(btmVal) > 0){
+             return ( ( parseInt(topVal) / parseInt(btmVal) ) * 100 );
+        }else{
+            return 0;
+        }
+    };
+    
+    function reload(e){
+        var container = e;
+        var content = container.innerHTML;
+        container.innerHTML= content;
+    };
+    
+     var metaData = '';
+
+    function updateMetaData(){
+        
+        var caseId = '{!caseId}';
+        var templateId = '{!templateId}';
+        var agentId = document.getElementById('userId').value;
+        var currentAgent = document.getElementById('cagent').value;
+        
+        //vaidation
+        if( (agentId == null || agentId == '') && (currentAgent == null || currentAgent == '') ){
+            
+            alert('Please search and add an Agent that you would like to submit this QA form for');
+            document.getElementById('{!$Component.qaForm}').style.cursor = 'default';
+            document.getElementById('userSearchBox').focus();
+            return null;
+        }
+        
+        saveButton.disabled = true;
+        document.getElementById('{!$Component.qaForm}').style.cursor = 'wait';
+        
+        var qa = new sforce.SObject("Case_QA__c");
+
+        if(document.getElementById('qaid').value != ''){
+          qa.Id = document.getElementById('qaid').value;             
+        }
+        
+        var radios = document.getElementsByTagName('input');
+       
+        for(var i=0; radios[i]; ++i){
+             if(radios[i].type == 'radio'){
+                  if(radios[i].checked){
+                       metaData += radios[i].name + '|' + radios[i].value + ';';
+                  }
+             }
+        }
+
+        qa.SavedResults__c = metaData;
+        qa.SubmittedBy__c = '{!$User.Id}';
+        qa.RelatedCase__c = caseId;
+        qa.QATemplate__c = templateId;
+        qa.AgentScore__c = parseInt(currentScore);
+        
+        //either true or false, will zero the score on the formula field on the record
+        qa.FailedAuditRequirement__c = failedAudit; 
+        
+        if(agentId != null || agentId != ''){
+            qa.AgentName__c = document.getElementById('userId').value;
+        }
+        qa.WeightingTotal__c= (parseInt(wtotal) - parseInt(naCount));
+        
+        var result = sforce.connection.upsert("Id", [qa]);
+        
+        if (result[0].getBoolean("success")){
+            sforce.console.getFocusedPrimaryTabId(closetab);
+        } else {
+            alert("Failed to save this QA Form: " + result[0]);
+        }
+    };
+    
+    var closetab = function closetab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+    };
+    
+    </script>
+</apex:page>

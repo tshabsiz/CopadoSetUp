@@ -1,0 +1,52 @@
+<apex:page standardController="advpm__Matter__c" extensions="MatterPortionClaimOverride_Cont" doctype="html-5.0" >
+	<apex:form >
+        <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlock id="pgBlock" mode="edit">
+				<apex:pageBlockButtons location="Top">
+                    <apex:commandButton value="Update Claims" action="{!updateClaims}" />
+                </apex:pageBlockButtons>                
+                <apex:outputPanel id="claimPanel">
+                    <apex:pageBlockSection id="pgInfo" title="Added Claims" columns="1">
+                        <apex:pageBlockTable value="{!addedBusinessUnitClaims}" var="addedClaims" id="addedClaims">
+                        <apex:column headerValue="Business Unit">
+                            <apex:inputField value="{!addedClaims.Business_Unit__c}" required="true" />
+                        </apex:column>
+                        <apex:column headerValue="Portion of Claim (%)">
+                            <apex:inputField value="{!addedClaims.Portion_of_Claim__c}" required="true"/>
+                        </apex:column>
+                        <apex:column style="width:20%;text-align:center">
+                            <apex:commandLink id="removeRow" action="{!removeClaim}" rerender="claimPanel">
+                                <apex:param name="addedClaim" value="{!addedClaims.id}" assignTo="{!claimId}"/>
+                                <apex:image height="16" width="16" url="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility/close_60.png')}" title="Remove Time Record Entry" />
+                            </apex:commandLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+                
+            <apex:outputPanel id="addClaimButton" rendered="{!showClaimButton}">
+                <apex:pageBlockSection id="addButton" columns="1">
+                	<apex:commandButton value="Add Claim" action="{!addClaimButton}"  />
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            
+			<apex:outputPanel id="addClaimPanel" rendered="{!(showClaimButton = false)}">
+                <apex:pageBlockSection id="addPgInfo" title="Add Claim" columns="1">
+                    <apex:pageBlockTable value="{!AddBusinessUnitClaims}" var="addClaims" id="addClaims">
+                        <apex:column headerValue="Business Unit">
+                            <apex:inputField value="{!addClaims.Business_Unit__c}" required="true"/>
+                        </apex:column>
+                        <apex:column headerValue="Portion of Claim (%)">
+                            <apex:inputField value="{!addClaims.Portion_of_Claim__c}" required="true"/>
+                        </apex:column>
+                        <apex:column style="width:20%;text-align:center">
+                            <apex:commandButton value="Add Claim" action="{!save}">
+                                <apex:param name="addClaims" value="{!addClaims.id}" assignTo="{!claimId}"/>
+                            </apex:commandButton>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:outputPanel>            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

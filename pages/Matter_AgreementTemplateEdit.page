@@ -1,0 +1,338 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 10/05/2017 - PG    - Create VF page.
+ 01/07/2017 - PG    - Changed conditional render to use record type id instead. Bug: W-001417
+ 03/07/2017 - PG    - Added "Other Relative Date" to bulk filtering options.
+ 30/08/2017 - PG    - Added "tooltip" for clasue field and removed it from page.
+ 05/02/2018 - TdB   - Change Product functionality to use 3 the 3 new TMG Product Objects
+                                                           
+-->
+<apex:page controller="Matter_AgreementTemplate" action="{!actionEntryHandler}"> 
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    
+    <!-- CUSTOM CSS -->
+    <style type="text/css">
+    .pageDescription {
+        white-space: nowrap !important;
+    }
+    .pbSubheader{
+        background-color: green !important;
+        border-color: none !important;
+    }
+    .valign {
+        vertical-align: cent !important;
+    }
+    .center {
+        text-align: center !important;
+    }
+    
+    .greenText {
+        color: green !important;
+    }
+    
+    .headerRow a:link {
+        color: blue !important;
+        font-size: 10px;
+    }
+    
+    .headerRow a:visited {
+        color: green !important;
+        font-size: 10px;
+    }
+
+    .headerRow a:hover {
+        color: hotpink !important;
+        font-size: 10px;
+    }
+    
+    input[type=checkbox] {
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+    
+    a:active {
+        color: blue;
+    }
+
+    .statusText {
+        border-radius: 25px;
+        background: #555;
+        padding: 4px;  
+        color: white;
+    }
+    /* Tooltip container */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        /** border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 300px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+
+        /* Position the tooltip text */
+        position: absolute;
+        z-index: 999;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -150px;
+
+        /* Fade in tooltip */
+        opacity: 0;
+        transition: opacity 1s;
+    }
+
+    /* Tooltip arrow */
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+    </style>
+    <!-- / CUSTOM CSS -->
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Deal Agreements" subtitle="Step 2 - Configure Agreement Conditions for Product: {!matter.TMG_Product_Level_3__r.Name}" rendered="{!NOT(ISBLANK(paramId))}" /> 
+    <apex:sectionHeader title="Deal Agreements" subtitle="Configure Agreement Conditions" rendered="{!NOT(ISBLANK(paramId2))}"/>
+    
+    <!-- FORM -->
+    <apex:form >
+        
+        <!-- ACITON FUNCTIONS -->
+        <apex:actionFunction name="bulkUpdate" action="{!actionBulkUpdate}" rerender="out" status="updateStatus" oncomplete="changeStatusText();" />
+        <apex:actionFunction name="filterConditions" action="{!actionFilterConditions}" rerender="out, jsScript, bulkControlInputs" oncomplete="clearCheckboxes();" status="processingRequest" /> 
+        <apex:actionFunction name="filterRecurrence" action="{!actionFilterRecurrence}" rerender="bulkControlInputs" status="processingRequest" /> 
+        <apex:actionFunction name="filterDate" action="{!actionFilterDate}" rerender="bulkControlInputs" status="processingRequest" /> 
+    
+        <!-- PAGE ERRORS -->
+        <apex:pageMessages />
+        
+        <!-- PAGE BLOCK-->
+        <apex:pageBlock title="Bulk Edit Condition Scheduling" rendered="{!NOT(pageHasError)}" mode="detail">
+            
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Save Conditions" action="{!actionSaveConditions}"/>
+                <apex:commandButton value="Cancel" action="{!actionCancel}"/>
+            </apex:pageBlockButtons>
+            
+            <!-- FILTER CONTROL -->
+            <apex:pageBlockSection title="Step 1 - Filter By Condition Type" columns="1" collapsible="false">
+                
+                <!-- ROW -->
+                <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="12" columnClasses="valign">
+                        
+                        <!-- SELECT LIST -->
+                        <apex:outputLabel value="Condition Type &nbsp;&nbsp;" for="Recurrence__c" escape="false" />
+                        <apex:selectList value="{!selectedFilterRecordType}" multiselect="false" size="1" onchange="filterConditions(); return false;">
+                            <apex:selectOptions value="{!FilterOptions}" />
+                        </apex:selectList>
+
+                        <apex:actionStatus startText="Retrieving Conditions..." id="processingRequest" startStyleClass="statusText" />
+                        <!-- / SELECT LIST -->
+                    
+                    </apex:panelGrid>
+                </apex:pageBlockSectionItem>
+                <!-- / ROW -->
+                
+            </apex:pageBlockSection>
+            <!-- / FILTER CONTROL -->
+            
+            <!-- BULK EDIT -->
+            <apex:pageBlockSection title="Step 2 - Specify Recurrence Information" columns="1" collapsible="false" id="bulkControlInputs">  
+                
+                <!-- ROW -->
+                <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="12" columnClasses="valign">
+                        
+                        <apex:outputLabel value="Recurrence &nbsp;&nbsp;" for="Recurrence__c" escape="false" />
+                        <apex:inputField value="{!bulkEditCondition.Recurrence__c}" id="Recurrence__c" onchange="filterRecurrence();" />
+                        
+                        <apex:outputLabel value="&nbsp;&nbsp; Number Of Days &nbsp;&nbsp;" for="Number_Of_Days__c" escape="false" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" />
+                        <apex:inputField value="{!bulkEditCondition.Number_Of_Days__c}" id="Number_Of_Days__c" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" />
+                        
+                        <apex:outputLabel value="&nbsp;&nbsp; Days &nbsp;&nbsp;" for="Days__c" escape="false" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" />
+                        <apex:inputField value="{!bulkEditCondition.Days__c}" id="Days__c" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" />
+                        
+                        <apex:outputLabel value="&nbsp;&nbsp; Date &nbsp;&nbsp;" for="Date__c" escape="false" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" />
+                        <apex:inputField value="{!bulkEditCondition.Date__c}" id="Date__c" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showAdvancedControls)}" onchange="filterDate(); return false;" />
+                        
+                        <!-- OTHER RELATIVE DATE -->
+                        <apex:outputLabel value="&nbsp;&nbsp; Other Relative Date &nbsp;&nbsp;" for="Date__c" escape="false" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showOtherDate)}" />
+                        <apex:inputField value="{!bulkEditCondition.Other_Relative_Date__c}" id="Other_Relative_Date__c" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, showOtherDate)}" />
+                        
+                        <!-- DUE DATE -->
+                        <apex:outputLabel value="&nbsp;&nbsp; Due Date &nbsp;&nbsp;" for="Due_Date__c" escape="false" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, NOT(showAdvancedControls))}" />
+                        <apex:inputField value="{!bulkEditCondition.Due_Date__c}" id="Due_Date__c" rendered="{!IF(bulkEditCondition.Recurrence__c == Null,showNoControls, NOT(showAdvancedControls))}" />
+                        
+                        <apex:commandButton value="Bulk Update Selected" onclick="bulkUpdate(); return false;" />
+                        
+                        <!-- ACTION STATUS -->
+                        <apex:actionStatus startText="In Progress" stopText="" id="updateStatus" />
+                    
+                    </apex:panelGrid>
+                </apex:pageBlockSectionItem>
+                <!-- / ROW -->
+                
+            </apex:pageBlockSection>
+            <!-- / BULK EDIT -->
+            
+        </apex:pageBlock>
+        <!-- / PAGE BLOCK-->
+        
+        <!-- PANEL -->
+        <apex:outputPanel id="out">
+            
+            <!-- JAVASCRIPT - DYNAMIC BINDING FOR RERENDER -->
+            <script>
+            $(document).ready(function() {
+                
+                //Selected column
+                $('.selectedBulkAll').click(function(e) {
+                    var table= $(e.target).closest('table');
+                    $('.selectedBulk', table).attr('checked',e.target.checked);
+                });
+                
+                //Active column
+                $('.selectedActiveAll').click(function(e) {
+                    var table= $(e.target).closest('table');
+                    $('.selectedActive', table).attr('checked',e.target.checked);
+                });
+            });
+            
+            function clearCheckboxes()
+            {
+                $("html").find('.selectedBulk').removeAttr('checked');
+            }
+            
+            function changeStatusText()
+            {
+                var matches = [].slice.call(document.querySelectorAll('[id$=updateStatus\\.stop]'));
+                matches[0].innerHTML = '<span class="greenText">Update Complete</span>'; 
+            }
+            </script>
+            <!-- / JAVASCRIPT -->
+            
+            <!-- REPEAT -->
+            <apex:repeat value="{!agreementConditionWrappers}" var="agreementConditionWrapperItem" id="agreementConditionWrapper">
+                
+                <!-- PAGE BLOCK - AGREEMENT -->
+                <apex:pageBlock title="{!agreementConditionWrapperItem.agreement.Name}" rendered="{!NOT(pageHasError)}" mode="detail">
+                        
+                        <!-- TABLE -->
+                        <table class="list" border="0" cellpadding="0" cellspacing="0" rules="all">
+                            
+                            <!-- TABLE HEAD -->
+                            <thead>
+                                <tr class="headerRow">
+                                    <th class="headerRow"><input type="checkbox" class="center selectedBulkAll" /></th>
+                                    <th class="headerRow">Condition Name</th>
+                                    <th class="headerRow">Condition Type</th>
+                                    <th class="headerRow">Recurrence</th>
+                                    <th class="headerRow">Number of Days</th>
+                                    <th class="headerRow">Days</th>
+                                    <th class="headerRow">Date</th>
+                                    <th class="headerRow">Other Relative Date</th> 
+                                    <th class="headerRow">Due Date</th>
+                                    <th class="headerRow"><label><input type="checkbox" class="center selectedActiveAll" /> Active</label></th>
+                                </tr>
+                            </thead>
+                            <!-- / TABLE HEAD -->
+                            
+                            <!-- TABLE BODY -->
+                            <tbody>
+                                
+                                <!-- REPEAT CONDITIONS -->
+                                <apex:repeat value="{!agreementConditionWrapperItem.conditions}" var="conditionWrapperItem">
+                                    
+                                    <!-- ROW -->
+                                    <tr class="dataRow" style="display: {!IF(conditionWrapperItem.condition.RecordTypeId != selectedFilterRecordType && selectedFilterRecordType != 'all', 'none', 'table-row')};">
+                                        <td width="3%">
+                                            <apex:inputCheckbox styleClass="selectedBulk" value="{!conditionWrapperItem.selected}" rendered="{!IF((conditionWrapperItem.condition.RecordTypeId != selectedFilterRecordType) && selectedFilterRecordType != 'all', 'false', 'true')}" />
+                                        </td>
+                                        <td width="10%">
+                                            <div class="tooltip">
+                                                <a href="{!URLFOR($Action.Condition__c.View, conditionWrapperItem.condition.Id)}" target="_blank"><apex:outputField value="{!conditionWrapperItem.condition.Name}" />
+                                                </a>
+                                                <span class="tooltiptext">{!conditionWrapperItem.condition.Clause__c}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <apex:outputField value="{!conditionWrapperItem.condition.RecordTypeId}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Recurrence__c}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Number_Of_Days__c}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Days__c}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Date__c}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Other_Relative_Date__c}" /> 
+                                        </td>
+                                        <td>
+                                            <apex:inputField value="{!conditionWrapperItem.condition.Due_Date__c}" />
+                                        </td>
+                                        <td>
+                                            <apex:inputCheckbox styleClass="selectedActive" value="{!conditionWrapperItem.condition.Active__c}" rendered="{!IF((conditionWrapperItem.condition.RecordTypeId != selectedFilterRecordType) && selectedFilterRecordType != 'all', 'false', 'true')}" />
+                                        </td>
+                                    </tr>
+                                    <!-- / ROW -->
+                                    
+                                </apex:repeat>
+                                <!-- / REPEAT CONDITIONS -->
+                            
+                            </tbody>
+                            <!-- / TABLE BODY -->
+                        
+                        </table>
+                        <!-- / TABLE -->
+                    
+                </apex:pageBlock>
+                <!-- / PAGE BLOCK - AGREEMENT -->
+                
+            </apex:repeat>
+            <!-- / REPEAT -->
+            
+        </apex:outputPanel>
+        <!-- / PANEL -->
+
+    
+    </apex:form>
+    <!-- / FORM -->
+
+</apex:page>

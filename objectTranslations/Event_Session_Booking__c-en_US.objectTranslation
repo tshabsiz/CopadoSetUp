@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Session Booking</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Session Bookings</value>
+    </caseValues>
+    <fields>
+        <label><!-- Attendance Status --></label>
+        <name>Attendance_Status__c</name>
+        <picklistValues>
+            <masterLabel>Attended</masterLabel>
+            <translation><!-- Attended --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>No Show</masterLabel>
+            <translation><!-- No Show --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Delegate Name --></label>
+        <name>Delegate_Name__c</name>
+    </fields>
+    <fields>
+        <label><!-- Delegate --></label>
+        <name>Delegate__c</name>
+        <relationshipLabel><!-- Booked Sessions --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Event Id --></label>
+        <name>Event_Id__c</name>
+    </fields>
+    <fields>
+        <label><!-- Invitation Status --></label>
+        <name>Invitation_Status__c</name>
+        <picklistValues>
+            <masterLabel>Cancelled</masterLabel>
+            <translation><!-- Cancelled --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Confirmed</masterLabel>
+            <translation><!-- Confirmed --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Requested</masterLabel>
+            <translation><!-- Requested --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Walk In</masterLabel>
+            <translation><!-- Walk In --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Session --></label>
+        <name>Session__c</name>
+        <relationshipLabel><!-- Session Participants --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Speaker --></label>
+        <name>isSpeaker__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You can only add delegates linked to the same event as the session --></errorMessage>
+        <name>Delegates_from_the_same_event</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You cannot add more than one delegate to a 1 to 1 session --></errorMessage>
+        <name>Limit_delegates</name>
+    </validationRules>
+</CustomObjectTranslation>

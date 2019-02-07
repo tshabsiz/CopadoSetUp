@@ -1,0 +1,70 @@
+<!-- 
+*** CHANGE LOG ***
+
+04/10/2017 - PG   - Created VF page.
+16/11/2017 - TdB  - Modify fields, add Page Block Sections for Participanys and Groups
+
+-->
+<apex:page standardController="Margin_Ratchet__c" extensions="Margin_Ratchet_Override" showHeader="true" sidebar="true" > 
+    <apex:sectionHeader title="Margin Ratchet Edit" subtitle="New Margin Ratchet" />
+    <apex:form id="theForm">
+        <apex:pageBlock id="pblock" >
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pblocksecA" title="Information">
+                <apex:inputField value="{!objectRecord.Name}" required="true"/>
+                <apex:inputField value="{!objectRecord.Matter_Deal__c}" />
+                <apex:inputField value="{!objectRecord.Type__c}" required="true" />
+                <apex:inputField value="{!objectRecord.Agreement__c}" required="true" />
+                <apex:inputField value="{!objectRecord.Event_Type__c}" required="true"/>
+                <apex:inputField value="{!objectRecord.Facility__c}" />
+                <apex:inputField id="userselectinput" value="{!objectRecord.Person_Responsibles__c}"/>
+                <apex:inputField value="{!objectRecord.Facility_Tranche__c}" />
+                <apex:inputTextArea value="{!objectRecord.Description__c }" rows="5" cols="40"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksecB" title="Scheduling Information (optional)" >
+                <apex:inputField value="{!objectRecord.Frequency__c}" />
+                <apex:inputField id="DueDate" value="{!objectRecord.Due_Date__c}" />
+                <apex:inputField value="{!objectRecord.Relative_Date__c}" />
+                <apex:inputField value="{!objectRecord.Other_Relative_Date__c}" />
+                <apex:inputField value="{!objectRecord.Number_of_Days__c}" />
+                <apex:outputText ></apex:outputText>  
+                <apex:inputField value="{!objectRecord.Days__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksecD" title="Notification Participants" columns="1">
+                <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!participantWrapper.participant.Name}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Notification Groups" columns="1">
+                <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />  
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Relationships" columns="1">
+                <apex:pageBlockTable value="{!relationshipPartiesWrapper}" var="relationshipPartyWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!relationshipPartyWrapper.selected}" />
+                    </apex:column>
+                    <apex:column headerValue="Name" value="{!relationshipPartyWrapper.partyName}" />
+                    <apex:column headerValue="Type" value="{!relationshipPartyWrapper.partyType}" />
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

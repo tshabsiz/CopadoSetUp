@@ -1,0 +1,186 @@
+<apex:page controller="advpm.AssignmentTemplateSelectController" tabStyle="advpm__Assignment_Rule__c" id="pg">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <script type="text/javascript">
+        function redirect(tId){
+            goBack();
+            hideLoader(tId);
+        }
+        function goBack() {
+            if ({!$User.UITheme == 'Theme4d'}) {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToSObject('{!JSENCODE(recordId)}');
+                }
+            }
+            else {
+                location.href = '/{!JSENCODE(recordId)}';
+            }
+        }
+        function showLoader(ob) {
+            $('.loader_'+ob).css('display','inline');
+        }
+        function hideLoader(ob) {
+            $('.loader_'+ob).css('display','none');
+        }
+    </script>
+    <script type="text/javascript">
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+
+        function showSFDCSimpleDialog(srcElemId) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(720);
+                d.createDialog();
+            }
+            d.setTitle('Preview');
+
+            $(d.dialog).find('#myCustomSFDCDialogInner').html( $(srcElemId).html() );
+            
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+    </script>
+    
+    <style type="text/css">
+        .text-center {text-align:center!important;}
+        .preview-container {display:none;}
+    </style>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            /*body {font-size: 100%;}*/
+            .list .iconColumn, .list .actionColumn {width:106px;white-space:nowrap!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">    
+        <apex:sectionHeader title="{!$ObjectType.advpm__Assignment_Rule__c.label}" subtitle="{!IF(batchMode,'Batch Assignment',JSINHTMLENCODE(recordName))}" />
+        <div style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!IF(batchMode,$ObjectType[sObjName].keyPrefix,JSINHTMLENCODE(recordId))}">Back to {!IF(batchMode,'list',LOWER($ObjectType[sObjName].label))}</apex:outputLink></div>
+        <br /><br />
+    </apex:outputPanel>
+    
+    <apex:form id="form" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="Process Assignment" 
+                                headerDescription="Select an {!$ObjectType.advpm__Assignment_Rule__c.label}"
+                                parentEntity="{!JSINHTMLENCODE($ObjectType[sObjName].labelPlural)}" 
+                                parentEntityLink="{!$ObjectType[sObjName].keyPrefix}" 
+                                parentRecordName="{!IF(batchMode,'Batch Assignment',JSINHTMLENCODE(recordName))}" 
+                                parentRecordID="{!IF(batchMode,$ObjectType[sObjName].keyPrefix,recordId)}">
+                <div class="" style="margin-top:-35px;min-width:230px;">
+                    <apex:actionStatus id="loadingCategory">
+                        <apex:facet name="start">
+                            <apex:outputPanel >
+                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    <apex:selectList value="{!selectedCategory}" size="1" styleClass="slds-input slds-float--right" style="width:85%">
+                        <apex:actionSupport event="onchange" action="{!refreshRuleslist}" rerender="tmplTable" status="loadingCategory" />
+                        <apex:selectOptions value="{!categoryList}" />
+                    </apex:selectList>
+                </div>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <style type="text/css">
+            .loader img {margin-left:4px;}
+            .no-records {margin-left: -5px;}
+        </style>
+        
+        <apex:actionFunction name="executeRule" action="{!executeRule}" rerender="form,msgs" oncomplete="if({!saveSuccess}){redirect('{!selectedTemplate}');}">
+            <apex:param name="parm" value="" assignTo="{!selectedTemplate}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="previewRule" action="{!previewRule}" rerender="form,msgs" oncomplete="if({!saveSuccess}){showSFDCSimpleDialog('.preview-container');}">
+            <apex:param name="parm" value="" assignTo="{!selectedTemplate}"/>
+        </apex:actionFunction>
+        
+        <apex:pageBlock title="{!IF(isLightning,'','Select an '+$ObjectType.advpm__Assignment_Rule__c.label)}" mode="edit">
+            <apex:pageMessages id="msgs" />
+            <apex:facet name="header">
+                <apex:outputPanel layout="block" styleClass="pbHeader" rendered="{!!isLightning}">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td class="pbTitle">
+                                    <h2 class="mainTitle">Select an {!$ObjectType.advpm__Assignment_Rule__c.label}</h2>
+                                </td>
+                                <td align="right" style="text-align: right;">
+                                    <apex:actionStatus id="loadingCategory">
+                                        <apex:facet name="start">
+                                            <apex:outputPanel >
+                                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                                            </apex:outputPanel>
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                    <apex:selectList value="{!selectedCategory}" size="1">
+                                        <apex:actionSupport event="onchange" action="{!refreshRuleslist}" rerender="tmplTable" status="loadingCategory" />
+                                        <apex:selectOptions value="{!categoryList}" />
+                                    </apex:selectList>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:facet>
+            
+            <apex:outputPanel layout="none" id="tmplTable">
+                <apex:pageBlockTable value="{!rulesList}" var="rule" rendered="{!rulesList.size>0}" styleClass="slds-table">
+                    <apex:column headerValue="Action" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap actionColumn"> 
+                        <apex:outputLink title="Preview" value="javascript:void(0);" styleClass="actionLink {!rule.Id}" onclick="showLoader('{!JSENCODE(rule.Id)}');previewRule('{!JSENCODE(rule.Id)}');">Select</apex:outputLink><!--&nbsp;|&nbsp;
+                        <apex:outputLink title="Execute" value="javascript:void(0);" styleClass="actionLink {!rule.Id}" onclick="showLoader('{!JSENCODE(rule.Id)}');executeRule('{!JSENCODE(rule.Id)}');">Execute</apex:outputLink>-->
+                        <apex:outputPanel id="loadingStatus" styleClass="loader">
+                            <span class="loader_{!rule.Id}" style="display:none;">
+                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                            </span>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column value="{!rule.Name}" headerValue="Rule Name" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!rule.advpm__Category__c}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column headerValue="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Assignment_Template__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+                        <apex:outputText value="{!map_emailTemplate[rule.advpm__Assignment_Template__c]}" rendered="{!NOT(ISBLANK(rule.advpm__Assignment_Template__c))}" />
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Additional_Notification_Template__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+                        <apex:outputText value="{!map_emailTemplate[rule.advpm__Additional_Notification_Template__c]}" rendered="{!NOT(ISBLANK(rule.advpm__Additional_Notification_Template__c))}" />
+                    </apex:column>
+                    <apex:column value="{!rule.LastModifieddate}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!rule.CreatedById}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                </apex:pageBlockTable>
+                <apex:pageBlockSection columns="1" rendered="{!NOT(rulesList.size>0)}">
+                    <apex:outputPanel styleClass="no-records">No active {!JSINHTMLENCODE(LOWER($ObjectType.advpm__Assignment_Rule__c.labelPlural))} found.</apex:outputPanel>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        
+        <apex:outputPanel styleClass="preview-container">
+            <c:AssignmentRulesPreview enableExecute="true"
+                                      executeBtnClass="{!IF(!isLightning,'btnPrimary','')} slds-button slds-button--brand {!selectedTemplate}"
+                                      executeOnClickJS="d.hide();showLoader('{!JSENCODE(selectedTemplate)}');executeRule('{!JSENCODE(selectedTemplate)}');"
+                                      isLightning="{!isLightning}"
+                                      sObjName="{!sObjName}"
+                                      ruleAssignedFields="{!ruleAssignedFields}"
+                                      originalRecordsList="{!originalRecordsList}"
+                                      previewRecordsList="{!previewRecordsList}" />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

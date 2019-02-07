@@ -1,0 +1,257 @@
+<apex:page showHeader="true" sidebar="false" title="S4G Help" controller="s4g_currencies.CurrencyUpdaterStartController" tabStyle="CurrencyUpdaterStartTab__tab" action="{!saveSettings}">
+    
+    <apex:outputPanel id="All">
+    <apex:stylesheet value="{!URLFOR($Resource.s4g_currencies__CurrencyUpdaterStyleSheet)}" />
+    
+    <style>
+    .AuthForm {
+        margin-left: 520px;
+    }
+    
+    
+    
+    </style>
+
+    <!-- Error Message -->
+    <apex:pageMessages id="messages" />
+    <br />
+    <!-- S4G's Header 
+    <div style ='float:left; '>
+        <apex:sectionHeader id="header" title="" subtitle="" />
+    </div>
+    -->
+    
+    <!-- S4G's Logo -->
+    <div style="float:left; margin-left:300px;">
+        <apex:image id="logo" value="{!$Resource.s4g_currencies__logo_tab}" />
+    </div>
+
+    <apex:pageBlock title="" mode="detail">
+        
+        <!-- Currency Updater INFO --> 
+        <apex:pageBlockSection title="S4G Currency Updater" collapsible="false" columns="1">
+            <div >
+                <i>S4G Currency Updater</i> lets you automatically update the exchange rates for your organization's currencies on a periodic basis. 
+                You can choose the frequency and time of the day when the update will happen. 
+                <p>To correctly configure this application, please follow all the steps below.</p>
+            </div>
+        </apex:pageBlockSection>
+
+        <!-- Currency Updater Settings -->
+        <apex:pageBlockSection title="System Requirements" id="currencyUpdaterSettings" collapsible="true"  columns="1">
+                
+         You need an <i>Enterprise Edition</i> organization with <i>Multi-currency</i> enabled (optionally, <i>Dated Exchange Rate</i> may also be enabled). To get Multi-currency enabled, you must create a case or contact Salesforce.com, as it is a provisioned feature it must be enabled by them. Once this has been done, you might enable Dated Exchange Rate yourself if you wish (check the standard help if you need assistance with this).    
+                
+               
+         </apex:pageBlockSection>
+              
+        <apex:pageBlockSection title="Remote Setting" rendered="{!errorURLOrG != 'OK'}" collapsible="true" columns="1">
+            <li> Currency updater needs to connect with this organizacion. In order to do this, you need to setup the remote setting configuration. Please copy your ORG URL from the error message bellow in a new Remote Setting under Setup->Security->Remote site settings.</li>
+                
+            <apex:pageMessage severity="error" strength="1" summary="{!errorURLOrG}" />
+            <apex:image value="{!$Resource.s4g_currencies__AddRemoteSetting}" style="margin-left:0px;"/>
+            
+        </apex:pageBlockSection>
+        
+        <!-- Authenticate User -->
+        <apex:pageBlockSection title="Authenticating user" columns="1">
+             <apex:pageBlockSectionItem >
+             
+                       To get access to your org and update the exchange rates, the app will need to authenticate your user. Click on 'Authenticate user' and then allow S4G's Automated Currency Updated to access your org by clicking the "Allow" button you will be prompted with.
+                           <div class="clear" style="height:20px;"/>
+               </apex:pageBlockSectionItem>
+
+
+               
+               <apex:pageBlockSectionItem >
+                
+                    <apex:panelGrid columns="3" id="theGrid">
+                    
+                        
+                        <apex:form styleClass="AuthForm">
+                            <apex:commandButton value="Authenticate user" action="{!loginSFOAuth}" style="border-radius:25px; height:30px; width:120px; font-size:11px;"/>
+                        </apex:form>
+                        
+                        <apex:image value="{!$Resource.s4g_currencies__authenticate_user}" style="margin-left:0px;" rendered="{! !okAuthorization}"/>
+                    
+                    </apex:panelGrid>
+
+              </apex:pageBlockSectionItem>
+              
+            <apex:panelGrid columns="3" id="theGrid">
+                <div style="margin-left:450px;">  
+                <apex:pageMessage summary="Currency Updater is authenticated" severity="confirm" strength="3" rendered="{!okAuthorization}" />              
+                </div> 
+            </apex:panelGrid>
+             
+         </apex:pageBlockSection>
+        
+        <!-- Start Currency Updater -->
+        <apex:pageBlockSection title="Setting up and running Currency Updater" columns="1">
+         
+               
+                <apex:pageBlockSectionItem >
+                
+                 
+                   Please specify the frequency and time (in your local timezone) you want the update to happen. After setting the time you must click the "Schedule" button for the process to be scheduled (or rescheduled if you have already configured this and just want to change the frequency or time). Alternatively, you can choose to run the process immediately before scheduling it by clicking the "Run now and Schedule" button. 
+                   <br/><br/>Below to the right, you will see information about the next time and date the process will be launched.  
+               
+                  <div class="clear" style="height:20px;"/>       
+                </apex:pageBlockSectionItem>
+               
+                
+                
+                 
+                
+                <apex:pageBlockSectionItem >   
+              
+               
+                <!-- Form Schedule CurrencyUpdater -->
+                <apex:form id="formSchedule">
+                   
+                   <table>
+                      
+                       <tr>
+                           <td>
+                            <table style="margin-left:100px;">
+                                 
+                                 <tr>
+                                    <td><b>Frequency</b></td>
+                                    <td>
+                                        <apex:selectList size="1" value="{!settings.s4g_currencies__Frecuency__c}" style="border-radius:25px;">
+                                            <apex:selectOptions value="{!frecuencySelectedList}"/>
+                                        </apex:selectList>
+                                    </td>
+                                    <td><b>Start Date</b></td>
+                                    <td>
+                                        <apex:inputField value="{!settings.s4g_currencies__Start_Date__c}" style="border-radius:5px;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Start Time</b></td>
+                                    <td>
+                                        <apex:selectList size="1" value="{!settings.s4g_currencies__Start_Hour__c}" style="border-radius:25px;">
+                                            <apex:selectOptions value="{!hourSelectedList}"/>
+                                        </apex:selectList>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <apex:commandButton value="Schedule" action="{!scheduleBatch}" style="border-radius:25px; margin-left:0px; margin-top:10px;" disabled="{!disabledButtons}" reRender="All"/>
+                                        <apex:commandButton value="Run now and Schedule" action="{!runAndScheduleBatch}" style="border-radius:25px; margin-left:0px; margin-top:10px;" disabled="{!disabledButtons}" reRender="All"/>
+                                   </td>
+                                   
+                                </tr>
+                            </table>
+                          </td>
+                         
+                          <td>
+                           <div style="border-style:solid; border-radius:25px;  border-color: #e9444b; margin-top:10px; margin-left:300px; width:260px;">
+                               <p style="font-size:14px; padding-left:15px;"><b>
+                                Currency Updater Information</b>
+                                </p>
+                                <div class="clear" style="height:10px;"/>
+                                    <table style="font-size:14px; padding-left:15px; padding-bottom:20px;">
+                                        <tr>
+                                            <td><b>Next time:</b></td>
+                                            <td>{!netHourCurrencyUpdaterRun}:{!nextMinuteCurrencyUpdaterRun}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Next date:</b></td>
+                                            <td>
+                                                <!--{!nextDateCurrencyUpdater}-->
+                                                <apex:outputText value="{!nextDateCurrencyUpdaterRun}" /> 
+                       
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                          </td>
+                        </tr>
+                    </table>
+                </apex:form>
+            </apex:pageBlockSectionItem>
+            
+            
+           
+        </apex:pageBlockSection>
+        
+        <apex:form id="formId">
+           
+            <apex:actionFunction action="{!updateIsActiveDatedConversionRateSetting}" name="updateIsActiveDatedConversionRateSettingJS" status="status" reRender="formId"/>
+
+            <apex:pageBlockSection title="Advanced Currency Management" columns="1" rendered="{!hasActiveAdvanceManageCurrency}">
+                
+                <apex:pageBlockSectionItem >
+                    <div style="text-align: justify">
+                    Advanced Currency Management  has been detected. Uncheck the box below if you want the App to update the standard, non-dated, exchange rate table instead of the dated one.
+                    </div>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <div style="font-weight:bold;">Use Advanced Currency Management</div>
+                    <apex:outputPanel >
+                        <apex:inputCheckbox value="{!wantUseAdvanceManageCurrency}" onclick="updateIsActiveDatedConversionRateSettingJS();"/>
+                        <apex:actionStatus id="status">
+                            <apex:facet name="start" >
+                                <img src="/img/loading.gif" />                    
+                            </apex:facet>
+                        </apex:actionStatus>                           
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:form>
+
+
+        <apex:pageBlockSection title="Additional Information" columns="1">
+         <apex:pageBlockSectionItem > 
+            
+                
+            
+                 <div style="font-weight:bold;">Supported Currencies</div>            
+                <p style="text-align: justify"> 
+                    Most currencies are supported by this process and therefore updated once configured. If you want to know the exact list of currencies 
+                        supported please visit <a href="http://help.yahoo.com/l/us/yahoo/ewsapt/webservices/reference/data/wsr_currency.html" target="_blank">Yahoo!'s 
+                    Currency Web services pages.</a> 
+                </p>
+               </apex:pageBlockSectionItem>   
+                
+                
+                <apex:pageBlockSectionItem > 
+                <div class="clear" style="height:20px;"/>
+                <div style="font-weight:bold;">Currency updater log</div>
+                <p>
+                By checking the Currency Updater Log in the <i>LogsCurrency tab</i> it is possible to know the status of every currency rate update request launched by the system.
+                </p>
+                
+                <p>
+                If you want to know the outcome of the process for the month, choose the <i>Month's Executions</i> view. An 'OK' Status in a record means that the process worked fine and a 'KO' status means the process failed. You can get further information about each process by clicking a specific record and checking its 'Logs' field.
+                </p>
+                 </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem >
+                 <div class="clear" style="height:20px;"/>
+                <apex:image value="{!$Resource.s4g_currencies__log_tab}" style="margin-left:20px;"/>
+                
+                
+         </apex:pageBlockSectionItem>     
+        </apex:pageBlockSection>
+
+
+    </apex:pageBlock>
+</apex:outputPanel> 
+
+<script type="text/javascript">
+    
+    window.onload = setFocus;
+    
+    function setFocus() {
+        document.getElementById("hiddenElement").focus();
+    }
+
+    if(location.href.split('?code=').length>1){
+        window.location=location.href.split('?code=')[0];
+    }
+    
+</script>
+</apex:page>

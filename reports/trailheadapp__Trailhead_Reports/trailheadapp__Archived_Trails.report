@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__Trail__c.trailheadapp__Badge_Icon__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__Trail__c.trailheadapp__Archived__c</field>
+    </columns>
+    <description>Report on trails that have been retired by Trailhead (e.g. can no longer be earned by trailblazers).</description>
+    <filter>
+        <criteriaItems>
+            <column>trailheadapp__Trail__c.trailheadapp__Archived__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Archived Trails</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$trailheadapp__Trail__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>trailheadapp__Trail__c.trailheadapp__Created_At__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

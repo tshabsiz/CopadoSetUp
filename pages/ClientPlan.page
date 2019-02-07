@@ -1,0 +1,2335 @@
+<apex:page controller="ClientPlanController" standardStylesheets="false" sidebar="false" docType="html-5.0">
+
+    <script>
+        $('document').ready(function() {
+            selectLabel(7);
+            prepareModalDatePickers();
+            prepareTypeaheadForCountries();
+        });
+        
+        function prepareModalDatePickers() {
+            //existing products modal
+            var elem = $('#existingProductMaturityDate');
+            
+            $(elem).datepicker({
+                format: 'dd/mm/yyyy'
+            });
+            
+            $(elem).on('changeDate', function() {
+                $('#existingProductMaturityDate').datepicker('hide');
+            });
+
+            //potential opty modal
+            elem = $('#potOptyCloseDate');
+            
+            $(elem).datepicker({
+                format: 'dd/mm/yyyy'
+            });
+            
+            $(elem).on('changeDate', function() {
+                $('#potOptyCloseDate').datepicker('hide');
+            });
+            
+            //open opty modal
+            elem = $('#optyCloseDate');
+            
+            $(elem).datepicker({
+                format: 'dd/mm/yyyy'
+            });
+            
+            $(elem).on('changeDate', function() {
+                $('#optyCloseDate').datepicker('hide');
+            });
+            
+            //manual facility modal
+            elem = $('#facilityExpiryDate');
+            
+            $(elem).datepicker({
+                format: 'dd/mm/yyyy'
+            });
+            
+            $(elem).on('changeDate', function() {
+                $('#facilityExpiryDate').datepicker('hide');
+            });
+        }
+
+        var countryBloodhound;
+        var countries;
+        function prepareTypeaheadForCountries() {
+            //default typeahead result
+            var countriesString = $('.countriesPanel').html();
+            countries = JSON.parse(countriesString);
+
+            countryBloodhound = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                local: countries
+            });
+            
+            $('#existingProductCountry').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 0
+                },{
+                name: 'countryBloodhound',
+                source: countriesWithDefaults
+            });
+        }
+
+        function countriesWithDefaults(q, sync) {
+            countryBloodhound.search(q, sync);
+        }
+
+        
+        //error messages functions
+        function checkErrorMessage() {
+            var content = $('.errorMessagePanel').text();
+            if (content != '') {
+                showAlert(content);
+            }
+        }
+        
+        //The currently selected 'Existing Product' record or empty if new
+        var existingRecordId;
+
+        /*
+        //production table functions
+        var productionFieldName;
+        var budgetRevenueId;
+        
+        function showProductionValueModal(field, id) {
+            budgetRevenueId = id;
+            productionFieldName = field;
+            closeProductionValueModalAlert();
+            $('#productionValueModal').show();
+        }
+        
+        function closeProductionValueModal() {
+            closeToast();
+            $('#productionValueModal').hide();
+        }
+        
+        function onBeforeSaveProductionValue() {
+            closeAlert();
+            var value = $('#productionValueModalInput').val();
+            if(isNaN(value)) {
+                showToast('{!$Label.errMsg_OnlyNumeric}');
+            } else {
+                closeProductionValueModal();
+                startLoading('{!$Label.lbl_Saving}');
+                saveProductionValue(budgetRevenueId, productionFieldName, value);
+            }
+        }
+        
+        function closeProductionValueModalAlert() {
+            $('#productionValueModalAlert').hide();
+        }
+        */
+        
+        //potential opportunities table functions
+        var potOptyId;
+        
+        function deletePotOptyModal(id) {
+            console.log('Delete potential opportunity: ' + id);
+            deletePotOpty(id);
+        }
+
+        function showPotOptyModal(id) {
+            closeAlert();
+            potOptyId = id;
+            
+            if (id != '') {
+                fillPotOptyModal(id);
+                setPotOptyModalHeaderLabel('{!$Label.lbl_EditPotOpty}');
+
+                var potOptyConvert = $('#' + id + ' .potOptyStage').text().trim();
+                if (potOptyConvert == 'Potential Opportunity Convert') {
+                    $('#convertOptyButton').show();
+                } else {
+                    $('#convertOptyButton').hide();
+                } 
+
+            } else {
+                cleanPotOptyModal();
+                setPotOptyModalHeaderLabel('{!$Label.lbl_AddPotOpty}');               
+            }
+
+            
+            $('#potOptyModal').show();
+        }        
+        
+        function setPotOptyModalHeaderLabel(label) {
+            $('#potOptyModalHeaderLabel').text(label);
+        }
+        
+        function fillPotOptyModal(id) {
+            var name = $('#' + id + ' .potOptyName').text().trim();
+            $('#potOptyName').val(name);
+            
+            $('#potOptyCloseDate').datepicker({ format: 'dd/mm/yyyy' });
+            var closeDate = $('#' + id + ' .potOptyCloseDate').text().trim();
+            if (closeDate != '') {
+                $('#potOptyCloseDate').datepicker('setDate', closeDate);
+            } else {
+                $('#potOptyCloseDate').datepicker('clearDates');
+            }
+            
+            var productName = $('#' + id + ' .potOptyProductName').text().trim();
+            var productId = $('#' + id + ' .potOptyProductId').text().trim();
+            var productLevel = $('#' + id + ' .potOptyProductLevel').text().trim();
+
+            $('.potOptyModalProduct input').val(productName);
+            selectedProductName = productName;
+            selectedProductLevelAndId = productLevel + '||' + productId;
+
+            console.log('Populating PotentialOptyModal with [Lvl: ' + productLevel + ', Id: ' + productId + ']');
+            
+            var stage = $('#' + id + ' .potOptyStage').text().trim();
+            $('#potOptyStage').val(stage);
+            
+            var type = $('#' + id + ' .potOptyType').text().trim();
+            $('#potOptyType').val(type);
+        }
+        
+        function cleanPotOptyModal() {
+            $('#potOptyName').val('');
+            $('#potOptyCloseDate').datepicker({ format: 'dd/mm/yyyy' });
+            $('#potOptyCloseDate').datepicker('clearDates');
+            $('.potOptyModalProduct input').val('');
+            $('#potOptyStage option:first-child').prop('selected', true);
+            $('#potOptyType option:first-child').prop('selected', true);
+
+            selectedProductLevelAndId = '';
+            selectedProductName = '';
+        }
+        
+        function closePotOptyModal() {
+            closeToast();
+            $('#potOptyModal').hide();
+        }
+        
+        function onBeforeModifyPotOpty() {
+            var name = $('#potOptyName').val().trim();
+            if (name.length == 0) {
+                showToast('{!$Label.errMsg_NameRequired}');
+                return;
+            }
+            closePotOptyModal();
+        
+            var closeDate = $('#potOptyCloseDate').val().trim();
+            var closeDateMillis = convertDateToTimestamp(closeDate);
+            
+            //If a product has been selected split the values
+            var selectedProductLevel = '';
+            var selectedProductId = '';
+
+            if(selectedProductLevelAndId != '') {
+                selectedProductLevel = selectedProductLevelAndId.substring(0, selectedProductLevelAndId.indexOf('||'));
+                selectedProductId = selectedProductLevelAndId.substring(selectedProductLevelAndId.indexOf('||') + 2);
+
+                console.log('Selected product [Level: ' + selectedProductLevel + ', Id: ' + selectedProductId + ']');
+            }
+
+            var stage = $('#potOptyStage').val();
+            var type = $('#potOptyType').val();
+            
+            if (potOptyId == '') {
+                startLoading('{!$Label.lbl_AddingPotOpty}');
+            } else {
+                startLoading('{!$Label.lbl_EditingPotOpty}');
+            }
+            modifyPotOpty(potOptyId, name, closeDateMillis, selectedProductLevel, selectedProductId, stage, type);
+        }
+
+        //Existing product table functions
+        function showProductModal(id) {
+            closeAlert();
+            existingRecordId = id;
+            
+            if (id != '') {
+                fillProductModal(id);
+                setProductHeaderLabel('{!$Label.lbl_EditProduct}');
+            } else {
+                cleanProductModal();
+                setProductHeaderLabel('{!$Label.lbl_AddProduct}');
+            }
+            
+            $('#productionValueModal').show();
+        }
+        
+        function setProductHeaderLabel(label) {
+            $('#productHeaderLabel').text(label);
+        }
+        
+        function fillProductModal(id) {
+            var existingProductId = $('#' + id + ' .existingProductId').text().trim();
+            var existingProductName = $('#' + id + ' .existingProductName').text().trim();
+
+            //Pre-populate the product selector
+            selectedProductLevelAndId = '3||' + existingProductId;
+            selectedProductName = existingProductName;
+            $('.brModalProduct input').val(existingProductName);
+            
+            var existingProductCountry = $('#' + id + ' .existingProductCountry')[0].innerText.trim();
+            if(existingProductCountry != '') {
+                $('#existingProductCountry').val(existingProductCountry);
+            }
+
+            $('#existingProductMaturityDate').datepicker({ format: 'dd/mm/yyyy' });
+            var existingProductMaturityDate = $('#' + id + ' .existingProductMaturityDate').text().trim();
+            if(existingProductMaturityDate != '') {
+                $('#existingProductMaturityDate').datepicker('setDate', existingProductMaturityDate);
+            } else {
+                $('#existingProductMaturityDate').datepicker('clearDates');
+            }
+
+            var existingProductLgd = $('#' + id + ' .existingProductLgd').text().trim();
+            if(existingProductLgd != '') {
+                existingProductLgd = replacePercent(existingProductLgd);
+                $('#existingProductLgd').val(existingProductLgd);
+            }
+
+            var existingProductDg = $('#' + id + ' .existingProductDg').text().trim();
+            if(existingProductDg != '') {
+                $('#existingProductDg').val(existingProductDg);
+            }
+
+            var existingProductLimit = $('#' + id + ' .existingProductLimit').text().trim();
+            if(existingProductLimit != '') {
+                existingProductLimit = existingProductLimit.split(' ')[1]
+                existingProductLimit = replaceComma(existingProductLimit);
+                $('#existingProductLimit').val(existingProductLimit);
+            }
+
+            var existingProductUtilisation = $('#' + id + ' .existingProductUtilisation').text().trim();
+            if(existingProductUtilisation != '') {
+                existingProductUtilisation = existingProductUtilisation.split(' ')[1];
+                existingProductUtilisation = replaceComma(existingProductUtilisation);
+                $('#existingProductUtilisation').val(existingProductUtilisation);
+            }
+            
+            var existingProductCurrency = $('#' + id + ' .existingProductCurrency').text().trim();
+            if(existingProductCurrency != '') {
+                $('#existingProductCurrency').val(existingProductCurrency);
+            }
+
+            var existingProductMargin = $('#' + id + ' .existingProductMargin').text().trim();
+            if(existingProductMargin != '') {
+                existingProductMargin = replacePercent(existingProductMargin);
+                $('#existingProductMargin').val(existingProductMargin);
+            }
+
+            var existingProductFtp = $('#' + id + ' .existingProductFtp').text().trim();
+            if(existingProductFtp != '') {
+                existingProductFtp = existingProductFtp.replace('bps', '');
+                $('#existingProductFtp').val(existingProductFtp);
+            }
+
+            var existingProductArrfee = $('#' + id + ' .existingProductArrfee').text().trim();
+            if(existingProductArrfee != '') {
+                existingProductArrfee = replacePercent(existingProductArrfee);
+                $('#existingProductArrfee').val(existingProductArrfee);
+            }
+
+            var existingProductComfee = $('#' + id + ' .existingProductComfee').text().trim();
+            if(existingProductComfee != '') {
+                existingProductComfee = replacePercent(existingProductComfee);
+                $('#existingProductComfee').val(existingProductComfee);
+            }
+
+            var existingProductRorwa = $('#' + id + ' .existingProductRorwa').text().trim();
+            if(existingProductRorwa != '') {
+                existingProductRorwa = replacePercent(existingProductRorwa);
+                $('#existingProductRorwa').val(existingProductRorwa);
+            }
+        }
+
+        function replaceComma(valueToReplace) {
+            if(typeof valueToReplace !== 'undefined') {
+                valueToReplace = valueToReplace.replace(/,/g,'');
+            }
+            return valueToReplace;
+        }
+        
+        function replacePercent(valueToReplace) {
+            if(typeof valueToReplace !== 'undefined') {
+                valueToReplace = valueToReplace.replace('%','');
+            }
+            return valueToReplace;
+        }          
+        
+        function cleanProductModal() {
+            $('.brModalProduct input').val('');
+
+            $('#existingProductCountry').val('');
+            $('#existingProductMaturityDate').datepicker({ format: 'dd/mm/yyyy' });
+            $('#existingProductMaturityDate').datepicker('clearDates');
+            $('#existingProductLgd').val('');
+            $('#existingProductDg').val('');
+            $('#existingProductLimit').val('');
+            $('#existingProductUtilisation').val('');
+            $('#existingProductMargin').val('');
+            $('#existingProductFtp').val('');
+            $('#existingProductArrfee').val('');
+            $('#existingProductComfee').val('');
+            $('#existingProductRorwa').val('');
+            $('#existingProductCurrency').val('ZAR');
+        }
+        
+        function closeProductModal() {
+            closeToast();
+            $('#productionValueModal').hide();
+        }
+        
+        function onBeforeModifyProduct() {
+            if(selectedProductLevelAndId.length == 0 || selectedProductName.length == 0) {
+                showToast('{!$Label.errMsg_NameRequired}');
+                return;
+            }
+
+            //If a product has been selected - check if it's a level3
+            //Split Level and ID
+            var selectedProductLevel = selectedProductLevelAndId.substring(0, selectedProductLevelAndId.indexOf('||'));
+            var selectedProductId = selectedProductLevelAndId.substring(selectedProductLevelAndId.indexOf('||') + 2);
+
+            console.log('Product selected [Level: ' + selectedProductLevel + ', ID: ' + selectedProductId + ', Name: ' + selectedProductName + ']');
+            if(selectedProductLevel != '3') {
+                showToast('Please select a Level 3 Product');
+                return;
+            }
+
+            var existingProductCountry = $('#existingProductCountry').val().trim();
+            
+            var existingProductMaturityDate = $('#existingProductMaturityDate').val().trim();
+            var existingProductMaturityDateMillis = null;
+            if(existingProductMaturityDate != '') {
+                existingProductMaturityDateMillis = convertDateToTimestamp(existingProductMaturityDate);
+            }
+
+            var existingProductLgd = $('#existingProductLgd').val().trim();
+            if((!isNumber(existingProductLgd) && existingProductLgd != '') || (isNumber(existingProductLgd) && (existingProductLgd >= 1000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.LGD__c.Label} is a percentage (###.##)');
+                return;
+            }
+
+            var existingProductDg = $('#existingProductDg').val().trim();
+            if((!isNumber(existingProductDg) && existingProductDg != '') || (isNumber(existingProductDg) && (existingProductDg >= 100000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.DG__c.Label} is a number (#####)');
+                return;
+            }
+
+            var existingProductLimit = $('#existingProductLimit').val().trim();
+            if((!isNumber(existingProductLimit) && existingProductLimit != '')) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.Limit__c.Label} is a number');
+                return;
+            }
+
+            var existingProductUtilisation = $('#existingProductUtilisation').val().trim();
+            if((!isNumber(existingProductUtilisation) && existingProductUtilisation != '')) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.Utilisation__c.Label} is a number');
+                return;
+            }
+            
+            var existingProductCurrency = $('#existingProductCurrency').val().trim();
+
+            var existingProductMargin = $('#existingProductMargin').val().trim();
+            if((!isNumber(existingProductMargin) && existingProductMargin != '') || (isNumber(existingProductMargin) && (existingProductMargin >= 1000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.Margin__c.Label} is a percentage (###.##)');
+                return;
+            }
+
+            var existingProductFtp = $('#existingProductFtp').val().trim();
+            if((!isNumber(existingProductFtp) && existingProductFtp != '') || (isNumber(existingProductFtp) && (existingProductFtp >= 100000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.FTP__c.Label} is a number (#####)');
+                return;
+            }
+
+            var existingProductArrfee = $('#existingProductArrfee').val().trim();
+            if((!isNumber(existingProductArrfee) && existingProductArrfee != '') || (isNumber(existingProductArrfee) && (existingProductArrfee >= 1000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.Arranging_Fee__c.Label} is a percentage (###.##)');
+                return;
+            }
+
+            var existingProductComfee = $('#existingProductComfee').val().trim();
+            if((!isNumber(existingProductComfee) && existingProductComfee != '') || (isNumber(existingProductComfee) && (existingProductComfee >= 1000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.Commitment_Fee__c.Label} is a percentage (###.##)');
+                return;
+            }
+
+            var existingProductRorwa = $('#existingProductRorwa').val().trim();
+            if((!isNumber(existingProductRorwa) && existingProductRorwa != '') || (isNumber(existingProductRorwa) && (existingProductRorwa >= 100000)) ) {
+                showToast('Please make sure that {!$ObjectType.Budget_Revenue__c.fields.RoRWA__c.Label} is a percentage (#####.##)');
+                return;
+            }
+
+            closeProductModal();
+
+            if(existingRecordId == null || existingRecordId == '') {
+                startLoading('{!$Label.lbl_AddingProduct}');
+            } else {
+                startLoading('{!$Label.lbl_EditingProduct}');
+            }
+            modifyProduct(existingRecordId, selectedProductId, existingProductCountry, existingProductMaturityDateMillis, existingProductLgd, existingProductDg, existingProductLimit, existingProductUtilisation, existingProductCurrency, existingProductMargin, existingProductFtp, existingProductArrfee, existingProductComfee, existingProductRorwa);
+        }
+
+        function isNumber(n) {
+          return !isNaN(parseFloat(n)) && isFinite(n);
+        }        
+
+        //opportunities table functions
+        function showOptyModal() {
+            closeAlert();
+            cleanOptyModal();
+            $('#optyModal').show();
+        }
+        
+        function cleanOptyModal() {
+            $('#optyName').val('');
+            $('#optyCloseDate').datepicker({ format: 'dd/mm/yyyy' });
+            $('#optyCloseDate').datepicker('clearDates');
+            $('#optyStage option:first-child').prop('selected', true);
+            $('#optyCountry option:first-child').prop('selected', true);
+        }
+        
+        function closeOptyModal() {
+            closeToast();
+            $('#optyModal').hide();
+        }
+        
+        function onBeforeModifyOpty() {
+            var name = $('#optyName').val().trim();
+            if (name.length == 0) {
+                showToast('{!$Label.errMsg_NameRequired}');
+                return;
+            }
+            closeOptyModal();
+        
+            var closeDate = $('#optyCloseDate').val().trim();
+            var closeDateMillis = convertDateToTimestamp(closeDate);
+            var stage = $('#optyStage').val();
+            var country = $('#optyCountry').val();
+            
+            startLoading('{!$Label.lbl_AddingOpty}');
+            modifyOpty(name, closeDateMillis, stage, country);
+        }
+        
+        function convertDateToTimestamp(dateString) {
+            if (dateString === '') {
+                return 0;
+            }
+            
+            var dateSplit = dateString.split('/');
+            if (dateSplit.length != 3) {
+                return 0;
+            }
+            
+            var month = parseInt(dateSplit[1]) - 1;
+            
+            var timestamp = new Date(dateSplit[2], month, dateSplit[0]).getTime();
+            if (isNaN(timestamp)) {
+                return 0;
+            }
+            return timestamp;
+        }
+
+        function onBeforeConvertUnqOpty() {
+            if(confirm('{!$Label.msg_ConvertPotOptyConfirm}')) {
+                $('#potOptyModal').hide();
+                startLoading('{!$Label.lbl_ConvertingOpportunity}');
+                convertUnqOpty(potOptyId);
+            }
+        }
+    
+    	// ACM Modal functions
+    	function closeACMModal() {
+            closeToast();
+            $('#ACMModal').hide();
+        }
+    
+    	function showACMModal() {
+            closeAlert();
+            cleanACMModal();
+            $('#ACMModal').show();
+        }
+    
+    	function cleanACMModal() {
+            $('#AddACMSDS option:first-child').prop('selected', true);
+        }
+    
+    	// Manual Facility functions
+    	
+    	//The currently selected facility record or empty if new
+        var facilityId;
+    
+        function closeManualFacilityModal() {
+            closeToast();
+            $('#manualFacilityModal').hide();
+        }
+    
+    	function showManualFacilityModal(id, sds) {
+            facilityId = id;
+            closeAlert();
+            if (id != '') {
+                cleanManualFacilityModal();
+                fillManualFacilityModal(id, sds);
+            } else
+                cleanManualFacilityModal();
+            $('#manualFacilityModal').show();
+        }
+            
+        function fillManualFacilityModal(id, sds) {
+            /* Manual Facilities should now be linked to current Relationship and not underlying SDS
+            if (sds != '') $('#AddManualSDS').val(sds);
+            
+            */
+            
+            var RETRIEVEDVIAACM = $('#' + id + ' .RETRIEVEDVIAACM').text().trim();
+        	var facilityProductDescription = $('#' + id + ' .facilityProductDescription')[0].innerText.trim();
+            if(facilityProductDescription != '') {
+                $('.facilityProductDescription input').val(facilityProductDescription);
+            }
+            
+            $('#facilityExpiryDate').datepicker({ format: 'dd/mm/yyyy' });
+            var facilityExpiryDate = $('#' + id + ' .facilityExpiryDate').text().trim();
+            if(facilityExpiryDate != '') {
+                $('#facilityExpiryDate').datepicker('setDate', facilityExpiryDate);
+            } else {
+                $('#facilityExpiryDate').datepicker('clearDates');
+            }
+            
+            var facilityCurrency = $('#' + id + ' .facilityAmount').text().trim();
+            if(facilityCurrency != '') {
+                facilityCurrency = facilityCurrency.split(' ')[0];
+                $('#facilityCurrency').val(facilityCurrency);
+            }
+            
+            var facilityCountry = $('#' + id + ' .facilityCountry').text().trim();
+            if(facilityCountry !='')
+            {
+                facilityCountry = replaceComma(facilityCountry);
+                $('#facilityCountry').val(facilityCountry);
+            }
+            
+            var facilityAmount = $('#' + id + ' .facilityAmount').text().trim();
+            if(facilityAmount != '') {
+                facilityAmount = facilityAmount.split(' ')[1];
+                facilityAmount = replaceComma(facilityAmount);
+                $('#facilityAmount').val(facilityAmount);
+            }
+            
+            var facilityLGD = $('#' + id + ' .facilityLGD').text().trim();
+            if(facilityLGD != '') {
+                $('#facilityLGD').val(facilityLGD);
+            }
+            
+            var facilityUtilizationAmount = $('#' + id + ' .facilityUtilizationAmount').text().trim();
+            if(facilityUtilizationAmount != '') {
+                facilityUtilizationAmount = facilityUtilizationAmount.split(' ')[1];
+                facilityUtilizationAmount = replaceComma(facilityUtilizationAmount);
+                $('#facilityUtilizationAmount').val(facilityUtilizationAmount);
+            }
+            
+            var grossMargin='';
+            var ftpBPS='';
+            var netMargin = '';
+            var arrangFee = '';
+            var comFees  ='';
+            var roRWA = '';
+            
+            grossMargin= $('#' + id + ' .grossMargin').text().trim();
+            
+            $('#grossMargin').val(grossMargin);
+            
+            ftpBPS = $('#' + id + ' .ftpBPS').text().trim();
+            $('#ftpBPS').val(ftpBPS);
+
+            
+            netMargin = $('#' + id + ' .netMargin').text().trim();
+            $('#netMargin').val(netMargin);
+            if(RETRIEVEDVIAACM =='true')
+                {
+                    document.getElementById("facilityExpiryDate").disabled = true;
+                    document.getElementById("facilityLGD").disabled = true;
+                    document.getElementById("facilityAmount").disabled = true;
+                }
+            else
+                {
+                    document.getElementById("facilityExpiryDate").disabled = false;
+                    document.getElementById("facilityLGD").disabled = false;
+                    document.getElementById("facilityAmount").disabled = false;
+                }
+            
+                
+           
+            
+            arrangFee = $('#' + id + ' .arrangFee').text().trim();
+            $('#arrangFee').val(arrangFee);
+            
+            comFees = $('#' + id + ' .comFees').text().trim();
+            $('#comFees').val(comFees);
+            
+            roRWA = $('#' + id + ' .roRWA').text().trim();
+                        
+        }
+    
+    	function cleanManualFacilityModal() {
+            
+            /* Manual SDS nolonger link to underlying SDS
+            $('#AddManualSDS option:first-child').prop('selected', true);*/
+            $('.facilityProductDescription input').val('');
+            $('#facilityCountry').val('');
+            $('#facilityExpiryDate').on('changeDate', function() { $('#facilityExpiryDate').datepicker('hide'); });
+            $('#facilityExpiryDate').datepicker({ format: 'dd/mm/yyyy' });
+            $('#facilityExpiryDate').datepicker('clearDates');
+            $('#facilityAmount').val('');
+            $('#facilityLGD').val('');
+            $('#facilityUtilizationAmount').val('');
+            $('#facilityCurrency').val('ZAR');
+            
+            $('#grossMargin').val('');
+            $('#ftpBPS').val('');
+            $('#netMargin').val('');
+            $('#arrangFee').val('');
+            $('#comFees').val('');
+            $('#roRWA').val('');
+        }
+    
+    	function onBeforeModifyFacility() {
+            
+           
+            /* No longer need to link manual facilities to underlying SDS
+            if (document.getElementById('AddManualSDS').selectedIndex == 0) {
+                showToast('Select a SDS');
+                return;
+            }
+            var selectedSDS = $('#AddManualSDS').val().trim();
+            var selectedSDSLabel = $('#AddManualSDS option:selected').text();
+            */
+            
+        	var product = $('.facilityProductDescription input')[1].value;
+            if (product.length == 0) {
+                showToast('{!$Label.errMsg_NameRequired}');
+                return;
+            }
+            
+            var facilityAmount = $('#facilityAmount').val().trim();
+            if(facilityAmount == '' || (!isNumber(facilityAmount) && facilityAmount != '')) {
+                showToast('Please make sure that {!$ObjectType.ACMFacility__c.fields.FACILITYAMOUNT__c.Label} is a number (#####)');
+                return;
+            }
+
+            var facilityLGD = $('#facilityLGD').val().trim();
+            if(facilityLGD == '' || (!isNumber(facilityLGD) && facilityLGD != '') || (isNumber(facilityLGD) && (facilityLGD >= 100))) {
+                showToast('Please make sure that {!$ObjectType.ACMFacility__c.fields.LOSSGIVENDEFAULT__c.Label} is a percentage (###.##)');
+                return;
+            }
+            
+            var facilityUtilizationAmount = $('#facilityUtilizationAmount').val().trim();
+            if(!isNumber(facilityUtilizationAmount) && facilityUtilizationAmount != '') {
+                showToast('Please make sure that {!$ObjectType.ACMFacility__c.fields.ACMUTILIZATIONAMOUNT__c.Label} is a number (#####)');
+                return;
+            }
+            
+            var expiryDate = $('#facilityExpiryDate').val().trim();
+            var expiryDateMillis = convertDateToTimestamp(expiryDate);
+            var facilityCurrency = $('#facilityCurrency').val().trim();
+            
+            
+            var grossMargin = $('#grossMargin').val().trim();
+            var ftpBPS = $('#ftpBPS').val().trim();
+            var netMargin = $('#netMargin').val().trim();
+            var arrangFee = $('#arrangFee').val().trim();
+            var comFees =$('#comFees').val().trim();
+            var roRWA = $('#roRWA').val().trim();
+            var facilityCountry = $('#facilityCountry').val().trim();
+                                    
+            closeManualFacilityModal();
+            
+            if(facilityId == null || facilityId == '') {
+                startLoading('Adding Facility...');
+            } else {
+                startLoading('Editing Facility...');
+            }
+            
+            modifyManualFacility(facilityId, product, expiryDateMillis, facilityCurrency, facilityAmount, facilityLGD, facilityUtilizationAmount,grossMargin,ftpBPS,netMargin,arrangFee,comFees,roRWA,facilityCountry);
+        }
+    </script>
+    
+    <style>
+    
+        @media (min-width: 48em) {
+            
+            #productionTable th {
+                width: 8%;
+            }
+            
+            #productionTable th span {
+                word-wrap: break-word;
+                white-space: normal;
+            }
+            
+            #firstCol {
+                width: 12%;
+            }
+            
+            #optyModal .slds-modal__container,
+            .productionValueModal {
+                width: 30em;
+            }
+        }
+        
+        .pageCenter {
+            padding-left: 3em;
+            padding-right: 3em;
+        }
+        
+        #wholePage {
+            background-color: #F4F6F9;
+            padding-top: 3em;
+            padding-bottom: 3em;
+        }
+        
+        #productionTable tbody tr:last-child {
+            background-color: #EEEEEE;
+        }
+        
+        #productionTable td {
+            text-align: right;
+        }
+        
+        .alignRight {
+            text-align: right;
+        }
+        
+        #productionFirstCol {
+            text-align: left !important;
+        }
+        
+        .marginTop3em {
+            margin-top: 3em !important;
+        }
+        
+        .marginTop1em {
+            margin-top: 1em;
+        }
+        
+        .datepicker-dropdown {
+            position: absolute;
+            display: block;
+            background-color: white;
+            z-index: 100;
+            border: 1px solid #d8dde6;
+        }
+        
+        #potOptyModal .datepicker-dropdown {
+            top: 4.5em;
+        }
+        
+        #optyModal .datepicker-dropdown {
+            top: -3.5em;
+            left: 12.5em;
+        }
+        
+        .slds table tbody td {
+            font-weight: bold;
+        }
+        
+        .slds-form-element__label {
+            font-size: inherit !important;
+            font-weight: bold !important;
+        }
+        
+        .marginTop1em {
+            margin-top: 1em !important;
+        }
+
+        #productionTable tr:last-child td:last-child button {
+            display: none;
+        }
+
+        #existingProductCountry {
+            min-height: 34px;
+            height: 34px;
+        }
+        
+        .tt-menu {
+            width: 100%;
+            margin: 12px 0;
+            padding: 8px 0;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            cursor: pointer;
+        }
+        .tt-suggestion {
+            padding: 3px 5px;
+            font-size: 18px;
+            line-height: 24px;
+        }
+        .tt-suggestion:hover {
+            background-color: #00AEEF;
+        }
+        .optionsWrapper {
+                width: 100%;
+                text-align: center;
+                padding-top: 1em;
+                padding-right: 1em;
+        }
+        .jloc-reference
+        {
+        border-style: ridge;
+        border-color: #960528;
+        border-width: 1px
+        }
+        
+    </style>
+      
+    <div class="slds">  
+    
+        <c:ClientPlanHeader />
+        
+        <c:LightningToast />
+        
+        <c:LightningAlert />
+        
+        <c:ProgressBarLightning />
+        
+        <apex:stylesheet value="{!URLFOR($Resource.bootstrap_datepicker, 'bootstrap-datepicker.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.bootstrap_datepicker, 'bootstrap-datepicker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.typeahead)}"/>
+        
+        <div id="wholePage">
+         <div style="display:inline-block ; margin: 5px;">
+             <apex:outputpanel rendered="{!isGlobalParent}">
+                 <apex:form >
+                     <label class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                         {!$Label.lblUnderlyingClientPlans}</b>
+                     </label><br/>
+                     <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                         <apex:selectOptions value="{!ChildClientPlans}"/>
+                     </apex:SelectList><br/>
+                 </apex:form>
+             </apex:outputpanel>
+            </div>
+        <apex:outputPanel rendered="{!planLoaded}" layout="block" styleClass="pageCenter">
+            
+           <apex:outputPanel id="productionTablePanel" layout="block">
+          
+                 <div class="alignRight marginTop1em" style="display:{!IF(acmfs.size>0 && acmfs[0].RETRIEVEDVIAACM__c,'block','none')}">
+                    <table>
+                       <tr> 
+                           <td style="width:75%"/>
+                           <td style="text-align:right;width:20%">
+                                <select id="SDSClient" class="slds-select">
+                                    <apex:repeat value="{!getSDSClients}" var="sdsclient">                                
+                                        <apex:outputPanel rendered="{!IF(sdsclient.value == selectedFacilitySDS, true, false)}">
+                                            <option selected="selected" value="{!sdsclient.value}">{!sdsclient.Label}</option>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!IF(sdsclient.value == selectedFacilitySDS, false, true)}">
+                                            <option value="{!sdsclient.value}">{!sdsclient.Label}</option>
+                                        </apex:outputPanel>
+                                    </apex:repeat>
+		                		</select>
+                           </td>
+                           <td style="text-align:right;width:5%">
+                           		<button class="slds-button slds-button--brand slds-button--small" onclick="if(document.getElementById('SDSClient').value!=''){var sel = document.getElementById('SDSClient');addFacilities(sel.value,sel.options[sel.selectedIndex].innerHTML);startLoading('{!$Label.lbl_ACMRetrievingFacilities}');}return false;">
+                                    {!$Label.lbl_Add}/{!$Label.lbl_Update}
+                    			</button>
+                           </td>
+                       </tr>                       
+                    </table>
+                </div>
+                <h3><apex:outputText value="{!$Label.lbl_ACMFacilities}" rendered="{!acmfs.size>0}"/></h3>
+                <div>
+                	<apex:outputPanel id="FacilitiesAddPanel" rendered="{!getSDSClients.size>1 || acmfs.size==0}" layout="none">
+                    	<div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="optionsWrapper">
+                        	<svg aria-hidden="true" class="slds-slds-icon slds-icon--large">
+                            	<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#cases')}"></use>
+                            </svg>
+                            <button class="slds-button slds-button--brand" onclick="showACMModal();return false;">Upload Facilities from ACM</button>
+							<button class="slds-button slds-button--brand" onclick="showManualFacilityModal('','');return false;">Upload Facilities Manually</button>
+                        </div>
+                	</apex:outputPanel>
+                </div>
+                
+               <div class="jloc-reference">
+                <table id="facilitiesTable" class="{!IF(acmfs.size==0,'slds-hide','slds-table slds-table--bordered')}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+                    <thead>
+                        <tr class="slds-text-hexading--label">
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYPRODUCTDESCRIPTION__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Country__c.Label}" />
+                                </span>
+                            </th>
+                            <th/>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.EXPIRYDATE__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYAMOUNT__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.LOSSGIVENDEFAULT__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.ACMUTILIZATIONAMOUNT__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.GROSS_MARGIN__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FTP_bps__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Net_Margin__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Arrang_Fee__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.COM_FEES__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.RoRWA__c.Label}" />
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:variable value="{!0}" var="acmfsKeyIndex"/>
+                        <apex:repeat value="{!acmfsKeys}" var="acmfsKey">
+                            <tr id="{!acmfsKey}" class="slds-hint-parent">
+                            	<td class="facilityCPTYLABEL" colspan="13" bgcolor="#bfbfbf">
+                                    {!acmfsLabels[acmfsKeyIndex]}
+                                    <apex:outputPanel id="AddUpdateCPTY" rendered="{!acmfsMap[acmfsKey][0].RETRIEVEDVIAACM__c}" layout="none">
+                                    	<div class="slds-dropdown-trigger editButton">
+                                    	<button class="slds-button slds-button--icon-bare" onclick="return false;">
+                                        	<svg aria-hidden="true" class="slds-button__icon">
+                                            	<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                        	<ul class="slds-dropdown__list" role="menu">
+                                            	<li id="menu-28-0" href="#" class="slds-dropdown__item" >
+                                                    <a class="slds-truncate" role="menuitem" onclick="if('{!acmfsKey}'!=''){addFacilities('{!acmfsKey}','{!acmfsLabels[acmfsKeyIndex]}');startLoading('{!$Label.lbl_ACMRetrievingFacilities}');}return false;">{!$Label.lbl_Update}</a>
+                                                </li>
+                                                <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                    <a class="slds-truncate" role="menuitem" onclick="if(confirm('{!$Label.lbl_ACMConfirmDeleteFacilities}')){deleteFacilities('{!acmfsKey}');startLoading('{!$Label.lbl_ACMDeletingFacilities}');}; return false;">{!$Label.lbl_Delete}</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        	<apex:repeat value="{!acmfsMap[acmfsKey]}" var="acmf">
+                                <tr id="{!acmf.Id}" class="slds-hint-parent">
+                                    <td class="facilityProductDescription">
+                                        {!acmf.FACILITYPRODUCTDESCRIPTION__c}
+                                    </td>
+                                    <td><!--&& !acmf.RETRIEVEDVIAACM__c-->
+                                        <apex:outputPanel id="AddEditFacility" layout="none" rendered="{!!acmfsMap[acmfsKey][0].RETRIEVEDVIAACM__c}">
+                                        	<div class="slds-dropdown-trigger editButton">
+                                                <button class="slds-button slds-button--icon-bare" onclick="return false;">
+                                                    <svg aria-hidden="true" class="slds-button__icon">
+                                                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                                    </svg>
+                                                </button>
+                                                <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu" >
+                                                    <ul class="slds-dropdown__list" role="menu">
+                                                        <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                            <a class="slds-truncate" role="menuitem" onclick="showManualFacilityModal('{!acmf.Id}','{!acmf.CPTYID__c}');return false;">{!$Label.lbl_Edit}</a>
+                                                        </li>
+                                                            <li id="menu-28-0" href="#" class="slds-dropdown__item" style="{!IF(!acmfsMap[acmfsKey][0].RETRIEVEDVIAACM__c,'none','list-item')}">
+                                                            <a class="slds-truncate" role="menuitem" onclick="deleteManualFacility('{!acmf.Id}');startLoading('Deleting Facility...');return false;">{!$Label.lbl_Delete}</a>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                    		</div>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!acmfsMap[acmfsKey][0].RETRIEVEDVIAACM__c}">
+                                        	<div class="slds-dropdown-trigger editButton">
+                                                <button class="slds-button slds-button--icon-bare" onclick="return false;">
+                                                    <svg aria-hidden="true" class="slds-button__icon">
+                                                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                                    </svg>
+                                                </button>
+                                                <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu" >
+                                                    <ul class="slds-dropdown__list" role="menu">
+                                                        <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                            <a class="slds-truncate" role="menuitem" onclick="showManualFacilityModal('{!acmf.Id}','{!acmf.CPTYID__c}');return false;">{!$Label.lbl_Edit}</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                    		</div>
+                                        </apex:outputPanel>
+                                    </td>
+                                    <td class="facilityCountry">
+                                        {!acmf.Country__c}
+                                    </td>
+                                    <td class="facilityExpiryDate">
+                                        <apex:outputText value="{0, date, dd/MM/yyyy}" rendered="{!acmf.EXPIRYDATE__c != null}">
+                                            <apex:param value="{!acmf.EXPIRYDATE__c}" /> 
+                                        </apex:outputText>
+                                    </td>
+                                    <td class="facilityAmount">
+                                        {!acmf.FACILITYCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.FACILITYAMOUNT__c}"/></apex:outputText>
+                                    </td>
+                                    <td class="facilityLGD">
+                                        {!acmf.LOSSGIVENDEFAULT__c}
+                                    </td>
+                                    <td class="facilityUtilizationAmount">
+                                        {!acmf.ACMUTILIZATIONCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.ACMUTILIZATIONAMOUNT__c}"/></apex:outputText>
+                                    </td>
+                                    <td class="grossMargin">
+                                        <apex:outputText value="{!acmf.GROSS_MARGIN__c}" />
+                                    </td>
+                                    <td class="ftpBPS" >
+                                        <apex:outputText value="{!acmf.FTP_bps__c}"/>
+                                    </td>
+                                    <td class="netMargin">
+                                        <apex:outputText value="{!acmf.NET_MARGIN__c}"/>
+                                    </td>
+                                    <td class="arrangFee">
+                                        <apex:outputText value="{!acmf.Arrang_Fee__c}"/>
+                                    </td>
+                                    <td class="comFees">
+                                        <apex:outputText value="{!acmf.COM_FEES__c}"/>
+                                    </td>
+                                    <td class="roRWA">
+                                        <apex:outputText value="{!acmf.RoRWA__c}"/>
+                                    </td>
+                                    <td class="RETRIEVEDVIAACM" style="display:none">
+                                        <apex:outputText value="{!acmf.RETRIEVEDVIAACM__c}"/>
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                            <apex:variable var="acmfsKeyIndex" value="{!acmfsKeyIndex + 1}"/>
+                        </apex:repeat>
+                        <tr>
+                            <th colspan="13" class="facilityProductDescription">
+                                {!$Label.lbl_ACMSubTotal}
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!facilitySubTotalMap}" var="key">
+                            <tr>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td style="word-wrap:break-word">
+                                    {!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!facilitySubTotalMap[key].facilityAmountSubTotal}"/>
+                                    </apex:outputText>
+                                    ({!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!facilitySubTotalMap[key].convertedFacilityAmountSubTotal}"/>
+                                    </apex:outputText>)
+                                </td>
+                                <td/>
+                                <td>
+                                    {!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!facilitySubTotalMap[key].utilizationAmountSubTotal}"/>
+                                    </apex:outputText> 
+                                    ({!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!facilitySubTotalMap[key].convertedUtilizationAmountSubTotal}"/>
+                                    </apex:outputText>)
+                                </td>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                            <th colspan="13" class="facilityProductDescription">
+                                {!$Label.lbl_ACMTotal}
+                            </th>
+                        </tr>
+                         <tr>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td>
+                                    {!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!ACMFacilityFacilityTotal}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td/>
+                                <td>
+                                    {!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!ACMFacilityUtilizationTotal}"/>
+                                    </apex:outputText> 
+                                    
+                                </td>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                                <td/>
+                            </tr>
+                    </tbody>
+                    </table>
+               </div> 
+                <br/>
+                <br/>
+                               
+                
+                <div class="alignRight marginTop1em" style="display:{!IF(acmfs.size>0 && !acmfs[0].RETRIEVEDVIAACM__c,'block','none')}">
+                    <table>
+                       <tr>
+                           <td style="width:95%"/>
+                           <td style="text-align:right;width:5%">
+                           		<button class="slds-button slds-button--brand slds-button--small" onclick="showManualFacilityModal('','');return false;">
+                                    {!$Label.lbl_Add}
+                    			</button>
+                           </td>
+                       </tr>                       
+                    </table>
+                </div>
+                
+                <br/><br/>
+                 <apex:outputpanel rendered="{!isGlobalParent}">
+                <table id="productionTable" class="slds-table slds-table--bordered" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th id="firstCol" scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Product_Level_3__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Country__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Maturity_Date__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.LGD__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.DG__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Limit__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Utilisation__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col" style="display:none;">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.CurrencyIsoCode.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Margin__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.FTP__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Arranging_Fee__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Commitment_Fee__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span>
+                                    <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.RoRWA__c.Label}" />
+                                </span>
+                            </th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:variable var="cnt" value="{!1}" /> 
+						
+                        <apex:repeat value="{!accountListToBudgetRevenues}" var="currentAccount">
+                            <tr>
+                                <th>{!accountListToBudgetRevenues[currentAccount].Name}</th>
+                            </tr>
+                            <apex:repeat value="{!clientPlanToBudgetRevenues[currentAccount]}" var="budgetRevenue">
+                                <tr id="{!budgetRevenue.Id}" class="slds-hint-parent">
+                                    <td id="productionFirstCol" class="existingProductName">
+                                        <apex:outputText value="{!budgetRevenue.Product_Level_3__r.Name}" />
+                                        
+                                        <apex:outputPanel layout="none" rendered="{!budgetRevenue.Product_Level_3__r.Name==null}">
+                                            {!$Label.lbl_Totals}
+                                        </apex:outputPanel>
+                                    </td>
+                                    <td class="existingProductId" style="display: none;">
+                                        {!budgetRevenue.Product_Level_3__c}
+                                    </td>
+                                    <td class="existingProductCountry">
+                                        <apex:outputField value="{!budgetRevenue.Country__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductMaturityDate">
+                                        <apex:outputText value="{0, date, dd/MM/yyyy}" >
+                                            <apex:param value="{!budgetRevenue.Maturity_Date__c}" /> 
+                                        </apex:outputText>
+                                        
+                                    </td>
+                                    <td class="existingProductLgd">
+                                        <apex:outputField value="{!budgetRevenue.LGD__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductDg">
+                                        <apex:outputField value="{!budgetRevenue.DG__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductLimit">
+                                        <apex:outputField value="{!budgetRevenue.Limit__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductUtilisation">
+                                        <apex:outputField value="{!budgetRevenue.Utilisation__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductCurrency" style="display:none;">
+                                        <apex:outputField value="{!budgetRevenue.CurrencyIsoCode}" />
+                                    </td>
+                                    <td class="existingProductMargin">
+                                        <apex:outputField value="{!budgetRevenue.Margin__c}" />
+                                    </td>
+                                        <td class="existingProductFtp">
+                                            <apex:outputField value="{!budgetRevenue.FTP__c}" />
+                                            <apex:outputText value="bps" />
+                                            
+                                    </td>
+                                    <td class="existingProductArrfee">
+                                        <apex:outputField value="{!budgetRevenue.Arranging_Fee__c}" />
+                                        
+                                    </td>
+                                    <td class="existingProductComfee">
+                                        <apex:outputField value="{!budgetRevenue.Commitment_Fee__c}" />
+                                        
+                                    </td>  
+                                    <td class="existingProductRorwa">
+                                        <apex:outputField value="{!budgetRevenue.RoRWA__c}" />
+                                        
+                                    </td>           
+                                    
+                                </tr>
+                                
+                            </apex:repeat>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+                </apex:outputpanel>
+                </apex:outputPanel>
+
+            <apex:outputPanel id="RevByProductPanel" layout="block">
+                <br/>
+                <c:ClientPlanRevenueByProduct PanelIdToRefresh="RevByProductPanel" /> 
+            </apex:outputPanel>
+
+            <apex:outputPanel id="potOppTablePanel" layout="block">
+                <h3 class="marginTop3em">{!$Label.lbl_PotentialFutureOpps}</h3>
+                
+                <table class="slds-table slds-table--bordered" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}" />
+                                </span>
+                            </th>
+                            <th/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!unqOptys}" var="opty">
+                            <tr id="{!opty.Id}" class="slds-hint-parent">
+                                <td class="potOptyName">
+                                    <apex:outputText value="{!opty.Name}" />
+                                </td>
+                                <td class="potOptyProductName">
+                                    <apex:outputText value="{!opty.Product_Level_3__r.Name}" rendered="{!opty.Product_Level_3__r != null}"/>
+                                    <apex:outputText value="{!opty.Product_Level_2__r.Name}" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r != null}" />
+                                    <apex:outputText value="{!opty.Product_Level_1__r.Name}" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r == null && opty.Product_Level_1__r != null}" />
+                                </td>
+                                <td class="potOptyProductId" style="display: none;">
+                                    <apex:outputText value="{!opty.Product_Level_3__r.Id}" rendered="{!opty.Product_Level_3__r != null}"/>
+                                    <apex:outputText value="{!opty.Product_Level_2__r.Id}" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r != null}" />
+                                    <apex:outputText value="{!opty.Product_Level_1__r.Id}" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r == null && opty.Product_Level_1__r != null}" />
+                                </td>
+                                <td class="potOptyProductLevel" style="display: none;">
+                                    <apex:outputText value="3" rendered="{!opty.Product_Level_3__r != null}"/>
+                                    <apex:outputText value="2" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r != null}" />
+                                    <apex:outputText value="1" rendered="{!opty.Product_Level_3__r == null && opty.Product_Level_2__r == null && opty.Product_Level_1__r != null}" />
+                                </td>
+                                <td class="potOptyStage">
+                                    <apex:outputText value="{!opty.Stage__c}" />
+                                </td>
+                                <td class="potOptyCloseDate">
+                                    <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                        <apex:param value="{!opty.Close_Date__c}" /> 
+                                    </apex:outputText>
+                                </td>                            
+                                <td>
+                                    <apex:outputText value="{!opty.Probability__c}" />
+                                </td>
+                                <td class="potOptyType">
+                                    <apex:outputText value="{!opty.Type__c}" />
+                                </td>
+                                <td>
+                                    <div class="slds-dropdown-trigger editButton">
+                                        <button class="slds-button slds-button--icon-bare" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                          <ul class="slds-dropdown__list" role="menu">
+                                            <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                <a class="slds-truncate" role="menuitem" onclick="showPotOptyModal('{!opty.Id}');return false;">{!$Label.lbl_Edit}</a>
+                                            </li>
+                                            <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                            <a class="slds-truncate" role="menuitem" onclick="if(confirm('Do you really want to delete this Potential Opportunity?')){deletePotOptyModal('{!opty.Id}');return false;}; return false;">{!$Label.lbl_Delete}</a>
+                                            </li>
+                                          </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+                <br/>
+                <br/>
+                 <div class="alignRight marginTop1em">
+                    <button class="slds-button slds-button--brand slds-button--small" onclick="showPotOptyModal('');return false;">
+                        {!$Label.lbl_Add}
+                    </button>
+                </div>
+                <!--Related Potenial Opps--><apex:outputpanel rendered="{!isGlobalParent}">
+                <table class="slds-table slds-table--bordered" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}" />
+                                </span>
+                            </th>
+                            <th/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!accountListToPotentialOpps}" var="currentAccount">
+                            <tr>
+                                <th>{!accountListToPotentialOpps[currentAccount].Name}</th>
+                            </tr>
+                            <apex:repeat value="{!clientPlanToPotentialOpportunities[currentAccount]}" var="potentialOpp">
+                                <tr id="{!potentialOpp.Id}" class="slds-hint-parent">
+                                    <td class="potOptyName">
+                                        <apex:outputText value="{!potentialOpp.Name}" />
+                                    </td>
+                                    <td class="potOptyProductName">
+                                        <apex:outputText value="{!potentialOpp.Product_Level_3__r.Name}" rendered="{!potentialOpp.Product_Level_3__r != null}"/>
+                                        <apex:outputText value="{!potentialOpp.Product_Level_2__r.Name}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r != null}" />
+                                        <apex:outputText value="{!potentialOpp.Product_Level_1__r.Name}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r == null && potentialOpp.Product_Level_1__r != null}" />
+                                    </td>
+                                    <td class="potOptyProductId" style="display: none;">
+                                        <apex:outputText value="{!potentialOpp.Product_Level_3__r.Id}" rendered="{!potentialOpp.Product_Level_3__r != null}"/>
+                                        <apex:outputText value="{!potentialOpp.Product_Level_2__r.Id}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r != null}" />
+                                        <apex:outputText value="{!potentialOpp.Product_Level_1__r.Id}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r == null && potentialOpp.Product_Level_1__r != null}" />
+                                    </td>
+                                    <td class="potOptyProductLevel" style="display: none;">
+                                        <apex:outputText value="3" rendered="{!potentialOpp.Product_Level_3__r != null}"/>
+                                        <apex:outputText value="2" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r != null}" />
+                                        <apex:outputText value="1" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r == null && potentialOpp.Product_Level_1__r != null}" />
+                                    </td>
+                                    <td class="potOptyStage">
+                                        <apex:outputText value="{!potentialOpp.Stage__c}" />
+                                    </td>
+                                    <td class="potOptyCloseDate">
+                                        <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                            <apex:param value="{!potentialOpp.Close_Date__c}" /> 
+                                        </apex:outputText>
+                                    </td>                            
+                                    <td>
+                                        <apex:outputText value="{!potentialOpp.Probability__c}" />
+                                    </td>
+                                    <td class="potOptyType">
+                                        <apex:outputText value="{!potentialOpp.Type__c}" />
+                                    </td>
+                                   
+                                </tr>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            
+                </apex:outputpanel>
+            </apex:outputPanel>
+<apex:outputPanel >
+  
+            </apex:outputPanel>
+            <apex:outputPanel id="OppTablePanel" layout="block"  >          
+                <h3 class="marginTop3em"><apex:outputText value="{!$Label.lbl_OpenOpportunities}"/></h3>
+                <div class="jloc-reference">
+                    
+                
+                <table class="slds-table slds-table--bordered">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Name.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Total_Balance_Facility_Size__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.OwnerId.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">{!$ObjectType.Opportunity.fields.CloseDate.Label}</span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Probability.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.StageName.Label}" />
+                                </span>
+                            </th>
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        <apex:repeat value="{!PipelineOptys}" var="opty">
+                            <tr class="slds-hint-parent">
+                                <td>
+                                    <a href="/{!opty.Id}">
+                                        <apex:outputField value="{!opty.Name}" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <apex:outputField value="{!opty.Total_Balance_Facility_Size__c}" />
+                                </td>                            
+                                <td>
+                                    <apex:outputField value="{!opty.Owner.Name}" />
+                                </td>
+                                <td>
+                                    <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                        <apex:param value="{!opty.CloseDate}" /> 
+                                    </apex:outputText>
+                                </td>
+                                <td>
+                                    <apex:outputText value="{!opty.Probability}%" />
+                                </td>                            
+                                <td>
+                                    <apex:outputField value="{!opty.Annualised_Income__c}" />
+                                </td>                            
+                                <td>
+                                    <apex:outputField value="{!opty.StageName}" />
+                                </td> 
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table> 
+               </div>
+                	 
+                <div class="alignRight marginTop1em">
+                    <button class="slds-button slds-button--brand slds-button--small" onclick="showOptyModal();return false;">
+                        {!$Label.lbl_Add}
+                    </button>
+                </div>
+                <apex:outputpanel rendered="{!isGlobalParent}">
+            <table class="slds-table slds-table--bordered">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Name.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Total_Balance_Facility_Size__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.OwnerId.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">{!$ObjectType.Opportunity.fields.CloseDate.Label}</span>
+                            </th>
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Probability.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}" />
+                                </span>
+                            </th>                        
+                            <th scope="col">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Opportunity.fields.StageName.Label}" />
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!accountListToOpps}" var="currentAccount">
+							<tr>
+								<th>{!accountListToOpps[currentAccount].Name}</th>
+							</tr>
+							<apex:repeat value="{!clientPlanToOpportunities[currentAccount]}" var="currentOpportnity">
+								<tr class="slds-hint-parent">
+                                    <td>
+                                        <a href="/{!currentOpportnity.Id}">
+                                            <apex:outputField value="{!currentOpportnity.Name}" />
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {!currentOpportnity.Total_Balance_Facility_Size__c}
+                                    </td>  
+                                    <td>
+                                    <apex:outputField value="{!currentOpportnity.Owner.Name}" />
+                                </td>
+                                <td>
+                                    <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                        <apex:param value="{!currentOpportnity.CloseDate}" />
+                                    </apex:outputText>
+                                </td>
+                                <td>
+                                    <apex:outputText value="{!currentOpportnity.Probability}%" />
+                                </td>                            
+                                <td>
+                                    <apex:outputField value="{!currentOpportnity.Annualised_Income__c}" />
+                                </td>                            
+                                <td>
+                                    <apex:outputField value="{!currentOpportnity.StageName}" />
+                                </td> 
+                                </tr>
+							</apex:repeat>
+                        </apex:repeat>
+                    </tbody>
+                </table> 
+                </apex:outputpanel>
+                </apex:outputPanel>  
+            
+            <apex:form >
+                
+                <apex:actionFunction action="{!modifyPotOpty}" name="modifyPotOpty" onComplete="checkErrorMessage();endLoading();" reRender="errorMessagePanel,potOppTablePanel">
+                    <apex:param name="potOptyId" assignTo="{!potOptyId}" value=""/>
+                    <apex:param name="potOptyName" assignTo="{!potOptyName}" value=""/>
+                    <apex:param name="closeDateMillis" assignTo="{!closeDateMillis}" value=""/>
+                    <apex:param name="potOptyProductLevel" assignTo="{!potOptyProductLevel}" value=""/>
+                    <apex:param name="potOptyProductId" assignTo="{!potOptyProductId}" value=""/>
+                    <apex:param name="potOptyStage" assignTo="{!potOptyStage}" value=""/>
+                    <apex:param name="potOptyType" assignTo="{!potOptyType}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!deletePotOpty}" name="deletePotOpty" onComplete="checkErrorMessage();endLoading();" reRender="errorMessagePanel,potOppTablePanel">
+                    <apex:param name="potOptyId" assignTo="{!potOptyId}" value=""/>
+                </apex:actionFunction>
+
+                 <apex:actionFunction name="convertUnqOpty" action="{!convertUnqOpty}" oncomplete="checkErrorMessage();endLoading();" reRender="errorMessagePanel,potOppTablePanel,OppTablePanel">
+                    <apex:param assignTo="{!managedUnqOptyId}" value="" name="managedUnqOptyId"/>
+                </apex:actionFunction>   
+
+                <apex:actionFunction action="{!modifyOpty}" name="modifyOpty" onComplete="checkErrorMessage();endLoading();" reRender="errorMessagePanel,OppTablePanel">
+                    <apex:param name="potOptyName" assignTo="{!potOptyName}" value=""/>
+                    <apex:param name="closeDateMillis" assignTo="{!closeDateMillis}" value=""/>
+                    <apex:param name="potOptyStage" assignTo="{!potOptyStage}" value=""/>
+                    <apex:param name="potOptyCountry" assignTo="{!potOptyCountry}" value=""/>
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!saveProductionValue}" name="saveProductionValue" onComplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+                    <apex:param name="budgetRevenueId" assignTo="{!budgetRevenueId}" value=""/>
+                    <apex:param name="productionFieldName" assignTo="{!productionFieldName}" value=""/>
+                    <apex:param name="productionValue" assignTo="{!productionValue}" value=""/>
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!modifyProduct}" name="modifyProduct" onComplete="checkErrorMessage();endLoading();prepareTypeaheadForCountries();" reRender="productionTablePanel,errorMessagePanel">
+                    <apex:param name="existingRecordId" assignTo="{!existingRecordId}" value=""/>
+                    <apex:param name="existingProductId" assignTo="{!existingProductId}" value=""/>
+                    <apex:param name="existingProductCountry" assignTo="{!existingProductCountry}" value=""/>
+                    <apex:param name="existingProductMaturityDateMillis" assignTo="{!existingProductMaturityDateMillis}" value=""/>
+                    <apex:param name="existingProductLgd" assignTo="{!existingProductLgd}" value=""/>
+                    <apex:param name="existingProductDg" assignTo="{!existingProductDg}" value=""/>
+                    <apex:param name="existingProductLimit" assignTo="{!existingProductLimit}" value=""/>
+                    <apex:param name="existingProductUtilisation" assignTo="{!existingProductUtilisation}" value=""/>
+                    <apex:param name="existingProductCurrency" assignTo="{!existingProductCurrency}" value=""/>
+                    <apex:param name="existingProductMargin" assignTo="{!existingProductMargin}" value=""/>
+                    <apex:param name="existingProductFtp" assignTo="{!existingProductFtp}" value=""/>
+                    <apex:param name="existingProductArrfee" assignTo="{!existingProductArrfee}" value=""/>
+                    <apex:param name="existingProductComfee" assignTo="{!existingProductComfee}" value=""/>
+                    <apex:param name="existingProductRorwa" assignTo="{!existingProductRorwa}" value=""/>
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!deleteProduct}" name="deleteProduct" oncomplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+                    <apex:param name="existingRecordId" assignTo="{!existingRecordId}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!addFacilities}" name="addFacilities" oncomplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+				    <apex:param name="selectedFacilitySDS" assignTo="{!selectedFacilitySDS}" value="" />
+                    <apex:param name="selectedFacilitySDSLabel" assignTo="{!selectedFacilitySDSLabel}" value="" />
+                </apex:actionFunction>
+                          
+                <apex:actionFunction action="{!deleteFacilities}" name="deleteFacilities" oncomplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+                    <apex:param name="selectedFacilitySDS" assignTo="{!selectedFacilitySDS}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!modifyManualFacility}" name="modifyManualFacility" onComplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+                    <apex:param name="facilityId" assignTo="{!facilityId}" value=""/>
+                    <!--<apex:param name="ManualSDS" assignTo="{!selectedFacilitySDS}" value=""/>
+                    <apex:param name="ManualSDSLabel" assignTo="{!selectedFacilitySDSLabel}" value=""/>-->
+                    <apex:param name="facilityProductDescription" assignTo="{!facilityProductDescription}" value=""/>
+                    <apex:param name="facilityExpiryDateMillis" assignTo="{!facilityExpiryDateMillis}" value=""/>
+                    <apex:param name="facilityCurrency" assignTo="{!facilityCurrency}" value=""/>
+                    <apex:param name="facilityAmount" assignTo="{!facilityAmount}" value=""/>
+                    <apex:param name="facilityLGD" assignTo="{!facilityLGD}" value=""/>
+                    <apex:param name="facilityUtilizationAmount" assignTo="{!facilityUtilizationAmount}" value=""/>
+                    
+                    <apex:param name="grossMargin" assignTo="{!grossMargin}" value=""/>
+                    <apex:param name="ftpBPS" assignTo="{!ftpBPS}" value=""/>
+                    <apex:param name="netMargin" assignTo="{!netMargin}" value=""/>
+                    <apex:param name="arrangFee" assignTo="{!arrangFee}" value=""/>
+                    <apex:param name="comFees" assignTo="{!comFees}" value=""/>
+                    <apex:param name="roRWA" assignTo="{!roRWA}" value=""/>
+                    <apex:param name="facilityCountry" assignTo="{!facilityCountry}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!deleteManualFacility}" name="deleteManualFacility" onComplete="checkErrorMessage();endLoading();" reRender="productionTablePanel,errorMessagePanel">
+                	<apex:param name="facilityId" assignTo="{!facilityId}" value=""/>
+                </apex:actionFunction>
+            </apex:form>          
+            
+            <div>
+                <div id="productionValueModal" style="display:none;">
+                    <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header">
+                                <h2 id="productHeaderLabel" class="slds-text-heading--medium"></h2>
+                                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeProductModal();return false;">
+                                    <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="slds-modal__content">
+                                <div class="slds-form--stacked">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Product__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <c:ClientPlanProductSearch identificator="brModalProduct"/>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Country__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductCountry" class="slds-input" type="text" />
+                                        </div>
+                                    </div> 
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Maturity_Date__c.Label}" />
+                                        </label>
+
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductMaturityDate" class="slds-input" value="" type="text" />
+                                        </div>
+                                    </div>                                      
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.LGD__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductLgd" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.DG__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductDg" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Limit__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductLimit" class="slds-input" type="currency" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Utilisation__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductUtilisation" class="slds-input" type="currency" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.CurrencyIsoCode.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+		                                    <select id="existingProductCurrency" class="slds-select">
+		                                        <apex:repeat value="{!CurrencyOptions}" var="cO">
+		                                            <option>{!cO.label}</option>
+		                                        </apex:repeat>
+		                                    </select>
+                                		</div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Margin__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductMargin" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.FTP__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductFtp" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Arranging_Fee__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductArrfee" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.Commitment_Fee__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductComfee" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">
+                                            <apex:outputText value="{!$ObjectType.Budget_Revenue__c.fields.RoRWA__c.Label}" />
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <input id="existingProductRorwa" class="slds-input" type="text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>        
+                            <div class="slds-modal__footer">
+                                <button class="slds-button slds-button--neutral" onclick="closeProductModal();return false;">Cancel</button>
+                                <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyProduct();return false;">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div id="potOptyModal" style="display:none;">
+                  <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                      xmlns:xlink="http://www.w3.org/1999/xlink">
+                      
+                    <div class="slds-modal__container">
+                      <div class="slds-modal__header">
+                      
+                        <h2 id="potOptyModalHeaderLabel" class="slds-text-heading--medium" />
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closePotOptyModal();return false;">
+                          <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+                        
+                          <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <input id="potOptyName" class="slds-input" type="text" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <input class="slds-input" id="potOptyCloseDate" value="" type="text" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <c:ClientPlanProductSearch identificator="potOptyModalProduct"/>
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <select id="potOptyStage" class="slds-select">
+                                  <apex:repeat value="{!PotOptyStageOptions}" var="o">
+                                      <option value="{!o.label}">{!o.label}</option>
+                                  </apex:repeat>
+                              </select>
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <select id="potOptyType" class="slds-select">
+                                  <apex:repeat value="{!PotOptyTypeOptions}" var="o">
+                                      <option>{!o.label}</option>
+                                  </apex:repeat>
+                              </select>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                      
+                      <div class="slds-modal__footer">
+                        <button id="convertOptyButton" class="slds-button slds-button--neutral slds-button--brand" style="display: none;" onclick="onBeforeConvertUnqOpty();return false;">Convert</button>
+                        <button class="slds-button slds-button--neutral" onclick="closePotOptyModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyPotOpty();return false;">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div id="optyModal" style="display:none;">
+                  <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                      xmlns:xlink="http://www.w3.org/1999/xlink">
+                      
+                    <div class="slds-modal__container">
+                      <div class="slds-modal__header">
+                      
+                        <h2 class="slds-text-heading--medium">{!$Label.lbl_AddOpportunity}</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeOptyModal();return false;">
+                          <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+                        
+                          <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Opportunity.fields.Name.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <input id="optyName" class="slds-input" type="text" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Opportunity.fields.CloseDate.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <input class="slds-input" id="optyCloseDate" value="" type="text" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Opportunity.fields.StageName.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <select id="optyStage" class="slds-select">
+                                  <apex:repeat value="{!OptyStageOptions}" var="o">
+                                      <option value="{!o.label}">{!o.label}</option>
+                                  </apex:repeat>
+                              </select>
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.Opportunity.fields.Opportunity_Country__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <select id="optyCountry" class="slds-select">
+                                  <apex:repeat value="{!OptyCountryOptions}" var="oc">
+                                      <option value="{!oc.label}">{!oc.value}</option>
+                                  </apex:repeat>
+                              </select>
+                            </div>
+                          </div>
+                            
+                        </div>
+                      </div>
+                      
+                      <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeOptyModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyOpty();return false;">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div id="ACMModal" style="display:none;">
+                      <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                          xmlns:xlink="http://www.w3.org/1999/xlink">
+                          
+                        <div class="slds-modal__container">
+                          <div class="slds-modal__header">
+                            <h2 class="slds-text-heading--medium">Add ACM Facility</h2>
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeACMModal();return false;">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                        	</button>
+                          </div>
+                          
+                          <div class="slds-modal__content">
+                                <div class="slds-form--stacked">                  
+                                  <div class="slds-form-element marginTop1em">
+                                    <label class="slds-form-element__label">
+                                      <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.CPTYID__c.Label}" />
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                      <select id="AddACMSDS" class="slds-select">
+                                          <apex:repeat value="{!getSDSClients}" var="o">
+                                              <option value="{!o.value}">{!o.label}</option>
+                                          </apex:repeat>
+                                      </select>
+                                    </div>
+                                  </div>  
+                                </div>
+                          
+                                <div class="slds-modal__footer">
+                                    <button class="slds-button slds-button--neutral" onclick="closeACMModal();return false;">Cancel</button>
+                                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="if(document.getElementById('AddACMSDS').value!=''){var sel = document.getElementById('AddACMSDS');addFacilities(sel.value,sel.options[sel.selectedIndex].innerHTML);closeACMModal();startLoading('{!$Label.lbl_ACMRetrievingFacilities}');}return false;">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+            	</div>
+            </div>
+            
+            <div>
+                <div id="manualFacilityModal" style="display:none;">
+                  <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                      xmlns:xlink="http://www.w3.org/1999/xlink">
+                      
+                    <div class="slds-modal__container">
+                      <div class="slds-modal__header">
+                      
+                          <h2 class="slds-text-heading--medium">Add/Modify Facility</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeManualFacilityModal();return false;">
+                          <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+                        
+                         <!-- manual Facilities should not be linked directly to the current relationship 
+							<div class="slds-form-element marginTop1em">
+                        	<label class="slds-form-element__label">
+                               	<apex:outputText value="{!$ObjectType.ACMFacility__c.fields.CPTYID__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                                <select id="AddManualSDS" class="slds-select">
+                                    <apex:repeat value="{!getSDSClients}" var="o">
+                                        <option value="{!o.value}">{!o.label}</option>
+                                    </apex:repeat>
+                                </select>
+                        	</div>
+                          </div>-->
+                            
+                          <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYPRODUCTDESCRIPTION__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                            	<c:ClientPlanACMProductSearch identifier="facilityProductDescription"/>
+                            </div>
+                          </div>
+                          
+                            <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Country__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                                    <select id="facilityCountry" class="slds-select">
+                                        <apex:repeat value="{!FacilityCountryOptions}" var="m">
+                                            <option>{!m.value}</option>
+                                        </apex:repeat>
+                                    </select>
+                                    <br/>
+                                    
+                                </div>
+                          </div>
+                            
+                          <div class="slds-form-element marginTop1em">
+                            <label class="slds-form-element__label">
+                              <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.EXPIRYDATE__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                              <input class="slds-input" id="facilityExpiryDate" value="" type="text" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element">
+                          	<label class="slds-form-element__label">
+                            	<apex:outputText value="{!$ObjectType.ACMFacility__c.fields.CurrencyIsoCode.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+		                    	<select id="facilityCurrency" class="slds-select">
+		                        	<apex:repeat value="{!CurrencyOptions}" var="cO">
+		                            	<option>{!cO.label}</option>
+		                            </apex:repeat>
+		                        </select>
+                            </div>
+                          </div>  
+                            
+                          <div class="slds-form-element">
+                          	<label class="slds-form-element__label">
+                            	<apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYAMOUNT__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                            	<input id="facilityAmount" class="slds-input" type="currency" />
+                            </div>
+                          </div>
+                          
+                          <div class="slds-form-element">
+                          	<label class="slds-form-element__label">
+                            	<apex:outputText value="{!$ObjectType.ACMFacility__c.fields.LOSSGIVENDEFAULT__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                            	<input id="facilityLGD" class="slds-input" type="text" />
+                            </div>
+                          </div>
+                            
+                          <div class="slds-form-element">
+                          	<label class="slds-form-element__label">
+                            	<apex:outputText value="{!$ObjectType.ACMFacility__c.fields.ACMUTILIZATIONAMOUNT__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                            	<input id="facilityUtilizationAmount" class="slds-input" type="currency" />
+                            </div>
+                          </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.GROSS_MARGIN__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="grossMargin" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FTP_bps__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="ftpBPS" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Net_Margin__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netMargin" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Arrang_Fee__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="arrangFee" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.COM_FEES__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="comFees" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.RoRWA__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="roRWA" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                        </div>
+                      </div>
+                      
+                      <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeManualFacilityModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyFacility();return false;">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+                </div>
+            </div>
+            
+            <apex:outputPanel id="errorMessagePanel" styleClass="errorMessagePanel hidden">{!ErrorMessage}</apex:outputPanel>
+        </apex:outputPanel>
+        </div>
+    </div>
+    <div style="display: none">
+        <apex:outputPanel id="countriesPanel" styleClass="countriesPanel">{!countriesJson}</apex:outputPanel>
+    </div>
+</apex:page>

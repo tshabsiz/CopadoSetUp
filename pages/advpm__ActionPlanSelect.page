@@ -1,0 +1,74 @@
+<apex:page id="selectionPage" standardController="advpm__ActionPlan__c" extensions="advpm.ActionPlanSelectController" >
+  
+    <apex:includeScript value="{!$Resource.advpm__ActionPlans_sortable}"/>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <apex:stylesheet value="{!$Resource.advpm__ActionPlan_ActionPlanSelectStyles}" />
+        <style type="text/css">
+            body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border: 0px solid #e0e3e5;}
+            body .pbBody table.list {background-color: transparent;border-top: 0px solid #e0e3e5;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+        <style type="text/css">
+            .detailPage .bPageBlock, .editPage .bPageBlock {border-top-width: 0px;}
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {border-width: 0 0 1px 1px;padding: 8px;}
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {background: #ffffff;border-width: 0 0 1px 1px;}
+            body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-left-width: 0px!important;border-right-width: 0px!important;}
+            body .pbBody table.list tr.headerRow th:first-child {border-left-width: 0px!important;padding-left: 24px;}
+            body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-top-width: 0px;}
+            .slds tr.headerRow th, .slds tr.headerRow th.headerRow {font-weight: normal!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">    
+        <apex:sectionHeader title="{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan}" subtitle="{!$Label.advpm__ap_selectapt}" help="{!URLFOR($Page.advpm__HelpActionPlanTemplate)}" />
+        <p>Select below an Action Plan Template to apply to this record and create a set of activities automatically.</p>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+        <div class="slds-page-header" role="banner">
+            <nav class="slds-m-bottom--xx-small" role="navigation">
+                <ol class="slds-breadcrumb slds-list--horizontal" aria-labelledby="bread-crumb-label">
+                    <li class="slds-list__item slds-text-heading--label"><apex:outputLink value="/{!IF(NOT(ISBLANK(JSINHTMLENCODE(refId))),JSINHTMLENCODE(refId),$ObjectType[JSINHTMLENCODE(refType)].keyPrefix)}">{!IF(NOT(ISBLANK(JSINHTMLENCODE(refId))),$ObjectType.advpm__ActionPlan__c.labelPlural,$ObjectType[JSINHTMLENCODE(refType)].labelPlural)}</apex:outputLink></li>
+                </ol>
+            </nav>
+            <div class="slds-grid">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <h1 class="slds-text-heading--medium slds-truncate" title="{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan}">{!$Label.advpm__ap_new} {!$Label.advpm__ap_action_plan}</h1>
+                </div>
+            </div>
+            <p class="slds-text-body--small slds-m-top--x-small">Select below an Action Plan Template to apply to this record and create a set of activities automatically.</p>
+        </div>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="block" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:pageBlock title="{!IF(isLightning,'',$Label.advpm__ap_selectapt)}" mode="edit">
+            <apex:outputpanel rendered="{!actionPlanTemplates.size > 0}">
+                <apex:pageBlockTable value="{!actionPlanTemplates}" var="actionPlan" styleclass="sortable slds-table" cellpadding="5" cellspacing="5">
+                    <apex:column width="25%" headerValue="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.Name.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap">
+                        <apex:outputPanel rendered="{!refType != null}">
+                            <apex:outputLink value="{!$Site.Prefix}/apex/advpm__ActionPlanCreation?templateId={!actionPlan.Id}&refId={!JSINHTMLENCODE($CurrentPage.parameters.refId)}&refType={!refType}&retURL={!retURL}" style="font-weight:{!IF(!isLightning,'bold','normal')}">{!actionPlan.Name}</apex:outputLink>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!refType == null}">
+                            <apex:outputLink value="{!$Site.Prefix}/apex/advpm__ActionPlanCreation?templateId={!actionPlan.Id}&retURL={!retURL}" style="font-weight:{!IF(!isLightning,'bold','normal')}">{!actionPlan.Name}</apex:outputLink>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column value="{!actionPlan.advpm__Description__c}" width="35%" headerValue="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Description__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!actionPlan.lastModifiedDate}" width="15%" headerValue="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.LastModifiedDate.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!actionPlan.createdById}" width="15%" headerValue="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.createdById.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!$ObjectType[actionPlan.advpm__Source_Object__c].label}" width="10%" headerValue="{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Source_Object__c.label}" rendered="{!refType == null || refType == ''}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                </apex:pageBlockTable>
+            </apex:outputpanel>
+            
+            <apex:outputpanel rendered="{!actionPlanTemplates.size == 0}" layout="block" style="padding: 15px; text-align: center;">
+            
+                <apex:outputText value="{!$Label.advpm__ap_empty_template_list}" styleClass="errorMsg"/><br/><br/>
+                <apex:outputLink value="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateCreation?refType={!JSINHTMLENCODE(refType)}&retURL={!retURL}" styleClass="btn slds-button slds-button--neutral" style="font-weight:{!IF(isLightning,'normal','bold')};text-decoration:none;">{!$Label.advpm__ap_createnewapt}</apex:outputLink>
+            
+            </apex:outputpanel>
+            
+        </apex:pageBlock>
+    </apex:outputPanel>
+    
+</apex:page>

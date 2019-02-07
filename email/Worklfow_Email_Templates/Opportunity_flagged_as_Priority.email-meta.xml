@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>SFA-271 Email to Opp Owner et al to notify of Opp flagged as Priority</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Opportunity flagged as Priority</name>
+    <style>freeForm</style>
+    <subject>Opportunity : {!Opportunity.Name} flagged as Priority</subject>
+    <textOnly>Dear {!Opportunity.OwnerFirstName}
+
+Your Opportunity {!Opportunity.Name} has been flagged as a Priority Opportunity. The reason for this is: {!Opportunity.Priority_Reason__c}.
+
+This opportunity will now appear in Senior Management&apos;s priority pipeline reports locally and regionally.
+
+cc:  Manager: {!Opportunity.00N2400000IqUrz}
+cc:  Relationship Owner: {!Account.OwnerFullName}
+
+
+
+Copy and paste this link into Chrome Browser to view in Salesforce:  {!Opportunity.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

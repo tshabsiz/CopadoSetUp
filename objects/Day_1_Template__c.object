@@ -1,0 +1,1802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Day 1 Template</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>true</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Are_Soft_Copies_expected__c</fullName>
+        <description>Are_Soft_Copies_expected</description>
+        <externalId>false</externalId>
+        <label>Are Soft Copies expected?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>BCMSXMLData__c</fullName>
+        <externalId>false</externalId>
+        <label>BCMSXMLData</label>
+        <length>130000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>BCMS_Client_Id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <externalId>true</externalId>
+        <label>BCMS Client Id</label>
+        <length>40</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>BCMS_Prospect_Id__c</fullName>
+        <caseSensitive>true</caseSensitive>
+        <externalId>true</externalId>
+        <label>BCMS Prospect Id</label>
+        <length>40</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Client_On_Boarding__c</fullName>
+        <externalId>false</externalId>
+        <label>Client On-Boarding</label>
+        <referenceTo>Client_On_Boarding__c</referenceTo>
+        <relationshipLabel>Day 1 Templates</relationshipLabel>
+        <relationshipName>Day_1_Templates</relationshipName>
+        <relationshipOrder>1</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Contact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Day 1 Templates</relationshipLabel>
+        <relationshipName>Day_1_Templates</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>FCC_Approval_for_MSB_Onboarding__c</fullName>
+        <externalId>false</externalId>
+        <label>FCC Approval for MSB on-boarding?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Group_CIF__c</fullName>
+        <externalId>false</externalId>
+        <label>Group CIF</label>
+        <length>40</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Group_Name__c</fullName>
+        <externalId>false</externalId>
+        <formula>Primary_Legal_Entity__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Group Name</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Guarantor_s__c</fullName>
+        <externalId>false</externalId>
+        <label>Guarantor(s)?</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ISC_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>ISC Code </label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ISC_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>ISC Description</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>1 - MONETARY AUTHORITY</fullName>
+                    <default>false</default>
+                    <label>1 - MONETARY AUTHORITY</label>
+                </value>
+                <value>
+                    <fullName>2 - BANKS</fullName>
+                    <default>false</default>
+                    <label>2 - BANKS</label>
+                </value>
+                <value>
+                    <fullName>2.1 - SOUTH AFRICAN BANKS</fullName>
+                    <default>false</default>
+                    <label>2.1 - SOUTH AFRICAN BANKS</label>
+                </value>
+                <value>
+                    <fullName>2.2 - SOUTH AFRICAN BRANCHES OF FOREIGN BANKS</fullName>
+                    <default>false</default>
+                    <label>2.2 - SOUTH AFRICAN BRANCHES OF FOREIGN BANKS</label>
+                </value>
+                <value>
+                    <fullName>3 - MUTUAL BANKS, POSTBANK AND LAND BANK</fullName>
+                    <default>false</default>
+                    <label>3 - MUTUAL BANKS, POSTBANK AND LAND BANK</label>
+                </value>
+                <value>
+                    <fullName>3.1 - MUTUAL BANKS</fullName>
+                    <default>false</default>
+                    <label>3.1 - MUTUAL BANKS</label>
+                </value>
+                <value>
+                    <fullName>3.2 - POST BANK</fullName>
+                    <default>false</default>
+                    <label>3.2 - POST BANK</label>
+                </value>
+                <value>
+                    <fullName>3.3 - LAND AND AGRICULTURAL BANK OF SOUTH AFRICA</fullName>
+                    <default>false</default>
+                    <label>3.3 - LAND AND AGRICULTURAL BANK OF SOUTH AFRICA</label>
+                </value>
+                <value>
+                    <fullName>4 - PUBLIC INVESTMENT COMMISSIONER (PIC)</fullName>
+                    <default>false</default>
+                    <label>4 - PUBLIC INVESTMENT COMMISSIONER (PIC)</label>
+                </value>
+                <value>
+                    <fullName>5 - INSURERS AND PENSION FUNDS</fullName>
+                    <default>false</default>
+                    <label>5 - INSURERS AND PENSION FUNDS</label>
+                </value>
+                <value>
+                    <fullName>5.1 - INSURERS</fullName>
+                    <default>false</default>
+                    <label>5.1 - INSURERS</label>
+                </value>
+                <value>
+                    <fullName>5.2 - PENSION AND PROVIDENT FUNDS</fullName>
+                    <default>false</default>
+                    <label>5.2 - PENSION AND PROVIDENT FUNDS</label>
+                </value>
+                <value>
+                    <fullName>5.3 - MEDICAL SCHEMES</fullName>
+                    <default>false</default>
+                    <label>5.3 - MEDICAL SCHEMES</label>
+                </value>
+                <value>
+                    <fullName>6 - OTHER FINANCIAL INSTITUTIONS</fullName>
+                    <default>false</default>
+                    <label>6 - OTHER FINANCIAL INSTITUTIONS</label>
+                </value>
+                <value>
+                    <fullName>6.1 - UNIT TRUSTS (&quot;GROWTH FUNDS&quot; - OPEN-END)</fullName>
+                    <default>false</default>
+                    <label>6.1 - UNIT TRUSTS (&quot;GROWTH FUNDS&quot; - OPEN-END)</label>
+                </value>
+                <value>
+                    <fullName>6.2 - PARTICIPATION MORTGAGE BOND SCHEMES</fullName>
+                    <default>false</default>
+                    <label>6.2 - PARTICIPATION MORTGAGE BOND SCHEMES</label>
+                </value>
+                <value>
+                    <fullName>6.3 - FINANCE COMPANIES</fullName>
+                    <default>false</default>
+                    <label>6.3 - FINANCE COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>6.4 - PUBLIC SECTOR INTERMEDIARIES (FINANCIAL)</fullName>
+                    <default>false</default>
+                    <label>6.4 - PUBLIC SECTOR INTERMEDIARIES (FINANCIAL)</label>
+                </value>
+                <value>
+                    <fullName>6.5 - FINANCIAL AUXILIARIES</fullName>
+                    <default>false</default>
+                    <label>6.5 - FINANCIAL AUXILIARIES</label>
+                </value>
+                <value>
+                    <fullName>6.5.1 - BOND EXCHANGE OF SOUTH AFRICA (BESA)</fullName>
+                    <default>false</default>
+                    <label>6.5.1 - BOND EXCHANGE OF SOUTH AFRICA (BESA)</label>
+                </value>
+                <value>
+                    <fullName>6.5.2 - JOHANNESBURG STOCK EXCHANGE (JSE)</fullName>
+                    <default>false</default>
+                    <label>6.5.2 - JOHANNESBURG STOCK EXCHANGE (JSE)</label>
+                </value>
+                <value>
+                    <fullName>6.5.3 - SOUTH AFRICAN FUTURES EXCHANGE (SAFEX)</fullName>
+                    <default>false</default>
+                    <label>6.5.3 - SOUTH AFRICAN FUTURES EXCHANGE (SAFEX)</label>
+                </value>
+                <value>
+                    <fullName>6.5.4 - SAFEX: AGRICULTURAL MARKETS DIVISON</fullName>
+                    <default>false</default>
+                    <label>6.5.4 - SAFEX: AGRICULTURAL MARKETS DIVISON</label>
+                </value>
+                <value>
+                    <fullName>6.5.5 - TRUST COMPANIES</fullName>
+                    <default>false</default>
+                    <label>6.5.5 - TRUST COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>6.5.6 - INSURANCE BROKERS OR AGENTS AND ACTUARIES</fullName>
+                    <default>false</default>
+                    <label>6.5.6 - INSURANCE BROKERS OR AGENTS AND ACTUARIES</label>
+                </value>
+                <value>
+                    <fullName>6.5.7 - SA REPRESENTATIVE OFFICES OF FOREIGN BANKS</fullName>
+                    <default>false</default>
+                    <label>6.5.7 - SA REPRESENTATIVE OFFICES OF FOREIGN BANKS</label>
+                </value>
+                <value>
+                    <fullName>6.5.8 - OTHER PORTFOLIO OR FUND MANAGERS, NOT INCLUDED ELSEWHERE</fullName>
+                    <default>false</default>
+                    <label>6.5.8 - OTHER PORTFOLIO OR FUND MANAGERS, NOT INCLUDED ELSEWHERE</label>
+                </value>
+                <value>
+                    <fullName>6.6 - FINANCIAL CONTROLLING COMPANIES</fullName>
+                    <default>false</default>
+                    <label>6.6 - FINANCIAL CONTROLLING COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>6.6.1 - BANK CONTROLLING COMPANIES</fullName>
+                    <default>false</default>
+                    <label>6.6.1 - BANK CONTROLLING COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>6.6.2 - OTHER FINANCIAL CONTROLLING COMPANIES</fullName>
+                    <default>false</default>
+                    <label>6.6.2 - OTHER FINANCIAL CONTROLLING COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>7 - FOREIGN SECTOR</fullName>
+                    <default>false</default>
+                    <label>7 - FOREIGN SECTOR</label>
+                </value>
+                <value>
+                    <fullName>7.1 - MONETARY AUTHORITY - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.1 - MONETARY AUTHORITY - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.2 - BANKS - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.2 - BANKS - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.3 - SECURITIES EXCHANGE - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.3 - SECURITIES EXCHANGE - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.3.1 - SECURITIES - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.3.1 - SECURITIES - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.3.2 - OTHER EXCHANGES - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.3.2 - OTHER EXCHANGES - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.4 - PUBLIC SECTOR - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.4 - PUBLIC SECTOR - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.5 - CENTRAL GOVERNMENT - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.5 - CENTRAL GOVERNMENT - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.6 - OTHER - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.6 - OTHER - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.6.1 - INDIVIDUALS - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.6.1 - INDIVIDUALS - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>7.6.2 - OTHER - FOREIGN</fullName>
+                    <default>false</default>
+                    <label>7.6.2 - OTHER - FOREIGN</label>
+                </value>
+                <value>
+                    <fullName>8 - CENTRAL GOVERNMENT</fullName>
+                    <default>false</default>
+                    <label>8 - CENTRAL GOVERNMENT</label>
+                </value>
+                <value>
+                    <fullName>8.1 - NATIONAL GOVERNMENT DEPARTMENTS</fullName>
+                    <default>false</default>
+                    <label>8.1 - NATIONAL GOVERNMENT DEPARTMENTS</label>
+                </value>
+                <value>
+                    <fullName>8.2 - EXTRA-BUDGETARY UNITS</fullName>
+                    <default>false</default>
+                    <label>8.2 - EXTRA-BUDGETARY UNITS</label>
+                </value>
+                <value>
+                    <fullName>8.3 - UNIVERSITIES AND TECHNIKONS</fullName>
+                    <default>false</default>
+                    <label>8.3 - UNIVERSITIES AND TECHNIKONS</label>
+                </value>
+                <value>
+                    <fullName>8.4 - SOCIAL SECURITY FUNDS</fullName>
+                    <default>false</default>
+                    <label>8.4 - SOCIAL SECURITY FUNDS</label>
+                </value>
+                <value>
+                    <fullName>9 - PROVINCIAL GOVERNMENTS</fullName>
+                    <default>false</default>
+                    <label>9 - PROVINCIAL GOVERNMENTS</label>
+                </value>
+                <value>
+                    <fullName>9.1 - PROVINCIAL LEGISLATORS</fullName>
+                    <default>false</default>
+                    <label>9.1 - PROVINCIAL LEGISLATORS</label>
+                </value>
+                <value>
+                    <fullName>9.2 - PROVINCIAL PUBLIC ENTITIES</fullName>
+                    <default>false</default>
+                    <label>9.2 - PROVINCIAL PUBLIC ENTITIES</label>
+                </value>
+                <value>
+                    <fullName>10 - LOCAL AUTHORITIES</fullName>
+                    <default>false</default>
+                    <label>10 - LOCAL AUTHORITIES</label>
+                </value>
+                <value>
+                    <fullName>10.1 - TRANSITIONAL METROPOLITAN COUNCILS</fullName>
+                    <default>false</default>
+                    <label>10.1 - TRANSITIONAL METROPOLITAN COUNCILS</label>
+                </value>
+                <value>
+                    <fullName>10.2 - DISTRICT COUNCILS AND MUNICIPALITIES</fullName>
+                    <default>false</default>
+                    <label>10.2 - DISTRICT COUNCILS AND MUNICIPALITIES</label>
+                </value>
+                <value>
+                    <fullName>11 - PRIVATE SECTOR COMPANIES (NON-FINANCIAL)</fullName>
+                    <default>false</default>
+                    <label>11 - PRIVATE SECTOR COMPANIES (NON-FINANCIAL)</label>
+                </value>
+                <value>
+                    <fullName>11.1 - NOMINEE COMPANIES</fullName>
+                    <default>false</default>
+                    <label>11.1 - NOMINEE COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>11.1.1 - NOMINEE COMPANIES: RESIDENT DIVISIONS</fullName>
+                    <default>false</default>
+                    <label>11.1.1 - NOMINEE COMPANIES: RESIDENT DIVISIONS</label>
+                </value>
+                <value>
+                    <fullName>11.1.2 - NOMINEE COMPANIES: NON-RESIDENT DIVISIONS</fullName>
+                    <default>false</default>
+                    <label>11.1.2 - NOMINEE COMPANIES: NON-RESIDENT DIVISIONS</label>
+                </value>
+                <value>
+                    <fullName>11.2 - NON-PROFIT INSTITUTIONS (SERVING BUSINESSES)</fullName>
+                    <default>false</default>
+                    <label>11.2 - NON-PROFIT INSTITUTIONS (SERVING BUSINESSES)</label>
+                </value>
+                <value>
+                    <fullName>11.3 - CO-OPERATIVES</fullName>
+                    <default>false</default>
+                    <label>11.3 - CO-OPERATIVES</label>
+                </value>
+                <value>
+                    <fullName>11.4 - CLOSE CORPORATIONS</fullName>
+                    <default>false</default>
+                    <label>11.4 - CLOSE CORPORATIONS</label>
+                </value>
+                <value>
+                    <fullName>11.5 - OTHER PRIVATE SECTOR COMPANIES</fullName>
+                    <default>false</default>
+                    <label>11.5 - OTHER PRIVATE SECTOR COMPANIES</label>
+                </value>
+                <value>
+                    <fullName>12 - PUBLIC ENTERPRISES &amp; CORPORATIONS (NON-FINANCIAL)</fullName>
+                    <default>false</default>
+                    <label>12 - PUBLIC ENTERPRISES &amp; CORPORATIONS (NON-FINANCIAL)</label>
+                </value>
+                <value>
+                    <fullName>13 - HOUSEHOLDS AND RELATED INSTITUTIONS</fullName>
+                    <default>false</default>
+                    <label>13 - HOUSEHOLDS AND RELATED INSTITUTIONS</label>
+                </value>
+                <value>
+                    <fullName>13.1 - INDIVIDUALS</fullName>
+                    <default>false</default>
+                    <label>13.1 - INDIVIDUALS</label>
+                </value>
+                <value>
+                    <fullName>13.2 - UNINCORPORATED BUSINESS ENTERPRISES</fullName>
+                    <default>false</default>
+                    <label>13.2 - UNINCORPORATED BUSINESS ENTERPRISES</label>
+                </value>
+                <value>
+                    <fullName>13.2.1 - ONE MAN BUSINESSES WITHOUT EMPLOYEES</fullName>
+                    <default>false</default>
+                    <label>13.2.1 - ONE MAN BUSINESSES WITHOUT EMPLOYEES</label>
+                </value>
+                <value>
+                    <fullName>13.2.2 - ONE MAN BUSINESSES WITH EMPLOYEES</fullName>
+                    <default>false</default>
+                    <label>13.2.2 - ONE MAN BUSINESSES WITH EMPLOYEES</label>
+                </value>
+                <value>
+                    <fullName>13.2.3 - PARTNERSHIPS AND OTHER</fullName>
+                    <default>false</default>
+                    <label>13.2.3 - PARTNERSHIPS AND OTHER</label>
+                </value>
+                <value>
+                    <fullName>13.3 - NON-PROFIT SEEKING ORGANISATIONS (SERVING HOUSEHOLDS)</fullName>
+                    <default>false</default>
+                    <label>13.3 - NON-PROFIT SEEKING ORGANISATIONS (SERVING HOUSEHOLDS)</label>
+                </value>
+                <value>
+                    <fullName>13.4 - PRIVATE TRUSTS</fullName>
+                    <default>false</default>
+                    <label>13.4 - PRIVATE TRUSTS</label>
+                </value>
+                <value>
+                    <fullName>13.5 - FRIENDLY SOCIETIES</fullName>
+                    <default>false</default>
+                    <label>13.5 - FRIENDLY SOCIETIES</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Instant_Account_Number__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Instant Account Number</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Is_the_client_a_MSB__c</fullName>
+        <externalId>false</externalId>
+        <label>Is the client a MSB?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Is_the_client_a_NBFI__c</fullName>
+        <externalId>false</externalId>
+        <label>Is the client a NBFI?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Is_the_client_a_SPV__c</fullName>
+        <description>NB - The label is different to that of the API name</description>
+        <externalId>false</externalId>
+        <label>Is the client an SPV?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Is_the_client_an_Associated_Party__c</fullName>
+        <externalId>false</externalId>
+        <label>Is the client an Associated Party?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Legal_Entity_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>Legal Entity Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Legal_Entity_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Legal Entity Type</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Natural Persons</fullName>
+                    <default>false</default>
+                    <label>Natural Persons</label>
+                </value>
+                <value>
+                    <fullName>Legal Entity / Persons</fullName>
+                    <default>false</default>
+                    <label>Legal Entity / Persons</label>
+                </value>
+                <value>
+                    <fullName>Sureties</fullName>
+                    <default>false</default>
+                    <label>Sureties</label>
+                </value>
+                <value>
+                    <fullName>Other Legal Enitites</fullName>
+                    <default>false</default>
+                    <label>Other Legal Enitites</label>
+                </value>
+                <value>
+                    <fullName>Other Persons</fullName>
+                    <default>false</default>
+                    <label>Other Persons</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Legal_Entity__c</fullName>
+        <externalId>false</externalId>
+        <label>Legal Entity</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Legal_Entity_Type__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Close Corporations</fullName>
+                    <default>false</default>
+                    <label>Close Corporations</label>
+                </value>
+                <value>
+                    <fullName>Close Corporations (Surety)</fullName>
+                    <default>false</default>
+                    <label>Close Corporations (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Co-Operatives</fullName>
+                    <default>false</default>
+                    <label>Co-Operatives</label>
+                </value>
+                <value>
+                    <fullName>Co-Operatives (Surety)</fullName>
+                    <default>false</default>
+                    <label>Co-Operatives (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Correspondent Bank</fullName>
+                    <default>false</default>
+                    <label>Correspondent Bank</label>
+                </value>
+                <value>
+                    <fullName>Deceased Estates</fullName>
+                    <default>false</default>
+                    <label>Deceased Estates</label>
+                </value>
+                <value>
+                    <fullName>Deceased Estates (Surety)</fullName>
+                    <default>false</default>
+                    <label>Deceased Estates (Surety)</label>
+                </value>
+                <value>
+                    <fullName>External Companies</fullName>
+                    <default>false</default>
+                    <label>External Companies</label>
+                </value>
+                <value>
+                    <fullName>External Companies (Surety)</fullName>
+                    <default>false</default>
+                    <label>External Companies (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Foreign Companies</fullName>
+                    <default>false</default>
+                    <label>Foreign Companies</label>
+                </value>
+                <value>
+                    <fullName>Foreign Companies (Surety)</fullName>
+                    <default>false</default>
+                    <label>Foreign Companies (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Individual - Foreign Nationals</fullName>
+                    <default>false</default>
+                    <label>Individual - Foreign Nationals</label>
+                </value>
+                <value>
+                    <fullName>Individual - Foreign Nationals (Surety)</fullName>
+                    <default>false</default>
+                    <label>Individual - Foreign Nationals (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Individual - Minors - Foreign Nationals</fullName>
+                    <default>false</default>
+                    <label>Individual - Minors - Foreign Nationals</label>
+                </value>
+                <value>
+                    <fullName>Individual - Minors - Foreign Nationals (Surety)</fullName>
+                    <default>false</default>
+                    <label>Individual - Minors - Foreign Nationals (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Individual - Minors - South African Citizens and Residents</fullName>
+                    <default>false</default>
+                    <label>Individual - Minors - South African Citizens and Residents</label>
+                </value>
+                <value>
+                    <fullName>Individual - Minors - South African Citizens and Residents (Surety)</fullName>
+                    <default>false</default>
+                    <label>Individual - Minors - South African Citizens and Residents (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Individual - South African Citizens and Residents</fullName>
+                    <default>false</default>
+                    <label>Individual - South African Citizens and Residents</label>
+                </value>
+                <value>
+                    <fullName>Individual - South African Citizens and Residents (Surety)</fullName>
+                    <default>false</default>
+                    <label>Individual - South African Citizens and Residents (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Informal Bodies</fullName>
+                    <default>false</default>
+                    <label>Informal Bodies</label>
+                </value>
+                <value>
+                    <fullName>Informal Bodies (Surety)</fullName>
+                    <default>false</default>
+                    <label>Informal Bodies (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Insurance, Banks and Other Financial Institutions</fullName>
+                    <default>false</default>
+                    <label>Insurance, Banks and Other Financial Institutions</label>
+                </value>
+                <value>
+                    <fullName>Insurance, Banks and Other Financial Institutions (Surety)</fullName>
+                    <default>false</default>
+                    <label>Insurance, Banks and Other Financial Institutions (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Joint and Several</fullName>
+                    <default>false</default>
+                    <label>Joint and Several</label>
+                </value>
+                <value>
+                    <fullName>Joint and Several (Surety)</fullName>
+                    <default>false</default>
+                    <label>Joint and Several (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Non-Government Organisations (NGO&apos;s)</fullName>
+                    <default>false</default>
+                    <label>Non-Government Organisations (NGO&apos;s)</label>
+                </value>
+                <value>
+                    <fullName>Non-Government Organisations (NGO&apos;s) (Surety)</fullName>
+                    <default>false</default>
+                    <label>Non-Government Organisations (NGO&apos;s) (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Organs of State and Institutions of Higher Learning</fullName>
+                    <default>false</default>
+                    <label>Organs of State and Institutions of Higher Learning</label>
+                </value>
+                <value>
+                    <fullName>Organs of State and Institutions of Higher Learning (Surety)</fullName>
+                    <default>false</default>
+                    <label>Organs of State and Institutions of Higher Learning (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Other Non-Resident Entities</fullName>
+                    <default>false</default>
+                    <label>Other Non-Resident Entities</label>
+                </value>
+                <value>
+                    <fullName>Other Non-Resident Entities (Surety)</fullName>
+                    <default>false</default>
+                    <label>Other Non-Resident Entities (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Partnerships</fullName>
+                    <default>false</default>
+                    <label>Partnerships</label>
+                </value>
+                <value>
+                    <fullName>Partnerships (Surety)</fullName>
+                    <default>false</default>
+                    <label>Partnerships (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Pension, Provident and Other Funds</fullName>
+                    <default>false</default>
+                    <label>Pension, Provident and Other Funds</label>
+                </value>
+                <value>
+                    <fullName>Pension, Provident and Other Funds (Surety)</fullName>
+                    <default>false</default>
+                    <label>Pension, Provident and Other Funds (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Sole Proprietors / Traders - Foreign Nationals</fullName>
+                    <default>false</default>
+                    <label>Sole Proprietors / Traders - Foreign Nationals</label>
+                </value>
+                <value>
+                    <fullName>Sole Proprietors / Traders - Foreign Nationals (Surety)</fullName>
+                    <default>false</default>
+                    <label>Sole Proprietors / Traders - Foreign Nationals (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Sole Proprietors / Traders - South African Citizens and Residents</fullName>
+                    <default>false</default>
+                    <label>Sole Proprietors / Traders - South African Citizens and Residents</label>
+                </value>
+                <value>
+                    <fullName>Sole Proprietors / Traders - South African Citizens and Residents (Surety)</fullName>
+                    <default>false</default>
+                    <label>Sole Proprietors / Traders - South African Citizens and Residents (Surety)</label>
+                </value>
+                <value>
+                    <fullName>South African Companies</fullName>
+                    <default>false</default>
+                    <label>South African Companies</label>
+                </value>
+                <value>
+                    <fullName>South African Companies (Surety)</fullName>
+                    <default>false</default>
+                    <label>South African Companies (Surety)</label>
+                </value>
+                <value>
+                    <fullName>South African Listed Companies</fullName>
+                    <default>false</default>
+                    <label>South African Listed Companies</label>
+                </value>
+                <value>
+                    <fullName>South African Listed Companies (Surety)</fullName>
+                    <default>false</default>
+                    <label>South African Listed Companies (Surety)</label>
+                </value>
+                <value>
+                    <fullName>Trusts</fullName>
+                    <default>false</default>
+                    <label>Trusts</label>
+                </value>
+                <value>
+                    <fullName>Trusts (Surety)</fullName>
+                    <default>false</default>
+                    <label>Trusts (Surety)</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Individual - Foreign Nationals</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Individual - Minors - Foreign Nationals</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Individual - Minors - South African Citizens and Residents</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Individual - South African Citizens and Residents</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Sole Proprietors / Traders - Foreign Nationals</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Natural Persons</controllingFieldValue>
+                <valueName>Sole Proprietors / Traders - South African Citizens and Residents</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>Close Corporations</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>Co-Operatives</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>External Companies</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>Foreign Companies</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>Joint and Several</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>South African Companies</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>South African Listed Companies</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Entity / Persons</controllingFieldValue>
+                <valueName>Trusts</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Close Corporations (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Co-Operatives (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Deceased Estates (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>External Companies (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Foreign Companies (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Individual - Foreign Nationals (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Individual - Minors - Foreign Nationals (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Individual - Minors - South African Citizens and Residents (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Individual - South African Citizens and Residents (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Informal Bodies (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Insurance, Banks and Other Financial Institutions (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Joint and Several (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Non-Government Organisations (NGO&apos;s) (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Organs of State and Institutions of Higher Learning (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Other Non-Resident Entities (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Partnerships (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Pension, Provident and Other Funds (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Sole Proprietors / Traders - Foreign Nationals (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Sole Proprietors / Traders - South African Citizens and Residents (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>South African Companies (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>South African Listed Companies (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Sureties</controllingFieldValue>
+                <valueName>Trusts (Surety)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Correspondent Bank</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Deceased Estates</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Insurance, Banks and Other Financial Institutions</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Non-Government Organisations (NGO&apos;s)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Organs of State and Institutions of Higher Learning</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Other Non-Resident Entities</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Legal Enitites</controllingFieldValue>
+                <valueName>Pension, Provident and Other Funds</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Persons</controllingFieldValue>
+                <valueName>Informal Bodies</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Other Persons</controllingFieldValue>
+                <valueName>Partnerships</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>MI_Flag_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>MI Flag Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MI_Flag__c</fullName>
+        <externalId>false</externalId>
+        <label>MI Flag</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>CIB ABCap</fullName>
+                    <default>false</default>
+                    <label>CIB ABCap</label>
+                </value>
+                <value>
+                    <fullName>CIB Corporate</fullName>
+                    <default>false</default>
+                    <label>CIB Corporate</label>
+                </value>
+                <value>
+                    <fullName>COVERAGE</fullName>
+                    <default>false</default>
+                    <label>COVERAGE</label>
+                </value>
+                <value>
+                    <fullName>EAST AFRICA CLIENT</fullName>
+                    <default>false</default>
+                    <label>EAST AFRICA CLIENT</label>
+                </value>
+                <value>
+                    <fullName>FINANCIAL INSTITUTION</fullName>
+                    <default>false</default>
+                    <label>FINANCIAL INSTITUTION</label>
+                </value>
+                <value>
+                    <fullName>MARKETS</fullName>
+                    <default>false</default>
+                    <label>MARKETS</label>
+                </value>
+                <value>
+                    <fullName>Midcorp</fullName>
+                    <default>false</default>
+                    <label>Midcorp</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Primary_Client_s_address__c</fullName>
+        <externalId>false</externalId>
+        <formula>Contact__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Primary Client’s address</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Legal_Entity__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Legal Entity</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Day 1 Templates</relationshipLabel>
+        <relationshipName>Day_1_Templates</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Registration_Number__c</fullName>
+        <externalId>false</externalId>
+        <formula>Primary_Legal_Entity__r.Registration_Number__c</formula>
+        <label>Registration Number</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SIC_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>SIC Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SIC_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>SIC Description</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Site_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>Site Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Draft</fullName>
+                    <default>true</default>
+                    <label>Draft</label>
+                </value>
+                <value>
+                    <fullName>Sent to ESP</fullName>
+                    <default>false</default>
+                    <label>Sent to ESP</label>
+                </value>
+                <value>
+                    <fullName>Case Created</fullName>
+                    <default>false</default>
+                    <label>Case Created</label>
+                </value>
+                <value>
+                    <fullName>Details Updated</fullName>
+                    <default>false</default>
+                    <label>Details Updated</label>
+                </value>
+                <value>
+                    <fullName>Client Status Screened</fullName>
+                    <default>false</default>
+                    <label>Client Status Screened</label>
+                </value>
+                <value>
+                    <fullName>Instructions Submitted</fullName>
+                    <default>false</default>
+                    <label>Instructions Submitted</label>
+                </value>
+                <value>
+                    <fullName>Client Risk Profiled</fullName>
+                    <default>false</default>
+                    <label>Client Risk Profiled</label>
+                </value>
+                <value>
+                    <fullName>Attestation Data Confirmation Required</fullName>
+                    <default>false</default>
+                    <label>Attestation Data Confirmation Required</label>
+                </value>
+                <value>
+                    <fullName>Attestation Data Confirmed</fullName>
+                    <default>false</default>
+                    <label>Attestation Data Confirmed</label>
+                </value>
+                <value>
+                    <fullName>Attestation Data Declined</fullName>
+                    <default>false</default>
+                    <label>Attestation Data Declined</label>
+                </value>
+                <value>
+                    <fullName>Case Closed</fullName>
+                    <default>false</default>
+                    <label>Case Closed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Submit_Group_Structure__c</fullName>
+        <externalId>false</externalId>
+        <label>Submit Group Structure</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Who_is_the_MD_CEO__c</fullName>
+        <externalId>false</externalId>
+        <formula>Contact__r.Owner.FirstName</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Who is the MD/CEO?</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Will_interest_rates_and_charges_apply__c</fullName>
+        <externalId>false</externalId>
+        <label>Will interest rates and charges apply?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>cdosp__c</fullName>
+        <description>Contact_Details_of_Strategic_Person</description>
+        <externalId>false</externalId>
+        <formula>spccn__r.MobilePhone</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Contact Details of Strategic Person</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>dosp2__c</fullName>
+        <description>Designation_of_Strategic_Person</description>
+        <externalId>false</externalId>
+        <formula>spccn__r.Job_title__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Designation of Strategic Person</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>dosp__c</fullName>
+        <externalId>false</externalId>
+        <label>Designation of Strategic Person</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>MANAGER</fullName>
+                    <default>false</default>
+                    <label>MANAGER</label>
+                </value>
+                <value>
+                    <fullName>DIRECTOR</fullName>
+                    <default>false</default>
+                    <label>DIRECTOR</label>
+                </value>
+                <value>
+                    <fullName>ACCOUNTANT</fullName>
+                    <default>false</default>
+                    <label>ACCOUNTANT</label>
+                </value>
+                <value>
+                    <fullName>SECRETARY</fullName>
+                    <default>false</default>
+                    <label>SECRETARY</label>
+                </value>
+                <value>
+                    <fullName>TRUSTEE</fullName>
+                    <default>false</default>
+                    <label>TRUSTEE</label>
+                </value>
+                <value>
+                    <fullName>CHAIRMAN</fullName>
+                    <default>false</default>
+                    <label>CHAIRMAN</label>
+                </value>
+                <value>
+                    <fullName>LIQUIDATOR</fullName>
+                    <default>false</default>
+                    <label>LIQUIDATOR</label>
+                </value>
+                <value>
+                    <fullName>PRESIDENT</fullName>
+                    <default>false</default>
+                    <label>PRESIDENT</label>
+                </value>
+                <value>
+                    <fullName>CURATOR</fullName>
+                    <default>false</default>
+                    <label>CURATOR</label>
+                </value>
+                <value>
+                    <fullName>TREASURER</fullName>
+                    <default>false</default>
+                    <label>TREASURER</label>
+                </value>
+                <value>
+                    <fullName>PRINCIPAL</fullName>
+                    <default>false</default>
+                    <label>PRINCIPAL</label>
+                </value>
+                <value>
+                    <fullName>PARTNER</fullName>
+                    <default>false</default>
+                    <label>PARTNER</label>
+                </value>
+                <value>
+                    <fullName>ADMINISTRATOR</fullName>
+                    <default>false</default>
+                    <label>ADMINISTRATOR</label>
+                </value>
+                <value>
+                    <fullName>TOWNCLERK</fullName>
+                    <default>false</default>
+                    <label>TOWNCLERK</label>
+                </value>
+                <value>
+                    <fullName>MEMBER</fullName>
+                    <default>false</default>
+                    <label>MEMBER</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>dosp_code__c</fullName>
+        <defaultValue>1</defaultValue>
+        <externalId>false</externalId>
+        <label>Person Designation Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>eafsc__c</fullName>
+        <description>Email_Address_for_Soft_Copies</description>
+        <externalId>false</externalId>
+        <label>Email Address for Soft Copies</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>eaosp__c</fullName>
+        <description>Email_Address_of_Strategic_Person</description>
+        <externalId>false</externalId>
+        <formula>spccn__r.Email</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Email Address of Strategic Person</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>hota__c</fullName>
+        <description>Head_office_trading_address__c</description>
+        <externalId>false</externalId>
+        <formula>Primary_Legal_Entity__r.BillingStreet + &apos;, &apos; +  Primary_Legal_Entity__r.BillingCity + &apos;, &apos; + Primary_Legal_Entity__r.BillingCountry</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Head office trading address</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>itcaib__c</fullName>
+        <description>Is_the_client_an_Introducer_Broker</description>
+        <externalId>false</externalId>
+        <label>Is the client an Introducer Broker?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>itcboap__c</fullName>
+        <description>Is_the_client_being_on_boarded_a_primary</description>
+        <externalId>false</externalId>
+        <label>What is the client being on-boarded as ?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Primary Client</fullName>
+                    <default>false</default>
+                    <label>Primary Client</label>
+                </value>
+                <value>
+                    <fullName>CounterParty</fullName>
+                    <default>false</default>
+                    <label>CounterParty</label>
+                </value>
+                <value>
+                    <fullName>Underlying Client</fullName>
+                    <default>false</default>
+                    <label>Underlying Client</label>
+                </value>
+                <value>
+                    <fullName>Disclosed Principal</fullName>
+                    <default>false</default>
+                    <label>Disclosed Principal</label>
+                </value>
+                <value>
+                    <fullName>None of the Above</fullName>
+                    <default>false</default>
+                    <label>None of the Above</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nobbt__c</fullName>
+        <description>Nature_of_Business_Business_Type__c</description>
+        <externalId>false</externalId>
+        <label>Nature of Business / Business Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pcpoeg__c</fullName>
+        <description>Primary_client_part_of_existing_group</description>
+        <externalId>false</externalId>
+        <formula>IF(ISNULL(Primary_Legal_Entity__r.ParentId),&quot;No&quot;,&quot;Yes&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Primary client part of existing  group</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ppcwbt__c</fullName>
+        <description>Products_primary_client_will_be_taking__c</description>
+        <externalId>false</externalId>
+        <label>Products primary client will be taking</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>spccn__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Strategic_Person_Client_Contact_Name</description>
+        <externalId>false</externalId>
+        <label>Strategic Person (Client Contact Name)</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Day 1 Templates (Strategic Person (Client Contact Name))</relationshipLabel>
+        <relationshipName>Day_1_Templates2</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>weec__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Who_exercises_executive_control</description>
+        <externalId>false</externalId>
+        <label>Who exercises executive control?</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Day 1 Templates (Who exercises executive control?)</relationshipLabel>
+        <relationshipName>Day_1_Templates1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>wex4cert__c</fullName>
+        <externalId>false</externalId>
+        <label>Will there be an Exempt. 4 certificate?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Day 1 Template</label>
+    <nameField>
+        <displayFormat>D1T{00000}</displayFormat>
+        <label>Day 1 Template Account</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Day 1 Templates</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Attach_Group_Structure</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Attach Group Structure</masterLabel>
+        <openType>sidebar</openType>
+        <page>Day1TemplateGSAtt</page>
+        <protected>false</protected>
+    </webLinks>
+    <webLinks>
+        <fullName>Send_as_Email</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Send as Email to Onboarding Team</masterLabel>
+        <openType>replace</openType>
+        <page>sendDay1Template</page>
+        <protected>false</protected>
+    </webLinks>
+    <webLinks>
+        <fullName>Start_Onboarding</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Start Onboarding</masterLabel>
+        <openType>sidebar</openType>
+        <page>BCMSControlPage</page>
+        <protected>false</protected>
+    </webLinks>
+</CustomObject>
