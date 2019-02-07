@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Compare_Excl_Incl_VAT_Prices__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL(Letter_Format__c, &apos;Comparative Incl VAT, VAT, Excl VAT&apos;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Compare Excl/Incl VAT Prices</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Compare_To_Previous_Year_Prices__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL(Letter_Format__c, &apos;Comparative Incl VAT&apos;) || ISPICKVAL(Letter_Format__c, &apos;Comparative Excl VAT&apos;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Compare To Previous Year Prices</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Letter_Format__c</fullName>
+        <externalId>false</externalId>
+        <label>Letter Format</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>VAT_Inclusive__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Current Incl VAT</fullName>
+                    <default>false</default>
+                    <label>Current Incl VAT</label>
+                </value>
+                <value>
+                    <fullName>Current Excl VAT</fullName>
+                    <default>false</default>
+                    <label>Current Excl VAT</label>
+                </value>
+                <value>
+                    <fullName>Comparative Incl VAT</fullName>
+                    <default>false</default>
+                    <label>Comparative Incl VAT</label>
+                </value>
+                <value>
+                    <fullName>Comparative Excl VAT</fullName>
+                    <default>false</default>
+                    <label>Comparative Excl VAT</label>
+                </value>
+                <value>
+                    <fullName>Comparative Incl VAT, VAT, Excl VAT</fullName>
+                    <default>false</default>
+                    <label>Comparative Incl VAT, VAT, Excl VAT</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>unchecked</controllingFieldValue>
+                <valueName>Current Excl VAT</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>unchecked</controllingFieldValue>
+                <valueName>Comparative Excl VAT</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>unchecked</controllingFieldValue>
+                <valueName>Comparative Incl VAT, VAT, Excl VAT</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>checked</controllingFieldValue>
+                <valueName>Current Incl VAT</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>checked</controllingFieldValue>
+                <valueName>Comparative Incl VAT</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Report_Sequence__c</fullName>
+        <externalId>false</externalId>
+        <label>Report Sequence</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>VAT_Inclusive__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates whether product prices listed under this pricing group include VAT.</inlineHelpText>
+        <label>VAT Inclusive</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>VAT_Rate__c</fullName>
+        <defaultValue>0.14</defaultValue>
+        <externalId>false</externalId>
+        <label>VAT Rate</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <label>Pricing Group</label>
+    <listViews>
+        <fullName>All_Pricing_Groups</fullName>
+        <columns>NAME</columns>
+        <columns>Report_Sequence__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Pricing Groups</label>
+    </listViews>
+    <nameField>
+        <label>Pricing Group</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Pricing Groups</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Letter_Format__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Read</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

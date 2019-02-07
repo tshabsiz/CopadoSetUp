@@ -1,0 +1,283 @@
+<apex:page controller="CC_ATTNOTRPT.SearchAttachmentAndNoteController" id="pageId" sidebar="false" standardStylesheets="false">
+<apex:sectionHeader title="Attachments" subtitle="Search Attachments"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/JavaScript" />
+    <script src="{!$Resource.jquery}" type="text/JavaScript" />
+    <apex:form id="mainFormId">
+        <apex:actionStatus startText="Please wait records are being searched....." startStyle="font-size:15px;color:red" id="status"></apex:actionStatus>
+        <apex:actionFunction name="SearchAttachments" action="{!SearchAttachments}" reRender="pgRecord,pgin" status="status" oncomplete="sortTable();">
+            <apex:param value="" name="arg1" assignTo="{!startDate}"/>
+            <apex:param value="" name="arg2" assignTo="{!endDate}"/>
+            <apex:param value="" name="arg3" assignTo="{!recordId}"/>
+        </apex:actionFunction>
+        <apex:actionStatus startText="Please wait attachment is being deleted....." startStyle="font-size:15px;color:red" id="status1"></apex:actionStatus>
+        <apex:actionFunction name="DeleteAttachment" action="{!DeleteAttachment}" reRender="pgRecord,pgin" status="status1" oncomplete="sortTable();">
+            <apex:param value="" name="arg1" assignTo="{!attId}"/>
+        </apex:actionFunction>
+        <apex:actionStatus startText="Please wait note is being deleted....." startStyle="font-size:15px;color:red" id="status2"></apex:actionStatus>
+        <apex:actionFunction name="deleteNote" action="{!deleteNote}" reRender="pgRecord,pgin" status="status2" oncomplete="sortTable();">
+            <apex:param value="" name="arg1" assignTo="{!ntId}"/>
+        </apex:actionFunction>
+        <apex:pageBlock title="Filter" id="bc">
+        <table width="100%" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+                <td colspan="3">
+                    <table width="40%">
+                        <tr><td align="center">
+                        <apex:outputLabel >Find</apex:outputLabel></td>
+                        <td><apex:selectRadio value="{!selectedQuickSearchOption}" layout="pageDirection">
+                            <apex:selectOptions value="{!QuickSearchOptions}"/>
+                        </apex:selectradio>
+                        </td></tr>
+                    </table>
+                </td>
+            </tr>
+        
+            <tr>
+                <td>
+                    <table width="100%">
+                        <tr><td width="20%" align="center">
+                        <apex:outputLabel >Object</apex:outputLabel></td>
+                        <td><apex:selectList value="{!selectedObject}" size="1" id="selectedObjectId" onchange="hideIcon();">
+                            <apex:selectOptions value="{!objectsList}"/>
+                        </apex:selectList>
+                        </td></tr>
+                    </table>
+                </td>
+                <td align="left">
+                    <table width="100%">
+                        <tr><td>
+                        <apex:outputLabel >Related To</apex:outputLabel></td>
+                        <td><apex:outputPanel id="oId">
+                        <apex:inputHidden value="{!recordId}" id="rId"/>
+                        <apex:inputText disabled="true" id="rName" onblur="checkVal();"/>
+                            <a href="javascript:void(0);" id="acc3_lkwgt" onclick="openLookupPopup();" tabindex="2" title="Parent Account Lookup (New Window)" style="text-decoration: none;">
+                                <img src="/s.gif" alt="Parent Account Lookup (New Window)" class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Parent Account Lookup (New Window)"/>
+                            </a>
+                        </apex:outputPanel>
+                        </td></tr>
+                    </table>
+                </td>
+                <td align="left">
+                    <table width="100%">
+                        <tr><td>
+                        <apex:outputLabel >Owner</apex:outputLabel></td>
+                        <td><apex:inputField value="{!conObj.OwnerId}" required="false"/>
+                        </td></tr>
+                    </table>
+                </td>    
+            </tr>
+        
+            <tr>
+                <td colspan="2" align="right">
+                    <table width="50%" align="right">
+                        <tr><td align="center">
+                        <apex:outputLabel >Created Date From</apex:outputLabel></td>
+                        <td><span class="dateInput dateOnlyInput">
+                            <input id="startdpic" type="text" size="12" onfocus="DatePicker.pickDate(false, 'startdpic', false);" name="startdpic" data-uidsfdc="43"/>
+                        </span>
+                        </td></tr>
+                    </table>    
+                </td>
+                <td align="center">
+                    <table width="100%">
+                        <tr><td>
+                        <apex:outputLabel >Created Date To</apex:outputLabel></td>
+                        <td><span class="dateInput dateOnlyInput">
+                            <input id="enddpic" type="text" size="12" onfocus="DatePicker.pickDate(false, 'enddpic', false);" name="enddpic" data-uidsfdc="43"/>
+                        </span>
+                        </td></tr>
+                    </table>    
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center" style="margin-top:50px"><br/><br/>
+                    <apex:commandButton value="Search" onclick="SearchRecords(); return false;"/>
+                </td>
+            </tr>
+        </table>
+    
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:pageBlockSection id="pgRecord" columns="1">
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:outputPanel rendered="{!IF(selectedQuickSearchOption == 'Attachment', true, false)}">
+                <apex:outputPanel rendered="{!IF(tempModelList.size > 0 , true, false)}">
+                    <apex:pageBlockTable id="pgTable" value="{!tempModelList}" var="md" width="100%" style="cursor:pointer;">
+                        <apex:column >
+                            <a href="https://c.ap1.content.force.com/servlet/servlet.FileDownload?file={!md.att.Id}" target="_blank">View</a> | 
+                            <apex:commandLink value="Delete" onclick="attachmentDelete('{!md.att.Id}'); return false;"/> 
+                        </apex:column>
+                        <apex:column headerValue="Object">
+                            <apex:outputLabel value="{!md.objName}"/>
+                        </apex:column>
+                        <apex:column headerValue="AttachmentName">
+                            <apex:outputField value="{!md.att.Name}"/>
+                        </apex:column>
+                        <apex:column headerValue="Related To">
+                            <apex:outputField value="{!md.att.Parent.Name}"/>
+                        </apex:column>
+                        <apex:column headerValue="Owner">
+                            <apex:outputField value="{!md.att.OwnerId}"/>
+                        </apex:column>
+                        <apex:column headerValue="Size">
+                            <apex:outputField value="{!md.att.BodyLength}"/>
+                        </apex:column>
+                        <apex:column headerValue="Created Date">
+                            <apex:outputField value="{!md.att.CreatedDate}"/>
+                        </apex:column>
+                        <apex:column headerValue="LastModifiedDate">
+                            <apex:outputField value="{!md.att.LastModifiedDate}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(selectedQuickSearchOption == 'Note', true, false)}">
+                <apex:outputPanel rendered="{!IF(tempModelList.size > 0 , true, false)}">
+                    <apex:pageBlockTable id="pgTable1" value="{!tempModelList}" var="md" width="100%" style="cursor:pointer;">
+                        <apex:column >
+                            <a href="https://ap1.salesforce.com/{!md.nt.Id}" target="_blank">View</a> | 
+                            <apex:commandLink value="Delete" onclick="noteDelete('{!md.nt.Id}'); return false;"/> 
+                        </apex:column>
+                        <apex:column headerValue="Object">
+                            <apex:outputLabel value="{!md.objName}"/>
+                        </apex:column>
+                        <apex:column headerValue="Note Title">
+                            <apex:outputField value="{!md.nt.Title}"/>
+                        </apex:column>
+                        <apex:column headerValue="Related To">
+                            <apex:outputField value="{!md.att.Parent.Name}"/>
+                        </apex:column>
+                        <apex:column headerValue="Owner">
+                            <apex:outputField value="{!md.att.OwnerId}"/>
+                        </apex:column>
+                        <apex:column headerValue="Created Date">
+                            <apex:outputField value="{!md.att.CreatedDate}"/>
+                        </apex:column>
+                        <apex:column headerValue="LastModifiedDate">
+                            <apex:outputField value="{!md.att.LastModifiedDate}"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageBlockSection>
+        <apex:outputPanel id="pgin">
+            <apex:outputPanel rendered="{!IF(tempModelList.size > 0 , true, false)}">
+                Showing Page &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!pageNumber} of &nbsp;&nbsp;&nbsp;&nbsp; {!totalPages}  &nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandLink value="First" action="{!first}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandLink value="Previous" action="{!previous}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandLink value="Next" action="{!PNext}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandLink value="Last" action="{!last}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+     </apex:pageBlock>
+    </apex:form>
+        <!-- Body events -->
+        <script type="text/javascript">function bodyOnLoad(){setFocusOnLoad();if (typeof(startSessionTimer)!='undefined') {startSessionTimer(); };if (typeof(ActivityReminder)!='undefined') {ActivityReminder.initialize([], false, false);};if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)){sfdcPage.executeOnloadQueue();};SearchClickLoggingUtil.setClickLoggingServletPath("/_ui/search/logging/SearchClickLoggingServlet");new UnifiedSearchAutoCompleteElement("phSearchInput","/_ui/common/search/client/ui/UnifiedSearchAutoCompleteServlet",1,{},true,null,"phSearchForm",["div","searchOwner","asPhrase","sen"],{},true,3,100);new UnifiedSearchButton("searchButtonContainer", "phSearchButton", "headerSearchRightRoundedCornerMouseOver", "phSearchForm");SfdcApp.MruHovers.global_data.url='retURL=%2Fapex%2Fdscorgpkg__UpdatableFields%3Fsfdc.tabName%3D01rE00000009F3I&isAjaxRequest=1&renderMode=RETRO&nocache=1401272663892';if (document.getElementById('sidebarDiv')){ Sidebar.prototype.theSidebar = new Sidebar(document.getElementById('sidebarDiv'), false); };if(window.PreferenceBits){window.PreferenceBits.prototype.csrfToken="tmYSwRnlpwFyVe18g5NrFYXJ3pHKoTF9IBKlAwN7oAPneIobdzZlRUZS6KUigzJHDSYIPbbt14qm.wvxEUfKduLBri6D_L36A5T.TC8sZO64.Rz0ajjSLgn8Rm.zsQmTkf8.m8qXZWN8jyjfMdqY65roJRA9.pDYy6mY_8IbhbZnsKuCRWSBSYWQd8Ci382Ezt9D0A==";};}function bodyOnBeforeUnload(){if ((window.sfdcPage) && (sfdcPage.executeOnBeforeUnloadQueue)){sfdcPage.executeOnBeforeUnloadQueue();};}function bodyOnFocus(){closePopupOnBodyFocus();}function bodyOnUnload(){}</script><div class="datePicker" id="datePicker"><div class="dateBar"><img src="/s.gif" alt="Previous Month"  class="calLeft" onblur="this.className = 'calLeft';" onclick="DatePicker.datePicker.prevMonth();" onfocus="this.className = 'calLeftOn';" onmouseout="this.className = 'calLeft';" onmouseover="this.className = 'calLeftOn';" title="Previous Month"/><select  id="calMonthPicker" name="calMonthPicker" title="Month"><option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+        </select><img src="/s.gif" alt="Next Month"  class="calRight" onblur="this.className = 'calRight';" onclick="DatePicker.datePicker.nextMonth();" onfocus="this.className = 'calRightOn';" onmouseout="this.className = 'calRight';" onmouseover="this.className = 'calRightOn';" title="Next Month"/><select  id="calYearPicker" name="calYearPicker" title="Year"><option value="2013">2013</option>
+        <option value="2014">2014</option>
+        <option value="2015">2015</option>
+        <option value="2016">2016</option>
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        </select></div><div class="calBody"><table  class="calDays" border="0" cellpadding="0" cellspacing="0" id="datePickerCalendar"><tr><TH class="dayOfWeek" scope="col">Sun</TH><TH class="dayOfWeek" scope="col">Mon</TH><TH class="dayOfWeek" scope="col">Tue</TH><TH class="dayOfWeek" scope="col">Wed</TH><TH class="dayOfWeek" scope="col">Thu</TH><TH class="dayOfWeek" scope="col">Fri</TH><TH class="dayOfWeek" scope="col">Sat</TH></tr>
+        <tr class="calRow" id="calRow1"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        <tr class="calRow" id="calRow2"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        <tr class="calRow" id="calRow3"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        <tr class="calRow" id="calRow4"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        <tr class="calRow" id="calRow5"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        <tr class="calRow" id="calRow6"><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td><td onblur="hiOff(this);" onclick="DatePicker.datePicker.selectDate(this);" onfocus="hiOn(this);" onmouseout="hiOff(this);" onmouseover="hiOn(this);">&nbsp;</td></tr>
+        </table><div class="buttonBar"><a href="javascript:%20void%280%29%3B" class="calToday" onclick="DatePicker.datePicker.selectDate('today');return false;">Today</a></div></div></div>
+        <!-- End page content -->
+        <script> 
+            var $ = jQuery.noConflict();
+             $(document).ready(function(){
+                 $('#acc3_lkwgt').children().removeClass('lookupIcon');
+                 $('table[id$=pgTable]').tablesorter();
+                 $('table[id$=pgTable1]').tablesorter();
+                  $("#toggleId").click(function(){
+                    $("#detailTblId").toggle();
+                    if($("#detailTblId").css('display')=='none'){
+                        $('#linkTextId').html('Click here to show the Contact information in the Tabular form.');
+                    }else{
+                        $('#linkTextId').html('Click here to Hide.');
+                    }
+                  });                                           
+            }); 
+            var newWin=null;
+            
+            function openLookupPopup(){ 
+               var objectName = $('select[id$=selectedObjectId]').val();
+               try{            
+                    if(objectName == 'undefined' || objectName == '' || objectName == null){
+                        alert('Error: Please select the Object name!');
+                    }else{
+                       var url="/apex/CustomLookup?oN="+objectName+"&core.apexpages.devmode.url=1" ;
+                       newWin=window.open(url, 'Popup','height=400,width=650,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+                       if (window.focus){
+                            newWin.focus();
+                       }
+                    }
+                }catch(e){
+                        alert('Server Error: '+e);
+                }                   
+                return false;
+            }
+            
+            function closeLookupPopup(){
+               if (null!=newWin)
+               {
+                  newWin.close();
+               }  
+            }
+            function hideIcon(){
+               try{ 
+                    var objectName = $('select[id$=selectedObjectId]').val();
+                   if(objectName == 'All'){
+                       $('#acc3_lkwgt').children().removeClass('lookupIcon');
+                       $('input[id$=rName]').attr('disabled','disabled');
+                   }else{
+                       $('#acc3_lkwgt').children().addClass('lookupIcon');
+                       $('input[id$=rName]').removeAttr('disabled');
+                       $('input[id$=rName]').val('');
+                   }
+               }catch(e){
+                   alert('Server Error: '+e);
+               }
+            }
+            function SearchRecords(){
+                var startDate = document.getElementById('startdpic').value; 
+                var endDate = document.getElementById('enddpic').value;
+                var recordId = $('input[id$=rId]').val();
+                
+                SearchAttachments(startDate ,endDate ,recordId);
+            }
+            function sortTable(){
+                $('table[id$=pgTable]').tablesorter();
+                $('table[id$=pgTable1]').tablesorter(); 
+            }
+            function checkVal(){
+                var val = $('input[id$=rName]').val();
+                if(val == ''){
+                    $('input[id$=rId]').val('');
+                }
+            }
+            function attachmentDelete(attId){
+                DeleteAttachment(attId);
+            }
+            function noteDelete(ntId){
+                deleteNote(ntId);
+            }
+        </script>
+</apex:page>

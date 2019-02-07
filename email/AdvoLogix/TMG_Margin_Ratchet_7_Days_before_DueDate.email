@@ -1,0 +1,44 @@
+<messaging:emailTemplate subject="Margin Ratchet {!relatedTo.Margin_Ratchet__r.Name} will be due for {!relatedTo.Margin_Ratchet__r.Matter_Deal__r.Name} on {!relatedTo.Due_Date__c}" recipientType="User" relatedToType="Watcher__c">
+<messaging:htmlEmailBody >
+        <html>
+            <body>
+
+            <p>Good day {!relatedTo.Margin_Ratchet__r.Person_Responsibles__r.Name}, </p>
+            <p>Margin Ratchet {!relatedTo.Margin_Ratchet__r.Name} will be due for {!relatedTo.Margin_Ratchet__r.Matter_Deal__r.Name} on  
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Due_Date__c}" />
+            </apex:OutputText>
+            :</p>
+            
+            <p>
+            Deal Name: {!relatedTo.Margin_Ratchet__r.Name}<br/>
+            Agreement Name: {!relatedTo.Margin_Ratchet__r.Agreement__r.Name}<br/>
+            Facility: {!relatedTo.Margin_Ratchet__r.Facility__r.Name}<br/>
+            Tranche: {!relatedTo.Margin_Ratchet__r.Facility_Tranche__r.Name}<br/>
+            Margin Ratchet Name: {!relatedTo.Margin_Ratchet__r.Name}<br/>
+            Margin Ratchet Type: {!relatedTo.Margin_Ratchet__r.Type__c}<br/>
+            Event Type: {!relatedTo.Margin_Ratchet__r.Event_Type__c}<br/>
+            Margin Ratchet Status: {!relatedTo.Margin_Ratchet__r.Status__c}<br/>
+            Margin Ratchet Due Date: 
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Due_Date__c}" />
+            </apex:OutputText><br/>
+            </p>
+            
+            <p>
+            <apex:outputlink value="{!LEFT($Api.Partner_Server_URL_140,FIND('.com',$Api.Partner_Server_URL_140)+4)+relatedTo.Margin_Ratchet__r.Id}" target="_blank">Click here to view in Salesforce</apex:outputlink>
+            </p>
+            
+            <p>
+            Kind regards,<br/>
+            Transaction Management Group
+            </p>
+            
+            <p>
+            <center><b><i> Auto generated email , please do not reply to this email. </i></b></center>
+            </p>
+            
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

@@ -1,0 +1,167 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 11/06/2017 - PG    - Create VF page.  
+ 09/08/2017 - PG    - Added "Payment_Expected__c" field.
+ 10/11/2017 - TdB    - Added Facility__c, Facility_Tranche__c and fields
+ 12/03/2018 - TdB   - Agreement Limit optional (prevent Users from creating Drawdown and Agency with no Agreement Limit) 
+ 17/03/2018 - TdB	- Add Limit exceed approval process and validation for 	Drawdown                                                           
+--> 
+<apex:page standardController="Drawdown__c" extensions="Drawdown_Override" tabStyle="Drawdown__c">
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+	<script>
+	function buttonDisable()
+	{
+		$("[id$='theSaveButton']").hide(); 
+	}
+
+	function buttonEnable()
+	{
+		$("[id$='theSaveButton']").show(); 
+	}
+	</script>
+    
+    <apex:actionStatus id="processStatus" onstart="buttonDisable()" onstop="buttonEnable()" />
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Drawdown Edit" subtitle="{! IF(drawdownObject.Id == null,'New Drawdown', drawdownObject.Name) }"/>
+    
+    <!-- FORM -->
+    <apex:form >
+        
+    <!-- PAGE BLOCK TABLE -->
+    <apex:pageBlock title="Drawdown Edit" mode="edit" id="thePage">
+
+        <!-- ERRORS  -->
+        <apex:pageMessages id="pageMsgId" />
+        
+        <!-- BUTTONS -->
+        <apex:PageBlockButtons id="buttonId" >
+            <apex:CommandButton value="Save" action="{!saveRecord}" id="theSaveButton" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}"/> 
+			<apex:CommandButton value="Cancel" action="{!cancel}"  />
+        </apex:PageBlockButtons>
+        <!-- / BUTTONS -->
+        
+        <!-- SECTION  - INFORMATION -->
+        <apex:pageBlockSection title="Information" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}"> 
+            
+            <apex:inputField value="{!drawdownObject.Name}" required="true" />
+            <apex:outputField value="{!drawdownObject.CurrencyISOCode}" />
+            <apex:inputField value="{!drawdownObject.Agreement__c}" required="true" /> 
+            <apex:inputField value="{!drawdownObject.Interest_Period__c}" />
+            <apex:inputField value="{!drawdownObject.Facility__c}" />
+            <apex:inputField value="{!drawdownObject.Borrower__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Facility_Tranche__c}" />
+            <apex:inputField value="{!drawdownObject.Period__c}" />
+            <apex:inputField value="{!drawdownObject.Interest_Type__c}" />
+            <apex:inputField value="{!drawdownObject.Status__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Our_Portion__c}" />            
+            <apex:inputField value="{!drawdownObject.Supporting_Documentation_Uploaded__c}" />
+            
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel for="advancedAmountField" value="Advanced Amount" />
+                    <apex:actionRegion >
+            <apex:inputField value="{!drawdownObject.Advance_Amount__c}" required="true" id="advancedAmountField" >
+                 <apex:actionSupport event="onblur" action="{!drawDownLimitCheck}" rerender="pageMsgId,theSaveAndApproveButton,theSaveButton" status="processStatus"/>
+                    </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem> 
+            <div></div>
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel for="currentUtilisationField" value="Current Utilisation" />
+                    <apex:actionRegion >
+            <apex:inputField value="{!drawdownObject.Current_Utilisation__c}" required="true" id="currentUtilisationField" >
+                <apex:actionSupport event="onblur" action="{!drawDownLimitCheck}" rerender="pageMsgId,theSaveAndApproveButton,theSaveButton" status="processStatus"/>
+                </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+            <div></div>
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel for="DrawDownLimit" value="Limit" />
+                    <apex:actionRegion >
+            <apex:inputField id="DrawDownLimit" value="{!drawdownObject.Facility_Limit__c}" required="true" >
+                <apex:actionSupport event="onblur" action="{!drawDownLimitCheck}" rerender="pageMsgId,theSaveAndApproveButton,theSaveButton" status="processStatus"/>
+                </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <!-- / SECTION  - INFORMATION -->
+        
+        <!-- SECTION  - ACCOUNT DETAILS -->
+        <apex:pageBlockSection title="Bank Account Details" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:inputField value="{!drawdownObject.Account_Name__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Account_Number__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Account_Bank__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Account_Branch__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.SWIFT_ID__c}" />
+            <apex:inputField value="{!drawdownObject.Reference__c}" required="true" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - ACCOUNT DETAILS -->
+        
+        <!-- SECTION  - DATES -->
+        <apex:pageBlockSection title="Dates" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:inputField value="{!drawdownObject.Advance_Date__c}" required="true" />
+            <apex:inputField value="{!drawdownObject.Payment_Expected__c}" />
+            <apex:inputField value="{!drawdownObject.Agent_Notice_Date__c}" />
+            <apex:inputField value="{!drawdownObject.Request_Date__c}" required="true" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - DATES -->
+        
+        <!-- SECTION  - PARTICIPANTS -->
+        <apex:pageBlockSection title="Notification Participants" columns="1" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!participantWrapper.participant.Name}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - PARTICIPANTS -->
+        
+        <!-- SECTION  - GROUPS -->
+        <apex:pageBlockSection title="Notification Groups" columns="1" rendered="{!IF(drawdownObject.Facility_Limit__c == Null || drawdownObject.Facility_Limit__c == 0,FALSE, TRUE)}">
+            
+            <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - GROUPS -->
+        
+        
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK TABLE -->
+    
+    </apex:form>
+    <!-- / FORM -->
+    
+</apex:page>

@@ -1,0 +1,155 @@
+<messaging:emailTemplate subject="{!relatedTo.Email_Setup_To_Use__r.Email_Subject__c}" recipientType="Contact" relatedToType="Delegate__c">
+    <messaging:htmlEmailBody >
+        <body style="background-color: #F2F2F2">
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+            <table width="650" border="0" cellspacing="0" cellpadding="0" align="center" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c}; background-color: #FFF;">
+                <apex:outputPanel rendered="{!relatedTo.Email_Setup_To_Use__r.Primary_Logo_URL__c != ''}" layout="none">
+                    <tr>
+                        <td>
+                        <table width="650" border="0" cellspacing="0" cellpadding="0" align="center" style="font-family: Arial, sans-serif; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c}; background-color: #FFF; border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                            <tr>
+                                <td style="padding: 20px 25px 20px 25px" width="300"><img src="{!relatedTo.Event__r.Theme__r.Primary_Logo__c}"/></td>
+                                <td style="padding: 20px 25px 20px 25px; text-align: right" width="300"><apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Header_BU__c}" escape="false" /></td>
+                            </tr>
+                        </table>
+                        </td>
+                    </tr>
+                </apex:outputPanel>
+                
+                <tr>
+                    <td style="{!IF(relatedTo.Email_Setup_To_Use__r.Full_width_banner__c == true, ' ', 'padding: 0 25px 0 25px;')}">
+                        <a href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}">
+                            <img src="{!relatedTo.Email_Setup_To_Use__r.Banner_URL__c}"/>
+                        </a>
+                    </td>
+                </tr>   
+                <tr>
+                    <td style="padding: 0 25px">
+                    
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Heading__c}" escape="false" />
+                        <p>Dear {!relatedTo.Contact__r.FirstName},</p>
+                        
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Body__c}" escape="false" />
+                        
+                        <table border="0" width="100%" cellspacing="0" cellpadding="0" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c};">
+                            <tr>
+                                <th align="left" width="130" valign="top">
+                                    Date:
+                                </th>
+                                <td>
+                                    <apex:outputText value="{0,date,dd' 'MMMMM' 'yyyy}">
+                                        <apex:param value="{!relatedTo.Event__r.Start_Date__c}" /> 
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="130" valign="top">
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="100" valign="top">
+                                    Time:
+                                </th>
+                                <td>
+                                    <apex:outputPanel layout="none" rendered="{!relatedTo.Event__r.Event_Display_Time__c == ''}">
+                                        {!relatedTo.Event__r.Start_Time_c__c} to {!relatedTo.Event__r.End_Time__c}
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="none" rendered="{!relatedTo.Event__r.Event_Display_Time__c != ''}">
+                                        {!relatedTo.Event__r.Event_Display_Time__c}
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="130" valign="top">
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="100" valign="top">
+                                    Venue: 
+                                </th>
+                                <td>
+                                    {!relatedTo.Event__r.Venue__r.Name}<br/>
+                                    {!relatedTo.Event__r.Venue__r.Address__c}<br/>
+                                    {!relatedTo.Event__r.Venue__r.City__c}<br/>
+                                    {!relatedTo.Event__r.Venue__r.Country__c}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="130" valign="top">
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="100" valign="top">
+                                    Dress Code: 
+                                </th>
+                                <td>
+                                    {!relatedTo.Event__r.DressCode__c}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="130" valign="top">
+                                    &nbsp;
+                                </th>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <th align="left" width="100" valign="top">
+                                    RSVP:
+                                </th>
+                                <td>
+                                    Kindly RSVP via the following links <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=Yes"><strong>Accept</strong></a> / <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=No"><strong>Decline</strong></a> <!--/ <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=Maybe"><strong>Maybe</strong></a>-->
+                                    <br/>
+                                    <br/>
+                                    <strong>Please note:</strong> This invitation is valid until 
+                                    <apex:outputText value="{0,date, MMMM d', 'yyyy}">
+                                        <apex:param value="{!relatedTo.Event__r.RSVP_Date__c}" /> 
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                        <apex:outputPanel rendered="{!relatedTo.Email_Setup_To_Use__r.Add_to_Outlook__c == true}" layout="none">
+                            <br/><br/> 
+                            <a href="http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]={!relatedTo.Event__r.Calendar_Start_Date__c}&e[0][date_end]={!relatedTo.Event__r.Calendar_End_Date__c}&e[0][timezone]=Africa%2FJohannesburg&e[0][title]={!relatedTo.Event__r.Name}&e[0][description]=&e[0][location]={!relatedTo.Event__r.Venue__r.Name}&e[0][organizer]={!relatedTo.Event__r.Calendar_Organiser_Name__c}&e[0][organizer_email]={!relatedTo.Event__r.Calendar_Organiser_Email__c}&e[0][privacy]=public">
+                                <img src="https://c.eu5.content.force.com/servlet/servlet.ImageServer?id=01524000002Q56a&oid=00D24000000ajGo&lastMod=1488973782000" style="margin-bottom:4px;"/>
+                            </a>
+                        </apex:outputPanel>
+                        <br/>
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Footer__c}" escape="false" />
+                        <apex:outputPanel rendered="{!relatedTo.Email_Setup_To_Use__r.Add_Hostname__c == true}" layout="none">
+                            <strong>{!relatedTo.Host__r.Team_Member__r.Name}</strong>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 25px 20px; font-size: 12px;">
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Disclaimer__c}" escape="false" />
+                        <img width="600" src="{!relatedTo.Email_Setup_To_Use__r.Disclaimer_Banner_URL__c}" />
+                    </td>
+                </tr>  
+            </table>
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+        </body>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

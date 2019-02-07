@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>1-(advpm__Matter__c.Negative_Outcome_Before_All_Costs__c:SUM / advpm__Matter__c.Total_Claim_Value_New__c:SUM)</calculatedFormula>
+        <datatype>percent</datatype>
+        <description>Full Claim Avoidance Ratio</description>
+        <developerName>FORMULA2</developerName>
+        <isActive>false</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Full Claim Avoidance Ratio</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <aggregates>
+        <calculatedFormula>advpm__Matter__c.Reasonably_Possible__c:SUM + advpm__Matter__c.Probable_Approved__c:SUM</calculatedFormula>
+        <datatype>number</datatype>
+        <description>Rea.Poss + Probable</description>
+        <developerName>FORMULA3</developerName>
+        <isActive>false</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Rea.Poss + Probable</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <aggregates>
+        <calculatedFormula>1-(advpm__Matter__c.Negative_Outcome_Before_All_Costs__c:SUM/(advpm__Matter__c.Reasonably_Possible__c:SUM+advpm__Matter__c.Probable_Approved__c:SUM))</calculatedFormula>
+        <datatype>percent</datatype>
+        <description>Likely Loss Avoidance Ratio</description>
+        <developerName>FORMULA4</developerName>
+        <isActive>false</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Likely Loss Avoidance Ratio</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>advpm__Matter__c.Total_Claim_Value_New__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>advpm__Matter__c.Negative_Outcome_Before_All_Costs__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>advpm__Matter__c.Positive_Outcome_Before_All_Costs__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>CUST_RECORDTYPE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>advpm__Matter__c.Litigation_Matter</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>advpm__Matter__c.Disposition_Type__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Absolution,Appellate Decision Against,Appellate Decision For,Arbitration Resulting in Award Against,Arbitration Resulting in Award For,Business Rescue / Liquidation (Finalised),Court Finding Against,Court Finding For,Default Judgement,Duplicate,Finding by Regulator Against,Finding by Regulator For,Investigation Completed,Matter Settled,Settlement,Settlement with Regulator (No Penalty),Settlement with Regulator (Penalty),Summary Judgement,Withdrawn</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>CUST_CREATED_DATE</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Legal Spend</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$advpm__Matter__c$Matter_Spend_Document__c@Matter_Spend_Document__c.Matter_Spend_Schedule__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

@@ -1,0 +1,19 @@
+<aura:component >
+    
+    <aura:registerEvent name="SelectLightningEvent" type="c:SelectLightningEvent"/>
+    
+    <aura:attribute name="options" type="List" required="true" />
+    <aura:attribute name="selectedValue" type="String" required="true" />
+    
+    <div>
+        <div class="customSelectWrapper" onclick="{!c.onCustomSelectClicked}">
+            <div id="customSelectValue">{!v.selectedValue}</div>
+            <ul aura:id="customSelectOptions" class="toggle">
+                <aura:iteration items="{!v.options}" var="o">
+                    <li onclick="{!c.onOptionClicked}">{!o}</li>
+                </aura:iteration>
+            </ul>
+        </div>
+    </div>
+	
+</aura:component>

@@ -1,0 +1,2090 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>AddProduct</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ChoosePricebook</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>AddProductToOpportunity</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EditAllProduct</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>AddProductToOpportunityView</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>SF1</fullName>
+        <fields>Product2Id</fields>
+        <fields>Product_Level_2__c</fields>
+        <fields>Product_Level_3__c</fields>
+        <fields>Booking_Country__c</fields>
+        <fields>Booking_Centre__c</fields>
+        <fields>Annualised_Income__c</fields>
+        <fields>Balance__c</fields>
+        <fields>Margin__c</fields>
+        <fields>Estimated_Utilisation__c</fields>
+        <fields>Fees__c</fields>
+        <label>SF1</label>
+    </compactLayouts>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>AccountSegment__c</fullName>
+        <description>Gets the segment of the account on the related opportunity</description>
+        <externalId>false</externalId>
+        <formula>TEXT(Opportunity.Account.Segment__c)</formula>
+        <inlineHelpText>The segment of the account on the related opportunity</inlineHelpText>
+        <label>Account Segment</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Fee_Deferred__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines whether we should use prorata calculation for upfront fees or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines whether we should use prorata calculation for upfront fees or not</inlineHelpText>
+        <label>Amortised</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Agency_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Agency Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Annual_Facility_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Annual Facility Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Annualised_Income__c</fullName>
+        <externalId>false</externalId>
+        <label>Annualised Income</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Arranging_Fee_Deferred__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines whether we should use prorata calculation for upfront fees or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines whether we should use prorata calculation for upfront fees or not</inlineHelpText>
+        <label>Amortised</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Arranging_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Arranging Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Balance__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>For Loans, Credit balances and Overdraft facilities, insert new total facility size</inlineHelpText>
+        <label>Balance / Facility Size</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Base_Rate__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Base Rate</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>12m Jibar</fullName>
+                    <default>false</default>
+                    <label>12m Jibar</label>
+                </value>
+                <value>
+                    <fullName>6m Jibar</fullName>
+                    <default>false</default>
+                    <label>6m Jibar</label>
+                </value>
+                <value>
+                    <fullName>3m Jibar</fullName>
+                    <default>false</default>
+                    <label>3m Jibar</label>
+                </value>
+                <value>
+                    <fullName>1m Jibar</fullName>
+                    <default>false</default>
+                    <label>1m Jibar</label>
+                </value>
+                <value>
+                    <fullName>Fixed</fullName>
+                    <default>false</default>
+                    <label>Fixed</label>
+                </value>
+                <value>
+                    <fullName>Prime Linked</fullName>
+                    <default>false</default>
+                    <label>Prime Linked</label>
+                </value>
+                <value>
+                    <fullName>CPI Linked</fullName>
+                    <default>false</default>
+                    <label>CPI Linked</label>
+                </value>
+                <value>
+                    <fullName>12m Libor</fullName>
+                    <default>false</default>
+                    <label>12m Libor</label>
+                </value>
+                <value>
+                    <fullName>6m Libor</fullName>
+                    <default>false</default>
+                    <label>6m Libor</label>
+                </value>
+                <value>
+                    <fullName>3m Libor</fullName>
+                    <default>false</default>
+                    <label>3m Libor</label>
+                </value>
+                <value>
+                    <fullName>1m Libor</fullName>
+                    <default>false</default>
+                    <label>1m Libor</label>
+                </value>
+                <value>
+                    <fullName>12m Euribor</fullName>
+                    <default>false</default>
+                    <label>12m Euribor</label>
+                </value>
+                <value>
+                    <fullName>6m Euribor</fullName>
+                    <default>false</default>
+                    <label>6m Euribor</label>
+                </value>
+                <value>
+                    <fullName>3m Euribor</fullName>
+                    <default>false</default>
+                    <label>3m Euribor</label>
+                </value>
+                <value>
+                    <fullName>1m Euribor</fullName>
+                    <default>false</default>
+                    <label>1m Euribor</label>
+                </value>
+                <value>
+                    <fullName>I/BANK</fullName>
+                    <default>false</default>
+                    <label>I/BANK</label>
+                </value>
+                <value>
+                    <fullName>182 day T-Bill</fullName>
+                    <default>false</default>
+                    <label>182 day T-Bill</label>
+                </value>
+                <value>
+                    <fullName>90 day T-Bill</fullName>
+                    <default>false</default>
+                    <label>90 day T-Bill</label>
+                </value>
+                <value>
+                    <fullName>BoZ Base</fullName>
+                    <default>false</default>
+                    <label>BoZ Base</label>
+                </value>
+                <value>
+                    <fullName>KBRR</fullName>
+                    <default>false</default>
+                    <label>KBRR</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Booking_Centre__c</fullName>
+        <externalId>false</externalId>
+        <label>Booking Centre</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Absa Actuaries &amp; Consultants</fullName>
+                    <default>false</default>
+                    <label>Absa Actuaries &amp; Consultants</label>
+                </value>
+                <value>
+                    <fullName>Absa Capital Alternative Asset Management</fullName>
+                    <default>false</default>
+                    <label>Absa Capital Alternative Asset Management</label>
+                </value>
+                <value>
+                    <fullName>Absa Capital Securities</fullName>
+                    <default>false</default>
+                    <label>Absa Capital Securities</label>
+                </value>
+                <value>
+                    <fullName>Absa Capital Securities (PRIME)</fullName>
+                    <default>false</default>
+                    <label>Absa Capital Securities (PRIME)</label>
+                </value>
+                <value>
+                    <fullName>Absa Card - Card Acquiring</fullName>
+                    <default>false</default>
+                    <label>Absa Card - Card Acquiring</label>
+                </value>
+                <value>
+                    <fullName>Absa Card - Card Issuing</fullName>
+                    <default>false</default>
+                    <label>Absa Card - Card Issuing</label>
+                </value>
+                <value>
+                    <fullName>Absa Commercial Asset Finance</fullName>
+                    <default>false</default>
+                    <label>Absa Commercial Asset Finance</label>
+                </value>
+                <value>
+                    <fullName>Absa Commercial Property Finance</fullName>
+                    <default>false</default>
+                    <label>Absa Commercial Property Finance</label>
+                </value>
+                <value>
+                    <fullName>Absa Financial Services</fullName>
+                    <default>false</default>
+                    <label>Absa Financial Services</label>
+                </value>
+                <value>
+                    <fullName>Absa Islamic Banking</fullName>
+                    <default>false</default>
+                    <label>Absa Islamic Banking</label>
+                </value>
+                <value>
+                    <fullName>Absa Vehicle And Commercial Asset Finance</fullName>
+                    <default>false</default>
+                    <label>Absa Vehicle And Commercial Asset Finance</label>
+                </value>
+                <value>
+                    <fullName>Adjustments/Provisions - Commodities</fullName>
+                    <default>false</default>
+                    <label>Adjustments/Provisions - Commodities</label>
+                </value>
+                <value>
+                    <fullName>Agency</fullName>
+                    <default>false</default>
+                    <label>Agency</label>
+                </value>
+                <value>
+                    <fullName>Asset Based Lending</fullName>
+                    <default>false</default>
+                    <label>Asset Based Lending</label>
+                </value>
+                <value>
+                    <fullName>Bonds</fullName>
+                    <default>false</default>
+                    <label>Bonds</label>
+                </value>
+                <value>
+                    <fullName>Bonds, Guarantees &amp; Indemnities</fullName>
+                    <default>false</default>
+                    <label>Bonds, Guarantees &amp; Indemnities</label>
+                </value>
+                <value>
+                    <fullName>Call Deposits</fullName>
+                    <default>false</default>
+                    <label>Call Deposits</label>
+                </value>
+                <value>
+                    <fullName>Call Deposits FA</fullName>
+                    <default>false</default>
+                    <label>Call Deposits FA</label>
+                </value>
+                <value>
+                    <fullName>Capex Financing Solutions</fullName>
+                    <default>false</default>
+                    <label>Capex Financing Solutions</label>
+                </value>
+                <value>
+                    <fullName>Cash</fullName>
+                    <default>false</default>
+                    <label>Cash</label>
+                </value>
+                <value>
+                    <fullName>Cash Handling Fees</fullName>
+                    <default>false</default>
+                    <label>Cash Handling Fees</label>
+                </value>
+                <value>
+                    <fullName>Cash Management (Notional Pooling, Sweeping, etc)</fullName>
+                    <default>false</default>
+                    <label>Cash Management (Notional Pooling, Sweeping, etc)</label>
+                </value>
+                <value>
+                    <fullName>Cheque Deposits</fullName>
+                    <default>false</default>
+                    <label>Cheque Deposits</label>
+                </value>
+                <value>
+                    <fullName>Commodities Trading</fullName>
+                    <default>false</default>
+                    <label>Commodities Trading</label>
+                </value>
+                <value>
+                    <fullName>Credit Trading</fullName>
+                    <default>false</default>
+                    <label>Credit Trading</label>
+                </value>
+                <value>
+                    <fullName>Currency Deposits</fullName>
+                    <default>false</default>
+                    <label>Currency Deposits</label>
+                </value>
+                <value>
+                    <fullName>Current Account</fullName>
+                    <default>false</default>
+                    <label>Current Account</label>
+                </value>
+                <value>
+                    <fullName>Equity Capital Markets</fullName>
+                    <default>false</default>
+                    <label>Equity Capital Markets</label>
+                </value>
+                <value>
+                    <fullName>Export Credit Agency (ECA)</fullName>
+                    <default>false</default>
+                    <label>Export Credit Agency (ECA)</label>
+                </value>
+                <value>
+                    <fullName>Financial Solutions Group</fullName>
+                    <default>false</default>
+                    <label>Financial Solutions Group</label>
+                </value>
+                <value>
+                    <fullName>FI Options</fullName>
+                    <default>false</default>
+                    <label>FI Options</label>
+                </value>
+                <value>
+                    <fullName>Fixed Deposits</fullName>
+                    <default>false</default>
+                    <label>Fixed Deposits</label>
+                </value>
+                <value>
+                    <fullName>Fixed Deposits FA</fullName>
+                    <default>false</default>
+                    <label>Fixed Deposits FA</label>
+                </value>
+                <value>
+                    <fullName>FX</fullName>
+                    <default>false</default>
+                    <label>FX</label>
+                </value>
+                <value>
+                    <fullName>FX Options</fullName>
+                    <default>false</default>
+                    <label>FX Options</label>
+                </value>
+                <value>
+                    <fullName>Government Bonds</fullName>
+                    <default>false</default>
+                    <label>Government Bonds</label>
+                </value>
+                <value>
+                    <fullName>Interest Rate Derivatives</fullName>
+                    <default>false</default>
+                    <label>Interest Rate Derivatives</label>
+                </value>
+                <value>
+                    <fullName>International Payments/Collections</fullName>
+                    <default>false</default>
+                    <label>International Payments/Collections</label>
+                </value>
+                <value>
+                    <fullName>Leveraged Finance And High Yield Bond</fullName>
+                    <default>false</default>
+                    <label>Leveraged Finance And High Yield Bond</label>
+                </value>
+                <value>
+                    <fullName>Linear Derivatives</fullName>
+                    <default>false</default>
+                    <label>Linear Derivatives</label>
+                </value>
+                <value>
+                    <fullName>Loan Portfolio (CORP)</fullName>
+                    <default>false</default>
+                    <label>Loan Portfolio (CORP)</label>
+                </value>
+                <value>
+                    <fullName>Loan Portfolio (IB)</fullName>
+                    <default>false</default>
+                    <label>Loan Portfolio (IB)</label>
+                </value>
+                <value>
+                    <fullName>Loans Syndication - Fees</fullName>
+                    <default>false</default>
+                    <label>Loans Syndication - Fees</label>
+                </value>
+                <value>
+                    <fullName>Money Market Short Term Lending (IB)</fullName>
+                    <default>false</default>
+                    <label>Money Market Short Term Lending (IB)</label>
+                </value>
+                <value>
+                    <fullName>Money Market Vostros</fullName>
+                    <default>false</default>
+                    <label>Money Market Vostros</label>
+                </value>
+                <value>
+                    <fullName>Money Transmission</fullName>
+                    <default>false</default>
+                    <label>Money Transmission</label>
+                </value>
+                <value>
+                    <fullName>NewFunds Shari’ah Top 40</fullName>
+                    <default>false</default>
+                    <label>NewFunds Shari’ah Top 40</label>
+                </value>
+                <value>
+                    <fullName>Non - Linear Derivatives</fullName>
+                    <default>false</default>
+                    <label>Non - Linear Derivatives</label>
+                </value>
+                <value>
+                    <fullName>Non ZAR Funding &amp; Investments</fullName>
+                    <default>false</default>
+                    <label>Non ZAR Funding &amp; Investments</label>
+                </value>
+                <value>
+                    <fullName>Notice Deposits</fullName>
+                    <default>false</default>
+                    <label>Notice Deposits</label>
+                </value>
+                <value>
+                    <fullName>Other Trade Fees</fullName>
+                    <default>false</default>
+                    <label>Other Trade Fees</label>
+                </value>
+                <value>
+                    <fullName>Overdrafts</fullName>
+                    <default>false</default>
+                    <label>Overdrafts</label>
+                </value>
+                <value>
+                    <fullName>Preference Shares</fullName>
+                    <default>false</default>
+                    <label>Preference Shares</label>
+                </value>
+                <value>
+                    <fullName>Project Finance</fullName>
+                    <default>false</default>
+                    <label>Project Finance</label>
+                </value>
+                <value>
+                    <fullName>Savings Accounts</fullName>
+                    <default>false</default>
+                    <label>Savings Accounts</label>
+                </value>
+                <value>
+                    <fullName>Securities Lending</fullName>
+                    <default>false</default>
+                    <label>Securities Lending</label>
+                </value>
+                <value>
+                    <fullName>Securitisation</fullName>
+                    <default>false</default>
+                    <label>Securitisation</label>
+                </value>
+                <value>
+                    <fullName>Structured Equity</fullName>
+                    <default>false</default>
+                    <label>Structured Equity</label>
+                </value>
+                <value>
+                    <fullName>Trade Loans</fullName>
+                    <default>false</default>
+                    <label>Trade Loans</label>
+                </value>
+                <value>
+                    <fullName>Underwriting Business</fullName>
+                    <default>false</default>
+                    <label>Underwriting Business</label>
+                </value>
+                <value>
+                    <fullName>ZAR Funding Execution</fullName>
+                    <default>false</default>
+                    <label>ZAR Funding Execution</label>
+                </value>
+                <value>
+                    <fullName>ZAR Investment</fullName>
+                    <default>false</default>
+                    <label>ZAR Investment</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Booking_Country__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Booking Country</label>
+        <referenceTo>Coverage_Country__c</referenceTo>
+        <relationshipLabel>Opportunity Product</relationshipLabel>
+        <relationshipName>Opportunity_Product</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>BulletAmount__c</fullName>
+        <externalId>false</externalId>
+        <label>Bullet Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>BulletPaymentDue__c</fullName>
+        <externalId>false</externalId>
+        <label>Bullet Payment Due</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>CalculatedCommittmentCurrentYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Committment Fee Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedCommittmentNextYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Committment Fee Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedDeferredCurrentYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Arr Fee Deferred Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedDeferredNextYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Arr Fee Deferred Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedNetMarginCurrentYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Net Margin Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedNetMarginNextYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Net Margin Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedTotalPipelineCurrentYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Total Pipeline Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedTotalPipelineNextYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Total Pipeline Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedUpfrontCurrentYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Arr Fee Upfront Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CalculatedUpfrontNextYear__c</fullName>
+        <externalId>false</externalId>
+        <label>Calculated Arr Fee Upfront Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Co_ordination_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Co-ordination Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Committment_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Commitment Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Compounding_Frequency__c</fullName>
+        <externalId>false</externalId>
+        <label>Compounding Frequency</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Monthly</fullName>
+                    <default>false</default>
+                    <label>Monthly</label>
+                </value>
+                <value>
+                    <fullName>Quarterly</fullName>
+                    <default>false</default>
+                    <label>Quarterly</label>
+                </value>
+                <value>
+                    <fullName>Semi-Annually</fullName>
+                    <default>false</default>
+                    <label>Semi-Annually</label>
+                </value>
+                <value>
+                    <fullName>Annually</fullName>
+                    <default>false</default>
+                    <label>Annually</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Coordination_Fee_Deferred__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines whether we should use prorata calculation for upfront fees or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines whether we should use prorata calculation for upfront fees or not</inlineHelpText>
+        <label>Amortised</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>CrossSellOpportunity__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Specifies whether this opportunity line item was created through a trigger through the cross sell process.</description>
+        <externalId>false</externalId>
+        <label>Cross Sell Opportunity</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>DG_TTC__c</fullName>
+        <externalId>false</externalId>
+        <label>DG (TTC)</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>1</fullName>
+                    <default>false</default>
+                    <label>1</label>
+                </value>
+                <value>
+                    <fullName>2</fullName>
+                    <default>false</default>
+                    <label>2</label>
+                </value>
+                <value>
+                    <fullName>3</fullName>
+                    <default>false</default>
+                    <label>3</label>
+                </value>
+                <value>
+                    <fullName>4</fullName>
+                    <default>false</default>
+                    <label>4</label>
+                </value>
+                <value>
+                    <fullName>5</fullName>
+                    <default>false</default>
+                    <label>5</label>
+                </value>
+                <value>
+                    <fullName>6</fullName>
+                    <default>false</default>
+                    <label>6</label>
+                </value>
+                <value>
+                    <fullName>7</fullName>
+                    <default>false</default>
+                    <label>7</label>
+                </value>
+                <value>
+                    <fullName>8</fullName>
+                    <default>false</default>
+                    <label>8</label>
+                </value>
+                <value>
+                    <fullName>9</fullName>
+                    <default>false</default>
+                    <label>9</label>
+                </value>
+                <value>
+                    <fullName>10</fullName>
+                    <default>false</default>
+                    <label>10</label>
+                </value>
+                <value>
+                    <fullName>11</fullName>
+                    <default>false</default>
+                    <label>11</label>
+                </value>
+                <value>
+                    <fullName>12</fullName>
+                    <default>false</default>
+                    <label>12</label>
+                </value>
+                <value>
+                    <fullName>13</fullName>
+                    <default>false</default>
+                    <label>13</label>
+                </value>
+                <value>
+                    <fullName>14</fullName>
+                    <default>false</default>
+                    <label>14</label>
+                </value>
+                <value>
+                    <fullName>15</fullName>
+                    <default>false</default>
+                    <label>15</label>
+                </value>
+                <value>
+                    <fullName>16</fullName>
+                    <default>false</default>
+                    <label>16</label>
+                </value>
+                <value>
+                    <fullName>17</fullName>
+                    <default>false</default>
+                    <label>17</label>
+                </value>
+                <value>
+                    <fullName>18</fullName>
+                    <default>false</default>
+                    <label>18</label>
+                </value>
+                <value>
+                    <fullName>19</fullName>
+                    <default>false</default>
+                    <label>19</label>
+                </value>
+                <value>
+                    <fullName>20</fullName>
+                    <default>false</default>
+                    <label>20</label>
+                </value>
+                <value>
+                    <fullName>21</fullName>
+                    <default>false</default>
+                    <label>21</label>
+                </value>
+                <value>
+                    <fullName>22</fullName>
+                    <default>false</default>
+                    <label>22</label>
+                </value>
+                <value>
+                    <fullName>DG01</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>DG01</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>DTLGD__c</fullName>
+        <externalId>false</externalId>
+        <label>DT LGD (%)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Description</fullName>
+    </fields>
+    <fields>
+        <fullName>Discount</fullName>
+    </fields>
+    <fields>
+        <fullName>DrawPercentageCurrentYear__c</fullName>
+        <description>Draw Percentage Current Year used for the RPF Calculator</description>
+        <externalId>false</externalId>
+        <label>Draw Percentage Current Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>DrawPercentageNextYear__c</fullName>
+        <description>Draw Percentage Next Year used for the RPF calculator</description>
+        <externalId>false</externalId>
+        <label>Draw Percentage Next Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Estimated_Utilisation__c</fullName>
+        <defaultValue>100</defaultValue>
+        <externalId>false</externalId>
+        <label>Estimated Utilisation (%)</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Existing_Facility_Balance__c</fullName>
+        <externalId>false</externalId>
+        <label>Existing Facility Balance</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>FX_Sales_Comment__c</fullName>
+        <description>Fx Sales comment on the product page when any product with level 2 foreign exchange is selected</description>
+        <externalId>false</externalId>
+        <label>FX Sales Comment</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Facilities_Off_Balance__c</fullName>
+        <externalId>false</externalId>
+        <label>Facilities Off Balance</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Bilateral</fullName>
+                    <default>false</default>
+                    <label>Bilateral</label>
+                </value>
+                <value>
+                    <fullName>Syndication</fullName>
+                    <default>false</default>
+                    <label>Syndication</label>
+                </value>
+                <value>
+                    <fullName>Club</fullName>
+                    <default>false</default>
+                    <label>Club</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Fee_Recovery_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Fee Recovery Description</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Upfront</fullName>
+                    <default>false</default>
+                    <label>Upfront</label>
+                </value>
+                <value>
+                    <fullName>Through the term</fullName>
+                    <default>false</default>
+                    <label>Through the term</label>
+                </value>
+                <value>
+                    <fullName>None</fullName>
+                    <default>false</default>
+                    <label>None</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Fees__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Once-off Fees</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>FlexiFee__c</fullName>
+        <externalId>false</externalId>
+        <label>Flexi Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Flexi__c</fullName>
+        <externalId>false</externalId>
+        <label>Flexi</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Ftp__c</fullName>
+        <externalId>false</externalId>
+        <label>FTP/Cost of Funds (%)</label>
+        <precision>7</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FundingBaseRate__c</fullName>
+        <externalId>false</externalId>
+        <label>Funding Base Rate</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>12m Jibar</fullName>
+                    <default>false</default>
+                    <label>12m Jibar</label>
+                </value>
+                <value>
+                    <fullName>6m Jibar</fullName>
+                    <default>false</default>
+                    <label>6m Jibar</label>
+                </value>
+                <value>
+                    <fullName>3m Jibar</fullName>
+                    <default>false</default>
+                    <label>3m Jibar</label>
+                </value>
+                <value>
+                    <fullName>1m Jibar</fullName>
+                    <default>false</default>
+                    <label>1m Jibar</label>
+                </value>
+                <value>
+                    <fullName>Fixed</fullName>
+                    <default>false</default>
+                    <label>Fixed</label>
+                </value>
+                <value>
+                    <fullName>Prime Linked</fullName>
+                    <default>false</default>
+                    <label>Prime Linked</label>
+                </value>
+                <value>
+                    <fullName>CPI Linked</fullName>
+                    <default>false</default>
+                    <label>CPI Linked</label>
+                </value>
+                <value>
+                    <fullName>12m Libor</fullName>
+                    <default>false</default>
+                    <label>12m Libor</label>
+                </value>
+                <value>
+                    <fullName>6m Libor</fullName>
+                    <default>false</default>
+                    <label>6m Libor</label>
+                </value>
+                <value>
+                    <fullName>3m Libor</fullName>
+                    <default>false</default>
+                    <label>3m Libor</label>
+                </value>
+                <value>
+                    <fullName>1m Libor</fullName>
+                    <default>false</default>
+                    <label>1m Libor</label>
+                </value>
+                <value>
+                    <fullName>12m Euribor</fullName>
+                    <default>false</default>
+                    <label>12m Euribor</label>
+                </value>
+                <value>
+                    <fullName>6m Euribor</fullName>
+                    <default>false</default>
+                    <label>6m Euribor</label>
+                </value>
+                <value>
+                    <fullName>3m Euribor</fullName>
+                    <default>false</default>
+                    <label>3m Euribor</label>
+                </value>
+                <value>
+                    <fullName>1m Euribor</fullName>
+                    <default>false</default>
+                    <label>1m Euribor</label>
+                </value>
+                <value>
+                    <fullName>I/BANK</fullName>
+                    <default>false</default>
+                    <label>I/BANK</label>
+                </value>
+                <value>
+                    <fullName>182 day T-Bill</fullName>
+                    <default>false</default>
+                    <label>182 day T-Bill</label>
+                </value>
+                <value>
+                    <fullName>90 day T-Bill</fullName>
+                    <default>false</default>
+                    <label>90 day T-Bill</label>
+                </value>
+                <value>
+                    <fullName>BoZ Base</fullName>
+                    <default>false</default>
+                    <label>BoZ Base</label>
+                </value>
+                <value>
+                    <fullName>KBRR</fullName>
+                    <default>false</default>
+                    <label>KBRR</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>FundingRateType__c</fullName>
+        <externalId>false</externalId>
+        <label>Funding Rate Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Fixed</fullName>
+                    <default>false</default>
+                    <label>Fixed</label>
+                </value>
+                <value>
+                    <fullName>Floating</fullName>
+                    <default>false</default>
+                    <label>Floating</label>
+                </value>
+                <value>
+                    <fullName>Prime Linked</fullName>
+                    <default>false</default>
+                    <label>Prime Linked</label>
+                </value>
+                <value>
+                    <fullName>I/BANK</fullName>
+                    <default>false</default>
+                    <label>I/BANK</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>GLGD__c</fullName>
+        <externalId>false</externalId>
+        <label>CLGD (%)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Gross_Margin__c</fullName>
+        <externalId>false</externalId>
+        <label>Gross Margin (%)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Hold_Size__c</fullName>
+        <externalId>false</externalId>
+        <label>Hold Size</label>
+        <precision>12</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Income_this_Year__c</fullName>
+        <externalId>false</externalId>
+        <label>Income this Year</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>LGD__c</fullName>
+        <externalId>false</externalId>
+        <label>LR LGD (%)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>LTV__c</fullName>
+        <externalId>false</externalId>
+        <label>Loan To Value (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>ListPrice</fullName>
+    </fields>
+    <fields>
+        <fullName>LoanType__c</fullName>
+        <externalId>false</externalId>
+        <label>Loan Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Refinance</fullName>
+                    <default>false</default>
+                    <label>Refinance</label>
+                </value>
+                <value>
+                    <fullName>Restructure</fullName>
+                    <default>false</default>
+                    <label>Restructure</label>
+                </value>
+                <value>
+                    <fullName>New Money</fullName>
+                    <default>false</default>
+                    <label>New Money</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Loan_Profile__c</fullName>
+        <externalId>false</externalId>
+        <label>Loan Profile</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Amort</fullName>
+                    <default>false</default>
+                    <label>Amort</label>
+                </value>
+                <value>
+                    <fullName>Bullet</fullName>
+                    <default>false</default>
+                    <label>Bullet</label>
+                </value>
+                <value>
+                    <fullName>CPI</fullName>
+                    <default>false</default>
+                    <label>CPI</label>
+                </value>
+                <value>
+                    <fullName>Interest Capitalisation</fullName>
+                    <default>false</default>
+                    <label>Interest Capitalisation</label>
+                </value>
+                <value>
+                    <fullName>Interest Only</fullName>
+                    <default>false</default>
+                    <label>Interest Only</label>
+                </value>
+                <value>
+                    <fullName>Sculpted</fullName>
+                    <default>false</default>
+                    <label>Sculpted</label>
+                </value>
+                <value>
+                    <fullName>Stepped Capital</fullName>
+                    <default>false</default>
+                    <label>Stepped Capital</label>
+                </value>
+                <value>
+                    <fullName>Stepped Installment</fullName>
+                    <default>false</default>
+                    <label>Stepped Installment</label>
+                </value>
+                <value>
+                    <fullName>Straight Line Capital Repayment</fullName>
+                    <default>false</default>
+                    <label>Straight Line Capital Repayment</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Margin__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Net Margin (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>MonthlyValue__c</fullName>
+        <externalId>false</externalId>
+        <label>Monthly Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Net_Facility_Balance__c</fullName>
+        <externalId>false</externalId>
+        <label>Net Facility Balance</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>NewCapital__c</fullName>
+        <externalId>false</externalId>
+        <label>New Capital</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>New_Facility_Balance__c</fullName>
+        <externalId>false</externalId>
+        <label>New Facility Balance</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>New_Facility__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Income from today&apos;s date to the same date next year</inlineHelpText>
+        <label>New Facility Annualised Income</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>OpportunityCountry__c</fullName>
+        <description>Returns the Country of the related Opportunity</description>
+        <externalId>false</externalId>
+        <formula>TEXT(Opportunity.Opportunity_Country__c)</formula>
+        <inlineHelpText>Returns the Country of the related Opportunity</inlineHelpText>
+        <label>Opportunity Country</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>OpportunityId</fullName>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Other_Fees_Deferred__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines whether we should use prorata calculation for upfront fees or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines whether we should use prorata calculation for upfront fees or not</inlineHelpText>
+        <label>Amortised</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Other_Fees__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Annual renewal, Management fees, Special fees</inlineHelpText>
+        <label>Other Fees (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>PTEA__c</fullName>
+        <description>Gives the PTEA calculation used in the net margin calculation</description>
+        <externalId>false</externalId>
+        <formula>IF( 
+NOT(ISBLANK(Product_Level_3__c)) &amp;&amp; Product_Level_3__r.Name = &apos;Preference Shares&apos;, 
+TEXT(ROUND((Gross_Margin__c / (1 - VALUE($Label.PreferenceSharesTaxRate))) * VALUE($Label.PreferenceSharesTaxRate) * 100,2)), 
+&apos;N/A&apos; 
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Gives the PTEA calculation used in the net margin calculation</inlineHelpText>
+        <label>PTEA</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Participation_Fee_Deferred__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines whether we should use prorata calculation for upfront fees or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines whether we should use prorata calculation for upfront fees or not</inlineHelpText>
+        <label>Amortised</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Participation_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Participation Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Primary_Banking_Target__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Banking Target</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Undisclosed</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Product2Id</fullName>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>ProductCode</fullName>
+    </fields>
+    <fields>
+        <fullName>ProductLevel3Count__c</fullName>
+        <description>Determines whether the opportunity line item has a level 3 Product or not</description>
+        <externalId>false</externalId>
+        <formula>IF(ISBLANK(Product_Level_3__c), 0, 1)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Product Level 3 Count</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ProductPartner__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>This is the user responsible for approving the opportunity when a product is added to an opportunity</description>
+        <externalId>false</externalId>
+        <label>Product Partner</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Opportunity_Product</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Product_Level_2_Name__c</fullName>
+        <description>Gets the name of the Product level 2</description>
+        <externalId>false</externalId>
+        <formula>Product_Level_2__r.Name</formula>
+        <label>Product Level 2 Name</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Product_Level_2__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product Level 2</label>
+        <referenceTo>Product_Level_2__c</referenceTo>
+        <relationshipLabel>Opportunity Product</relationshipLabel>
+        <relationshipName>Opportunity_Product</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Product_Level_3_Name__c</fullName>
+        <externalId>false</externalId>
+        <formula>Product_Level_3__r.Name</formula>
+        <label>Product Level 3 Name</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Product_Level_3__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product Level 3</label>
+        <referenceTo>Product_Level_3__c</referenceTo>
+        <relationshipLabel>Opportunity Product</relationshipLabel>
+        <relationshipName>Opportunity_Product</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Product_Name__c</fullName>
+        <externalId>false</externalId>
+        <formula>PricebookEntry.Product2.Name</formula>
+        <label>Product Name</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Quantity</fullName>
+    </fields>
+    <fields>
+        <fullName>ROEC__c</fullName>
+        <externalId>false</externalId>
+        <label>ROEC (%)</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>RORC1stYear__c</fullName>
+        <externalId>false</externalId>
+        <label>RORC (1st Year %)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>RORC__c</fullName>
+        <externalId>false</externalId>
+        <label>RORC (Lifetime %)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>RWA1stYear__c</fullName>
+        <externalId>false</externalId>
+        <label>RWA (1st Year)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>RWA__c</fullName>
+        <externalId>false</externalId>
+        <label>RWA (Lifetime)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Rate_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Rate Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Fixed</fullName>
+                    <default>false</default>
+                    <label>Fixed</label>
+                </value>
+                <value>
+                    <fullName>Floating</fullName>
+                    <default>false</default>
+                    <label>Floating</label>
+                </value>
+                <value>
+                    <fullName>Prime Linked</fullName>
+                    <default>false</default>
+                    <label>Prime Linked</label>
+                </value>
+                <value>
+                    <fullName>I/BANK</fullName>
+                    <default>false</default>
+                    <label>I/BANK</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Recurring_Fees_Period__c</fullName>
+        <externalId>false</externalId>
+        <label>Recurring Fees Period</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Monthly</fullName>
+                    <default>false</default>
+                    <label>Monthly</label>
+                </value>
+                <value>
+                    <fullName>Quarterly</fullName>
+                    <default>false</default>
+                    <label>Quarterly</label>
+                </value>
+                <value>
+                    <fullName>Semi-Annually</fullName>
+                    <default>false</default>
+                    <label>Semi-Annually</label>
+                </value>
+                <value>
+                    <fullName>Annually</fullName>
+                    <default>false</default>
+                    <label>Annually</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Recurring_Fees__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Recurring Fees</label>
+        <precision>11</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>RefinanceAmount__c</fullName>
+        <externalId>false</externalId>
+        <label>Refinance</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>RefinanceIncreaseDecrease__c</fullName>
+        <description>If the user selects that this is a refinance, this field determines whether this is an increase, decrease or unchanged refinance amount</description>
+        <externalId>false</externalId>
+        <label>Refinance Increase/Decrease</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Increase</fullName>
+                    <default>false</default>
+                    <label>Increase</label>
+                </value>
+                <value>
+                    <fullName>Decrease</fullName>
+                    <default>false</default>
+                    <label>Decrease</label>
+                </value>
+                <value>
+                    <fullName>Unchanged</fullName>
+                    <default>false</default>
+                    <label>Unchanged</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>RoRWA1stYear__c</fullName>
+        <externalId>false</externalId>
+        <label>RoRWA (1st Year %)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>RoRWA__c</fullName>
+        <externalId>false</externalId>
+        <label>RoRWA (Lifetime %)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Role_League__c</fullName>
+        <externalId>false</externalId>
+        <label>Role League</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>MLA</fullName>
+                    <default>false</default>
+                    <label>MLA</label>
+                </value>
+                <value>
+                    <fullName>Joint MLA</fullName>
+                    <default>false</default>
+                    <label>Joint MLA</label>
+                </value>
+                <value>
+                    <fullName>Lender</fullName>
+                    <default>false</default>
+                    <label>Lender</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>SecondaryLoan__c</fullName>
+        <externalId>false</externalId>
+        <label>Secondary Loan</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>ServiceDate</fullName>
+    </fields>
+    <fields>
+        <fullName>StartDate__c</fullName>
+        <description>Start Date used for the RPF pipeline calculator functionality</description>
+        <externalId>false</externalId>
+        <label>Start Date</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Subtotal</fullName>
+    </fields>
+    <fields>
+        <fullName>Syndicated__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Syndicated</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Term_Interval__c</fullName>
+        <description>Field used to determine what interval users are recording the term in</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Field used to determine what interval users are recording the term in</inlineHelpText>
+        <label>Term (Interval)</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Years</fullName>
+                    <default>true</default>
+                    <label>Years</label>
+                </value>
+                <value>
+                    <fullName>Months</fullName>
+                    <default>false</default>
+                    <label>Months</label>
+                </value>
+                <value>
+                    <fullName>Days</fullName>
+                    <default>false</default>
+                    <label>Days</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Terms_Years__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>One has to enter the term in years for upfront fees to apply</inlineHelpText>
+        <label>Terms (Years)</label>
+        <precision>12</precision>
+        <required>false</required>
+        <scale>5</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Threshold__c</fullName>
+        <externalId>false</externalId>
+        <label>Hurdle (RoRWA)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>TotalPrice</fullName>
+    </fields>
+    <fields>
+        <fullName>Transaction_Value__c</fullName>
+        <externalId>false</externalId>
+        <label>Fee Per Transaction</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>UK_Barclays_OppProdLineItem_ID__c</fullName>
+        <caseSensitive>true</caseSensitive>
+        <externalId>true</externalId>
+        <label>UK Barclays OppProdLineItem ID</label>
+        <length>18</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Underwrite__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Underwrite</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>UnitPrice</fullName>
+    </fields>
+    <fields>
+        <fullName>Unutilised_Facility_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Unutilised Facility Fee (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Volume__c</fullName>
+        <description>Volume of transactions. Together with the fees per transaction field determine the recurring fees</description>
+        <externalId>false</externalId>
+        <label>Monthly Volume</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Weighted_Annualised_Income__c</fullName>
+        <externalId>false</externalId>
+        <formula>Annualised_Income__c *  Opportunity.Probability</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Weighted Annualised Income</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Weighted_Income_this_Year__c</fullName>
+        <externalId>false</externalId>
+        <formula>Income_this_Year__c *  Opportunity.Probability</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Weighted Income this Year</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Currency</type>
+    </fields>
+    <validationRules>
+        <fullName>Bullet_Amount</fullName>
+        <active>true</active>
+        <description>Bullet Amount can not be greater than hold size</description>
+        <errorConditionFormula>OR(
+	AND(
+		NOT(ISBLANK(BulletAmount__c)),
+		NOT(ISBLANK(Hold_Size__c)),
+		BulletAmount__c &gt; Hold_Size__c
+	)
+	,
+	AND
+	(
+		NOT(ISBLANK(BulletAmount__c)),
+		BulletAmount__c &lt; 0
+	)
+)</errorConditionFormula>
+        <errorMessage>Bullet Amount can not be greater than Hold Size or less than zero</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>FTP</fullName>
+        <active>true</active>
+        <description>Makes sure FTP is between -10 and 99.99</description>
+        <errorConditionFormula>OR 
+( 
+Ftp__c &lt; -10, 
+Ftp__c &gt; 99.99
+)</errorConditionFormula>
+        <errorMessage>FTP must be between -10 and 99.99</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Fees</fullName>
+        <active>false</active>
+        <description>The Annualized Income formula will only work if there is atleast a 0 value in the fees field</description>
+        <errorConditionFormula>ISBLANK(Fees__c)</errorConditionFormula>
+        <errorDisplayField>Fees__c</errorDisplayField>
+        <errorMessage>There must at least be a 0 in the Fees field in order to save a product.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Negative_Fees</fullName>
+        <active>true</active>
+        <description>Checks if any fees entered are negative</description>
+        <errorConditionFormula>OR(
+	AND
+	(
+		NOT(ISBLANK(Arranging_Fee__c)),
+		Arranging_Fee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Other_Fees__c)),
+		Other_Fees__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Committment_Fee__c)),
+		Committment_Fee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(FlexiFee__c)),
+		FlexiFee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Annual_Facility_Fee__c)),
+		Annual_Facility_Fee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Participation_Fee__c)),
+		Participation_Fee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Agency_Fee__c)),
+		Agency_Fee__c &lt; 0
+	),
+	AND
+	(
+		NOT(ISBLANK(Co_ordination_Fee__c)),
+		Co_ordination_Fee__c &lt; 0
+	)
+)</errorConditionFormula>
+        <errorMessage>Fees can not be less than zero</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Refinance</fullName>
+        <active>true</active>
+        <description>Refinance Amount can not be greater than hold size</description>
+        <errorConditionFormula>OR(
+	AND(
+		NOT(ISBLANK(RefinanceAmount__c)),
+		NOT(ISBLANK(Hold_Size__c)),
+		RefinanceAmount__c &gt; Hold_Size__c
+	)
+	,
+	AND
+	(
+		NOT(ISBLANK(RefinanceAmount__c)),
+		RefinanceAmount__c &lt; 0
+	)
+)</errorConditionFormula>
+        <errorMessage>Refinance Amount can not be greater than Hold Size or less than zero</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Term_Years</fullName>
+        <active>true</active>
+        <description>Makes sure that the term years don&apos;t go over 99.99999 or under 0</description>
+        <errorConditionFormula>OR( Terms_Years__c &lt; 0, Terms_Years__c &gt; 99.99999)</errorConditionFormula>
+        <errorMessage>The term must be between 0 and 99 years</errorMessage>
+    </validationRules>
+    <webLinks>
+        <fullName>Add_Product</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Add Product</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+        <url>if({!Opportunity.HasOpportunityLineItem} == false)
+{
+   window.location.href = &apos;/apex/AddProductToOpportunity?oppId={!Opportunity.Id}&apos;;
+} else {
+   alert(&apos;Product already exists.&apos;);
+}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Back_to_Opportuntiy</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Back to Opportuntiy</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>/{!Opportunity.Id}</url>
+    </webLinks>
+</CustomObject>

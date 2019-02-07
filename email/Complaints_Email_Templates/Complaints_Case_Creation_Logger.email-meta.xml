@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Complaints Case Creation Logger</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber} : {!Case.Subject}</subject>
+    <textOnly>Dear {!Case.Queue__c}
+
+A new formal complaint was created in Salesforce and
+assigned to you.
+
+
+See case details below:
+
+Case Number: {!Case.CaseNumber}
+
+Case Subject: {!Case.Subject}
+
+Case Description:
+
+{!Case.Description}
+
+
+You can view the Case here:
+
+{!Case.Link}
+
+
+Regards,Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

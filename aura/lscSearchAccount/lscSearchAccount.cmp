@@ -1,0 +1,34 @@
+<aura:component controller="lscNewCaseExt">
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="searchText" type="String" default="" access="private"/>
+    <aura:attribute name="found" type="boolean"  access="private"/>
+    <aura:attribute name="SelectedAccount" type="String" default="" access="public"/>
+    <aura:attribute name="HasAccount" type="boolean" default="false" access="public"/>
+    <aura:attribute name="isUserSearch" type="boolean" default="true" access="public"/>
+    <aura:attribute name="UserID" type="String" default="" access="public"/>
+    <aura:attribute name="UserName" type="String" default="" access="public"/>
+    <aura:attribute name="Lable" type="String" default="" access="public"/>
+    <aura:attribute name="relationships" type="string[]" default="" access="private"/>
+    <aura:handler name="change" value="{!v.searchText}" action="{!c.filterFunction}"/> 
+    <aura:attribute name="timer" type="Integer"/>
+    <div id="myDropdown" class="dropdown-content" style="left:0;">
+        
+        <div style="top:0">
+      <div >
+     <lightning:input aura:id="searchText"
+                             name="searchText"
+                             value="{!v.searchText}"
+                             type="text"
+                             label="{!v.Lable}" 
+                      			onblur="{!c.toggleVisibility}"
+                             placeholder="Search User"
+                             /> 
+          </div>
+      
+             <div class="myDropdown dropdown-content" id="relationshipList"   onclick="{!c.getSelectedAccount}" style="position:absolute; z-index: 1000;max-width:600px;display: none;">
+                
+             </div>
+              </div>
+  </div>
+    
+</aura:component>

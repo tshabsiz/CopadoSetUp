@@ -1,0 +1,148 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="AddViewChargeController" >
+    <aura:attribute name="model" type="object" />
+    <aura:attribute name="recordId" type="String"  default=""/>
+    <aura:attribute name="charge" type="charge__C" default="{sobjectType : 'charge__C'}" />  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div style="overflow:auto ">
+        <lightning:layout horizontalAlign="auto">
+            
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button variant="brand" class="slds-m-top--medium" aura:id="cifSearch"  label="New Charge" onclick="{! c.addnewLine }" disabled="{!v.model.currentCase.Charge_Locked__c}"/>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button variant="success" class="slds-m-top--medium" aura:id="cifSearch"  label="Save/Update" onclick="{! c.saveUpdates }" disabled="{!v.model.currentCase.Charge_Locked__c}"/>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button variant="brand" class="slds-m-top--medium" aura:id="cifSearch"  label="Approved" onclick="{! c.lockCharges }" disabled="{!v.model.currentCase.Charge_Locked__c}" />
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <aura:if isTrue="{!v.model.isSystemAdmin}">
+                    <lightning:button variant="brand" class="slds-m-top--medium" aura:id="cifSearch"  label="Unlock" onclick="{! c.unlock }" disabled="{!!v.model.currentCase.Charge_Locked__c}" />
+                </aura:if>
+            </lightning:layoutItem>
+            
+        </lightning:layout>
+        
+        <lightning:spinner aura:id="TheSpinner1" variant="brand" size="large"/>
+        <!--
+ <lightning:helptext content="Your email address will be your login name" />
+    -->
+        <lightning:layout horizontalAlign="auto">            
+            <table class="slds-table slds-table--bordered slds-table--striped slds-table--cell-buffer slds-table--fixed-layout" id="tableId" style="min-width:1500px">
+                <thead>
+                    <tr class="slds-text-heading--label">
+                        <th scope="col"><div class="slds-truncate" title="CHARGE ACCOUNT NO">CHARGE ACCOUNT NO</div></th>
+                        <th scope="col"><div class="slds-truncate" title="CHARGE AMOUNT">CHARGE AMOUNT</div></th>
+                        <th scope="col"><div class="slds-truncate" title="TRANSACTION CODE">TRANSACTION CODE</div></th>
+                        <th scope="col"><div class="slds-truncate" title="CORP CODE">CORP CODE</div></th>
+                        <th scope="col"><div class="slds-truncate" title="COST CENTRE">COST CENTRE</div></th>
+                        <th scope="col"><div class="slds-truncate" title="CR REF">CR REF</div></th>
+                        <th scope="col"><div class="slds-truncate" title="DR REF">DR REF</div></th>
+                        
+                        <th scope="col"><div class="slds-truncate" title="CR ACCOUNT NO">CR ACCOUNT NO</div></th>
+                        <th scope="col"><div class="slds-truncate" title="EFFECTIVE DATE">EFFECTIVE DATE</div></th>
+                        <th scope="col"><div class="slds-truncate" title="ACTION">ACTION</div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <!-- Use the Apex model and controller to fetch server side data -->
+                    <aura:if isTrue="{!v.model.chargeWrapperList.length > 0}">
+                        <aura:iteration aura:id="mabee" items="{!v.model.chargeWrapperList}" var="chargeWrapper" indexVar="indx">
+                            
+                            <tr id="{!'row_'+indx}" onclick="setNewSelectedValue(null)">
+                                
+                                <td>
+                                    <!--<lightning:inputField aura:id="{!indx}" id="{!indx}"   fieldName="Charge_Account_No__c" value="{!chargeWrapper.charge.Charge_Account_No__c}" onchange="{! c.react }"/>-->
+                                    <input type="text" class="slds-input" value="{!chargeWrapper.charge.Charge_Account_No__c}" id="{!'ChargeAccountNo_'+chargeWrapper.index}" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.checkValidation }" />
+                                    
+                                </td>
+                                
+                                <td>
+                                    <!--<lightning:inputField aura:id="Charge_Amount__c_{!chargeWrapper.index}" fieldName="Charge_Amount__c" />-->
+                                    <input type="number" min="0" step="any"  class="slds-input"  value="{!chargeWrapper.charge.Charge_Amount__c}" id="{!'ChargeAmount_'+chargeWrapper.index}" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.checkValidation }"/>
+                                    
+                                </td>
+                                
+                                <td>
+                                    <select class="slds-select checkselectValidation" id="{!'row_'+indx}" onchange="{! c.transactionCodeListSelect }" disabled="{!v.model.currentCase.Charge_Locked__c}">
+                                        <option value="--None--"  >--None--</option>
+                                        <aura:iteration items="{!v.model.TransactionCodeList}" var="TransactionCodeList" indexVar="indx">                       
+                                            <option value="{!TransactionCodeList.value}" text="{!TransactionCodeList.label}"  selected="{!chargeWrapper.charge.Transaction_Code__c ==TransactionCodeList.value }"></option>
+                                        </aura:iteration>                  
+                                    </select>
+                                    
+                                    
+                                </td>
+                                
+                                <td>
+                                    <select class="slds-select checkselectValidation" id="{!'row_'+indx}" onchange="{! c.corpCodeListSelect }" disabled="{!v.model.currentCase.Charge_Locked__c}">
+                                        <option value="--None--" >--None--</option>
+                                        <aura:iteration items="{!v.model.CorpCodeList}" var="CorpCodeList" indexVar="indx">
+                                            <option value="{!CorpCodeList.value}" text="{!CorpCodeList.label}"  selected="{!chargeWrapper.charge.Corp_Code__c ==CorpCodeList.value }"></option>
+                                        </aura:iteration>                  
+                                    </select>
+                                    
+                                </td>
+                                
+                                <td>
+                                    <!--<lightning:inputField aura:id="Cost_Centre__c_{!chargeWrapper.index}" fieldName="Cost_Centre__c" /> -->
+                                    <input type="text" class="slds-input" value="{!chargeWrapper.charge.Cost_Centre__c}" id="{!'CostCentre_'+chargeWrapper.index}" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.checkValidation }"/>
+                                </td>
+                                
+                                <td>
+                                    <!--<lightning:inputField aura:id="CR_Ref__c_{!chargeWrapper.index}" fieldName="CR_Ref__c" />-->
+                                    <input type="text" class="slds-input" value="{!chargeWrapper.charge.CR_Ref__c}" id="{!'CRRef_'+chargeWrapper.index}" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.checkValidation }"/>
+                                </td>
+                                
+                                
+                                <td>
+                                    <!--<lightning:inputField aura:id="DR_Ref__c_{!chargeWrapper.index}" fieldName="DR_Ref__c" />-->
+                                    <input type="text" class="slds-input" value="{!chargeWrapper.charge.DR_Ref__c}" id="{!'DRRef_'+chargeWrapper.index}" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.checkValidation }"/>
+                                </td>
+                                
+                                
+                                <td>                 
+                                    <select class="slds-select checkselectValidation" id="{!'row_'+indx}" onchange="{! c.CrAccountNoListSelect }" disabled="{!v.model.currentCase.Charge_Locked__c}">
+                                        <option value="--None--">--None--</option>
+                                        <aura:iteration items="{!v.model.CrAccountNoList}" var="CrAccountNoList" indexVar="indx">
+                                            <option value="{!CrAccountNoList.value}" text="{!CrAccountNoList.label}"  selected="{!chargeWrapper.charge.CR_Account_No__c ==CrAccountNoList.value }"></option>
+                                        </aura:iteration>                  
+                                    </select>
+                                    
+                                </td>
+                                <td> 
+                                    <input type="date" id="{!'EffectiveDate_'+indx}" name="date" disabled="{!v.model.currentCase.Charge_Locked__c}" value="{!chargeWrapper.charge.Effective_Date__c}" onchange="{! c.effectiveDateChanged }" style="width:80%"/>
+                                    <!--         <lightning:input type="date" aura:id="{!'row_'+indx}" label="Birthday" name="date" disabled="{!v.model.currentCase.Charge_Locked__c}" onchange="{! c.effectiveDateChanged }"/>
+
+             <lightning:inputField aura:id="Effective_Date__c_{!chargeWrapper.index}" fieldName="Effective_Date__c" value="{!chargeWrapper.charge.Effective_Date__c}" onchange="{! c.setNewSelectedValue }"/>
+                 -->
+                                </td>
+                                
+                                <td>
+                                    <button Class="slds-button slds-button_destructive" id="{!chargeWrapper.charge.Id}" name ="{!chargeWrapper.index}"  disabled="{!v.model.currentCase.Charge_Locked__c}" onclick="{! c.deletecharge }">Delete</button>
+                                    <br/>
+                                    <label>&nbsp;</label>
+                                    
+                                </td>
+                                
+                            </tr> 
+                            
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            No Data to show
+                        </aura:set>
+                    </aura:if> 
+                </tbody>
+                
+            </table>        
+        </lightning:layout>
+        
+        
+    </div>
+    
+</aura:component>

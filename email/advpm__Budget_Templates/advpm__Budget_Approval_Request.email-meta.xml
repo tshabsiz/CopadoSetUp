@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Approval Request notification template for Budget</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>advpm__Advologix</letterhead>
+    <name>Budget Approval Request</name>
+    <style>freeForm</style>
+    <subject>Budget Approval Request: {!advpm__Budget__c.advpm__Matter__c} / {!advpm__Budget__c.Name}</subject>
+    <textOnly>Budget {!advpm__Budget__c.Name}
+
+
+A new budget is awaiting your approval. Here are the details:
+
+Budget Ref #: {!advpm__Budget__c.Name}
+
+Matter: {!advpm__Budget__c.advpm__Matter__c}
+
+Firm: {!advpm__Budget__c.advpm__Firm__c}
+
+Start Date: {!advpm__Budget__c.advpm__Start_Date__c}
+
+End Date: {!advpm__Budget__c.advpm__End_Date__c}
+
+Total Budget: {!advpm__Budget__c.advpm__Total_Budget__c}
+
+Created By: {!advpm__Budget__c.CreatedBy}
+
+
+
+
+
+You can approve or reject this request directly from your desktop email program or mobile email device:
+1) Click the Reply button
+2) Type the word APPROVE or REJECT in the first line of the reply
+3) Click Send
+
+You can also review this request in Salesforce before approving.
+
+
+If the link above does not work, paste this URL into your browser:
+{!advpm__Budget__c.Link}
+
+Audit Trail Info:
+{!ApprovalRequest.Process_Name} - {!ApprovalRequest.Process_Step_Name} - {!Workitem.ID}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

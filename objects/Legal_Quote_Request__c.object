@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>LegalQuoteRequest</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>true</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Approved__c</fullName>
+        <externalId>false</externalId>
+        <label>Approved #</label>
+        <summaryFilterItems>
+            <field>Legal_Quote__c.Status__c</field>
+            <operation>equals</operation>
+            <value>Approved</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Legal_Quote__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>BEE_Status_1__c</fullName>
+        <externalId>false</externalId>
+        <label>BEE Status</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>BEE_Status_2__c</fullName>
+        <externalId>false</externalId>
+        <label>BEE Status</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>BEE_Status_3__c</fullName>
+        <externalId>false</externalId>
+        <label>BEE Status</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Box_Quote_Request_Link__c</fullName>
+        <description>The link to the main folder for all Legal Quote Requests</description>
+        <externalId>false</externalId>
+        <label>Legal Quote Request Documents Link</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Box_Supplier_Link__c</fullName>
+        <description>Law firm s to have link sent to them when requesting service from them</description>
+        <externalId>false</externalId>
+        <label>Supplier Link</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact_1__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Contact.Account.Id</field>
+                <operation>equals</operation>
+                <valueField>$Source.Law_Firm_1__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Legal Quote Requests</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Contact_2__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Contact.AccountId</field>
+                <operation>equals</operation>
+                <valueField>$Source.Law_Firm_2__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Legal Quote Requests (Contact)</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Contact_3__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Contact.AccountId</field>
+                <operation>equals</operation>
+                <valueField>$Source.Law_Firm_3__c</valueField>
+            </filterItems>
+            <isOptional>true</isOptional>
+        </lookupFilter>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Legal Quote Requests (Contact)</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests3</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Cost_Centre__c</fullName>
+        <externalId>false</externalId>
+        <label>Cost Centre</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>External_Counsel_Name_1__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The Full Name of the External Counsel</inlineHelpText>
+        <label>Preferred External Counsel</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>External_Counsel_Name_2__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The Full Name of the External Counsel</inlineHelpText>
+        <label>Preferred External Counsel</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>External_Counsel_Name_3__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The Full Name of the External Counsel</inlineHelpText>
+        <label>Preferred External Counsel</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FolderID__c</fullName>
+        <externalId>false</externalId>
+        <label>FolderID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Law_Firm_1__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Law Firm 1</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>On/Off Panel Law Firm</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Legal Quote Requests</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Law_Firm_2__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Law Firm 2</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>On/Off Panel Law Firm</value>
+            </filterItems>
+            <filterItems>
+                <field>Account.Approved__c</field>
+                <operation>equals</operation>
+                <value>True</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Legal Quote Requests (Law Firm 2)</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Law_Firm_3__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Law Firm 3</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>On/Off Panel Law Firm</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Legal Quote Requests (Law Firm 3)</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests2</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Litigation_Risk_Score__c</fullName>
+        <externalId>false</externalId>
+        <label>Litigation Risk Score</label>
+        <precision>16</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Matter_Difficulty__c</fullName>
+        <externalId>false</externalId>
+        <label>Matter Difficulty</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Low</fullName>
+                    <default>false</default>
+                    <label>Low</label>
+                </value>
+                <value>
+                    <fullName>Medium</fullName>
+                    <default>false</default>
+                    <label>Medium</label>
+                </value>
+                <value>
+                    <fullName>High</fullName>
+                    <default>false</default>
+                    <label>High</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Matter_Value__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(
+  Matter__r.Total_Claim_Value_New__c &gt;= 0 &amp;&amp; Matter__r.Total_Claim_Value_New__c &lt;= 30000, &quot;Very Low&quot;,
+  IF(Matter__r.Total_Claim_Value_New__c&gt; 30000 &amp;&amp; Matter__r.Total_Claim_Value_New__c &lt;= 300000, &quot;Low&quot;,
+  IF(Matter__r.Total_Claim_Value_New__c&gt; 300000 &amp;&amp; Matter__r.Total_Claim_Value_New__c&lt;= 5000000, &quot;Medium&quot;,
+  IF(Matter__r.Total_Claim_Value_New__c&gt; 500000 &amp;&amp; Matter__r.Total_Claim_Value_New__c &lt;= 1000000, &quot;High&quot;,
+  &quot;Very High&quot;))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Matter Value</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Matter__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Legal Quote Requests</relationshipLabel>
+        <relationshipName>Legal_Quote_Requests</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Pending__c</fullName>
+        <externalId>false</externalId>
+        <label>Pending #</label>
+        <summaryFilterItems>
+            <field>Legal_Quote__c.Status__c</field>
+            <operation>notEqual</operation>
+            <value>Approved, Rejected</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Legal_Quote__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Quote_Approver__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The individual that legal quotes approvals will be routed to.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The individual that legal quotes approvals will be routed to.</inlineHelpText>
+        <label>Quote Approver</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Legal_Quote_Requests</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Quote_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Quote Description</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Quote_Title__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>A short description of the quote.</inlineHelpText>
+        <label>Quote Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Rejected__c</fullName>
+        <externalId>false</externalId>
+        <label>Rejected #</label>
+        <summaryFilterItems>
+            <field>Legal_Quote__c.Status__c</field>
+            <operation>equals</operation>
+            <value>Rejected</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Legal_Quote__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Request_Motivation__c</fullName>
+        <externalId>false</externalId>
+        <label>Request Motivation</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Request_Off_Panel__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Request Off Panel</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Requested_Services__c</fullName>
+        <externalId>false</externalId>
+        <label># Requested Services</label>
+        <summaryFilterItems>
+            <field>Legal_Quote__c.Request_for_Service__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Legal_Quote__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Services__c</fullName>
+        <externalId>false</externalId>
+        <label>Services #</label>
+        <summaryForeignKey>Legal_Quote_Service__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Draft</fullName>
+                    <default>false</default>
+                    <label>Draft</label>
+                </value>
+                <value>
+                    <fullName>Requested</fullName>
+                    <default>false</default>
+                    <label>Requested</label>
+                </value>
+                <value>
+                    <fullName>Closed</fullName>
+                    <default>false</default>
+                    <label>Closed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Total__c</fullName>
+        <externalId>false</externalId>
+        <label>Total #</label>
+        <summaryForeignKey>Legal_Quote__c.Legal_Quote_Request__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <label>Legal Quote Request</label>
+    <listViews>
+        <fullName>All_Legal_Quote_Requests</fullName>
+        <columns>NAME</columns>
+        <columns>Matter__c</columns>
+        <columns>OWNER.ALIAS</columns>
+        <columns>Status__c</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RECORDTYPE</field>
+            <operation>equals</operation>
+            <value>Legal_Quote_Request__c.Legal_Request</value>
+        </filters>
+        <label>All - Legal Quote Requests</label>
+    </listViews>
+    <listViews>
+        <fullName>All_Litigation_Quote_Requests</fullName>
+        <columns>NAME</columns>
+        <columns>Matter__c</columns>
+        <columns>Cost_Centre__c</columns>
+        <columns>Matter_Difficulty__c</columns>
+        <columns>Matter_Value__c</columns>
+        <columns>Status__c</columns>
+        <columns>OWNER.ALIAS</columns>
+        <columns>Litigation_Risk_Score__c</columns>
+        <columns>Quote_Title__c</columns>
+        <columns>Request_Off_Panel__c</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>RECORDTYPE</field>
+            <operation>equals</operation>
+            <value>Legal_Quote_Request__c.Litigation_Off_Panel,Legal_Quote_Request__c.Litigation_Request</value>
+        </filters>
+        <label>All - Litigation Quote Requests</label>
+    </listViews>
+    <nameField>
+        <displayFormat>QR-{000000}</displayFormat>
+        <label>Quote Request #</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Legal Quote Requests</pluralLabel>
+    <recordTypeTrackFeedHistory>false</recordTypeTrackFeedHistory>
+    <recordTypes>
+        <fullName>Legal_Off_Panel</fullName>
+        <active>true</active>
+        <label>Legal (Off Panel)</label>
+        <picklistValues>
+            <picklist>Matter_Difficulty__c</picklist>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Draft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Legal_Request</fullName>
+        <active>true</active>
+        <label>Legal Request</label>
+        <picklistValues>
+            <picklist>Matter_Difficulty__c</picklist>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Draft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Litigation_Off_Panel</fullName>
+        <active>true</active>
+        <label>Litigation (Off Panel)</label>
+        <picklistValues>
+            <picklist>Matter_Difficulty__c</picklist>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Draft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Litigation_Request</fullName>
+        <active>true</active>
+        <label>Litigation Request</label>
+        <picklistValues>
+            <picklist>Matter_Difficulty__c</picklist>
+            <values>
+                <fullName>High</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Low</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Medium</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Closed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Draft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Requested</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <customTabListAdditionalFields>Matter__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Quote_Title__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Total__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Approved__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Rejected__c</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>Matter__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Quote_Title__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Status__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Total__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Approved__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Rejected__c</lookupDialogsAdditionalFields>
+        <lookupFilterFields>NAME</lookupFilterFields>
+        <lookupFilterFields>Matter__c</lookupFilterFields>
+        <lookupFilterFields>Quote_Title__c</lookupFilterFields>
+        <lookupFilterFields>Status__c</lookupFilterFields>
+        <lookupPhoneDialogsAdditionalFields>Quote_Title__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Matter__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Total__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Approved__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Rejected__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Quote_Title__c</searchFilterFields>
+        <searchFilterFields>Matter__c</searchFilterFields>
+        <searchFilterFields>Status__c</searchFilterFields>
+        <searchFilterFields>Total__c</searchFilterFields>
+        <searchFilterFields>Approved__c</searchFilterFields>
+        <searchFilterFields>Rejected__c</searchFilterFields>
+        <searchResultsAdditionalFields>Matter__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Quote_Title__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Status__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Total__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Approved__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Rejected__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Motivation_required</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(Request_Off_Panel__c, ISBLANK( Request_Motivation__c ))</errorConditionFormula>
+        <errorDisplayField>Request_Motivation__c</errorDisplayField>
+        <errorMessage>Please fill out the motivation for requesting off panel firm</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Submit_Request_for_Quotes</fullName>
+        <availability>online</availability>
+        <description>Submits the Legal Quote Request to the specified Law Firms.</description>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Submit Request for Quotes</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/39.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/39.0/apex.js&quot;)} 
+
+var confirmation = confirm(&quot;Are you sure you want to submit the request for quotes?&quot;);
+
+if (confirmation == true) 
+{
+	var soqlQuery = sforce.connection.query(&quot;SELECT Id, Status__c, Quote_Approver__c FROM Legal_Quote_Request__c WHERE Id =&apos;{!Legal_Quote_Request__c.Id}&apos; LIMIT 1&quot;);
+	var records = soqlQuery.getArray(&quot;records&quot;); 
+	var quoteApprover = records[0].Quote_Approver__c;
+	var currentStatus = records[0].Status__c;
+
+	if(quoteApprover == &apos;&apos; || quoteApprover == null)
+	{
+		alert(&quot;There is no Quote Approver assigned to this request.&quot;);   
+	}
+	else
+	{
+
+		if(currentStatus == &apos;Draft&apos;)
+		{
+			//Identify the record.
+			var legalQuoteRequest = new sforce.SObject(&quot;Legal_Quote_Request__c&quot;);
+
+			//Set object to current record.
+			legalQuoteRequest.Id = &quot;{!Legal_Quote_Request__c.Id}&quot;;
+
+			//Make the field change
+			legalQuoteRequest.Status__c = &quot;Requested&quot;;
+
+			//save the change
+			sforce.connection.update([legalQuoteRequest]);			
+
+			//refresh the page
+			window.location.reload();
+			window.location.reload();
+		}
+		else
+		{
+			alert(&quot;This quote request has already been requested.&quot;);
+		}
+	}
+} 
+else 
+{
+	//Do nothing.
+}</url>
+    </webLinks>
+</CustomObject>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>RN - CloudSmiths
+List of email filters</description>
+    <fields>
+        <fullName>Flag_As__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Flag As</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Flag as Spam / Junk</fullName>
+                    <default>true</default>
+                    <label>Flag as Spam / Junk</label>
+                </value>
+                <value>
+                    <fullName>Flag as Out of Office</fullName>
+                    <default>false</default>
+                    <label>Flag as Out of Office</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Flag as Duplicate</fullName>
+                    <default>false</default>
+                    <label>Flag as Duplicate</label>
+                </value>
+                <value>
+                    <fullName>No Case Required</fullName>
+                    <default>false</default>
+                    <label>No Case Required</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>From_Email_Address__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>From Email Address</label>
+        <required>false</required>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Text_In_Subject_Line__c</fullName>
+        <externalId>false</externalId>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Text In Subject Line</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>CSC Email Filter</label>
+    <listViews>
+        <fullName>Detailed_View</fullName>
+        <columns>MasterLabel</columns>
+        <columns>From_Email_Address__c</columns>
+        <columns>Flag_As__c</columns>
+        <columns>Text_In_Subject_Line__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>Detailed View</label>
+    </listViews>
+    <pluralLabel>CSC Email Filters</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Complaints_Letterhead</letterhead>
+    <name>Complaints Case Closure</name>
+    <style>freeForm</style>
+    <subject>Case Closed : {!Case.CaseNumber}  {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Once again, we thank you for raising your concern with us
+and allowing us the opportunity to investigate and resolve
+your complaint ref number: #{!Case.CaseNumber}
+
+You would have been contacted by one of our staff to
+advise you of the outcome of the complaint.
+
+We trust that you are satisfied with the outcome and the
+level of service we have provided you.
+
+Should you have any further queries please do not hesitate
+to contact us.
+
+Yours sincerely
+
+Complaints Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

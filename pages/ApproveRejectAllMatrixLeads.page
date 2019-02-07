@@ -1,0 +1,39 @@
+<apex:page standardcontroller="Matrix_Lead__c" extensions="ApproveRejectAllMatrixLeads">
+    <apex:form >
+        <apex:pageBlock >        
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Approve Selected" action="{!approveAll}" />
+                <apex:commandButton value="Reject Selected" action="{!rejectAll}" />                
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageblockTable value="{!pendingApprovals}" var="request" width="70%">
+                <apex:column >
+                    <apex:inputCheckbox value="{!request.selected}"/>
+                </apex:column>
+                <apex:column headerValue="Related To">            
+                    <apex:outputText value="{!request.Leadnumber}"  />
+                </apex:column>
+                <apex:column headerValue="Company Name">            
+                    <apex:outputText value="{!request.leadName}"  />
+                </apex:column>
+                <apex:column headerValue="Date Submitted">
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!request.submittedDate}" /> 
+                    </apex:outputText>  
+                </apex:column>
+                <apex:column headerValue="Status">            
+                    <apex:outputText value="{!request.approvalStatus}"  />
+                </apex:column>  
+                <apex:column headerValue="Submitter">            
+                    <apex:outputText value="{!request.submittedBy}"  />
+                </apex:column>
+              </apex:pageblockTable>    
+            <apex:pageBlockSection columns="1" >
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Comments"/>
+                <apex:inputTextArea style="width:300px;height:50px" value="{!comments}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

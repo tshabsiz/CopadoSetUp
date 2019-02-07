@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowRecall>false</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>Name</field>
+        <field>Owner</field>
+        <field>Matter_Deal__c</field>
+        <field>Status__c</field>
+    </approvalPageFields>
+    <approvalStep>
+        <allowDelegate>true</allowDelegate>
+        <assignedApprover>
+            <approver>
+                <name>steven.palmer@absa1.com</name>
+                <type>user</type>
+            </approver>
+            <whenMultipleApprovers>FirstResponse</whenMultipleApprovers>
+        </assignedApprover>
+        <label>Department Head</label>
+        <name>Department_Head</name>
+    </approvalStep>
+    <emailTemplate>AdvoLogix/LEAP_Claim_Against_Barlcays_Notification</emailTemplate>
+    <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
+    <entryCriteria>
+        <formula>AND( 
+ISPICKVAL(Matter_Deal__r.Claim_By_Against_Barclays__c, &quot;Claim Against Barclays&quot;), Matter_Deal__r.Probable_For_Approval__c &gt; 0)</formula>
+    </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>LEAP_Email_Notification_to_Litigation_Matter_Owner_Probable_Approved</name>
+            <type>Alert</type>
+        </action>
+        <action>
+            <name>Set_Approved_to_Yes</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalApprovalActions>
+    <finalApprovalRecordLock>false</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Email_Notification_Claim_Against_Barclays_probable_for_approval_amount_rejected</name>
+            <type>Alert</type>
+        </action>
+        <action>
+            <name>Set_Approved_to_No</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalRejectionActions>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Claim_Against_Barclays_Probable_for_Approval_amount_needs_to_be_Approved</name>
+            <type>Alert</type>
+        </action>
+    </initialSubmissionActions>
+    <label>Probable Approval - Claim on Matter</label>
+    <recordEditability>AdminOrCurrentApprover</recordEditability>
+    <showApprovalHistory>true</showApprovalHistory>
+</ApprovalProcess>

@@ -1,0 +1,273 @@
+<apex:page standardController="ContentVersion" extensions="advpm.ContentDrop_Publish" tabStyle="advpm__Matter__c" sidebar="false" showheader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/common.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/dCustom0.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/dStandard.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/elements.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/extended.css')}" />
+    <style>
+        .message {
+            background-color: transparent;
+            border-style: none;
+            border-width: 0px;
+            color: #000000;
+            margin: 0px;
+            padding: 0px;
+        }
+        .publish-dialog-titlebar {
+            padding: 0.5em 1em 0.5em;
+            position: relative;
+            background-color: #cccccc;
+            font-weight: bold;
+            color: black;
+            font-size: 12px;
+            -moz-border-radius:4px 4px 4px 4px;
+        }
+        .publish-dialog-titlebar {
+            -moz-border-bottom-colors: none;
+            -moz-border-image: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            background: url("/img/alohaSkin/metaBar_sprite.png") repeat-x scroll left -104px transparent;
+            border-color: #D1D1D1 #E1E0E0 #E1E0E0;
+            border-radius: 5px 5px 5px 5px;
+            border-right: 1px solid #E1E0E0;
+            border-style: solid;
+            border-width: 1px;
+            line-height: 26px;
+            margin: 5px;
+            width: auto;
+            font-size: 1.25em;
+            padding:10px;
+        }
+        .publish-dialog-titlebar {
+            background-color: #D6D6D6;
+            border-bottom: 1px solid #C1C1C1;
+            line-height: 22px;
+            white-space: nowrap;
+            width: 99%;
+        }
+        #publishWindow h5 {
+            background-image: url("/sfc/images/white-top-bottom.gif");
+            border-bottom: 1px solid #D0D0D0;
+            color: #333333;
+            display: block;
+            font-family: tahoma,arial,verdana,sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            padding: 5px;
+        }
+        .categorizeContentType {
+            width: auto;
+            margin: 3px;
+        }
+        .formSection {
+            -moz-border-bottom-colors: none;
+            -moz-border-image: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            border-color: -moz-use-text-color #D0D0D0 #D0D0D0;
+            border-right: 1px solid #D0D0D0;
+            border-style: none solid solid;
+            border-width: 0 1px 1px;
+            display: block;
+            margin-bottom: 0px;
+            width: 100%;
+        }
+        .detailList th, .detailList td {
+            vertical-align: top;
+        }
+        .dataCol {
+            padding: 2px 2px 2px 10px;
+            text-align: left;
+            width: 32%;
+        }
+        .labelCol {
+            color: #333333;
+            font-size: 91%;
+            font-weight: bold;
+            padding: 2px 10px 2px 2px;
+            text-align: right;
+            width: 18%;
+        }
+        .requiredInput {
+            height: 100%;
+            position: relative;
+        }
+        .requiredInput .requiredBlock {
+            background-color: #CC0000;
+            bottom: 1px;
+            left: -4px;
+            position: absolute;
+            top: 1px;
+            width: 3px;
+        }
+        .container {
+            padding: 2px;
+        }
+    </style>
+    
+<apex:form >
+    <apex:inputField value="{!ContentVersion.ContentDocumentId}" rendered="false" />
+    <apex:outputField value="{!ContentVersion.FirstPublishLocationId}" rendered="false" />
+    <apex:outputField value="{!ContentVersion.ContentDocument.ParentId}" rendered="false" />
+    <apex:outputField value="{!ContentVersion.VersionNumber}" rendered="false" />
+    <apex:outputField value="{!ContentVersion.CreatedDate}" rendered="false" />
+    <apex:outputField value="{!ContentVersion.LastModifiedDate}" rendered="false" />
+    
+    <div style="padding:3px 10px 3px 5px;" id="publishWindow">
+        <div style="padding:0px 21px 0px 0px;">
+            <div class="publish-dialog-titlebar">
+                <span>Publish Content</span>
+            </div>
+        </div>
+        <div style="max-height: {!IF(JSINHTMLENCODE($CurrentPage.parameters.isnewversion) == '1','240px','210px')};overflow-y: auto;overflow-x: hidden;">
+            <apex:pageMessages />
+            <div class="categorizeContentType contributeSection container">
+                <div class="formSection">
+                    <div>
+                        <h5>General Information
+                            <span class="requiredLegend" style="float:right;white-space: nowrap;display:inline;">
+                                <span class="requiredExampleOuter"><span class="requiredExample"></span></span>
+                                <span class="requiredText"> = Required Information</span>
+                            </span>
+                        </h5>
+                    </div>
+                    <div class="container">
+                        <div class="wrapper">
+                            <div class="sectionArrow"></div>
+                            <div id="coreForm1">
+                                <table width="100%" cellspacing="0" cellpadding="5" border="0" class="detailList contributeTable">
+                                    <tbody>
+                                        <tr>
+                                            <td class="labelCol"><label>Title</label></td>
+                                            <td class="dataCol">
+                                                <div class="requiredInput">
+                                                    <div class="requiredBlock"></div>
+                                                    <apex:inputText value="{!ContentVersion.Title}" />
+                                                </div>
+                                            </td>
+                                            <apex:repeat value="{!1}" var="r" rendered="{!(JSINHTMLENCODE($CurrentPage.parameters.isnewversion) == '1')}">
+                                                <td class="labelCol"><label>Reason For Change</label></td>
+                                                <td class="dataCol">
+                                                    <div class="requiredInput">
+                                                        <div class="requiredBlock"></div>
+                                                        <apex:inputTextArea value="{!ContentVersion.ReasonForChange}" rows="1" />
+                                                    </div>
+                                                </td>
+                                            </apex:repeat>
+                                            <apex:repeat value="{!1}" var="r" rendered="{!(JSINHTMLENCODE($CurrentPage.parameters.isnewversion) != '1')}">
+                                                <td class="labelCol"><label>Library</label></td>
+                                                <td class="dataCol">
+                                                    <div class="requiredInput">
+                                                        <div class="requiredBlock"></div>
+                                                        <apex:selectList value="{!WorkspaceId}" size="1">
+                                                            <apex:selectOptions value="{!WorkspacesList}" />
+                                                        </apex:selectList>
+                                                    </div>
+                                                </td>
+                                            </apex:repeat>
+                                        </tr>
+                                        <tr>
+                                            <td class="labelCol"><label>Description</label></td>
+                                            <td class="dataCol">
+                                                <apex:inputField value="{!ContentVersion.Description}" />
+                                            </td>
+                                            <td class="labelCol"><label>Tags</label></td>
+                                            <td class="dataCol">
+                                                <apex:inputField value="{!ContentVersion.TagCsv}" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="categorizeContentType contributeSection container">
+                <div class="formSection">
+                    <h5>Additional Information</h5>
+                    <div class="container">
+                        <div class="wrapper">
+                            <div class="sectionArrow"></div>
+                            <div id="coreForm2">
+                                <apex:variable var="index" value="{!0}" />
+                                <table width="100%" cellspacing="0" cellpadding="5" border="0" class="detailList contributeTable">
+                                    <tbody>
+                                        <tr>
+                                            <apex:repeat value="{!$ObjectType.ContentVersion.FieldSets.advpm__fieldSet_Content}" var="f">
+                                                <apex:variable var="index" value="{!(index + 1)}" /> 
+                                                <td class="labelCol"><label>{!f.Label}</label></td>
+                                                <td class="dataCol">
+                                                    <apex:inputField value="{!ContentVersion[f]}" />
+                                                </td>
+                                                <apex:outputText escape="false" value="{!IF(MOD(index,2) == 0,'</tr><tr>','')}" />
+                                            </apex:repeat>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="categorizeContentType contributeSection container" style="display:{!IF($ObjectType.ContentVersion.FieldSets.fieldSet_ContentTime.size>0,'block','none')};">
+                <div class="formSection">
+                    <h5>Time Information</h5>
+                    <div class="container">
+                        <div class="wrapper">
+                            <div class="sectionArrow"></div>
+                            <div id="coreForm3">
+                            	<apex:variable var="indexT" value="{!0}" />
+                                <table width="100%" cellspacing="0" cellpadding="5" border="0" class="detailList contributeTable">
+                                    <tbody>
+                                        <tr>
+	                                        <apex:repeat value="{!$ObjectType.ContentVersion.FieldSets.advpm__fieldSet_ContentTime}" var="f">
+                                                <apex:variable var="indexT" value="{!(indexT + 1)}" /> 
+                                                <td class="labelCol"><label>{!f.Label}</label></td>
+                                                <td class="dataCol">
+                                                    <apex:inputField value="{!ContentVersion[f]}" />
+                                                </td>
+                                                <apex:outputText escape="false" value="{!IF(MOD(indexT,2) == 0,'</tr><tr>','')}" />
+                                            </apex:repeat>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table width="100%" cellpadding="0" border="0" cellspacing="0">
+            <tr align="center">
+                <td align="center">
+                    <span>
+                        <apex:commandButton value="  Publish  " action="{!publishContent}" rendered="{!!editMode && JSINHTMLENCODE($CurrentPage.parameters.isnewversion) != '1'}" styleClass="btnPrimary publishersharebutton btn" />
+                        <apex:commandButton value="  Publish  " action="{!publishContent}" rendered="{!!editMode && JSINHTMLENCODE($CurrentPage.parameters.isnewversion) == '1'}" styleClass="btnPrimary publishersharebutton btn" />
+						<!-- <apex:commandButton value="  Publish  " action="{!publishNewVersion}" rendered="{!!editMode && JSINHTMLENCODE($CurrentPage.parameters.isnewversion) == '1'}" styleClass="btnPrimary publishersharebutton btn" /> -->
+                        <!-- <apex:commandButton value="   Delete   " action="{!deleteContent}" rendered="{!(JSENCODE($CurrentPage.parameters.endel) == '1')}" onclick="return confirm('Deleting it will remove all previous versions as well. Continue?');" /> -->
+                        <apex:commandButton value="   Close   "  
+                        					onclick="if(confirm('It will skip publishing to shared Libraries. This document will remain in your Personal Content Space. Continue?')) {parent.doClose();} return false;" 
+                        					rendered="{!!editMode && JSINHTMLENCODE($CurrentPage.parameters.isnewversion) != '1'}" />
+                        
+                        <apex:commandButton value="  Save  " action="{!publishContent}" rendered="{!editMode}" styleClass="btnPrimary publishersharebutton btn" />
+                        <apex:commandButton value="   Cancel   "  
+                        					onclick="parent.doClose(); return false;" 
+                        					rendered="{!editMode || JSINHTMLENCODE($CurrentPage.parameters.isnewversion) == '1'}" />
+                    </span>
+                </td>
+            </tr>
+		</table>
+    </div>
+    <apex:outputPanel rendered="{!SaveSuccess}">
+	    <script type="text/javascript">
+	        parent.RefreshDisplay('{!JSINHTMLENCODE($CurrentPage.parameters.workid)}','{!JSINHTMLENCODE($CurrentPage.parameters.cat)}','{!ContentVersion.Id}',false, 0);
+	    </script>
+    </apex:outputPanel>
+</apex:form>
+
+</apex:page>

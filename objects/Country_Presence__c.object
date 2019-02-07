@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Banking_Country__c</fullName>
+        <externalId>false</externalId>
+        <label>Banking Country</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Client_Plan__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Plan</label>
+        <referenceTo>Client_Plan__c</referenceTo>
+        <relationshipLabel>Country Presence</relationshipLabel>
+        <relationshipName>Country_Presents</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Engaged__c</fullName>
+        <externalId>false</externalId>
+        <label>Engaged</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Primary Bank</fullName>
+                    <default>false</default>
+                    <label>Primary Bank</label>
+                </value>
+                <value>
+                    <fullName>Not Primary Bank</fullName>
+                    <default>false</default>
+                    <label>Not Primary Bank</label>
+                </value>
+                <value>
+                    <fullName>Present But Not Banking</fullName>
+                    <default>false</default>
+                    <label>Present But Not Banking</label>
+                </value>
+                <value>
+                    <fullName>Absa Not Present</fullName>
+                    <default>false</default>
+                    <label>Absa Not Present</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Primary_Bank__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Bank</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Absa</fullName>
+                    <default>false</default>
+                    <label>Absa</label>
+                </value>
+                <value>
+                    <fullName>Citibank</fullName>
+                    <default>false</default>
+                    <label>Citibank</label>
+                </value>
+                <value>
+                    <fullName>First National</fullName>
+                    <default>false</default>
+                    <label>First National</label>
+                </value>
+                <value>
+                    <fullName>HSBC</fullName>
+                    <default>false</default>
+                    <label>HSBC</label>
+                </value>
+                <value>
+                    <fullName>Investec</fullName>
+                    <default>false</default>
+                    <label>Investec</label>
+                </value>
+                <value>
+                    <fullName>Nedbank</fullName>
+                    <default>false</default>
+                    <label>Nedbank</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Standard Bank</fullName>
+                    <default>false</default>
+                    <label>Standard Bank</label>
+                </value>
+                <value>
+                    <fullName>Standard Chart</fullName>
+                    <default>false</default>
+                    <label>Standard Chart</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Country Presence</label>
+    <nameField>
+        <displayFormat>CP{00000}</displayFormat>
+        <label>Country Presence Name</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Country Presence</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

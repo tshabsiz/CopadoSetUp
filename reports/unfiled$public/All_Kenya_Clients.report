@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Account.Client_ID__c</field>
+    </columns>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>USERS.NAME</field>
+    </columns>
+    <columns>
+        <field>TYPE</field>
+    </columns>
+    <columns>
+        <field>FK_$Coverage_Country__c.Country__c</field>
+    </columns>
+    <currency>KES</currency>
+    <description>All Commercial Customers</description>
+    <filter>
+        <criteriaItems>
+            <column>FK_$Coverage_Country__c.Country__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>kenya</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>All Kenya Clients</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>AccountList@Account.Coverage_country__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>DUE_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

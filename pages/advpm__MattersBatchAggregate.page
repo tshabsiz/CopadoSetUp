@@ -1,0 +1,112 @@
+<apex:page controller="advpm.MattersBatchAggregateController" sidebar="false" showHeader="false">
+
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+
+<script type="text/javascript">
+	$j = jQuery.noConflict();
+	$j(document).ready(function(){
+    	
+    });
+    function disableButton(obj) {
+    	$j(obj).toggleClass('btnDisabled', true).attr('disabled', 'disabled');
+    }
+</script>
+<style type="text/css">
+    .progressBar{
+        background-color: #f8f8f8;
+        border:1px solid #DDDDDD;
+        height: 16px;
+        width: 99%;
+        -moz-border-radius: 5px; 
+        -webkit-border-radius: 5px;
+    }
+    .progress{
+        background-color: #F7B64B;
+        border:1px solid #E78F08;
+        height: 100%;
+        /*margin: -1px;*/
+        text-align: center;
+        -moz-border-radius: 5px; 
+        -webkit-border-radius: 5px;
+        line-height: 18px;
+    }
+    body .bPageTitle .ptBody .pageDescription {margin-left: 0px!important;}
+    .info-msg-list li {padding:4px 5px;}
+</style>
+<div class="bPageTitle">
+	<div class="ptBody secondaryPalette brandSecondaryBrd">
+		<apex:outputPanel id="header" styleclass="content">
+			<h2 class="pageDescription">{!IF(exportFileId != null && !batchJobId_update_inprogress, 'Validation Results', 'Validate Matter Aggregates')}</h2>
+			<div class="blank"></div>
+		</apex:outputPanel>
+	</div>
+</div>
+<apex:form id="myForm">
+	<div style="padding:0 6px;">
+        The <i>Validate Matter Aggregates</i> process validates two Matter aggregate fields: <i>Total Time</i> and <i>Total Time Amount</i>. This process ensures these totals are balanced as compared to the Time assigned to each Matter in your system.
+		<br />
+		<ol class="info-msg-list">
+		   	<li>The first step analyzes your data for any unbalanced aggregate.</li>
+			<li>The aggregates are then compared to the sum of their related Time records.</li>
+		   	<li>If an aggregate is out of balance, you will have an opportunity to review any changes before the aggregates are corrected.</li>
+		   	<li>Should any Matters be out of balance, a list will be posted to your chatter feed and also displayed below.</li>
+		</ol>
+		Press the Begin Validation button to continue
+    </div>
+    <apex:pageBlock mode="maindetail" id="pb">
+    	<apex:pageMessages id="msgs" />
+    	<apex:pageblockButtons location="top">
+    		<apex:commandButton id="validateBtn" value=" Begin Validation " onclick="disableButton(this);doInitValidateBatch(); return false;" 
+    							rendered="{!exportFileId == null && !batchJobId_validate_inprogress && !batchJobId_update_inprogress}" />
+    		<apex:commandButton id="executeBtn" value=" Update Aggregates " onclick="disableButton(this);doUpdateMattersBatch(); return false;" 
+    							rendered="{!exportFileId != null && !batchJobId_update_inprogress}" />
+	    	<apex:commandButton id="processingBtn" value=" Processing... " disabled="true" rendered="{!batchJobId_validate_inprogress || batchJobId_update_inprogress}" />
+	    	<apex:commandButton id="CancelBtn" 
+	    		value=" Close " 
+	    		onclick="if({!(!batchJobId_validate_success && !batchJobId_validate_failed && batchJobId_validate_inprogress) || (!batchJobId_update_success && !batchJobId_update_failed && batchJobId_update_inprogress)}){alert('Please wait for the processing to complete.');}else {parent.d.hide();} return false;" 
+	    		style="margin-left:6px;" />
+    	</apex:pageblockButtons>
+    	<br />
+    	<apex:pageMessage summary="The aggregate validation has completed and found no unbalanced aggregates. No further action is required." severity="confirm" strength="1" 
+    			rendered="{!batchJobId_validate_success && !batchJobId_validate_failed && !batchJobId_validate_inprogress && !batchJobId_update_success && !batchJobId_update_inprogress && exportFileId == null}" />
+    	<apex:pageMessage summary="The aggregate correction has completed successfully." severity="confirm" strength="1" 
+    			rendered="{!batchJobId_validate_success && !batchJobId_validate_failed && !batchJobId_validate_inprogress && batchJobId_update_success && !batchJobId_update_inprogress && exportFileId == null}" />
+    	<apex:outputPanel layout="block" styleClass="progressBar" rendered="{!batchJobId_validate_inprogress || batchJobId_update_inprogress}">
+		    <div class="progress" style="width: {!percentComplete};">
+		    	{!percentComplete}
+		    </div>
+		</apex:outputPanel>
+    	<apex:pageBlockSection collapsible="false" columns="1" rendered="{!batchJobId_validate_success && !batchJobId_validate_failed && !batchJobId_validate_inprogress && exportFileId != null && !batchJobId_update_inprogress}">
+    		<br />
+    		<script type="text/javascript">
+    			stopPolling();
+    		</script>
+            <p style="padding:0 6px;">The aggregate validation has completed. There were {!invalidMattersCount} Matters found to have aggregate discrepancies. The results are displayed below and we have posted a copy of this spreadsheet to your Chatter Feed and may also be opened by clicking on <a target="_blank" href="/sfc/servlet.shepherd/version/download/{!exportFileId}">this link</a>.</p>
+            <br />
+            <p style="padding:0 6px;">You may choose to cancel now and no further action will be taken. Otherwise press the Update Aggregates button to begin correcting the designated aggregates.</p>
+            <br />
+            <embed 	id="priviewembed" name="renditionLarge" 
+            		src="/_swf/190003/sfc/flex/DocViewer.swf"
+                  	flashvars="shepherd_prefix=/sfc/servlet.shepherd&v={!exportFileId}&mode=chatterfilepreview&in_tests=false"
+                  	width="100%" height="450px" align="middle" 
+                  	quality="high" bgcolor="#f3f3f3" 
+                  	allowscriptaccess="true" allowfullscreen="true" 
+                  	pluginspage="http://www.adobe.com/go/getflashplayer" 
+                  	wmode="opaque"
+                  	type="application/x-shockwave-flash" />
+           	
+    	</apex:pageBlockSection>
+    </apex:pageBlock>
+    
+    <apex:outputPanel id="op_poller">
+		<apex:actionPoller action="{!checkJobStatus}" rerender="pb" interval="5" 
+							rendered="{!exportFileId == null || batchJobId_validate_inprogress || batchJobId_update_inprogress}" 
+							enabled="{!exportFileId == null || batchJobId_validate_inprogress || batchJobId_update_inprogress}" />
+	</apex:outputPanel>
+	
+	<apex:actionFunction name="doInitValidateBatch" action="{!doInitValidateBatch}" rerender="pb,header,op_poller" />
+	<apex:actionFunction name="doUpdateMattersBatch" action="{!doUpdateMattersBatch}" rerender="pb,header,op_poller" />
+	<apex:actionFunction name="stopPolling" rerender="op_poller" oncomplete="" />
+</apex:form>
+
+</apex:page>

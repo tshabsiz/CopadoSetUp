@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Trigger Watcher Status</name>
+    <style>freeForm</style>
+    <subject>{!Watcher__c.Trigger__c} is in {!Watcher__c.Watcher_Status__c} for {!Trigger__c.Deal__c}</subject>
+    <textOnly>Good day,
+
+
+{!Trigger__c.Name} is in {!Watcher__c.Watcher_Status__c} for {!Trigger__c.Deal__c}.
+
+Comments:{!Watcher__c.Comments__c}
+
+
+Deal Name:{!Trigger__c.Deal__c}
+
+Agreement Name: {!Trigger__c.Agreement__c}
+
+Trigger Name: {!Trigger__c.Name}
+
+Trigger Status: {!Watcher__c.Watcher_Status__c}
+
+Trigger Due Date: {!Watcher__c.Due_Date__c}
+
+
+Click on the below link to view the Trigger:
+
+{!Trigger__c.Link}
+
+
+Kind regards,
+
+Transaction Management Group
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

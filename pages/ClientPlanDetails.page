@@ -1,0 +1,525 @@
+<apex:page standardController="Client_Plan__c" extensions="ClientPlanDetailsController" sidebar="false" standardStylesheets="false" 
+    docType="html-5.0" id="thepageid" >
+    
+    <apex:includeScript value="{!$Resource.kimmobrunfeldt_progressbar}"/>
+    
+    <script>
+    
+        $('document').ready(function() {
+            
+            selectLabel(1);
+            setPageMinHeight();
+            retrieveSpearData();
+            
+            prepareProgressBar();
+        });
+        
+        function retrieveSpearData() {
+        	if ($("[id$='overrideDGfromSPEARField']")[0].checked || $('#SDSClient').val() == "")
+        		setSPEARData(null);
+        	else {
+        		startLoading('{!$Label.lbl_Retrieving}');
+        		getSPEARData($('#SDSClient').val());
+        	}
+        }
+        
+        function ToggleDisableDG() {
+        	if ($("[id$='overrideDGfromSPEARField']")[0].checked) {
+        		$("[id$='dgField']").removeAttr('disabled');
+        		$("[id$='SDSClient']").prop('disabled','true');
+        	} else {
+        		$("[id$='dgField']").prop('disabled','true');
+        		$("[id$='SDSClient']").removeAttr('disabled');
+        	}
+        }
+        
+		var retrieved_from_SPEAR = true;
+        function setSPEARData(DG) {
+        	if (!$("[id$='overrideDGfromSPEARField']")[0].checked && DG != null && DG != "") {
+        		var DGcmb = document.getElementById('dgField');
+        		DGcmb.value = DG;
+        	}
+        	if (DG == "") retrieved_from_SPEAR = false;
+        	onBeforeSave();
+        }
+        
+        function setPageMinHeight() {
+            var height = window.innerHeight - 230;
+            $('.slds').css('min-height', height);
+        }
+        
+        function prepareProgressBar() {
+            $('#progressBar').html('');
+        
+            var perc = $('.clientProgressPanel').html();
+            if (perc == '' || isNaN(perc)) {
+                perc = 0;
+            } else {
+                perc = perc / 100;
+            }
+        
+            var circle = new ProgressBar.Circle('#progressBar', {
+                color: '#aaa',
+                // This has to be the same size as the maximum width to
+                // prevent clipping
+                strokeWidth: 10,
+                trailWidth: 1,
+                easing: 'easeInOut',
+                duration: 1000,
+                text: {
+                    value: '0%'
+                },
+            
+                from: { color: '#FF3939', width: 3 },
+                to: { color: '#00AEEF', width: 8 },
+                // Set default step function for all animate calls
+                step: function(state, circle) {
+                    circle.path.setAttribute('stroke', state.color);
+                    circle.path.setAttribute('stroke-width', state.width);
+                    circle.setText((circle.value() * 100).toFixed(0) + '%');
+                }
+            });
+            
+            circle.animate(perc);
+        }
+        
+        function onBeforeSave() {
+            closeAlert();
+            startLoading('{!$Label.lbl_Saving}');
+            
+            var status = $('#statusField').val();
+            var policy = $('#policyField').val();
+            var dg = $('#dgField').val();
+            var overrideDGfromSPEAR = $("[id$='overrideDGfromSPEARField']")[0].checked;
+            var sdsclient = $('#SDSClient').val();
+            var currentdatemillis = new Date().getTime();
+            if (retrieved_from_SPEAR == false || overrideDGfromSPEAR || sdsclient == '') currentdatemillis = -1; // leave the time alone
+            saveData(status, policy, dg, overrideDGfromSPEAR, currentdatemillis, sdsclient);
+        }
+        
+        //error messages functions
+        function checkErrorMessage() {
+            var content = $('.errorMessagePanel').text();
+            if (content != '') {
+                showAlert(content);
+            }
+        }
+        
+        
+        //team members functions
+        
+        function showAddMemberModal() {
+            $('#addMemberModal').show();
+        }
+        
+        function closeAddMemberModal() {
+            $('#addMemberModal').hide();
+        }
+        
+        function onBeforeAddTeamMember() {
+            closeAddMemberModal();
+            closeAlert();
+            startLoading('{!$Label.lbl_Adding}');
+            
+            var role = $('#addMemberRoleSelect').val();
+            addTeamMember(role);
+        }
+        
+        function onBeforeTeamMemberRemoved(position) {
+            var proceed = confirm('{!$Label.msg_DeleteTeamMemberConfirm}');
+            if (proceed) {
+                closeAlert();
+                startLoading('{!$Label.lbl_Removing}');
+                removeTeamMember(position);
+            }
+        }
+        
+    </script>
+    
+    <style>
+    
+        @media (min-width: 48em) {
+            .slds-form-element {
+                text-align: left !important;
+            }
+            
+            #leftPanelWrapper label {
+                width: 10em;
+            }
+            
+            .inputLabel {
+                top: 8px !important;
+            }
+            
+            .textLabel {
+                top: 1px !important;
+            }
+            
+            .slds-form-element__label {
+                font-size: inherit !important;
+                font-weight: bold;
+            }
+        }
+    
+        .pageCenter {
+            width: 1000px;
+            margin: auto;
+            padding-top: 3em;
+            padding-bottom: 3em;
+        }
+        
+        .inline {
+            display: inline-block;
+        }
+        
+        .slds {
+            background-color: #F4F6F9 !important;
+        }
+        
+        .slds-tabs--default {
+            background-color: white;
+        }
+        
+        .slds-modal__container {
+            width: 20em !important;
+        }
+        
+        .alignRight {
+            text-align: right;
+        }
+        
+        #leftPanelWrapper {
+            width: 50%;
+        }
+        
+        .teamPanel {
+            margin-top: 3em;
+        }
+        
+        .optionsButton {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+        }
+        
+        #teamPanelAddButtonWrapper {
+            text-align: right;
+            margin-top: 1em;
+        }
+        
+        #addMemberUserWrapper {
+            border: 1px solid #D8DDE6;
+            border-radius: 4px;
+            height: 27px;
+        }
+        
+        #rightPanel {
+            vertical-align: top;
+            width: 49%;
+        }
+        
+        #progressBar {
+            width: 40%;
+            margin-left: 25%;
+        }
+        
+        .progressbar-text {
+            font-size: 30px;
+            font-weight: bold;
+        }
+        
+        .bold {
+            font-weight: bold !important;
+        }
+        
+        .marginTop1em {
+            margin-top: 1em;
+        }
+    
+    </style>
+    
+    
+    <apex:form >
+    <div class="slds">
+     
+        <c:ClientPlanHeader />
+        
+        <c:ProgressBarLightning />
+        
+        <c:LightningAlert />
+       <div style="display:inline-block ; margin: 5px;">
+           <apex:outputPanel rendered="{!isGlobalParent}">
+           <label   class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                {!$Label.lblUnderlyingClientPlans}</b>
+            </label><br/>
+            <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                <apex:selectOptions value="{!ChildClientPlans}" />
+            </apex:SelectList><br/>
+           </apex:outputPanel>
+        </div>
+        <apex:outputPanel rendered="{!planLoaded}" layout="block" styleClass="pageCenter">
+            
+            <div id="leftPanelWrapper" class="slds-form--horizontal inline">
+                <apex:outputPanel id="leftPanel" layout="block">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label inputLabel" for="statusField">
+                            <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Status__c.Label}" />
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="statusField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!StageOptions}" var="o">
+                                    <apex:outputPanel rendered="{!IF(o.value == plan.Status__c, true, false)}">
+                                        <option selected="selected">{!o.value}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(o.value == plan.Status__c, false, true)}">
+                                        <option>{!o.value}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label inputLabel" for="policyField">
+                            <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Expansion_Policy__c.Label}" />
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="policyField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!ExpansionPolicyOptions}" var="ep">                                
+                                    <apex:outputPanel rendered="{!IF(ep.value == plan.Expansion_Policy__c, true, false)}">
+                                        <option selected="selected">{!ep.value}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(ep.value == plan.Expansion_Policy__c, false, true)}">
+                                        <option>{!ep.value}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label inputLabel" for="dgField">
+                            <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.DG__c.Label}" />
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="dgField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!DGOptions}" var="dg">
+                                    <apex:outputPanel rendered="{!IF(dg.value == plan.DG__c, true, false)}">
+                                        <option selected="selected">{!dg.value}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(dg.value == plan.DG__c, false, true)}">
+                                        <option>{!dg.value}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                            <table style="font-style:italic;font-size:9px">
+    							<tbody>
+							        <tr>
+            							<td>
+            								<apex:inputCheckbox id="overrideDGfromSPEARField" value="{!plan.Override_Pull_DG_From_SPEAR__c}" onchange="retrieveSpearData();"/>
+                          					<apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Override_Pull_DG_From_SPEAR__c.Label}" />
+                          				</td>
+            							<td style="text-align:right">
+            								<apex:outputText value="{!$ObjectType.Client_Plan__c.fields.DG_Last_Pulled_From_SPEAR__c.Label & ' '}" rendered="{!plan.SDS__c!='' && plan.Override_Pull_DG_From_SPEAR__c==false}"/>
+            								<apex:outputText id="DGLastPulledFromSPEAR" value="{0, date, dd/MM/yyyy HH:mm:ss}" rendered="{!plan.SDS__c!='' && plan.Override_Pull_DG_From_SPEAR__c==false}">
+											    <apex:param value="{!plan.DG_Last_Pulled_From_SPEAR__c+offset}" />
+											</apex:outputText>
+											<apex:outputText value="N/A" rendered="{!plan.SDS__c!='' && plan.Override_Pull_DG_From_SPEAR__c==false && plan.DG_Last_Pulled_From_SPEAR__c==null}"/>
+            							</td>
+        							</tr>
+    							</tbody>
+							</table>
+                        </div>
+                    </div>                  
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label textLabel">
+                            <apex:outputText value="{!$Label.lbl_CoverageBanker}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <apex:outputText value="{!plan.Relationship__r.Owner.Name}"/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label textLabel">
+                            <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.LastModifiedDate.Label}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                <apex:param value="{!plan.LastModifiedDate}" />
+                            </apex:outputText>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+		            	<label class="slds-form-element__label inputLabel" for="SDSClient">
+		                	<apex:outputText value="{!$ObjectType.Client_Plan__c.fields.SDS__c.Label}" />
+		            	</label>
+		            	<div class="slds-form-element__control">
+		                	<select id="SDSClient" class="slds-select" onchange="retrieveSpearData();">
+		                    	<apex:repeat value="{!getSDSClients}" var="sdsclient">                                
+		                        	<apex:outputPanel rendered="{!IF(sdsclient.value == plan.SDS__c, true, false)}">
+                                        <option selected="selected" value="{!sdsclient.value}">{!sdsclient.Label}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(sdsclient.value == plan.SDS__c, false, true)}">
+                                        <option value="{!sdsclient.value}">{!sdsclient.Label}</option>
+                                    </apex:outputPanel>
+		                		</apex:repeat>
+		                	</select>
+		            	</div>
+            		</div>
+                </apex:outputPanel>
+            </div>
+            
+            <div id="rightPanel" class="inline">
+                <div id="progressBar"/>
+            </div>
+           <input type="hidden" name="currentvfpage" value="{!$CurrentPage.Name}"/>
+            <apex:outputPanel id="teamPanel" styleClass="teamPanel" layout="block">
+                <h3 class="bold"><apex:outputText value="{!$Label.lbl_ClientTeam}" /></h3>
+                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th scope="col" width="48%">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Account_Team_Member__c.fields.Team_Member__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col" width="48%">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="{!$ObjectType.Account_Team_Member__c.fields.Team_Role__c.Label}" />
+                                </span>
+                            </th>
+                            <th scope="col" class="slds-row-action" width="4%"/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:variable var="cnt" value="{!0}" /> 
+                        <apex:repeat value="{!Members}" var="member">
+                            <tr class="slds-hint-parent">
+                                <td>
+                                    <span class="slds-truncate">
+                                        <apex:outputField value="{!member.Team_Member__r.Name}" />
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="slds-truncate">
+                                        <apex:outputField value="{!member.Team_Role__c}" />
+                                    </span>
+                                </td>
+                                <td class="slds-row-action">
+                                    <div class="slds-dropdown-trigger">
+                                        <button xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                                class="slds-button slds-button--icon-container optionsButton" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                    <a onclick="onBeforeTeamMemberRemoved({!cnt});return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Remove}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <apex:variable var="cnt" value="{!cnt+1}"/>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+            
+            <div id="teamPanelAddButtonWrapper">
+                <button id="teamPanelAddButton" class="slds-button slds-button--brand slds-button--small" onclick="showAddMemberModal();return false;">
+                    {!$Label.lbl_Add}
+                </button>
+            </div> 
+            <br/>
+             <span style="color: red;color: red;">All sections with a red border feed through to a linked JLOC Paper</span>
+            <br/>
+            <apex:outputPanel id="DGFooterPanel" layout="block">
+            	<div id="DGFooter" style="font-style:italic;font-size:9px;display:{!IF(plan.SDS__c!='' && plan.Override_Pull_DG_From_SPEAR__c==false,'block','none')}">
+            		<apex:outputText value="*DG retrieved based on: {!getSelectedSDSClient}"/>
+            	</div>
+            </apex:outputPanel>
+            
+            <apex:actionFunction action="{!save}" name="saveData" oncomplete="checkErrorMessage();endLoading();prepareProgressBar();ToggleDisableDG();"
+                    reRender="leftPanel,clientProgressPanel,errorMessagePanel,DGFooterPanel">
+                <apex:param name="status" assignTo="{!plan.Status__c}" value=""/>
+                <apex:param name="policy" assignTo="{!plan.Expansion_Policy__c}" value=""/>
+                <apex:param name="dg" assignTo="{!plan.DG__c}" value=""/>
+                <apex:param name="pulldgfromSPEAR" assignTo="{!plan.Override_Pull_DG_From_SPEAR__c}" value=""/>
+                <apex:param name="dglastpulledfromSPEAR" assignTo="{!DGLastPulledFromSPEARMillis}" value=""/>
+                <apex:param name="SDSClient" assignTo="{!plan.SDS__c}" value=""/>
+            </apex:actionFunction>
+            
+            <apex:actionFunction action="{!addMember}" onComplete="checkErrorMessage();endLoading();prepareProgressBar();" name="addTeamMember"
+                    reRender="teamPanel,clientProgressPanel,errorMessagePanel">
+                <apex:param name="memberToAddRole" assignTo="{!memberToAdd.Team_Role__c}" value=""/>
+            </apex:actionFunction>
+            
+            <apex:actionFunction action="{!removeMember}" onComplete="checkErrorMessage();endLoading();prepareProgressBar();" name="removeTeamMember"
+                    reRender="teamPanel,clientProgressPanel,errorMessagePanel">
+                <apex:param name="memberRowToDelete" assignTo="{!memberRowToDelete}" value=""/>
+            </apex:actionFunction>
+            
+            <apex:actionFunction name="getSPEARData" action="{!getSPEARData}" oncomplete="endLoading();setSPEARData('{!spear.RatingsFeed[0].TTCDGYear1}');">
+            	<apex:param name="SelectedSDS" assignTo="{!SelectedSDS}" value=""/>
+            </apex:actionFunction>
+            
+            <div id="addMemberModal" style="display:none;">
+              <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                  xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                  <div class="slds-modal__header">
+                    <h2 class="slds-text-heading--medium">{!$Label.lbl_AddTeamMember}</h2>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeAddMemberModal();return false;">
+                      <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="slds-modal__content">
+                  
+                    <div class="slds-form-element">
+                      <label class="slds-form-element__label">
+                        <apex:outputText value="{!$ObjectType.Account_Team_Member__c.fields.Team_Member__c.Label}"/>
+                      </label>
+                      <div id="addMemberUserWrapper" class="slds-form-element__control">
+                        <apex:outputField value="{!memberToAdd.Team_Member__c}">
+                            <apex:inlineEditSupport event="onmouseover" />
+                        </apex:outputField>
+                      </div>
+                    </div>
+                    <div class="slds-form-element marginTop1em">
+                      <label class="slds-form-element__label">
+                        <apex:outputText value="{!$ObjectType.Account_Team_Member__c.fields.Team_Role__c.Label}"/>
+                      </label>
+                      <div class="slds-form-element__control">
+                        <select id="addMemberRoleSelect" class="slds-select">
+                            <apex:repeat value="{!RoleOptions}" var="o">
+                                <option>{!o.value}</option>
+                            </apex:repeat>
+                        </select>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="closeAddMemberModal();return false;">Cancel</button>
+                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeAddTeamMember();return false;">Save</button>
+                  </div>
+                </div>
+              </div>
+              <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+            </div>
+            
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="clientProgressPanel" styleClass="clientProgressPanel hidden">{!planProgress}</apex:outputPanel>
+        
+        <apex:outputPanel id="errorMessagePanel" styleClass="errorMessagePanel hidden">{!ErrorMessage}</apex:outputPanel>
+        
+    </div>
+    </apex:form>
+    
+</apex:page>

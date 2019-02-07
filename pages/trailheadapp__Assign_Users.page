@@ -1,0 +1,56 @@
+<apex:page doctype="html-5.0" standardController="trailheadapp__Trailmix__c" extensions="trailheadapp.AssignMultipleUsersController">   
+    <apex:sectionHeader title="{!trailmix.Name}" subtitle="Assign Users"/> 
+    <apex:form >
+
+        <apex:pageBlock mode="edit" id="block"> 
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+                <apex:commandButton action="{!back}" value="Back" rendered="{!NOT(showSearchUI)}"/>
+                <apex:commandButton action="{!submit}" value="Submit" rendered="{!NOT(showSearchUI)}" disabled="{!ISNULL(selectedUsers)}"/>
+                <apex:commandButton action="{!next}" value="Next"  rendered="{!showSearchUI}" disabled="{!ISNULL(searchResults)}"/>
+            </apex:pageBlockButtons>
+            <div style="margin:10px"><apex:pageMessages /></div>
+
+            <apex:panelGroup rendered="{!showSearchUI}">
+                <apex:pageBlockSection >
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="searchText">Search Users</apex:outputLabel>
+                        <apex:panelGroup >
+                        <apex:inputText id="searchText" value="{!searchText}" size="30"/>
+                        <apex:commandButton value="Search" action="{!search}" rerender="block" status="status"/>
+                        </apex:panelGroup>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Search Results" id="selectedBlock" columns="1" rendered="{!NOT(ISNULL(searchResults))}">
+                    <apex:pageBlockTable value="{!searchResults}" var="c">
+                        <apex:column width="25px">
+                            <apex:inputCheckbox value="{!c.checked}"/>
+                        </apex:column>
+                        <apex:column value="{!c.user.Name}" headerValue="Name"/>
+                        <apex:column value="{!c.user.Title}" headerValue="Title"/>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:panelGroup>
+
+            <apex:panelGroup rendered="{!NOT(showSearchUI)}">
+                <apex:pageBlockSection >
+                    <apex:pageBlockSectionItem >
+                        Select an optional due date for the user(s) to complete the trailmix.
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:input type="date" value="{!dueDate}"/> 
+                    </apex:pageBlockSectionItem>                
+                </apex:pageBlockSection> 
+
+                <apex:pageBlockSection title="Selected Users" id="resultsBlock" columns="1" rendered="{!NOT(ISNULL(searchResults))}">
+                    <apex:pageBlockTable value="{!selectedUsers}" var="c">
+                        <apex:column value="{!c.user.Name}" headerValue="Name"/>
+                        <apex:column value="{!c.user.Title}" headerValue="Title"/>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>                
+            </apex:panelGroup>                    
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

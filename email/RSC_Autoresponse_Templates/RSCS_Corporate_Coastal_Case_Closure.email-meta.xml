@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>RSCS Corp CPT Chq Ver, RSCS Corp CPT, RSCS Corp CPT Bank Conf, RSCS Corp CPT Limits, RSCS Corp CPT &amp; PTA Pricing, RSCS Corp CPT Acc Ver</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>RSCS - Corporate Coastal - Case Closure</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Subject}: {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Please be advised that your request relating to
+case number: #{!Case.CaseNumber} has been
+successfully resolved.
+
+Thank you
+
+{!User.Name} {!User.Surname}
+Regional Service Centre Support - Corporate  Inland
+
+Telephone: {!User.CSC_Phone__c}
+Email:  {!User.CSC_email__c}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

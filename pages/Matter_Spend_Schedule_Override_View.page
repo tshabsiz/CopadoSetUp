@@ -1,0 +1,200 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+                                                           
+ 
+*** CHANGE LOG ***
+ 
+ 28/07/2017 - PG    - Created VF Page.
+ 04/08/2017 - PG 	- Reworked page to use actionFunction to support inputs.
+ 10/08/2017 - PG    - Updated button display logic.
+                    - Add "Submit For Payment" button.
+                    - Add standard export to PDF button.
+ 11/08/2017 - KK    - Added Box UI.
+
+--> 
+<apex:page standardController="Matter_Spend_Schedule__c" extensions="Matter_Spend_Schedule_Override_View" showHeader="true" sidebar="true" action="{!initialiseDocuments}">
+	
+	<!-- JAVASCRIPT -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+	<script>
+	function exportSchedule(duplicateCopy)
+	{
+		//Open PDF Page
+		var url = window.location.protocol+'//'+window.location.hostname+'/apex/Matter_Spend_Schedule_PDF?id={!objectRecord.Id}'; 
+		window.open(url, "_blank");
+		
+		if(duplicateCopy == 'lock')
+		{
+		    //Lockschdeule
+		    lockSchedule();
+		}
+	}
+	</script>
+
+	<!-- CSS -->
+	<style>
+		.statusText {
+		    border-radius: 25px;
+		    background: green;
+		    padding: 4px;  
+		    color: white;
+		}
+		.smallInput {
+			width: 65px !important;
+		}
+		.red-text {
+			color: red;
+			font-weight: bold;
+		}
+	</style>	
+    <apex:stylesheet value="{!URLFOR($Resource.box__BoxEmbed, 'BoxEmbed/style.css')}"/>
+	<!-- FORM -->
+	<apex:form >
+
+		<!-- ACTION FUNCTIONS -->
+        <!-- BOX -->
+        <apex:actionFunction name="callBox" action="{!createBoxPermission}" rerender="out"/>
+		<!-- APPROVE -->
+		<apex:actionFunction name="approveRow" action="{!actionApproveRow}" reRender="detailPanel, docPage" oncomplete="refreshDetails();">
+				<apex:param name="rowId" value="" />
+		</apex:actionFunction>
+        
+        <!-- REFRESH -->
+		<apex:actionFunction name="refreshDetails" reRender="detailPanel" />
+    
+        <!-- QUERY -->
+		<apex:actionFunction name="queryRow" action="{!actionQueryRow}" reRender="detailPanel, docPage" oncomplete="refreshDetails();">
+				<apex:param name="rowId" value="" />
+		</apex:actionFunction>
+        
+        <!-- UPDATE -->
+		<apex:actionFunction name="updateRow" action="{!actionUpdateRow}" reRender="detailPanel, docPage" oncomplete="refreshDetails();" status="actionProcess">
+				<apex:param name="rowId" value="" />
+		</apex:actionFunction>
+        
+        <!-- EXPORT -->
+		<apex:actionFunction name="lockSchedule" action="{!actionLockSchedule}" reRender="detailPanel, docPage" oncomplete="refreshDetails();" status="actionProcess"/>
+		
+		<!-- SUBMIT PAYMENT -->
+		<apex:actionFunction name="submitPayment" action="{!actionSubmitPayment}" reRender="detailPanel, docPage" oncomplete="refreshDetails();" status="actionProcess" />
+        
+        <!-- PAID -->
+		<apex:actionFunction name="paidRow" action="{!actionPaidRow}" reRender="detailPanel, docPage" oncomplete="refreshDetails();" status="actionProcess">
+				<apex:param name="rowId" value="" /> 
+		</apex:actionFunction>
+		<!-- / ACTION FUNCTIONS -->
+
+		<!-- DETAILS -->
+		<apex:outputPanel id="detailPanel">
+			<apex:detail inlineEdit="false" relatedList="false" subject="{!objectRecord.Id}" />
+		</apex:outputPanel>
+		<!-- / DETAILS -->
+
+		<br />
+
+		<!-- PAGE BLOCK -->
+		<apex:pageBlock title="Matter Spend Schedule Documents" id="docPage" >
+
+			<!-- BLOCK BUTTONS -->
+			<apex:pageBlockButtons location="top" >
+                
+                <apex:commandButton value="Submit For Payment" onclick="submitPayment(); return false;" rendered="{!AND(objectRecord.Status__c == 'Exported', showExport)}"/> 
+				<apex:commandButton value="Lock & Export Schedule (PDF)" onclick="exportSchedule('lock'); return false;" rendered="{!AND(showExport, objectRecord.Status__c != 'Pending Payment')}" />
+				<apex:commandButton value="Export Schedule (PDF)" onclick="exportSchedule('copy'); return false;" rendered="{!showExportPaid}" /> 
+				<apex:outputText value="All GL Account and Corp. Code fields need values." styleClass="red-text" rendered="{!showMessage}" />
+				<apex:actionStatus id="actionProcess" startText=" Updating Record" startStyleClass="statusText" />
+
+			</apex:pageBlockButtons>
+			<!-- / BLOCK BUTTONS -->
+
+			<!-- PAGE BLOCK TABLE -->
+			<apex:pageBlockTable value="{!scheduleDocuments}" var="scheduleDoc" id="docTable">
+
+				<!-- COLS -->
+				<apex:column headerValue="Document #"> 
+					<apex:outputLink value="{!URLFOR($Action.Matter_Spend_Document__c.View, scheduleDoc.Id)}" target="_blank">
+						{!scheduleDoc.Name}
+					</apex:outputLink>  
+				</apex:column>
+				<apex:column headerValue="Documents">
+						<apex:outputLink target="_blank" value="{!scheduleDoc.Box_Folder_Link__c}">View File(s)</apex:outputLink> 
+				</apex:column> 
+				<apex:column value="{!scheduleDoc.Matter__c}" />		
+				<apex:column value="{!scheduleDoc.Total_Amount_Excl_VAT__c}" />
+				<apex:column value="{!scheduleDoc.Total_Amount_Non_VATable__c}" /> 
+				<apex:column value="{!scheduleDoc.Total_VAT__c}" /> 
+				<apex:column value="{!scheduleDoc.Grand_Total__c}" />
+				<apex:column value="{!scheduleDoc.Status__c}" headerValue="Status" />
+				<apex:column headerValue="GL Account">
+					<apex:inputField value="{!scheduleDoc.GL_Account__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Corp. Code">
+					<apex:inputField value="{!scheduleDoc.BU_Corporate_Code__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Cost Centre">
+					<apex:inputField value="{!scheduleDoc.Cost_Centre2__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Vendor Number">
+					<apex:inputField value="{!scheduleDoc.Vendor_Number__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Invoice Number">
+					<apex:inputField value="{!scheduleDoc.InvoiceNumber__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Invoice Date">
+					<apex:inputField value="{!scheduleDoc.InvoiceDate__c}" styleClass="smallInput" />
+				</apex:column>
+				<apex:column headerValue="Action">
+				    
+				    <!-- MARK AS PAID --> 
+					<apex:commandButton onclick="paidRow('{!scheduleDoc.Id}'); return false;" value="Mark as Paid" style="background:purple; color:white" rendered="{!scheduleDoc.Status__c == 'Pending Payment'}" />
+
+					<!-- APPROVE -->
+					<apex:commandButton onclick="approveRow('{!scheduleDoc.Id}'); return false;" value="Approve" style="background:green; color:white" rendered="{!scheduleDoc.Status__c == 'Approved'}" />  
+
+					<!-- QUERY -->
+					<apex:commandButton onclick="queryRow('{!scheduleDoc.Id}'); return false;" value="Query" style="background:red; color:white" rendered="{!OR(scheduleDoc.Status__c == 'Approved',scheduleDoc.Status__c == 'Pending Payment')}" />
+
+					<!-- UPDATE -->
+					<apex:commandButton onclick="updateRow('{!scheduleDoc.Id}'); return false;" value="Update" style="background: #1797C0; color:white" rendered="{!OR(scheduleDoc.Status__c == 'Approved For Payment')}" />  
+
+					<!-- DONE -->
+					<apex:commandButton onclick="return false;" value="✓ Done" style="background: YellowGreen; color:white" rendered="{!scheduleDoc.Status__c == 'Paid'}"/>  
+
+				</apex:column>
+				<apex:column headerValue="Comment">
+					<apex:inputField value="{!scheduleDoc.Latest_Comment__c}"  />  
+				</apex:column>
+				<!-- / COLS -->
+
+			</apex:pageBlockTable> 
+			<!-- / PAGE BLOCK TABLE -->  
+
+		</apex:pageBlock>
+        <!-- / PAGE BLOCK -->
+        
+        <!-- BOX PAGE BLOCK -->
+        <apex:outputPanel id="boxPanel">
+            <apex:pageBlock title="Box.com Documents" mode="">
+                <apex:iframe src="/apex/BxdBoxSection?id={!objectRecord.Id}&param=BxdMatterSpendScheduleService" rendered="{!(!showBox)}"/>
+                <apex:iframe src="{!boxEmbedURL}" frameborder="false" rendered="{!showBox}"/>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <!-- / BOX PAGE BLOCK -->
+
+	</apex:form>
+	<!-- / FORM -->
+    <script>
+    j$ = jQuery.noConflict();
+    
+    j$(document).ready(function() {
+        callBox();
+        console.log('Box Called');
+    });
+    </script>
+
+</apex:page>

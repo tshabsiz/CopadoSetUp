@@ -1,0 +1,18 @@
+<apex:page controller="advpm.MyPortalController" tabStyle="My_Budgets__tab" title="My Budgets">
+	<apex:sectionHeader title="My Budgets" subtitle="Home" />
+	<apex:pageBlock tabStyle="advpm__Budget__c" title="My Budgets">
+        <apex:pageBlockTable value="{!budgets}" var="m" rendered="{!NOT(ISNULL(budgets))}">
+            <apex:column styleClass="actionColumn" headerValue="Action">
+                <apex:outputLink styleClass="actionLink" value="{!URLFOR($Action.advpm__Budget__c.Edit,m.Id,[retURL=URLFOR($Page.advpm__MyBudgets)],false)}">Edit</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Budget Ref #">
+                <apex:outputLink value="/{!m.ID}">{!m.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column value="{!m.advpm__Matter__c}" />
+            <apex:column value="{!m.advpm__Start_Date__c}" />
+            <apex:column value="{!m.advpm__End_Date__c}" />
+            <apex:column value="{!m.advpm__Total_Budget__c}" />
+        </apex:pageBlockTable>
+        <apex:outputLabel value="No records found." rendered="{!ISNULL(budgets)}" />
+    </apex:pageBlock>
+</apex:page>

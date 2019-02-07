@@ -1,0 +1,292 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 16/04/2017 - PG    - Created VF page.
+                                                           
+-->
+<apex:page showHeader="false" standardStylesheets="true" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="Matter_SmartForm">
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Salesforce Lightning Design System Trailhead Module</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Import the Design System style sheet -->
+  <apex:slds />
+</head>
+<body>
+    
+<!-- REQUIRED SLDS WRAPPER -->
+<div class="slds-scope">
+    
+    <!-- CONTAINER -->
+    <div class="slds-container--medium slds-container--center">
+        
+        <!-- APEX FORM -->
+        <apex:form >
+            
+            <apex:pageMessages />
+            
+            <!-- FORM CONTAINER -->
+            <div class="slds-form--stacked">
+                
+                <!-- FORM HEADING -->
+                <div class="slds-p-bottom--medium slds-p-top--medium">
+                    <h3 class="slds-text-heading--large">Legal Request Form</h3>
+                </div>
+                <!-- / FORM HEADING -->
+                
+                <!-- PROGRESS -->
+                
+                <div class="slds-grid">
+                  <div class="slds-tabs--path" role="application">
+                    <ul class="slds-tabs--path__nav" role="tablist">
+                        <li class="slds-tabs--path__item slds-is-current" role="presentation">
+                        <a class="slds-tabs--path__link" id="tabs-path-93" aria-controls="content-path-1" aria-selected="false" tabindex="-1" role="tab" href="javascript:void(0);" aria-live="assertive">
+                          <span class="slds-tabs--path__stage">
+                            <svg class="slds-icon slds-icon--x-small" aria-hidden="true">
+                              <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#check"></use>
+                            </svg>
+                          </span>
+                          <span class="slds-tabs--path__title">Step 1 - Compelete Form</span>
+                        </a>
+                      </li>
+                      <li class="slds-tabs--path__item slds-is-incomplete" role="presentation">
+                        <a class="slds-tabs--path__link" id="tabs-path-94" aria-controls="content-path-1" aria-selected="false" tabindex="-1" role="tab" href="javascript:void(0);" aria-live="assertive">
+                          <span class="slds-tabs--path__stage">
+                            <svg class="slds-icon slds-icon--x-small" aria-hidden="true">
+                              <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#check"></use>
+                            </svg>
+                          </span>
+                          <span class="slds-tabs--path__title">Step 2 - Upload Attachments</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- / PROGRESS -->
+                
+                <!-- SECTION HEADING -->
+                <div class="slds-p-bottom--medium slds-p-top--large">
+                    <h3 class="slds-section__title">Requestor Details (Person Completing The Form)</h3>
+                </div>
+                <!-- / SECTION HEADING -->
+            
+                <!-- ELEMENT -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['fullName']) > 0,'slds-has-error','')}">
+                    <label class="slds-form-element__label" for="fullName"><abbr class="slds-required" title="required">*</abbr>Full Name</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!fullName}" id="fullName" styleClass="slds-input" html-placeholder="John Doe" />
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['emailAddress']) > 0,'slds-has-error','')}">
+                    <label class="slds-form-element__label" for="emailAddress"><abbr class="slds-required" title="required">*</abbr>Email Address</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!emailAddress}" id="emailAddress" styleClass="slds-input" html-placeholder="e.g. johndoe@abc.com" html-aria-describedby="emailAddressError" />
+                  </div>
+                  <apex:outputPanel rendered="{!LEN(inputErrors['emailAddress']) > 0}">
+                    <div id="emailAddressError" class="slds-form-element__help">{!inputErrors['emailAddress']}</div>
+                  </apex:outputPanel>
+                </div>
+                <!-- / ELEMENT -->                
+                
+                <!-- ELEMENT - BUSINESS UNIT LOOKUP -->
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="BusinessUnitLookup"><abbr class="slds-required" title="required">*</abbr>Business Unit</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField required="true" value="{!caseObj.Business_Unit_Cluster_Segment__c}" id="BusinessUnitLookup" styleClass="{!IF(LEN(inputErrors['BusinessUnitLookup']) > 0,'slds-has-error','')}" />
+                    </div>
+                </div>
+                <!-- / ELEMENT - BUSINESS UNIT LOOKUP-->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['businessUnitContactPerson']) > 0,'slds-has-error','')}">
+                    <label class="slds-form-element__label" for="businessUnitContactPerson"><abbr class="slds-required" title="required">*</abbr>Business Unit - Contact Person</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!businessUnitContactPerson}" id="businessUnitContactPerson" styleClass="slds-input" html-placeholder="e.g. johndoe@abc.com" /> 
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="costCentre">Cost Centre</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!costCentre}" id="costCentre" styleClass="slds-input" html-placeholder="Cost Centre Number" />
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT - DIVISION 
+               <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="division"><abbr class="slds-required" title="required">*</abbr>Division</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField required="" value="{!caseObj.LegalDivision__c}" id="division" styleClass="slds-input" />
+                  </div>
+                </div>
+                -->
+                
+                <!-- / ELEMENT - DIVISION -->
+
+                <!-- ELEMENT - BUSINESS AREA 
+               <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="businessArea"><abbr class="slds-required" title="required">*</abbr>Business Area</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField required="" value="{!caseObj.LegalBusinessArea__c}" id="businessArea" styleClass="slds-input" />
+                  </div>
+                </div>
+                -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['LegalDivision']) > 0,'slds-has-error','')}">
+                  <label class="slds-form-element__label" for="LegalDivision"><abbr class="slds-required" title="required">*</abbr>Legal Division</label>
+                  <div class="slds-form-element__control">
+                    <apex:inputField id="LegalDivision" value="{!caseObj.LegalDivision__c}" styleClass="slds-textarea" html-placeholder="Division"/>
+                  </div>
+                </div>
+                
+                <div class="slds-form-element {!IF(LEN(inputErrors['LegalBusinessArea']) > 0,'slds-has-error','')}">
+                  <label class="slds-form-element__label" for="LegalBusinessArea"><abbr class="slds-required" title="required">*</abbr>Legal Coverage Area</label>
+                  <div class="slds-form-element__control">
+                    <apex:inputField id="LegalBusinessArea" value="{!caseObj.LegalBusinessArea__c}" styleClass="slds-textarea" html-placeholder=" Business Area"/>
+                  </div>
+                </div>
+                
+                <!-- / ELEMENT - BUSINESS AREA -->
+                
+                <!-- SECTION HEADING -->
+                <div class="slds-p-bottom--medium slds-p-top--large">
+                    <h3 class="slds-section__title">External Party Details</h3>
+                </div>
+                <!-- / SECTION HEADING -->
+                
+                <!-- SECTION HEADING -->
+        
+        <!--
+                <div class="slds-p-bottom--medium">
+                    <h3 class="slds-section-title--divider">Existing External Party</h3>
+                </div>
+         -->       
+                <!-- / SECTION HEADING -->
+                
+                <!-- ELEMENT -->
+         <!--       
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="clientNameLookup">External Party Name</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField value="{!caseObj.AccountId}" id="clientNameLookup" styleClass="{!IF(LEN(inputErrors['clientNameLookup']) > 0,'slds-has-error','')}" />
+                  </div>
+                </div>
+          -->   
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+         <!--       
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="clientRepresentativeLookup">External Party Representative</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField value="{!caseObj.ContactId}" id="clientRepresentativeLookup" styleClass="{!IF(LEN(inputErrors['clientRepresentativeLookup']) > 0,'slds-has-error','')}"/>
+                  </div>
+                </div>
+                -->
+                <!-- / ELEMENT -->
+                
+                <!-- SECTION HEADING -->
+         <!--
+                <div class="slds-p-bottom--medium slds-p-top--medium">
+                    <h3 class="slds-section-title--divider">New External Party</h3>
+                </div>
+                -->
+                <!-- / SECTION HEADING -->
+                
+                <!-- ELEMENT -->
+         
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="clientName">External Party Name</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!clientName}" id="clientName" styleClass="slds-input" html-placeholder="Client Name" />
+                  </div>
+                </div>
+                
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+               
+                <div class="slds-form-element {!IF(LEN(inputErrors['clientEmailAddress']) > 0,'slds-has-error','')}">
+                    <label class="slds-form-element__label" for="clientEmailAddress">External Party Email Address</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!clientEmailAddress}" id="clientEmailAddress" styleClass="slds-input" html-placeholder="e.g. johndoe@abc.com" />
+                  </div>
+                  <apex:outputPanel rendered="{!LEN(inputErrors['clientEmailAddress']) > 0}">
+                    <div id="emailAddressError" class="slds-form-element__help">{!inputErrors['emailAddress']}</div>
+                  </apex:outputPanel>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="clientRepresentative">External Party Representative</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!clientRepresentative}" id="clientRepresentative" styleClass="slds-input" html-placeholder="e.g. John Doe" />
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- SECTION HEADING -->
+                <div class="slds-p-bottom--medium slds-p-top--large"> 
+                    <h3 class="slds-section__title">Enquiry Details</h3>
+                </div>
+                <!-- / SECTION HEADING -->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['subject']) > 0,'slds-has-error','')}">
+                    <label class="slds-form-element__label" for="subject"><abbr class="slds-required" title="required">*</abbr>Subject</label>
+                    <div class="slds-form-element__control">
+                        <apex:input value="{!subject}" id="subject" styleClass="slds-input" html-placeholder="Short description" />
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- ELEMENT -->
+                <div class="slds-form-element {!IF(LEN(inputErrors['description']) > 0,'slds-has-error','')}">
+                  <label class="slds-form-element__label" for="description"><abbr class="slds-required" title="required">*</abbr>Description</label>
+                  <div class="slds-form-element__control">
+                    <apex:inputTextarea id="description" value="{!description}" styleClass="slds-textarea" html-placeholder="Detailed description of the query"/>
+                  </div>
+                </div>
+                <!-- / ELEMENT -->
+                
+                <!-- BUTTONS -->
+                    <div class="slds-p-bottom--medium slds-p-top--medium">
+                    <div class="slds-form-element">
+                      <apex:commandButton action="{!validateForm}" value="Next Step" id="saveButton" styleClass="slds-button slds-button--brand" />
+                    </div>
+                </div>
+                <!-- / BUTTONS -->
+            
+            </div>
+            <!-- / FORM CONTAINER -->
+        
+        </apex:form>
+        <!-- APEX FORM -->
+        
+    </div>
+    <!-- / CONTAINER -->
+    
+
+</div>
+<!-- / REQUIRED SLDS WRAPPER -->
+
+</body>
+</html>
+</apex:page>

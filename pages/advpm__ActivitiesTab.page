@@ -1,0 +1,38 @@
+<apex:page id="pb" standardController="Event" tabStyle="Activities__tab" sidebar="true" showHeader="true" name="Activities" label="Activities" title="Activities">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <script type="text/javascript">
+        function reduceTo15Digits(val) {
+            return val.substring(0,15);
+        }
+        $(function(){
+            
+        });
+        function initPrint() {
+            $('.topNavTab').html( $('.print_link').html() );
+        }
+    </script>
+    <apex:outputPanel layout="none" rendered="{!$User.UIThemeDisplayed == 'Theme4d'}">
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+        <style type="text/css">
+            .slds-text-heading--label {font-size: 0.75rem!important;line-height: 1.25!important;color: #54698d!important;}
+            body{overflow-y:none;overflow-x:none;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!$User.UIThemeDisplayed != 'Theme1' && $User.UIThemeDisplayed != 'Theme2' && $User.UIThemeDisplayed != 'Theme3'}">
+    <style type="text/css">
+        .listButtons li:first-child {display:none;}
+    </style>
+    </apex:outputPanel>
+    <div class="slds">
+    <apex:enhancedList oncomplete="initPrint()" reRender="printPanel" type="Activity" height="{!IF($User.UIThemeDisplayed == 'Theme4d','700','750')}" id="ActivitiesList"></apex:enhancedList>
+    </div>
+    <apex:outputPanel layout="block" id="printPanel" style="width:100%; text-align: right;display:none;">
+        <span class="print_link">
+        <a title="Printable View (New Window)" href="javascript:printWin('/{!$ObjectType.Activity}/x?fcf='+reduceTo15Digits(document.getElementById('pb:ActivitiesList_listSelect').value)+'&rolodexIndex=-1&page=1');">
+            <img title="Printable View (New Window)" onmouseover="this.className = 'printerIconOn';this.className = 'printerIconOn';" 
+                 onmouseout="this.className = 'printerIcon';this.className = 'printerIcon';" onfocus="this.className = 'printerIconOn';" 
+                 onblur="this.className = 'printerIcon';" class="printerIcon" alt="Printable View (New Window)" src="/s.gif" />
+        </a>
+        </span>
+    </apex:outputPanel>
+</apex:page>

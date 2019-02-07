@@ -1,0 +1,93 @@
+<aura:component controller="ClientPlanDetailsControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    Add team member
+                </div>
+                
+                <div id="wholePage">
+                    
+                    <aura:if isTrue="{!not(v.userSelected)}">
+                        
+                        <div id="searchInputWrapper" class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right" 
+                                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                
+                                <ui:inputText aura:id="searchUserInput" class="slds-input" keyup="{!c.searchUsers}"/>
+                            </div>
+                        </div>
+                        
+                        <ul id="usersList" class="slds-list--vertical slds-has-dividers--bottom-space slds-has-selection">
+                            
+                            <aura:iteration items="{!v.users}" var="u">
+                                <aura:if isTrue="{!u.isPlaceholder}">
+                                    
+                                    <div id="noUsersPlaceholder">
+                                        <div class="alignCenter">
+                                            <div>
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/action-sprite/svg/symbols.svg#new_task" />
+                                            </div>
+                                            <div id="noUsersPlaceholderLabel">
+                                                No records found
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <aura:set attribute="else">
+                                        <li class="slds-list__item user" id="{!u.Id}" onclick="{!c.onUserClicked}">
+                                            <div class="slds-media slds-tile">
+                                                <div class="slds-media__body">
+                                                    <p class="slds-tile__title slds-truncate userName">{!u.Name}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                            
+                        </ul>
+                        
+                        <div id="loadMoreButtonWrapper">
+                            <button id="loadMoreButton" class="slds-button slds-button--neutral" onclick="{!c.loadMore}">Load more</button>
+                        </div>
+                        
+                        <aura:set attribute="else">
+                            Select team role for user {!v.selectedName}:
+                            
+                            <ui:inputSelect aura:id="role" class="dynamic marginTop1 marginBottom1">
+                                <aura:iteration items="{!v.teamRoleOptions}" var="o">
+                                    <ui:inputSelectOption text="{!o}" label="{!o}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            
+                        </aura:set>
+                        
+                    </aura:if>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        
+                        <aura:if isTrue="{!v.userSelected}">
+                            <button class="slds-button slds-button--brand" onclick="{!c.onBeforeAddTeamMember}">Save</button>
+                        </aura:if>
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+        
+    </div>
+        
+</aura:component>

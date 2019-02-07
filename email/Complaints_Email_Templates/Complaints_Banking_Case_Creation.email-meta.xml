@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>false</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Complaints Banking Case Creation</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Thank you for raising your concern with us and allowing us 
+the opportunity to investigate and resolve your complaint. 
+We have received your complaint and giving it our full attention.
+
+For any future correspondence regarding your complaint, 
+please quote the following complaint 
+reference number: #{!Case.CaseNumber}
+
+We do apologise for any inconvenience that may have been
+caused and would like to assure you that we will provide 
+you with the best quality service at every step of the way.
+
+If you would like to contact us, 
+please feel free to send us an 
+email on complaints_banking@barclays.com.
+
+Yours sincerely
+
+Complaints Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>advpm__AdvoLogix</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>advpm__AdvoLogix</fullName>
+        <fields>Name</fields>
+        <fields>advpm__Type__c</fields>
+        <fields>advpm__Expense_Date__c</fields>
+        <fields>advpm__Total_Amount__c</fields>
+        <fields>advpm__Billing_Status__c</fields>
+        <fields>advpm__Billing_Disposition__c</fields>
+        <label>AdvoLogix</label>
+    </compactLayouts>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>advpm__Billing_Disposition__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Disposition</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Bill</fullName>
+                    <default>true</default>
+                    <label>Bill</label>
+                </value>
+                <value>
+                    <fullName>Do Not Bill</fullName>
+                    <default>false</default>
+                    <label>Do Not Bill</label>
+                </value>
+                <value>
+                    <fullName>Hold</fullName>
+                    <default>false</default>
+                    <label>Hold</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Billing_Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Unprocessed</fullName>
+                    <default>true</default>
+                    <label>Unprocessed</label>
+                </value>
+                <value>
+                    <fullName>Billed</fullName>
+                    <default>false</default>
+                    <label>Billed</label>
+                </value>
+                <value>
+                    <fullName>Not Billed</fullName>
+                    <default>false</default>
+                    <label>Not Billed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Category__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Category</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Communication</fullName>
+                    <default>false</default>
+                    <label>Communication</label>
+                </value>
+                <value>
+                    <fullName>Court Costs</fullName>
+                    <default>false</default>
+                    <label>Court Costs</label>
+                </value>
+                <value>
+                    <fullName>Dining/Entertainment</fullName>
+                    <default>false</default>
+                    <label>Dining/Entertainment</label>
+                </value>
+                <value>
+                    <fullName>Legal Services</fullName>
+                    <default>false</default>
+                    <label>Legal Services</label>
+                </value>
+                <value>
+                    <fullName>Miscellaneous</fullName>
+                    <default>false</default>
+                    <label>Miscellaneous</label>
+                </value>
+                <value>
+                    <fullName>Office</fullName>
+                    <default>false</default>
+                    <label>Office</label>
+                </value>
+                <value>
+                    <fullName>Technology</fullName>
+                    <default>false</default>
+                    <label>Technology</label>
+                </value>
+                <value>
+                    <fullName>Travel</fullName>
+                    <default>false</default>
+                    <label>Travel</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Description__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>advpm__Expense_Amount__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Rate Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Expense_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Expense Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Export_Date_Time__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Export Date/Time</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Exported__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Exported</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Incurred_By__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Timekeeper</label>
+        <referenceTo>advpm__Timekeeper__c</referenceTo>
+        <relationshipLabel>Expenses</relationshipLabel>
+        <relationshipName>Expenses</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Invoice_Number__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Invoice Number</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Expenses</relationshipLabel>
+        <relationshipName>Expenses</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>true</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>advpm__My_Timekeeper_s_Expense__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF($User.Id = advpm__Incurred_By__r.advpm__Staff__c, &quot;True&quot;, &quot;False&quot;)</formula>
+        <label>My Timekeeper&apos;s Expense</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Paid__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Paid</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Payment_Method__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Payment Method</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cash</fullName>
+                    <default>false</default>
+                    <label>Cash</label>
+                </value>
+                <value>
+                    <fullName>Check</fullName>
+                    <default>false</default>
+                    <label>Check</label>
+                </value>
+                <value>
+                    <fullName>Credit Card</fullName>
+                    <default>false</default>
+                    <label>Credit Card</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Payment_Reference__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Payment Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Quantity__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Quantity</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Total_Amount__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( ISBLANK( advpm__Expense_Amount__c ), 0 , advpm__Expense_Amount__c ) *  IF( ISBLANK( advpm__Quantity__c  ), 1 , advpm__Quantity__c  )</formula>
+        <label>Total Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>advpm__Category__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>E101 Copying</fullName>
+                    <default>false</default>
+                    <label>E101 Copying</label>
+                </value>
+                <value>
+                    <fullName>E102 Outside printing</fullName>
+                    <default>false</default>
+                    <label>E102 Outside printing</label>
+                </value>
+                <value>
+                    <fullName>E103 Word processing</fullName>
+                    <default>false</default>
+                    <label>E103 Word processing</label>
+                </value>
+                <value>
+                    <fullName>E104 Facsimile</fullName>
+                    <default>false</default>
+                    <label>E104 Facsimile</label>
+                </value>
+                <value>
+                    <fullName>E105 Telephone</fullName>
+                    <default>false</default>
+                    <label>E105 Telephone</label>
+                </value>
+                <value>
+                    <fullName>E106 Online research</fullName>
+                    <default>false</default>
+                    <label>E106 Online research</label>
+                </value>
+                <value>
+                    <fullName>E107 Delivery services/messengers</fullName>
+                    <default>false</default>
+                    <label>E107 Delivery services/messengers</label>
+                </value>
+                <value>
+                    <fullName>E108 Postage</fullName>
+                    <default>false</default>
+                    <label>E108 Postage</label>
+                </value>
+                <value>
+                    <fullName>E109 Local travel</fullName>
+                    <default>false</default>
+                    <label>E109 Local travel</label>
+                </value>
+                <value>
+                    <fullName>E110 Out-of-town travel</fullName>
+                    <default>false</default>
+                    <label>E110 Out-of-town travel</label>
+                </value>
+                <value>
+                    <fullName>E111 Meals</fullName>
+                    <default>false</default>
+                    <label>E111 Meals</label>
+                </value>
+                <value>
+                    <fullName>E112 Court fees</fullName>
+                    <default>false</default>
+                    <label>E112 Court fees</label>
+                </value>
+                <value>
+                    <fullName>E113 Subpoena fees</fullName>
+                    <default>false</default>
+                    <label>E113 Subpoena fees</label>
+                </value>
+                <value>
+                    <fullName>E114 Witness fees</fullName>
+                    <default>false</default>
+                    <label>E114 Witness fees</label>
+                </value>
+                <value>
+                    <fullName>E115 Deposition transcripts</fullName>
+                    <default>false</default>
+                    <label>E115 Deposition transcripts</label>
+                </value>
+                <value>
+                    <fullName>E116 Trial transcripts</fullName>
+                    <default>false</default>
+                    <label>E116 Trial transcripts</label>
+                </value>
+                <value>
+                    <fullName>E117 Trial exhibits</fullName>
+                    <default>false</default>
+                    <label>E117 Trial exhibits</label>
+                </value>
+                <value>
+                    <fullName>E118 Litigation support vendors</fullName>
+                    <default>false</default>
+                    <label>E118 Litigation support vendors</label>
+                </value>
+                <value>
+                    <fullName>E119 Experts</fullName>
+                    <default>false</default>
+                    <label>E119 Experts</label>
+                </value>
+                <value>
+                    <fullName>E120 Private investigators</fullName>
+                    <default>false</default>
+                    <label>E120 Private investigators</label>
+                </value>
+                <value>
+                    <fullName>E121 Arbitrators/mediators</fullName>
+                    <default>false</default>
+                    <label>E121 Arbitrators/mediators</label>
+                </value>
+                <value>
+                    <fullName>E122 Local counsel</fullName>
+                    <default>false</default>
+                    <label>E122 Local counsel</label>
+                </value>
+                <value>
+                    <fullName>E123 Other professionals</fullName>
+                    <default>false</default>
+                    <label>E123 Other professionals</label>
+                </value>
+                <value>
+                    <fullName>E124 Other</fullName>
+                    <default>false</default>
+                    <label>E124 Other</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Communication</controllingFieldValue>
+                <valueName>E104 Facsimile</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Communication</controllingFieldValue>
+                <valueName>E105 Telephone</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Court Costs</controllingFieldValue>
+                <valueName>E112 Court fees</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Court Costs</controllingFieldValue>
+                <valueName>E113 Subpoena fees</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Court Costs</controllingFieldValue>
+                <valueName>E114 Witness fees</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Court Costs</controllingFieldValue>
+                <valueName>E116 Trial transcripts</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Dining/Entertainment</controllingFieldValue>
+                <valueName>E111 Meals</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <controllingFieldValue>Technology</controllingFieldValue>
+                <valueName>E106 Online research</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E115 Deposition transcripts</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E117 Trial exhibits</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E118 Litigation support vendors</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E119 Experts</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E120 Private investigators</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E121 Arbitrators/mediators</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E122 Local counsel</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Legal Services</controllingFieldValue>
+                <valueName>E123 Other professionals</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Miscellaneous</controllingFieldValue>
+                <valueName>E107 Delivery services/messengers</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Miscellaneous</controllingFieldValue>
+                <valueName>E124 Other</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Office</controllingFieldValue>
+                <valueName>E101 Copying</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Office</controllingFieldValue>
+                <valueName>E102 Outside printing</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Office</controllingFieldValue>
+                <valueName>E103 Word processing</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Office</controllingFieldValue>
+                <valueName>E108 Postage</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Travel</controllingFieldValue>
+                <valueName>E109 Local travel</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Travel</controllingFieldValue>
+                <valueName>E110 Out-of-town travel</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Vendor__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Vendor</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Expenses</relationshipLabel>
+        <relationshipName>Expenses</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Expense</label>
+    <listViews>
+        <fullName>advpm__All</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Expense_Amount__c</columns>
+        <columns>advpm__Expense_Date__c</columns>
+        <columns>advpm__Type__c</columns>
+        <columns>advpm__Category__c</columns>
+        <columns>advpm__Export_Date_Time__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <listViews>
+        <fullName>advpm__Exported_Expense_Entries</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Expense_Amount__c</columns>
+        <columns>advpm__Expense_Date__c</columns>
+        <columns>advpm__Category__c</columns>
+        <columns>advpm__Type__c</columns>
+        <columns>advpm__Export_Date_Time__c</columns>
+        <columns>advpm__Incurred_By__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>advpm__Exported__c</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>Exported Expense Entries</label>
+    </listViews>
+    <listViews>
+        <fullName>advpm__My_Timekeeper_s_Expense</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Total_Amount__c</columns>
+        <columns>advpm__Expense_Date__c</columns>
+        <columns>advpm__Type__c</columns>
+        <columns>advpm__Category__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>advpm__My_Timekeeper_s_Expense__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </filters>
+        <label>My Expenses Logged As Timekeeper</label>
+    </listViews>
+    <listViews>
+        <fullName>advpm__UnExported_Expense_Entries</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Expense_Amount__c</columns>
+        <columns>advpm__Expense_Date__c</columns>
+        <columns>advpm__Category__c</columns>
+        <columns>advpm__Type__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>advpm__Exported__c</field>
+            <operation>equals</operation>
+            <value>0</value>
+        </filters>
+        <label>UnExported Expense Entries</label>
+    </listViews>
+    <nameField>
+        <label>Expense</label>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Expenses</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>advpm__Type__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Category__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Expense_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Quantity__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Expense_Amount__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Incurred_By__c</customTabListAdditionalFields>
+        <listViewButtons>advpm__Export</listViewButtons>
+        <listViewButtons>advpm__Mass_Edit_Update</listViewButtons>
+        <lookupDialogsAdditionalFields>advpm__Type__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Category__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Expense_Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Quantity__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Expense_Amount__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Incurred_By__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Type__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Category__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Expense_Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Quantity__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Expense_Amount__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Incurred_By__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>advpm__Type__c</searchFilterFields>
+        <searchFilterFields>advpm__Category__c</searchFilterFields>
+        <searchFilterFields>advpm__Expense_Date__c</searchFilterFields>
+        <searchFilterFields>advpm__Expense_Amount__c</searchFilterFields>
+        <searchFilterFields>advpm__Incurred_By__c</searchFilterFields>
+        <searchFilterFields>advpm__Invoice_Number__c</searchFilterFields>
+        <searchFilterFields>advpm__Matter__c</searchFilterFields>
+        <searchResultsAdditionalFields>advpm__Type__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Category__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Expense_Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Quantity__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Expense_Amount__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Incurred_By__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>advpm__Export</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Export</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__ExportExpenses</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Mass_Edit_Update</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Mass Edit/Update</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__MassUpdateExpense</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+</CustomObject>

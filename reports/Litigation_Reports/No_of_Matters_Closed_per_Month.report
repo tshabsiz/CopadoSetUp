@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_30242860</developerName>
+        <masterLabel>Closed vs Open Matters</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>advpm__Matter__c.Disposition_Type__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>Absolution</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Appellate Decision Against</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Appellate Decision For</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Arbitration Resulting in Award Against</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Arbitration Resulting in Award For</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Business Rescue / Liquidation (Finalised)</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Court Finding Against</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Court Finding For</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Default Judgement</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Duplicate</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Finding by Regulator Against</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Finding by Regulator For</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Investigation Completed</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Settlement</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Settlement with Regulator (No Penalty)</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Settlement with Regulator (Penalty)</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Summary Judgement</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Withdrawn</sourceValue>
+            </sourceValues>
+            <value>Closed Matters</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumnGrouped</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>CUST_CREATED_DATE</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_TOP</location>
+        <secondaryGroupingColumn>BucketField_30242860</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>advpm__Matter__c.Total_Claim_Value_New__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>No. of Matters Opened / Closed per Month</description>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Matter__c.Matter_Type__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Litigation</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>BucketField_30242860</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Other,Closed Matters</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_30242860</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>CUST_CREATED_DATE</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>No. of Matters Open / Closed per Month</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$advpm__Matter__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

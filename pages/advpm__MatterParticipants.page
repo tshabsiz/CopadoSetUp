@@ -1,0 +1,4 @@
+<apex:page standardController="advpm__Matter__c" tabStyle="advpm__Matter__c" readOnly="true" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" sidebar="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1','Related Participants: '+advpm__Matter__c.Name,'')}">
+    <apex:outputField value="{!advpm__Matter__c.Name}" rendered="false" />
+    <c:ParticipantList recordId="{!advpm__Matter__c.Id}" recordName="{!advpm__Matter__c.Name}" fieldName="advpm__Matter__c" />
+</apex:page>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Complaints_Reporting</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>This sharing Rule is for compliance to see all complaints logged in Salesforce</description>
+        <label>Complaints Reporting</label>
+        <sharedTo>
+            <group>Complaints_Reporting</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Complaint</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Complaints_Share</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Complaints Share</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Client_Service_Centre</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Complaint</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Email_Sharing</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Email Sharing</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Client_Service_Centre</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Email_Status__c</field>
+            <operation>equals</operation>
+            <value>New,Actioned</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>CSC Emails</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Email_Sharing_Cash_Ops</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Email Sharing Cash Ops</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>CSC_Cash_Operations</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Email_Status__c</field>
+            <operation>equals</operation>
+            <value>New,Actioned</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>CSC Emails</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Email_Sharing_Payments</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Email Sharing &quot;Payments&quot;</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>CSC_Payments_Operations</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Email_Status__c</field>
+            <operation>equals</operation>
+            <value>,New,Actioned</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>CSC Emails</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_Complaint_with_team</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Share Complaint with team</label>
+        <sharedTo>
+            <group>Complaints_Team</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Complaint</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>MNPI__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Staff_Error__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+</SharingRules>

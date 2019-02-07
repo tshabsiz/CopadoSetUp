@@ -1,0 +1,221 @@
+<!-- 13/01/2016 C Reinecke US-0839 Added Client Country Filter and Column -->
+<!-- Tonga MM : Added additional columns as requested by client(TB Region,Sub Stage,Product Partner Approval,Product Partner)-->
+<apex:page contentType="application/vnd.ms-excel#PipelineReportExport.xls" cache="true" 
+           standardstylesheets="false" showHeader="false" controller="PipelineReportController" readOnly="true">
+    
+    <apex:dataTable value="{!ExcelData}" var="opty">
+        <apex:column headerValue="{!$Label.lbl_OpportunityName}">
+            <apex:outputField value="{!opty.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Name.Label}">
+            <apex:outputField value="{!opty.Account.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Account_Name__c.Label}">
+            <apex:outputField value="{!opty.Account_Name__r.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$Label.lbl_Type}">
+            <apex:outputField value="{!opty.RecordType.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Client_Country__c.Label}">
+            <apex:outputField value="{!opty.Account.Client_Country__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Client_Region__c.Label}">
+            <apex:outputField value="{!opty.Account.Client_Region__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Transactional_Banking_Region__c.Label}" 
+                     title="{!opty.Account.Transactional_Banking_Region__c}">
+            <apex:outputField value="{!opty.Account.Transactional_Banking_Region__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Segment__c.Label}">
+            <apex:outputField value="{!opty.Account.Segment__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Account.fields.Industry.Label}">
+            <apex:outputField value="{!opty.Account.Industry}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Product2.Label} 1">
+            <apex:outputField value="{!opty.OpportunityLineItems[0].PricebookEntry.Product2.Name}" 
+                              rendered="{!opty.OpportunityLineItems.size > 0}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Product2.Label} 2">
+            <apex:outputField value="{!opty.OpportunityLineItems[0].Product_Level_2__r.Name}" 
+                              rendered="{!opty.OpportunityLineItems.size > 0}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Product2.Label} 3">
+            <apex:outputField value="{!opty.OpportunityLineItems[0].Product_Level_3__r.Name}" 
+                              rendered="{!opty.OpportunityLineItems.size > 0}"/>
+        </apex:column>
+        <apex:column headerValue="{!$Label.lbl_CoverageTeam}">
+            <apex:outputField value="{!opty.Account.Team_F__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$Label.lbl_CoverageBanker}">
+            <apex:outputField value="{!opty.Account.Owner.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Opportunity_Country__c.Label}" >
+            <apex:outputField value="{!opty.Opportunity_Country__c}"/>
+        </apex:column>
+        
+        <apex:column headerValue="{!$Label.lbl_OpportunityOwner}">
+            <apex:outputField value="{!opty.Owner.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.ProductPartner__c.Label}">
+            <apex:outputField value="{!opty.ProductPartner__r.Name}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.ProductPartnerApprovalStatus__c.Label}" >
+            <apex:outputField value="{!opty.ProductPartnerApprovalStatus__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.StageName.Label}">
+            <apex:outputField value="{!opty.StageName}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.SubStage__c.Label}">
+            <apex:outputField value="{!opty.SubStage__c}"/>
+        </apex:column>
+        <apex:column headerValue="{!$Label.lbl_FacilitySizeBalance} ({!currencyIsoCode})" styleClass="alignRight">
+            <apex:outputText value="{0, number, 0.00}">
+                <apex:param value="{!opty.Total_Balance_Facility_Size__c}" />
+            </apex:outputText>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}">
+        	<apex:outputText value="{0, number, 0.00}" 
+                             rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Hold_Size__c != NULL}">
+            	<apex:param value="{!opty.OpportunityLineItems[0].Hold_Size__c}" />
+            </apex:outputText>
+        </apex:column>      
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.LoanType__c.Label}"
+        			 styleClass="alignCenter">
+        	<apex:outputText value="{!opty.OpportunityLineItems[0].LoanType__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].LoanType__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.RefinanceIncreaseDecrease__c.Label}"
+        		     styleClass="alignCenter">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].RefinanceIncreaseDecrease__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].RefinanceIncreaseDecrease__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Underwrite__c.Label}"
+        			 styleClass="alignCenter">
+        	<apex:outputText value="{!IF(opty.OpportunityLineItems[0].Underwrite__c, 'YES', 'NO')}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Underwrite__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Gross_Margin__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Gross_Margin__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Gross_Margin__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Ftp__c.Label}"
+                     styleClass="alignRight">
+        	<apex:outputText value="{!opty.OpportunityLineItems[0].Ftp__c}"
+                             rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Ftp__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Margin__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Margin__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Margin__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Arranging_Fee__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Arranging_Fee__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Other_Fees__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Other_Fees__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Committment_Fee__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Committment_Fee__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Committment_Fee__c != NULL}"/>
+        </apex:column>          
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Annual_Facility_Fee__c.Label}" 
+                     styleClass="alignRight">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].Annual_Facility_Fee__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Annual_Facility_Fee__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.DG_TTC__c.Label}"
+                     styleClass="alignCenter">
+        	<apex:outputField value="{!opty.OpportunityLineItems[0].DG_TTC__c}"
+                              rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].DG_TTC__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.LGD__c.Label}"
+                     styleClass="alignCenter">
+        	<apex:outputText value="{!opty.OpportunityLineItems[0].LGD__c}"
+                             rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].LGD__c != NULL}"/>
+        </apex:column>
+        <apex:column headerValue="1st {!$ObjectType.OpportunityLineItem.fields.RWA__c.Label}">
+            <apex:outputText value="{0, number, 0.00}" 
+                             rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].RWA__c != NULL}">
+            	<apex:param value="{!opty.OpportunityLineItems[0].RWA__c}" />
+            </apex:outputText>
+        </apex:column>  
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.First_Drawdown__c.Label}"
+                     styleClass="alignCenter">
+            <apex:outputText value="{0, date, yyyy/MM/dd}">
+            	<apex:param value="{!opty.First_Drawdown__c}" /> 
+            </apex:outputText>
+        </apex:column>        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Income_this_Year__c.Label} ({!currencyIsoCode})" 
+                     styleClass="alignRight">
+            <apex:outputText value="{0, number, 0.00}">
+                <apex:param value="{!opty.Income_this_Year__c}" />
+            </apex:outputText>
+        </apex:column>
+        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}  ({!currencyIsoCode})" 
+                     styleClass="alignRight">
+            <apex:outputText value="{0, number, 0.00}">
+                <apex:param value="{!opty.Annualised_Income__c}" />
+            </apex:outputText>
+        </apex:column>
+        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Probability.Label}" 
+                     styleClass="alignRight">
+            <apex:outputField value="{!opty.Probability}"/>
+        </apex:column>
+        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Weighted_Income_this_Year__c.Label} ({!currencyIsoCode})" 
+                     styleClass="alignRight">
+            <apex:outputText value="{0, number, 0.00}">
+                <apex:param value="{!opty.Weighted_Income_this_Year__c}" />
+            </apex:outputText>
+        </apex:column>
+        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Weighted_Annualised_Income__c.Label} ({!currencyIsoCode})" 
+                     styleClass="alignRight">
+            <apex:outputText value="{0, number, 0.00}">
+                <apex:param value="{!opty.Weighted_Annualised_Income__c}" />
+            </apex:outputText>
+        </apex:column>
+        
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.CloseDate.Label}" 
+                     styleClass="alignCenter">
+            <apex:outputText value="{0, date, yyyy/MM}">
+                <apex:param value="{!opty.CloseDate}" /> 
+            </apex:outputText>
+        </apex:column>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.CreatedDate.Label}" styleClass="alignCenter">
+            <apex:outputText value="{0, date, yyyy/MM/dd}">
+                <apex:param value="{!opty.CreatedDate}" /> 
+            </apex:outputText>
+        </apex:column>
+        <apex:column headerValue="{!$Label.lbl_NumberOfDaysSinceStageChanged}" styleClass="alignRight">
+            <apex:outputField value="{!opty.Days_Since_Last_Stage_Change__c}"/>
+        </apex:column>
+        <apex:repeat value="{!NUM_OF_OPPTEAMMEMBERS}" var="optyTeamMember">
+            <apex:column headerValue="Opportunity Team Member {!optyTeamMember} Team" headerClass="alignRight">
+                <apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].User.Team__c}" 
+                                  rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+            </apex:column>
+            <apex:column headerValue="Opportunity Team Member {!optyTeamMember} Name">
+                <apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].Name}" 
+                                  rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+            </apex:column>
+            <apex:column headerValue="Opportunity Team Member {!optyTeamMember} Role">
+                <apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].TeamMemberRole}" 
+                                  rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+            </apex:column>
+        </apex:repeat>
+        <apex:column headerValue="{!$ObjectType.Opportunity.fields.Push_Counter__c.Label}">
+            <apex:outputField value="{!opty.Push_Counter__c}"/>
+        </apex:column>
+   </apex:dataTable>
+    
+</apex:page>

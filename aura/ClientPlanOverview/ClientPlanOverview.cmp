@@ -1,0 +1,309 @@
+<aura:component controller="ClientPlanOverviewControllerMobile">
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.onAfterRendering}"/>
+    <aura:handler event="aura:locationChange" action="{!c.update}"/>
+    
+    <ltng:require styles="/resource/jquery_ui/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.min.css,/resource/primitives/primitives/primitives.latest.css" />
+    <ltng:require scripts="/resource/jquery_1_11,/resource/jquery_ui/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js,/resource/primitives/primitives/primitives.latest.js" afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <c:ClientPlanHeader tabId="2" planId="{!v.planId}"/>
+                
+                <div id="wholePage">
+                    <div id="clientOverviewLabel" class="sectionLabel" onclick="{!c.onClientOverviewLabelClicked}">
+                        <span class="slds-align-middle">Client overview</span>
+                    </div>
+                    <div id="clientOverview" aura:id="clientOverview" class="section toggle">
+                        <div class="paddingTop1em richtextWrapper">
+                            <div class="richTextMenu">
+                                <span class="slds-align-middle">Sector overview</span>
+                                <div aura:id="sectorRTMenu" class="slds-dropdown-trigger slds-float--right">
+                                    <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li class="slds-dropdown__item" onclick="{!c.onEditSectorRTClicked}">
+                                                <a href="javascript:void(0)" role="menuitem">
+                                                    <p class="slds-truncate">Edit</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="richtextEditorWrapper">
+                                <ui:outputRichText value="{!v.clientPlan.Sector_Overview__c}" />
+                            </div>
+                        </div>
+                        <div class="paddingTop1em richtextWrapper">
+                            <div class="richTextMenu">
+                                <span class="slds-align-middle">Client overview</span>
+                                <div aura:id="clientRTMenu" class="slds-dropdown-trigger slds-float--right">
+                                    <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li class="slds-dropdown__item" onclick="{!c.onEditClientRTClicked}">
+                                                <a href="javascript:void(0)" role="menuitem">
+                                                    <p class="slds-truncate">Edit</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="richtextEditorWrapper">
+                                <ui:outputRichText value="{!v.clientPlan.Client_Overview__c}"/>
+                            </div>
+                        </div>
+                        
+                        <div id="swot" class="slds-tile slds-hint-parent paddingTop1em">
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate scoreLabel">
+                                <p class="slds-tile__title slds-truncate">Strengths of client</p>
+                                
+                                <button class="slds-button slds-button--icon-border" onclick="{!c.onAddStrengthClicked}">
+                                    <c:SVG class="slds-button__icon"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                </button>
+                            </div>
+                            
+                            <aura:iteration items="{!v.stregths}" var="s">
+                                <div class="slds-tile slds-hint-parent score strength">
+                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                        <p class="slds-tile__title slds-truncate"><strong>{!s.Name}</strong></p>
+                                        <div class="slds-dropdown-trigger">
+                                            <button class="slds-button slds-button--icon-container">
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'edit-' + s.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onEditStrengthClicked}">Edit</a>
+                                                    </li>
+                                                    <li id="{!'remove-' + s.Id}" class="slds-dropdown__item">
+                                                        <a id="{!'remove-' + s.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onRemoveScoreClicked}">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile__detail scoreBody">{!s.Description__c}</div>
+                                </div>
+                            </aura:iteration>
+                            
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate scoreLabel">
+                                <p class="slds-tile__title slds-truncate">Weaknesses of client</p>
+                                
+                                <button class="slds-button slds-button--icon-border" onclick="{!c.onAddWeaknessClicked}">
+                                    <c:SVG class="slds-button__icon"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                </button>
+                            </div>
+                            
+                            <aura:iteration items="{!v.weaknesses}" var="w">
+                                <div class="slds-tile slds-hint-parent score weakness">
+                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                        <p class="slds-tile__title slds-truncate"><strong>{!w.Name}</strong></p>
+                                        <div class="slds-dropdown-trigger">
+                                            <button class="slds-button slds-button--icon-container">
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'edit-' + w.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onEditWeaknessClicked}">Edit</a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'remove-' + w.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onRemoveScoreClicked}">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile__detail scoreBody">{!w.Description__c}</div>
+                                </div>
+                            </aura:iteration>
+                            
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate scoreLabel">
+                                <p class="slds-tile__title slds-truncate">Opportunities of client</p>
+                                
+                                <button class="slds-button slds-button--icon-border" onclick="{!c.onAddOpportunityClicked}">
+                                    <c:SVG class="slds-button__icon"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                </button>
+                            </div>
+                            
+                            <aura:iteration items="{!v.opportunities}" var="o">
+                                <div class="slds-tile slds-hint-parent score opportunity">
+                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                        <p class="slds-tile__title slds-truncate"><strong>{!o.Name}</strong></p>
+                                        <div class="slds-dropdown-trigger">
+                                            <button class="slds-button slds-button--icon-container">
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'edit-' + o.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onEditOpportunityClicked}">Edit</a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'remove-' + o.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onRemoveScoreClicked}">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile__detail scoreBody">{!o.Description__c}</div>
+                                </div>
+                            </aura:iteration>
+                            
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate scoreLabel">
+                                <p class="slds-tile__title slds-truncate">Threats of client</p>
+                                
+                                <button class="slds-button slds-button--icon-border" onclick="{!c.onAddThreatClicked}">
+                                    <c:SVG class="slds-button__icon"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                </button>
+                            </div>
+                            
+                            <aura:iteration items="{!v.threats}" var="t">
+                                <div class="slds-tile slds-hint-parent score threat">
+                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                        <p class="slds-tile__title slds-truncate"><strong>{!t.Name}</strong></p>
+                                        <div class="slds-dropdown-trigger">
+                                            <button class="slds-button slds-button--icon-container">
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'edit-' + t.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onEditThreatClicked}">Edit</a>
+                                                    </li>
+                                                    <li class="slds-dropdown__item">
+                                                        <a id="{!'remove-' + t.Id}" class="slds-truncate" role="menuitem" onclick="{!c.onRemoveScoreClicked}">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile__detail scoreBody">{!t.Description__c}</div>
+                                </div>
+                            </aura:iteration>
+                            
+                        </div>
+                    </div>
+                    
+                    <div id="companyOrganogramLabel" class="sectionLabel" onclick="{!c.onCompanyOrganogramLabelClicked}">
+                        Company organogram
+                    </div>
+                    <div id="companyOrganogram" aura:id="companyOrganogram" class="section">
+                        
+                        <aura:if isTrue="{!v.showPlaceholder}">
+                            
+                            <aura:if isTrue="{!v.uploadImage}">
+                                
+                                <div id="imageUploadPanel">
+                                    <input type="file" class="file" aura:id="file" />
+                                    <button class="slds-button slds-button--brand floatRight" onclick="{!c.onBeforeUploadImage}">
+                                        Save
+                                    </button>
+                                </div>
+                                
+                                <aura:set attribute="else">
+                                    <div id="orgStructurePlaceholderWrapper">
+                                        <div id="orgStructurePlaceholder">
+                                            <c:SVG class="slds-slds-icon slds-icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#company" />
+                                            <div id="orgStructurePlaceholderLabel">Organogram</div>
+                                            <div class="buttonWrapper" onclick="{!c.showImageUpload}">
+                                                <button class="slds-button slds-button--brand">Upload image</button>
+                                            </div>
+                                            <div class="buttonWrapper" onclick="{!c.onBeforeCreateHierarchy}">
+                                                <button class="slds-button slds-button--brand">Create hierarchy</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!v.imageId}">
+                                    
+                                    <img id="organogramImage" src="{!'/servlet/servlet.FileDownload?file=' + v.imageId}" />
+                                    
+                                    <div id="organogramImageButtonsWrapper">
+                                        <button class="slds-button slds-button--brand floatRight" onclick="{!c.onBeforeDeleteImage}">Delete photo</button>
+                                    </div>
+                                    
+                                    <aura:set attribute="else">
+                                        <div id="diagramWrapper">
+                                            <div id="diagram" style="width: 100%; height: 400px;"/>
+                                        </div>
+                                        
+                                        <div id="organogramButtons">
+                                            <div id="organogramButtonsTop" class="organogramArrowKeyWrapper">
+                                                <button class="slds-button slds-button--neutral floatRight" onclick="{!c.moveDiagramUp}">
+                                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronup" />
+                                                </button>
+                                            </div>
+                                            <div id="organogramButtonsMiddle">
+                                                <button class="slds-button slds-button--neutral" onclick="{!c.zoomIn}">
+                                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#zoomin" />
+                                                </button>
+                                                <button class="slds-button slds-button--neutral" onclick="{!c.zoomOut}">
+                                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#zoomout" />
+                                                </button>
+                                                <div class="floatRight">
+                                                    <button class="slds-button slds-button--neutral " onclick="{!c.moveDiagramLeft}">
+                                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronleft" />
+                                                    </button>
+                                                    <button class="slds-button slds-button--neutral" onclick="{!c.moveDiagramRight}">
+                                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronright" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="organogramButtonsBottom" class="organogramArrowKeyWrapper">
+                                                <button class="slds-button slds-button--neutral floatRight" onclick="{!c.moveDiagramDown}">
+                                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevrondown" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

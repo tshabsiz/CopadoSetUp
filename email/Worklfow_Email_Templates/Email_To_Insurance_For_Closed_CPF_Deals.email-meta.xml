@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Email To Insurance For Closed CPF Deals</name>
+    <style>freeForm</style>
+    <subject>Closed Opportunity : {!Opportunity.Name}</subject>
+    <textOnly>Good Day Team,
+
+
+Please note that the Commercial Property Finance colleagues have successfully closed the following deal:
+
+
+Relationship Name  : {!Opportunity.Account}
+Relationship Owner  : {!Account.OwnerFullName}
+Relationship Owner&apos;s Email : {!Account.OwnerEmail}
+Relationship Contact : {!Contact.Name}
+Opportunity Name : {!Opportunity.Name}
+
+
+
+
+Kind Regards
+Salesforce Support
++27 (0) 11 895 6002</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

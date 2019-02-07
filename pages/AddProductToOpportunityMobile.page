@@ -1,0 +1,584 @@
+<apex:page standardController="Opportunity" extensions="AddProductToOpportunityRemoteController"
+    showHeader="false" standardStylesheets="false" docType="html-5.0" applyHtmlTag="false" applyBodyTag="false"
+>
+
+<apex:styleSheet value="{!URLFOR($Resource.MobileSample_Resources_jQueryMobile, 'jquery.mobile-1.3.0.css')}"/>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+
+<head>
+<script type="text/javascript">
+
+var addEmptyInfo = function(domId) {
+    $('#' + domId).append($('<option>', { value : ''}).text('-- Empty --'));
+}
+
+var hideErrorPanel = function() {
+    $('#responseErrors').hide();
+};
+
+var displayError = function(event) {
+    $('#responseErrors').show();
+    $('#responseErrors').html(event.message);
+};
+
+var displayValues = function(domId, result) {
+    if (result.length == 0) {
+        addEmptyInfo(domId);
+        return;
+    }
+    $('#' + domId).append($('<option>', { value: '' }).text('-- Select --'));
+    
+    for(var i = 0; i < result.length; i++) {
+        var key = result[i].Id;
+        var value = result[i].Name;
+        $('#' + domId).append($('<option>', { value : key }).text(value));
+    }
+};
+
+var handleResult2 = function(result, event) { 
+    if (event.status) {
+         displayValues('select-product-2', result);
+         addEmptyInfo('select-product-3');
+    } else {
+        displayError(event);
+    }
+};
+
+var handleResult3 = function(result, event) { 
+    if (event.status) {
+         displayValues('select-product-3', result);
+    } else {
+        displayError(event);
+    }
+};
+
+var changeProducts = function(lvl) {
+    $('#select-product-3').empty();
+    hideErrorPanel();
+        
+    if (lvl == 1){
+        $('#select-product-2').empty();
+        
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.AddProductToOpportunityRemoteController.getProductsLevel2}',
+            $('#select-product-1').val(), 
+            handleResult2
+        );
+    } else {
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.AddProductToOpportunityRemoteController.getProductsLevel3}',
+            $('#select-product-2').val(), 
+            handleResult3
+        );
+    }
+};
+
+var fixDecimal = function(num) {  
+    return +(Math.round(num + 'e+0')  + 'e-0');
+};
+
+var setNetFacilityBalance = function(){
+    if($('#Net_Facility_Balance__c').length > 0){
+        var newFacilityBalance = $('#New_Facility_Balance__c').val().replace(/\,/g,'');
+        var existingFacilityBalance = $('#Existing_Facility_Balance__c').val().replace(/\,/g,'');
+    
+        newFacilityBalance = fixDecimal(newFacilityBalance);
+        existingFacilityBalance = fixDecimal(existingFacilityBalance);
+
+        var finalVal = parseFloat(newFacilityBalance) - parseFloat(existingFacilityBalance);
+        if(!isNaN(finalVal)) {
+            $('#Net_Facility_Balance__c').val(fixDecimal(finalVal));
+            $('#netFacilityBalanceHiddenF').val(fixDecimal(finalVal));
+        }
+    }
+};
+
+var setNewFacilityBalance = function() {
+    var balance = $('#Balance__c').val().replace(/\,/g,'');
+    $('#New_Facility_Balance__c').val(balance);
+    $('#newFacilityBalanceHiddenF').val(balance);
+    setNetFacilityBalance();
+};
+
+var setInitialValues = function(){
+    $('#Annualised_Income__c').val($('#annualisedIncomeHiddenF').val());
+    $('#Income_this_Year__c').val($('#incomeThisYearHiddenF').val());
+    $('#New_Facility_Balance__c').val($('#newFacilityBalanceHiddenF').val());
+    //Check if field is rendered on page
+    if($('#Net_Facility_Balance__c').length > 0){
+        $('#Net_Facility_Balance__c').val($('#netFacilityBalanceHiddenF').val());
+    }
+    $('#New_Facility__c').val($('#newFalcilityHiddenF').val());
+};
+
+var updateAnnualValue = function() {
+    var balance = $('#Balance__c').val().replace(/\,/g,'');
+    var margin = $('#Margin__c').val();
+    var estimatedUtilisation = $('#Estimated_Utilisation__c').val();
+    var recurringFeesPeriod = $('#Recurring_Fees_Period__c').val();
+    var recurringFees = $('#Recurring_Fees__c').val().replace(/\,/g,'');
+    var upfrontFees = $('#Fees__c').val().replace(/\,/g,'');
+
+    // Unify decimal point precision
+    balance = fixDecimal(balance);
+    margin = margin / 100; 
+    estimatedUtilisation = estimatedUtilisation / 100;
+    upfrontFees = fixDecimal(upfrontFees);
+    //Calculate Recurring Fees
+    var annualisedFees = 0;
+    var firstYearFees = 0;
+    if(recurringFeesPeriod == "Monthly"){
+        annualisedFees = parseFloat(recurringFees)*12;
+        firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear};
+    } else if(recurringFeesPeriod == "Quarterly"){
+        annualisedFees = parseFloat(recurringFees)*4;
+        firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear} / 3;
+    } else if(recurringFeesPeriod == "Semi-Annually"){
+        annualisedFees = parseFloat(recurringFees)*2;
+        firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear} / 6;
+    } else if(recurringFeesPeriod == "Annually"){
+        annualisedFees = parseFloat(recurringFees);
+    } 
+    annualisedFees = fixDecimal(annualisedFees);
+    firstYearFees = fixDecimal(firstYearFees);
+
+    var nii = parseFloat(balance) * parseFloat(margin) * parseFloat(estimatedUtilisation);
+    var annualisedIncome = nii + annualisedFees + parseFloat(upfrontFees);
+
+    if(!isNaN(annualisedIncome)) {
+        var firstYearIncome = nii * {!daysFromCloseDateToEndOfYear} / 365;
+        firstYearIncome += firstYearFees + parseFloat(upfrontFees);
+        $('#Annualised_Income__c').val(fixDecimal(annualisedIncome));
+        $('#Income_this_Year__c').val(fixDecimal(firstYearIncome));
+        $('#New_Facility__c').val(fixDecimal(annualisedIncome));
+        $('#annualisedIncomeHiddenF').val(fixDecimal(annualisedIncome));
+        $('#incomeThisYearHiddenF').val(fixDecimal(firstYearIncome));
+        $('#newFalcilityHiddenF').val(fixDecimal(annualisedIncome));
+    }
+};
+
+var afterSave = function(result, event) {
+    Sfdc.canvas.publisher.subscribe(saveAction);
+    
+    if (event.status) {
+        Sfdc.canvas.publisher.publish({
+            name: "publisher.close",
+            payload:{ refresh:"true" }
+        });
+    } else {
+        displayError(event);
+    }
+};
+
+var afterSaveCustom = function(result, event) {
+    if (event.status) {
+        window.history.go(-2);
+    } else {
+        displayError(event);
+    }
+};
+
+var getDoubleVal = function(domId) {
+    return $('#' + domId).val() == '' ? 0 : $('#' + domId).val();
+};
+
+var saveData = function(callback) {
+    hideErrorPanel();
+    
+    Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.AddProductToOpportunityRemoteController.createProduct}',
+        $('#lineId').val(),
+        $('#oppIdHiddenF').val(), 
+        $('#select-product-1').val(), 
+        $('#select-product-2').val(), 
+        $('#select-product-3').val(), 
+        getDoubleVal('Fees__c'), 
+        getDoubleVal('Annualised_Income__c'),
+        getDoubleVal('Balance__c'),
+        $('#Booking_Centre__c').val(),
+        getDoubleVal('Estimated_Utilisation__c'),
+        getDoubleVal('Existing_Facility_Balance__c'),
+        getDoubleVal('Income_this_Year__c'),
+        getDoubleVal('Net_Facility_Balance__c'),
+        getDoubleVal('Margin__c'),
+        getDoubleVal('New_Facility__c'),
+        getDoubleVal('New_Facility_Balance__c'),
+        getDoubleVal('ROEC__c'),
+        getDoubleVal('RoRWA__c'),
+        getDoubleVal('Terms_Years__c'),
+        getDoubleVal('Recurring_Fees__c'),
+        $('#Recurring_Fees_Period__c').val(),
+        callback
+    );
+    
+};
+
+var saveAction = { name: "publisher.post", onData: function(e) {
+    saveData(afterSave);
+}};
+
+$(document).ready(function() {
+    setInitialValues();
+    
+    if ($('#select-product-2 > option').length == 0) {
+        addEmptyInfo('select-product-2');
+    }
+    if ($('#select-product-3 > option').length == 0) {
+        addEmptyInfo('select-product-3');
+    }
+    
+    $('#select-product-1').val($('#productId').val());
+    $('#select-product-2').val($('#productId2').val());
+    $('#select-product-3').val($('#productId3').val());
+    
+    $('#Booking_Centre__c').val($('#bookingCentre').val());
+    $('#Recurring_Fees_Period__c').val($('#recurringFeesPeriod').val());
+    
+    $('#select-product-1').change(function() { changeProducts(1); });
+    $('#select-product-2').change(function() { changeProducts(2); });
+    $('#Recurring_Fees_Period__c').change(function() { updateAnnualValue(); });
+    
+    $('.button-save').click(function() {
+        saveData(afterSaveCustom);
+    });
+    $('.button-cancel').click(function() {
+        var event = {name:"s1.navigateToObject", payload: {entityName: "Opportunity", Id: "{!oppId}"}};
+        Sfdc.canvas.publisher.publish(event);
+    });
+     
+    
+    if ($('#lineId').val() != '') {
+        $('#select-product-1').attr('disabled', true);
+        $('.buttons').show();
+    } else {
+        $('.buttons').hide();
+    }
+});
+
+
+Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+    onData: function(e) {
+        Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+}});
+Sfdc.canvas.publisher.subscribe(saveAction);
+    
+</script>
+<style>
+
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'ProximaNovaSoft-Regular','Helvetica Neue';
+}
+
+label {
+    font-size: 12px;
+    color: #696e71;
+    padding-top: 8px;
+    display: block;
+    min-width: 100px;
+}
+
+input, textarea {
+    -webkit-appearance: none;
+    width:100%;
+    font-size: 15px;
+    color: #3c3d3e;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    line-height: 27px;
+    border: 1px solid #cfd0d2;
+    border-radius: 5px;
+    background-color: #fff;
+    margin: 2px 25px 2px 0px;
+}
+ 
+input:focus, textarea:focus {
+    border: 1px solid #bbc0c4;
+    background-color: #fff;
+    outline-style: none;
+}
+
+input:disabled {
+    background: none;
+} 
+select {
+    -webkit-appearance: none;
+    background-color: #fff;
+    
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9ImRvd25fMV8iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNjRweCIgaGVpZ2h0PSI2NHB4IiB2aWV3Qm94PSIwIDAgNjQgNjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDY0IDY0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIGlkPSJEb3duX3g0MF8yeC5wbmdfMV8iPg0KCTxnIGlkPSJkaXJlY3Rkb3duX2NvcHkiPg0KCQk8Zz4NCgkJCTxwYXRoIGZpbGw9IiM5Njk4OTkiIGQ9Ik01NS4wNjYsMTcuODY2Yy0wLjUzMy0wLjkzNC0xLjQ2Ny0xLjUzMy0yLjUzMy0xLjZDNTIuMzk4LDE2LjE5OSw0Mi4zOTgsMTUuNiwzMiwxNS42DQoJCQkJYy0xMC4zOTksMC0yMC40LDAuNi0yMC41MzMsMC42NjdjLTEuMDY2LDAuMDY2LTIuMDY2LDAuNjY2LTIuNTMzLDEuNmMtMC41MzMsMC45MzQtMC41MzMsMi4wNjYsMCwzDQoJCQkJYzcuOTMzLDE0LjA2NiwyMC40LDI2LjI2NywyMC45MzMsMjYuNzMyYzEuMiwxLjA2NiwzLjA2NiwxLjA2Niw0LjI2NywwYzAuNTMzLTAuNDY3LDEzLTEyLjY2NiwyMC45MzMtMjYuNzMyDQoJCQkJQzU1LjYsMTkuOTMzLDU1LjYsMTguOCw1NS4wNjYsMTcuODY2eiIvPg0KCQk8L2c+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=);
+    background-repeat: no-repeat;
+    background-position: 95% 50%;
+    background-size: 16px 16px,100% 100%;
+    color: #3c3d3e;
+    line-height: 27px;
+    font-size: 15px;
+    width: 100%;
+    height: 43px;
+    padding: 7px 14px;
+    margin: 2px 0px 2px 0px;
+    border: 1px solid #cfd0d2;
+    border-radius: 5px;
+}
+
+.pageblock {
+    background-color: #fff;
+    color: black;
+    margin-top: 7px;
+    padding: 7px;
+    font-size: 13px;
+    text-transform: uppercase;
+    line-height: 20px;
+    border-radius: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+#responseErrors {
+    background-color: #fff;
+    color: red;
+    margin-top: 7px;
+    padding: 7px;
+    font-size: 13px;
+    line-height: 20px;
+    border-radius: 5px;
+    border: 1px solid red;
+    display: none;
+}
+
+.info {
+    font-size: 13px;
+    color: red;
+}
+
+@media all and (max-width: 35em) {
+    .ui-block-a,
+    .ui-block-b,
+    .ui-block-c,
+    .ui-block-d,
+    .ui-block-e {
+        width: 100% !important;
+        float: none;
+        margin: 0px !important;
+    }
+}
+
+@media all and (min-width: 35em) {
+    .ui-block-b,
+    .ui-block-c,
+    .ui-block-d,
+    .ui-block-e {
+        padding-left: 10px;
+    }
+}
+
+.buttons {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.button-cancel {
+    color: #FFF;
+    background-color: #c0c0c0;
+    border-color: #204D74;
+}
+.button-save {
+    color: #FFF;
+    background-color: #337AB7;
+    border-color: #204D74;
+}
+
+.btn {    
+    text-decoration: none;
+    
+    display: inline-block;
+padding: 6px 12px;
+margin-bottom: 0px;
+font-size: 14px;
+font-weight: 400;
+line-height: 1.42857;
+text-align: center;
+white-space: nowrap;
+vertical-align: middle;
+cursor: pointer;
+-moz-user-select: none;
+background-image: none;
+border: 1px solid transparent;
+border-radius: 4px;
+}
+
+</style>
+<script>
+
+</script>
+</head>
+<body>
+
+<div data-role="page" id="page1">
+<div role="main" class="ui-content">
+<div class="ui-grid-solo">
+    <input type="hidden" value="{!oppId}" id="oppIdHiddenF"/>
+
+    <input type="hidden" value="{!oppLine.Id}" id="lineId"/>
+    <input type="hidden" value="{!oppLine.Product2Id}" id="productId"/>
+    <input type="hidden" value="{!oppLine.Product_Level_2__c}" id="productId2"/>
+    <input type="hidden" value="{!oppLine.Product_Level_3__c}" id="productId3"/>
+    <input type="hidden" value="{!oppLine.Booking_Centre__c}" id="bookingCentre"/>
+    <input type="hidden" value="{!oppLine.Recurring_Fees_Period__c}" id="recurringFeesPeriod"/>
+    
+    <input type="hidden" value="{!oppLine.Annualised_Income__c}" id="annualisedIncomeHiddenF"/>
+    <input type="hidden" value="{!oppLine.Income_this_Year__c}" id="incomeThisYearHiddenF"/>
+    <input type="hidden" value="{!oppLine.New_Facility_Balance__c}" id="newFacilityBalanceHiddenF"/>
+    <input type="hidden" value="{!oppLine.Net_Facility_Balance__c}" id="netFacilityBalanceHiddenF"/>
+    <input type="hidden" value="{!oppLine.New_Facility__c}" id="newFalcilityHiddenF"/>    
+            
+    <div class="buttons">
+        <a href="#" class="btn button-cancel" onclick="window.history.go(-4);">Cancel</a>
+        <a href="#" class="btn button-save">Save</a>
+    </div>
+
+
+    <div class="info">
+        {!$Label.lbl_AddProductToOpportunityHelpText}
+    </div>
+
+
+    <div id="responseErrors"></div>
+</div>
+
+<div class="ui-grid-a">
+<div class="ui-block-a">
+    <div>
+        <label for="select-product-1 labelCol">{!$ObjectType.Product2.Label}</label>
+        <select id="select-product-1">
+           <apex:repeat value="{!products}" var="prod">
+               <option value="{!prod.value}">{!prod.label}</option>
+           </apex:repeat>
+        </select>
+    </div>
+
+    <div >
+        <label for="select-product-2">{!$ObjectType.Product_Level_2__c.Label}</label>
+        <select id="select-product-2">
+            <apex:repeat value="{!products2}" var="prod">
+               <option value="{!prod.value}">{!prod.label}</option>
+           </apex:repeat>
+        </select>
+    </div>
+    
+    <div>
+        <label for="select-product-3">{!$ObjectType.Product_Level_3__c.Label}</label>
+        <select id="select-product-3">
+            <apex:repeat value="{!products3}" var="prod">
+               <option value="{!prod.value}">{!prod.label}</option>
+           </apex:repeat>
+        </select>
+    </div>
+    
+    <div>
+        <label for="Booking_Centre__c">{!$ObjectType.OpportunityLineItem.fields.Booking_Centre__c.Label}</label>
+        <select id="Booking_Centre__c">
+            <apex:repeat value="{!bookingCentres}" var="prod">
+               <option value="{!prod.value}">{!prod.label}</option>
+           </apex:repeat>
+        </select>
+    </div>
+
+    <div>
+        <label for="Annualised_Income__c">{!$ObjectType.OpportunityLineItem.fields.Annualised_Income__c.Label}</label>
+        <input type="text" disabled="true" id="Annualised_Income__c" value="{!oppLine.Annualised_Income__c}" />
+    </div>
+    
+    <div>
+        <label for="Balance__c">{!$ObjectType.OpportunityLineItem.fields.Balance__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Balance__c" onchange="setNewFacilityBalance();updateAnnualValue();" value="{!oppLine.Balance__c}" />
+    </div>
+    
+    <div>
+        <label for="Margin__c">{!$ObjectType.OpportunityLineItem.fields.Margin__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Margin__c" onchange="updateAnnualValue();" value="{!oppLine.Margin__c}" />
+    </div>
+        
+    <div>
+        <label for="Estimated_Utilisation__c">{!$ObjectType.OpportunityLineItem.fields.Estimated_Utilisation__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Estimated_Utilisation__c" onchange="updateAnnualValue();" value="{!oppLine.Estimated_Utilisation__c}" />
+    </div>
+</div>
+<div class="ui-block-b">
+        
+    <div>
+        <label for="Fees__c">{!$ObjectType.OpportunityLineItem.fields.Fees__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Fees__c" onchange="updateAnnualValue();" value="{!oppLine.Fees__c}" />
+    </div>
+    <div>
+        <label for="Recurring_Fees_Period__c">{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees_Period__c.Label}</label>
+        <select id="Recurring_Fees_Period__c">
+            <apex:repeat value="{!RecurringFeesPeriod}" var="fees">
+               <option value="{!fees.value}">{!fees.label}</option>
+           </apex:repeat>
+        </select>
+    </div>
+    <div>
+        <label for="Recurring_Fees__c">{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Recurring_Fees__c" onchange="updateAnnualValue();" value="{!oppLine.Recurring_Fees__c}" />
+    </div>
+    
+    <div>
+        <label for="Income_this_Year__c">{!$ObjectType.OpportunityLineItem.fields.Income_this_Year__c.Label}</label>
+        <input type="text" disabled="true" id="Income_this_Year__c" value="{!oppLine.Income_this_Year__c}" />
+    </div>
+    
+    <div>
+        <label for="Terms_Years__c">{!$ObjectType.OpportunityLineItem.fields.Terms_Years__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="Terms_Years__c" value="{!oppLine.Terms_Years__c}"/>
+    </div>
+        
+    <div>
+        <label for="ROEC__c">{!$ObjectType.OpportunityLineItem.fields.ROEC__c.Label}</label>
+        <input type="number" pattern="[0-9]*" id="ROEC__c" value="{!oppLine.ROEC__c}" />
+    </div>
+        
+    <div>
+        <label for="RoRWA__c">{!$ObjectType.OpportunityLineItem.fields.RoRWA__c.Label}</label>
+        <input type="number" pattern="\d+(\.\d*)?" id="RoRWA__c" value="{!oppLine.RoRWA__c}" />
+    </div>
+
+</div>
+</div>
+<div class="ui-grid-solo">
+    <div class="pageblock">{!$Label.lbl_BalanceAndIncome}</div>
+
+    <div>
+        <label for="New_Facility_Balance__c">{!$ObjectType.OpportunityLineItem.fields.New_Facility_Balance__c.Label}</label>
+        <input type="text" disabled="true" id="New_Facility_Balance__c" value="{!oppLine.New_Facility_Balance__c}" />
+    </div>
+
+    <div class="{!displayNet}">
+        <label for="Existing_Facility_Balance__c">{!$ObjectType.OpportunityLineItem.fields.Existing_Facility_Balance__c.Label}</label>
+        <input type="text" id="Existing_Facility_Balance__c" onchange="setNetFacilityBalance();" value="{!oppLine.Existing_Facility_Balance__c}" />
+    </div>
+
+         
+    <div class="{!displayNet}">
+        <label for="Net_Facility_Balance__c">{!$ObjectType.OpportunityLineItem.fields.Net_Facility_Balance__c.Label}</label>
+        <input type="text" disabled="true" id="Net_Facility_Balance__c" value="{!oppLine.Net_Facility_Balance__c}" />
+    </div>
+      
+    <div>
+        <label for="New_Facility__c">{!$ObjectType.OpportunityLineItem.fields.New_Facility__c.Label}</label>
+        <input type="text" disabled="true" id="New_Facility__c" value="{!oppLine.New_Facility__c}" />
+    </div>
+</div>
+
+</div>
+</div>
+
+
+
+</body>
+</apex:page>

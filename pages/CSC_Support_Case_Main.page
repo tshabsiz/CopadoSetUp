@@ -1,0 +1,38 @@
+<!--
+CHANGES
+16-08-10	DH	Added Page MEssages as the controller now has more than one failure point.  
+				Using standard Style sheets to format page message correctly.  Page still looks ok in console
+
+TODO
+
+-->
+
+<apex:page standardController="Case" extensions="CSC_Support_Case_Main_Cont" action="{!runProcess}" showHeader="false" sidebar="false" standardStylesheets="true">
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <apex:form id="mainForm">
+        <apex:pageMessages ></apex:pageMessages>
+        <div class="slds">
+            <div class="slds-form-element__label">
+                <!--  This is added by PageMessage in the controller now           
+The Selected Service type, Sub-Category and Category are invalid.<br/>
+Please contact your Salesforce Administrator to ensure the service mapping<br/>
+is correctly entered in Salesforce
+-->
+                <br/>
+                <div class="slds-form-element slds-float--left">
+                    <button class="slds-button slds-button--brand" type="button" onclick="backToEmail();" >
+                        Back To Email
+                    </button>
+                </div>
+            </div>
+            <apex:actionFunction name="BackToEmail" action="{!reload}" />
+        </div>
+    </apex:form>
+    <script>
+    
+    function backToEmail() {
+        BackToEmail();
+    }
+    
+    </script>
+</apex:page>

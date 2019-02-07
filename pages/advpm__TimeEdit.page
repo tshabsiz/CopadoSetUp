@@ -1,0 +1,177 @@
+<apex:page standardController="advpm__Time__c" tabStyle="advpm__Time__c" extensions="advpm.TimeController" sidebar="{!!isSF1}" showHeader="{!!isSF1}" standardStyleSheets="{!!isSF1}" action="{!IF(!hasEditAccess,URLFOR($Page.InsufficientPrivileges,null,[recid=Time__c.Id]),'')}">
+<apex:outputPanel rendered="{!isLightning}">
+	<script type="text/javascript">
+		var ur = '{!URLFOR($Page.TimeEditSLDS,Time__c.Id,[id=Time__c.Id,d=URLENCODE($CurrentPage.parameters.d),m=URLENCODE($CurrentPage.parameters.m),y=URLENCODE($CurrentPage.parameters.y),totalunits=URLENCODE($CurrentPage.parameters.totalunits),qsid=IF(ISBLANK($CurrentPage.parameters.qsid),Time__c.Matter__c,URLENCODE($CurrentPage.parameters.qsid)),retURL=URLENCODE($currentpage.parameters.retURL),clone=$currentpage.parameters.clone])}';
+		if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+			sforce.one.navigateToURL(ur, true);
+		}
+	</script>
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!!isLightning}">	
+	<style type="text/css">
+        .dataLabel {display:block !important;font-weight:bold !important;margin-bottom:-6px !important;font-size:12px !important;line-height:14px !important;}
+        .loadingImage {margin-left:10px;min-width:16px;min-height:16px;}
+        .showList {background:transparent url('/img/arrowRight.gif');width:14px;height:14px;margin-top:-3px;}
+        .hideList {background:transparent url('/img/arrowDown.gif');width:14px;height:14px;margin-top:-3px;}
+        .hide { display: none; }
+        .gantt_options .dateFormat { display:none; }
+        .gantt_options td { vertical-align:middle;}
+        .gantt_options td.cell3,.gantt_options td.cell4 {min-width:174px;}
+        .gantt_options td.cell4 select {display:none!important;}
+        .advwrap input, .advwrap textarea, .advwrap .uneditable-input {width: 146px;}
+        .advwrap select, .advwrap textarea, .advwrap input[type="text"], .advwrap input[type="password"], .advwrap input[type="datetime"], .advwrap input[type="datetime-local"], .advwrap input[type="date"], .advwrap input[type="month"], .advwrap input[type="time"], .advwrap input[type="week"], .advwrap input[type="number"], .advwrap input[type="email"], .advwrap input[type="url"], .advwrap input[type="search"], .advwrap input[type="tel"], .advwrap input[type="color"], .advwrap .uneditable-input {
+            height: 18px;
+            padding: 3px 4px;
+            margin-bottom: 0px;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        .textRight {text-align:right !important;}
+        /*.lookupInput input {padding-right:22px !important;}*/
+        .dateInput input {width:90px;}
+        .datePicker select {width: inherit;}
+        .datePicker select {display:inline-block;height:22px;padding:0px;margin-bottom:0px;}
+        .message {margin: 4px 2px;}
+        .messageText h1, .messageText h2, .messageText h3, .messageText h4, .messageText h5, .messageText h6 {margin: 0px 0;}
+    </style>
+    
+	<apex:outputPanel layout="none" rendered="{!isLightning}">
+		<apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+		<style type="text/css">
+			.slds .slds-page-header {padding-left: 10px;}
+			.slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 8px;}
+			.detailPage .bPageBlock, .editPage .bPageBlock {border-top-width: 0px;}
+			body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {border-width: 0 0 1px 1px;}
+			body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {background: #ffffff;border-width: 0 0 1px 1px;padding: 8px;}
+			body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-left-width: 0px!important;border-right-width: 0px!important;}
+			body .pbBody table.list tr.headerRow th:first-child {border-left-width: 0px!important;}
+			body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-top-width: 0px;}
+			.slds tr.headerRow th, .slds tr.headerRow th.headerRow {font-weight: normal!important;}
+	  		.requiredBlock {display: none !important;}
+    		.assistiveText {position: relative !important;color: #c23934; margin: 0 .125rem;}
+		</style>
+	</apex:outputPanel>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <script type="text/javascript">
+        $(document).ready(function(){
+            fixRatesForMatterAutoMatchLookup();
+        });
+        function fixRatesForMatterAutoMatchLookup() {
+            var el = $('.lookupInput select[id$="_lkid"].field_lookupSelect');
+            if (el.length > 0) {
+                if (el.val() != '') {
+                    fetchDefaultRate();
+                }
+            }
+        }
+        /*
+         * Below fix is for 'apex:inputField' onchange handler firing twice from Recent Items list on the field
+         */
+        var ajaxRunning = null;
+        var ajaxDelay = 250;
+        function fetchDefaultRate() {
+            if (ajaxRunning) {
+                clearTimeout(ajaxRunning);
+            }
+            ajaxRunning = setTimeout(function(){
+                              doSetDefaultRate();
+                              ajaxRunning = null;
+                          }, ajaxDelay);
+        }
+        function changeRate() {
+            if (ajaxRunning) {
+                clearTimeout(ajaxRunning);
+            }
+            ajaxRunning = setTimeout(function(){
+                              doChangeRate();
+                              ajaxRunning = null;
+                          }, ajaxDelay);
+        }
+    </script>
+	<apex:sectionHeader title="{!$ObjectType.advpm__Time__c.label} Edit" subTitle="{!IF(advpm__Time__c.Id == null || isClone, 'New '+ $ObjectType.advpm__Time__c.label, advpm__Time__c.Name)}" rendered="{!!isSF1 && !isLightning}" />
+	<apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+		<div class="slds-page-header" role="banner">
+			<nav class="slds-m-bottom--xx-small" role="navigation">
+				<ol class="slds-breadcrumb slds-list--horizontal" aria-labelledby="bread-crumb-label">
+			      	<li class="slds-list__item slds-text-heading--label"><apex:outputLink value="/{!$ObjectType.advpm__Time__c.keyPrefix}">{!$ObjectType.advpm__Time__c.label}</apex:outputLink></li>
+			   	</ol>
+			</nav>
+			<div class="slds-grid">
+		    	<div class="slds-col slds-has-flexi-truncate">
+		      		<h1 class="slds-text-heading--medium slds-truncate" title="{!$ObjectType.advpm__Time__c.label} Edit">New Time</h1>
+		    	</div>
+	    	</div>
+		</div>
+	</apex:outputPanel>
+	<apex:outputPanel layout="inline" rendered="{!isSF1}">
+		<script type="text/javascript">
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+				window.onload = function() {
+					sforce.one.navigateToURL('{!URLFOR($Page[EditCalendarPageTime],null,[src=URLENCODE('TimeEdit'),matid=Time__c.Matter__c,id=Time__c.Id,clone=$currentpage.parameters.clone,gotoURL=IF(Time__c.Id != null,URLENCODE('/'+Time__c.Id),$currentpage.parameters.retURL)])}', true);
+				};
+			}
+		</script>
+		<div id="loading_cal_status" style="text-align:center;"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Loading...</span></div>
+	</apex:outputPanel>
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+    <script type="text/javascript">
+        toggleButtons('{!$Component.theForm}', false);
+    </script>
+    <apex:form id="theForm" styleClass="{!IF(isLightning,'slds','')}" rendered="{!!isSF1}">
+        <apex:actionFunction name="doSetDefaultRate" action="{!SetDefaultRate}" rerender="opRatesContainer" status="loadingStatus" />
+        <apex:actionFunction name="doChangeRate" action="{!ChangeRate}" rerender="opRatesContainer" status="loadingStatus" />
+        
+        <apex:pageBlock id="thePageBlock" mode="edit" title="{!IF(isLightning,'','Time Edit')}">
+            <apex:pageMessages id="msgs" />
+            <apex:pageBlockButtons location="both">
+                <apex:commandButton styleClass="{!IF(isLightning,'slds-button slds-button--neutral showOnEditButton','showOnEditButton')}" value="  Save  " action="{!saveTime}" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                <apex:commandButton styleClass="{!IF(isLightning,'slds-button slds-button--neutral showOnEditButton','showOnEditButton')}" value="  Save & New  " action="{!saveAndNewTime}" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                <apex:commandButton styleClass="{!IF(isLightning,'slds-button slds-button--neutral showOnEditButton','showOnEditButton')}" value="  Cancel  " action="{!cancel}" immediate="true" />
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                <apex:actionStatus id="loadingStatus" onstart="toggleButtons('{!$Component.theForm}', true)" onstop="toggleButtons('{!$Component.theForm}', false)"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+            </apex:pageBlockButtons>
+            <apex:outputPanel layout="block" styleClass="slds">
+            <apex:pageBlockSection title="Information">
+                <apex:inputField value="{!advpm__Time__c.advpm__Matter__c}" styleClass="field_lookupSelect" onchange="fetchDefaultRate()" />
+                <apex:outputField value="{!advpm__Time__c.OwnerId}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Time Details" id="secTime">
+                <apex:inputField value="{!advpm__Time__c.advpm__Entry_Date__c}" id="f_Entrydate" required="true" />
+                <apex:inputField value="{!advpm__Time__c.advpm__Timekeeper__c}" styleClass="field_lookupSelect" onchange="fetchDefaultRate()" />
+                <apex:inputField value="{!advpm__Time__c.advpm__Time_In_Hours__c}" id="timeInHours">
+                	<apex:actionSupport event="onchange" action="{!processTimeRounding}" rerender="timeInHours" 
+                                        status="loadingStatus" rendered="{!(advpm__Time__c.Id == null || isClone) && GlobalOptions.advpm__Enable_Time_Rounding__c==true && GlobalOptions.advpm__Incremental_Rounding_Value__c > 0}" />
+                </apex:inputField>
+                <apex:inputField value="{!advpm__Time__c.advpm__Billing_Disposition__c}" required="true" />
+            </apex:pageBlockSection>
+            <apex:outputPanel layout="none" id="opRatesContainer">
+	            <apex:pageBlockSection id="rateSectionBlock" showHeader="false" columns="1" rendered="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate.size > 0}">
+	                <apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate}" var="f">
+	                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+	                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f != 'advpm__Rate__c' && f != 'advpm__Total_Amount__c' && NOT(CONTAINS(f,'.'))}" />
+	                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f == 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}" onchange="changeRate()" />
+	                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f == 'advpm__Total_Amount__c' && advpm__Time__c.Id != null && !isClone}" />
+	                </apex:repeat>
+	                <apex:inputField value="{!advpm__Time__c['CurrencyIsoCode']}" rendered="{!isMultiCurrencyOrg}">
+	                	<apex:actionSupport event="onchange" action="{!ChangeCurrency}" rerender="opRatesContainer" status="loadingStatus" />
+	                </apex:inputField>
+	            </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:pageBlockSection title="Description" columns="1">
+                <apex:inputField value="{!advpm__Time__c[TimeDescriptionField]}" style="width:360px;height:60px;" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Information" columns="1" rendered="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time.size > 0}">
+                <apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time}" var="f">
+                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}" />
+                </apex:repeat>
+            </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:outputPanel>
+</apex:page>

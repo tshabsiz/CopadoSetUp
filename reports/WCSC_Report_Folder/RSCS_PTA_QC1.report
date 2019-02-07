@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Case_QA__c.RelatedCase__c</field>
+    </columns>
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>FK_NAME</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Average</aggregateTypes>
+        <field>Case_QA__c.AgentScorePer__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Case_QA__c.AgentName__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>Charity,Hellen,Daphne,Nombulelo,Phumzile Lekubu,Liezel,Zinzile,Anusha</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Case_QA__c.AgentName__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>RSCS PTA QC</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Case_QA__c@Case_QA__c.QATemplate__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <endDate>2018-10-12</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2018-10-12</startDate>
+    </timeFrameFilter>
+</Report>

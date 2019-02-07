@@ -1,0 +1,173 @@
+<apex:page controller="BoxDocumentDetailController" tabStyle="BoxDocument__c" showHeader="false" sidebar="false" action="{!actionBoxCreateFolder}">
+    <style type="text/css">
+        .btn {
+            display:inline-block;
+            min-width: 75px;
+            font-size:14px;
+            font-weight:400;
+            line-height:1.42857143;
+            text-align:center;
+        }
+        .bPageBlock
+        {
+        	border-top-width: 4px !important;
+        }
+        .pbHeader {
+            background-color: #bf0202 !important;
+            color:white !important;         
+            font-size:115% !important;
+            padding: 10px 6px 10px 6px !important;
+        }
+        .center-pills {
+            display: flex;
+            justify-content: center;
+        }
+        
+        /*push nav tabs closer to header, override*/
+        .page-header {
+            margin: 0px;
+            padding: 4px 0px 1px;
+        }
+        
+        .loader {
+            font-size: 18px;
+            text-align:center;
+            font-weight:800;
+        }
+        
+        .loader span {
+            font-size: 18px;
+            font-weight:800;
+            color: #bf0202;
+            animation-name: blink;
+            animation-duration: 1.4s;
+            animation-iteration-count: infinite;
+            animation-fill-mode: both;
+        }
+        
+        .loader span:nth-child(2) {
+        	animation-delay: .2s;
+        }
+        
+        .loader span:nth-child(3) {
+        	animation-delay: .4s;
+        }
+        
+        @keyframes blink {
+            0% {
+            opacity: .2;
+            }
+            20% {
+            opacity: 1;
+            }
+            100% {
+            opacity: .2;
+            }
+        }
+        
+        .hidden { 
+        	display: none;
+        }
+        
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 20;
+            min-width: 320px;
+        }
+    </style>
+    <!-- LIBS -->
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_resources, 'bootstrapsf1/css/bootstrap.min.css')}"/>
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.BoxUploader,'polyfill.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.BoxUploader, 'uploader.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.BoxUploader,'uploader.js')}" />
+    <!-- / JS LIB -->
+    <script>
+    function confirmCancel() {
+        var deleteAllowed = {!allowDelete};
+        //only close if previous button was not used
+        if(deleteAllowed){
+            closeUploader();
+        } else {
+            goToNextPage();
+        }
+    }  
+    
+    function showUploadStatus(uploadResponse){
+        //console.log(uploadResponse);
+        var loaderMessage = document.getElementById('loadImg').className = 'loader';
+        goToNextPage();
+    }
+    </script>
+    <apex:form id="uploadForm">
+        <apex:inputHidden value="{!uploadedResponse}" id="theResponseField" />
+        <apex:pageBlock title="Box Documents" mode="edit">
+            <apex:facet name="header"><b>Box Documents Upload</b></apex:facet>
+            <apex:outputPanel id="header">
+                <div class="page-header">
+                    <!-- Nav tabs -->    
+                    <ul class="nav nav-tabs" id="navTabs">      
+                        <li class="active"><a data-toggle="tab">{!pageTitle}</a></li>
+                    </ul>
+                </div>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        <div><p id="loadImg" class="hidden">Please wait to capture Metadata on the next page<span>.</span><span>.</span><span>.</span></p></div>
+        <div class="container" style="height:370px;width: 100%;" ></div>
+        <apex:actionFunction name="closeUploader" action="{!cancel}" oncomplete="return true" immediate="true"/>
+        <apex:actionFunction name="goToNextPage" action="{!next}"/>
+        <apex:actionFunction name="refreshAttachments" action="{!RefreshAttachments}" reRender="attachmentPanel" oncomplete="showUploadStatus('uploaded'); return false;"/>
+        <script>       
+        // Folder ID of Parent Record
+        var FOLDER_ID = "{!folderId}";
+        var FILE_URL = '{!fileBaseURL}';
+        
+        // Child Token
+        const TOKEN = '{!accessToken}';
+        
+        var uploadedFiles = [];
+        var theResponseField = document.getElementById('{!$Component.theResponseField}');
+        
+        function FileData(id, name, url, parent) {
+            this.id = id,
+            this.name = name,
+            this.url = url,
+            this.parent = parent
+        }
+        
+        const uploader = new Box.ContentUploader();
+        
+        uploader.show(FOLDER_ID, TOKEN, {
+            container: '.container'
+        });
+        
+        const doClosed = function (data) {
+            confirmCancel();
+        }
+        uploader.addListener('close', doClosed);
+        
+        const doError = function (data) {
+            console.log('Failed to upload: ' + JSON.stringify(data));
+            console.log(data);
+        }
+        uploader.addListener('error', doError);
+        
+        const doUploaded = function (data) {
+            var fileData = new FileData(data.id, data.name, FILE_URL + data.id, data.parent.id);
+            //Add uploaded file to list
+            uploadedFiles.push(fileData);
+        }
+        uploader.addListener('upload', doUploaded);
+        
+        const doCompleted = function (data) {
+            //Add list of uploaded files to response json
+            theResponseField.value=JSON.stringify(uploadedFiles);
+            refreshAttachments();
+        }
+        uploader.addListener('complete', doCompleted);
+        </script>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,814 @@
+<apex:page standardController="advpm__AdvoDoc_Template__c" extensions="advpm.TemplateDesignerController">
+    <!-- Scripts --->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__AdvoDoc_Resources,'/Scripts/jquery.min.js')}"/>
+    <!-- <apex:includeScript value="{!URLFOR($Resource.AdvoDoc_Resources,'/Scripts/jquery-1.10.2.js')}"/> -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__AdvoDoc_Resources,'/Scripts/jquery-ui.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__AdvoDoc_ckeditor,'ckeditor.js')}"/>
+    <!-- <apex:includeScript value="/soap/ajax/37.0/connection.js"/> -->
+    
+    <!-- CSS --->
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__AdvoDoc_Resources,'/CSS/jquery-ui.theme.css')}"/>
+    <!-- <link rel="stylesheet" href="/resources/demos/style.css" /> -->
+    <c:includeSLDS />
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <style type="text/css">
+            /*body {font-size: 100%;}*/
+            .slds .slds-button-group .slds-button.firstbutton {border-top-left-radius: 4px;border-bottom-left-radius: 4px;}
+        </style>
+    </apex:outputPanel>
+    
+    <script type="text/javascript">
+        var isConditional = false;
+        var _isDirty = false;
+        var isSysTemplate = {!isSystemTemplate};
+        
+        $(window).on('beforeunload', function () {
+            if (_isDirty) {
+                return 'Changes you made will not be saved.';
+            }
+        });
+        $(document).ready(function() {
+            _isDirty = false;
+            /*sforce.connection.sessionId = '{!$Api.Session_ID}';*/
+            $('.hd-btn').removeClass('btn');
+            $('#dialog-insertField').dialog({
+                autoOpen: false,
+                width: 1000,
+                modal: true,
+                buttons: [
+                    {
+                        text: "Close",
+                        click: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                ]
+            });
+            $('#dialog-relatedlist').dialog({
+                autoOpen: false,
+                width: 824,
+                modal: true,
+                buttons: [
+                    {
+                        text: "Close",
+                        click: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                ]
+            });
+            $('#dialog-templateList').dialog({
+                autoOpen: false,
+                width: 624,
+                modal: true,
+                open: function( event, ui ) {
+                    PrepareTemplateMergeTag()
+                },
+                buttons: [
+                    {
+                        text: "Close",
+                        click: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                ]
+            });
+        });
+        
+        function loading(val) {
+            if(val) {
+                document.getElementById('contentLoading').style.display = 'inline-block';
+            }
+            else{
+                document.getElementById('contentLoading').style.display = 'none';
+            }
+        }
+        
+        function openPopup(val){
+            if(val == 'p1'){
+                if(!isConditional){
+                    $('#dialog-insertField').dialog("option", "title", "Insert field");
+                    $('.condition').css("display", "none");
+                    $('.conditionObject').css("display", "table-cell");
+                }
+                else{
+                    $('#dialog-insertField').dialog("option", "title", "Condition");
+                    $('.condition').css("display", "table-cell");
+                    $('.conditionObject').css("display", "none");
+                }
+                $('#dialog-insertField').dialog('open');
+            }
+            else if(val == 'p2'){
+                $('#dialog-relatedlist').dialog('open');
+            }
+            else if(val == 'p3'){
+                $('.mfield').parent().css('display','none');
+                $('#dialog-templateList').dialog('open');
+            }
+        }
+        
+        function selectField(fieldname) {
+            var objName = $('.selectedObject').val();
+            createMergeField(objName, fieldname,'');
+        }
+        function refselectField(fieldname) {
+            var objName = $('.selectedObject').val();
+            var objName2 = $('.selectedField').val();
+            //alert(objName+'    '+objName2);
+            createMergeField(objName,objName2, fieldname);
+        }
+        function clickSelect(){
+            var selectedValues = '';
+            $('.availableValues :selected').each(function(i, selected){
+                if(selectedValues != ''){
+                    selectedValues += '#@#';
+                }
+                selectedValues += $(selected).text();
+            });
+            
+            if(selectedValues != ''){
+                jsclickSelect(selectedValues);
+            }
+        }
+        function clickunselect(){
+            var selectedValues = '';
+            $('.selectedValues :selected').each(function(i, selected){
+                if(selectedValues != ''){
+                    selectedValues += '#@#';
+                }
+                selectedValues += $(selected).text();
+            });
+            
+            if(selectedValues != ''){
+                jsclickunselect(selectedValues);
+            }
+        }
+        function moveUpward(){
+            var selectedValues = '';
+            $('.selectedValues :selected').each(function(i, selected){
+                if(selectedValues != ''){
+                    selectedValues += '#@#';
+                }
+                selectedValues += $(selected).text();
+            });
+            if(selectedValues != ''){
+                jsmoveUpward(selectedValues);
+            }
+        }
+        
+        function moveDownward(){
+            var selectedValues = '';
+            $('.selectedValues :selected').each(function(i, selected){
+                if(selectedValues != ''){
+                    selectedValues += '#@#';
+                }
+                selectedValues += $(selected).text();
+            });
+            if(selectedValues != ''){
+                jsmoveDownward(selectedValues);
+            }
+        }
+        function doValidateQuery() {
+            var columns = '';
+            $(".selectedValues option").each(function(){
+                if(columns != ''){
+                    columns +=',';
+                }
+                columns += ''+$(this).val()+'';
+            });
+            validateQuery($('.selectedChild').val(), columns, $('.selectedFilter').val(), $('.selectedOrder').val());
+        }
+        /*function validateQuery(objName, objFilter, objSortOrder) {
+            try {
+                var columns = '';
+                $(".selectedValues option").each(function(){
+                    if(columns != ''){
+                        columns +=',';
+                    }
+                    columns += ''+$(this).val()+'';
+                });
+                var qry = 'Select '+columns+' From '+objName;
+                if (objFilter != null && objFilter != '')
+                    qry += ' where '+objFilter;
+                if (objSortOrder != null && objSortOrder != '')
+                    qry += ' order by '+objSortOrder;
+                qry += ' limit 1';
+                console.log(qry);
+                var queryResult = sforce.connection.query(qry);
+                return true;
+            } catch(er) {
+                //console.log(er);
+                alert('Query is invalid, please make sure your filter/sort order criteria are valid.');
+                return false;
+            }
+            return false;
+        }*/
+        function escapeFilter(str) {
+            return str.replace(/(['"])/g, "\\\\$1");
+        }
+        function PrepareJSON(){
+            var selChild = $('.selectedChild').val();
+            var hideHeader = $('.relatedListHideHeader').is(":checked");
+            var displayStacked = $('.relatedListDisplayAsStacked').is(":checked");
+            
+            if(selChild != undefined && selChild != ''){
+                
+                //display: none; /* Must contain this <space> for Parser for RelatedList to work */
+                var JSONBody = '<div style="display: none;">{"relatedList": {\n';
+                var TBody = '<table class="relTableDefault '+(displayStacked ? ' stacked':'')+' '+(hideHeader ? ' no-header':'')+'" border="0" cellspacing="0" cellpadding="4" style="width:100%;" width="100%">';
+                TBody += '<tr '+(hideHeader ? ' class="no-header"':'')+'>';
+                
+                JSONBody += '"ObjectName": "'+selChild+'",\n';
+                JSONBody += '"tableSchema": {\n';
+                JSONBody += '"columns": [\n';
+                
+                var columns = '';
+                $(".selectedValues option").each(function(){
+                    if(columns != ''){
+                        columns +=',';
+                    }
+                    columns += '{\n';
+                    columns += '"name": "'+$(this).val()+'"\n';
+                    columns += '}\n';
+                    
+                    TBody += '<th style="'+(hideHeader==false?'border-bottom:1px solid #000;':'')+'">'+$(this).text()+'</th>';
+                });
+                                
+                JSONBody += columns+']\n';
+                JSONBody += '},\n';
+                JSONBody += '"sortorder": "'+$('.selectedOrder').val()+'",\n';
+                JSONBody += '"filter": "'+escapeFilter($('.selectedFilter').val())+'"\n';
+                JSONBody += '}\n';
+                JSONBody += '}\n</div>';
+                
+                var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+                document.getElementById('{!$Component.frm.msgpost}').value = objEditor.getData();
+                
+                TBody += '</tr>';
+                TBody += '</table>';
+                //objEditor.insertHtml(TBody);
+                objEditor.insertHtml('<div>'+JSONBody+TBody+'</div>');
+                $('#dialog-relatedlist').dialog("close");
+                _isDirty = true;
+                
+            }
+            else{
+                alert('Please select related object and fields.');
+            }
+        }
+        
+        function PrepareTemplateMergeTag() {
+            var v = $('.selectedTemplate').val();
+            if (v != undefined && v != null && v != '') {
+                var ht = '{'+'!'+'$'+'Template.' + v + '}';
+                $('#opTemplateInsert .mfield').text(''+ht+'');
+                $('#opTemplateInsert .mfield').parent().css('display','block');
+            }
+        }
+        function HideTemplateMergeTag() {
+            $('#opTemplateInsert .mfield').text('');
+            $('#opTemplateInsert .mfield').parent().css('display','none');
+        }
+        
+        function doInsertAction() {
+            var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+            document.getElementById('{!$Component.frm.msgpost}').value = objEditor.getData();
+            var field = $('.mfield').html();
+            
+            if(!isConditional && field != undefined){
+                objEditor.insertText(''+field+'');
+                _isDirty = true;
+            }
+            else if(field != undefined){
+                var field = field;
+                field = field.replace('{'+'!','');
+                field = field.replace('}','');
+                
+                var Choice = $('.ConditionChoice').val();
+                //console.log('=== choice == '+Choice);
+                
+                var ht = '';
+                if(Choice == 'true'){
+                    ht = '<div style="padding:5px;border:2px dashed #B7B7B7;display:'+'{'+'!IF('+field+',\'block\',\'none\')}"><i style="color:darkgray;">'+field+'</i><br />Place your conditional content here.</div>';
+                }
+                else{
+                    ht = '<div style="padding:5px;border:2px dashed #B7B7B7;display:'+'{'+'!IF('+field+',\'none\',\'block\')}"><i style="color:darkgray;">'+field+'</i><br />Place your conditional content here.</div>';
+                }
+                //objEditor.insertHtml('<table><tbody><tr><td>'+ht+'</td></tr></tbody></table>');
+                objEditor.insertHtml(''+ht+'');
+                _isDirty = true;
+                
+                /*
+                objEditor.insertHtml('<br/>Place your content here.');
+                objEditor.insertHtml('<br/>');
+                objEditor.insertText('</div> ');
+                */
+            }
+            $('#dialog-insertField').dialog( "close" );
+        }
+        
+        function doInsertTemplateAction() {
+            var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+            document.getElementById('{!$Component.frm.msgpost}').value = objEditor.getData();
+            var field = $('.mfield').html();
+            objEditor.insertText(''+field+'');
+            $('#dialog-templateList').dialog( "close" );
+            _isDirty = true;
+        }
+        
+        function confirmPreviewTemplate() {
+            if (_isDirty) {
+                if (confirm('There are unsaved changes which must be saved before previewing this Template. Would you like to save the changes and preview?')) {
+                    beforeTextSaveAndPreview();
+                }
+            }
+            else {
+                previewAdvoDoc();
+            }
+        }
+        function previewAdvoDoc() {
+            var ur = "{!$Site.prefix}/apex/advpm__TemplateDesignerPreview?srcRef=templatedesigner&Id={!advpm__AdvoDoc_Template__c.Id}&srcLtng={!IF(isLightning,'1','')}";
+            showSFDCSimpleDialog('AdvoDoc Preview',ur);
+        }
+        function openPreviewAdvoDoc(recId) {
+            d.hide();
+            var ur = '{!$Site.prefix}/apex/advpm__generatepdf?Id='+recId+'&TempId={!advpm__AdvoDoc_Template__c.Id}&type=PDF';
+            showSFDCSimpleDialog2('AdvoDoc Preview',ur);
+        }
+        
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+        var d2 = sfdcPage.dialogs['myCustomSFDCDialog2'], close2;
+        
+        function showSFDCSimpleDialog(titleText, iframeSrc, height, width) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(350);
+                d.createDialog();
+            }
+            d.setTitle(titleText);
+            
+            $(d.dialog).find('#myCustomSFDCDialogInner').html('<iframe src="'+iframeSrc+'" height="150" width="315" border="0" style="border: 0;" />');
+            $(d.dialog).find('#myCustomSFDCDialogInner iframe').on('load', function() {
+                $(this).contents().find('input[type="submit"]').on('click', function() {
+                    if ($(this).val() == 'Cancel') d.hide();
+                    return false;
+                });
+            });
+
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+        function showSFDCSimpleDialog2(titleText, iframeSrc) {
+            if (!d2) {
+                d2 = sfdcPage.dialogs['myCustomSFDCDialog2'] = new SimpleDialog('myCustomSFDCDialog2', true);
+                d2.setWidth(1000);
+                d2.createDialog();
+            }
+            d2.setTitle(titleText);
+            
+            $(d2.dialog).find('#myCustomSFDCDialog2Inner').html('<iframe src="'+iframeSrc+'" height="550" width="965" border="0" style="border: 0;" />');
+            $(d2.dialog).find('#myCustomSFDCDialog2Inner iframe').on('load', function() {
+                $(this).contents().find('input[type="submit"]').on('click', function() {
+                    if ($(this).val() == 'Cancel') d2.hide();
+                    return false;
+                });
+            });
+
+            if ($(d2.dialog).find('#InlineEditDialogX').size() == 0) {
+                close2 = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close2.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d2.hide();
+                });
+                close2.insertBefore($(d2.dialog).find('.topLeft h2'));
+            }
+            d2.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d2.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+    </script>
+    
+    <apex:form id="frm" styleClass="{!IF(isLightning,'slds','')}">
+        <style type="text/css">
+            .btn-insert {background: none!important;background-color: #0070d2!important;border-color: #0070d2!important; color: #fff!important}
+            .btn-insert:hover {background-color:rgb(0, 95, 178)!important;color:rgb(255, 255, 255)!important}
+            
+            .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {float: none;text-align: center;}
+            .ui-dialog .ui-dialog-buttonpane {border-width: 0px 0 0 0;}
+            
+            .cke_button__advodocfield_icon, .cke_button__advodocrelated_icon, .cke_button__advodoccondition_icon, .cke_button__advodoctemplate_icon {display:none;}
+            .cke_button__advodocfield_label, .cke_button__advodocrelated_label, .cke_button__advodoccondition_label, .cke_button__advodoctemplate_label {display:block;padding-right:3px;}
+            
+            .cke_button_disabled .cke_button_icon{opacity:.3}
+            .cke_button_disabled{opacity:.5}
+            
+            body .bPageTitle .ptBody .links {
+                padding-top: 7px;
+            }
+            .pageType, .pageDescription {margin-left: 0px!important;}
+            .pageTitleIcon {display:none!important;}
+            .pageType {
+                font-size: 1em!important;
+                color: rgb(84, 105, 141)!important;
+                padding-bottom: 3px!important;
+            }
+            #contentLoading{
+                width: 100%;
+                height: 100%;
+                top: 0px;
+                left: 0px;
+                position: fixed;
+                display: block;
+                opacity: 0.6;
+                background-color: #fff;
+                z-index: 10001;
+                text-align: center;
+            }
+            
+            #contentLoading1{
+                position: relative;
+                top:300px;
+                z-index: 10000;
+            }
+            
+            .btn-cls{
+                width: 100px;
+                height:30px;
+            }
+            .outerDiv {
+                border: 1px solid #919191;
+                background-color: #fff;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            .innerDiv {
+                white-space: nowrap;
+                overflow-x: auto;
+                height: 100%;
+            }
+            .header{
+                height: 65px;
+                margin-top: 20px;
+            }
+        </style>
+        <apex:pageMessages id="msg"/>
+        <apex:actionStatus id="loading" onstart="loading(true)" onstop="loading(false)"/>
+        <!-- Action Functions -->
+        <apex:actionFunction name="doCancel" action="{!cancel}" />
+        <apex:actionFunction name="createMergeField" status="loading" action="{!createMergeField}" reRender="opMergeField,msg,refsobjectFields,choice" oncomplete="$('.btn-insert').button();">
+            <apex:param name="p1" value="" assignTo="{!selectedObject}"/>
+            <apex:param name="p2" value="" assignTo="{!selectedField}"/>
+            <apex:param name="p3" value="" assignTo="{!refselectedField}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="update" status="loading" action="{!createMergeField}" rerender="jsvalues,msgs"/>
+        <apex:actionFunction name="update2" status="loading" action="{!createMergeField2}" rerender="jsvalues2,msg"/>
+        
+        <apex:actionFunction name="refreshInsertField" status="loading" action="{!InitializeInsertFields}" reRender="insertField" oncomplete="openPopup('p1');">
+            <apex:param name="p1" value="" assignTo="{!selectedObject}"/>
+            <apex:param name="p3" value="" assignTo="{!isConditional}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="refreshRelatedList" status="loading" action="{!InitializeRelatedFields}" reRender="relatedObjects" oncomplete="$('.btn-insert').button();openPopup('p2');">
+            <apex:param name="parm1" value="" assignTo="{!selectedObject}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="refreshInsertTemplate" status="loading" action="{!refreshAdvoDocTemplatelist}" reRender="insertTemplate" oncomplete="HideTemplateMergeTag();openPopup('p3');">
+            <apex:param name="cat" value="" assignTo="{!selectedCategory}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="fetchSobjectFields" action="{!fetchsobjectFields}" status="loading" reRender="sobjectFields,msg">
+            <apex:param name="parm2" value="" assignTo="{!selectedObject}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="fetchChildSobjectFields" action="{!RObjectFields}" status="loading" reRender="pgrid,msg" oncomplete="$('.btn-insert').button();">
+            <apex:param name="parm3" value="" assignTo="{!relatedObject}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="jsclickSelect" action="{!selectclick}" status="loading" oncomplete="$('.btn-insert').button();return false;" reRender="pgrid">
+            <apex:param name="parm4" value="" assignTo="{!leftselected}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="jsclickunselect" action="{!unselectclick}" status="loading" oncomplete="$('.btn-insert').button();return false;" reRender="pgrid">
+            <apex:param name="parm5" value="" assignTo="{!rightselected}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="jsmoveUpward" action="{!moveUpward}" status="loading" oncomplete="$('.btn-insert').button();return false;" reRender="pgrid">
+            <apex:param name="parm6" value="" assignTo="{!rightselected}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="jsmoveDownward" action="{!moveDownward}" status="loading" oncomplete="$('.btn-insert').button();return false;" reRender="pgrid">
+            <apex:param name="parm7" value="" assignTo="{!rightselected}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="validateQuery" action="{!validateQuery}" status="loading" oncomplete="if($('.rel-error-message').text()==''){PrepareJSON();}$('.btn-insert').button();return false;" reRender="pgrid">
+            <apex:param name="objN" value="" />
+            <apex:param name="cols" value="" />
+            <apex:param name="objF" value="" />
+            <apex:param name="objS" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="selectCategory" action="{!refreshAdvoDocTemplatelist}" status="loading" reRender="tpList,msg" oncomplete="HideTemplateMergeTag();$('.btn-insert').button();">
+            <apex:param name="cat" value="" assignTo="{!selectedCategory}"/>
+        </apex:actionFunction>
+        
+        <!-- Action Function End -->
+        
+        <!-- Insert Field Popup -->
+        <div id="dialog-insertField" title="Insert field" style="display:none;">
+            <apex:outputPanel id="insertField">
+                <div style="width: 950px; display: block; visibility: visible;">
+                    <p>Select a field, then click Insert. Labels followed by a "&gt;" indicate that there are more fields available.</p>
+                    <div class="outerDiv" style="height: 193px;">
+                        <div class="innerDiv">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="conditionObject">
+                                            <apex:selectList size="9" style="overflow: auto;min-width:100px" styleClass="selectedObject" id="selectedObject" value="{!selectedObject}" onchange="fetchSobjectFields(this.value);">
+                                                <apex:selectOptions value="{!ObjectNames}"/>
+                                            </apex:selectList>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel id="sobjectFields">
+                                                <apex:outputPanel layout="block" style="width:250px" rendered="{!AND(ObjectFields != null, ObjectFields.size > 0)}">
+                                                    <apex:selectList size="9" style="width:250px" value="{!selectedField}" styleClass="selectedField" onchange="selectField(this.value);">
+                                                        <apex:selectOptions value="{!ObjectFields}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel id="refsobjectFields">
+                                                <apex:outputPanel layout="block" style="width:250px"  rendered="{!AND(refObjectFields != null, refObjectFields.size > 0)}">
+                                                    <apex:selectList size="9" style="width:250px" value="{!refselectedField}" onchange="refselectField(this.value);">
+                                                        <apex:selectOptions value="{!refObjectFields}"/>
+                                                    </apex:selectList>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel id="opMergeField">
+                                                <apex:outputPanel rendered="{!mergeField != ''}" layout="block" style="background-color: #fafafa;padding-left: 5px;padding-right: 5px;border: 1px solid #aaa;text-align: center;height: 153px;">
+                                                    <div style="margin-top: 50px;">You have selected:</div>
+                                                    <div style="font-weight: bold;" class="mfield">{!mergeField}</div>
+                                                    <br />
+                                                    <button onclick="doInsertAction();return false;" type="button" class="btn-insert ui-button ui-widget ui-corner-all ui-button-text-only" role="button">Insert</button>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </td>
+                                        <td class="condition">
+                                            <apex:outputPanel id="choice">
+                                                <apex:outputPanel rendered="{!mergeField != ''}" layout="block" style="background-color: #fafafa;padding-left: 5px;padding-right: 5px;border: 1px solid #aaa;text-align: center;height: 153px;">
+                                                    <div style="margin-top: 50px;">
+                                                        display when selected field value is:<br/>
+                                                        <apex:selectList value="{!conditionChoice}" size="1" style="width: 65px;" styleClass="ConditionChoice">
+                                                            <apex:selectOption itemLabel="True" itemValue="true"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="False" itemValue="false"></apex:selectOption>
+                                                        </apex:selectList>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </div>
+        <!-- Insert Field Popup End -->
+        
+        <!-- Related List Popup -->
+        <div id="dialog-relatedlist" title="Insert Related List" style="display:none;">
+            <apex:outputPanel id="relatedObjects">
+                <table style="width:100%;border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td style="width:40%;">
+                                <table style="height:195px;">
+                                    <tr>
+                                        <td colspan="2">
+                                            <div style="font-weight: bold;color: #4a4a56;width: 100%;">
+                                            Select Related List</div>
+                                            
+                                            <div style="float: left;">
+                                                <apex:actionRegion >
+                                                    <apex:selectList value="{!RelatedObject}" style="width: 235px;" styleClass="selectedChild" size="1" onchange="fetchChildSobjectFields(this.value);">
+                                                        <apex:selectOptions value="{!AllRelatedObjects}"/>
+                                                    </apex:selectList>
+                                                </apex:actionRegion>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div style="font-weight: bold;color: #4a4a56;width: 100%;">Sort Order</div>
+                                            <div style="float: left;"><apex:inputText style="width: 232px;" styleClass="selectedOrder" value="{!relatedListFilter}" /></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div style="font-weight: bold;color: #4a4a56;width: 100%;">Filter</div>
+                                            <div style="float: left;"><apex:inputText style="width: 232px;" styleClass="selectedFilter" value="{!relatedListSortOrder}" /></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td nowrap="nowrap" width="50%">
+                                            <span style="font-weight: bold;color: #4a4a56;"><label for="{!$Component.frm.relatedListHideHeader}">Hide Header?</label></span>
+                                        </td>
+                                        <td width="50%">
+                                            <span ><apex:inputCheckbox style="vertical-align:middle;margin-left:10px;" id="relatedListHideHeader" styleClass="relatedListHideHeader" value="{!relatedListHideHeader}" /></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td nowrap="nowrap" width="50%">
+                                            <span style="font-weight: bold;color: #4a4a56;"><label for="{!$Component.frm.relatedListDisplayAsStacked}">Show as Stacked?</label></span>
+                                        </td>
+                                        <td width="50%">
+                                            <span ><apex:inputCheckbox style="vertical-align:middle;margin-left:10px;" id="relatedListDisplayAsStacked" styleClass="relatedListDisplayAsStacked" value="{!relatedListDisplayAsStacked}" /></span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="width:60%;">
+                                <apex:outputPanel id="pgrid">
+                                    <apex:outputText styleClass="rel-error-message" style="color: red;" value="{!fieldLimitAlert}" rendered="{!fieldLimitAlert != ''}"></apex:outputText>
+                                    <div style="background-color: #fafafa;padding-left: 5px;padding-right: 5px;border: 1px solid #aaa;text-align: center;">
+                                        <apex:panelGrid columns="4" id="pgrid33">
+                                            <apex:panelGroup style="margin-left: -2px;">
+                                                Available Fields
+                                                <apex:selectList id="sel1" styleClass="availableValues" value="{!leftselected}" multiselect="true" size="5" style="overflow: auto;min-width: 201px;max-width:201px; height: 135px;">
+                                                    <apex:selectOptions value="{!unSelectedValues}" />
+                                                </apex:selectList>
+                                            </apex:panelGroup>
+                                            
+                                            <apex:panelGroup >
+                                                <a onclick="clickSelect();return false;">
+                                                    <img src="/s.gif" alt="Add" class="picklistArrowRight" id="right_arrow" style="cursor:pointer;" title="Add"/>
+                                                </a>
+                                                <br/>
+                                                <a onclick="clickunselect();return false;">
+                                                    <img src="/s.gif" alt="Remove" class="picklistArrowLeft" id="left_arrow" style="cursor:pointer;background-position: left -60px;" title="Remove"/>
+                                                </a>
+                                            </apex:panelGroup>
+                                            
+                                            <apex:panelGroup >
+                                                Selected Fields
+                                                <apex:selectList id="sel2" styleClass="selectedValues" value="{!rightselected}" multiselect="true" size="5" style="overflow: auto;min-width: 201px;max-width:201px; height: 135px;">
+                                                    <apex:selectOptions value="{!SelectedValues}" />
+                                                </apex:selectList>
+                                            </apex:panelGroup>
+                                            
+                                            <apex:panelGroup >
+                                                <a onclick="moveUpward();return false;">
+                                                    <img src="/s.gif" alt="Up" class="upArrowIcon" id="" style="cursor:pointer;" title="Add"/>
+                                                </a>
+                                                <br/>
+                                                <a onclick="moveDownward();return false;">
+                                                    <img src="/s.gif" alt="Down" class="downArrowIcon" id="" style="cursor:pointer;" title="Remove"/>
+                                                </a> 
+                                            </apex:panelGroup>
+                                        </apex:panelGrid>
+                                        <button style="margin:7px 0px;margin-left:-32px;" onclick="doValidateQuery();return false;" type="button" class="btn-insert ui-button ui-widget ui-corner-all ui-button-text-only" role="button">Insert</button>
+                                    </div>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </div>
+        <!-- Related List Popup End -->
+        
+        <!-- Template List Popup -->
+        <div id="dialog-templateList" title="Insert Template" style="display:none;">
+            <apex:outputPanel id="insertTemplate">
+                <table style="width:100%;border-collapse: collapse;">
+                    <tbody>
+                        <tr>
+                            <td style="width:40%;">
+                                <div style="float: left;">
+                                    <apex:actionRegion >
+                                        <apex:selectList size="1" style="overflow: auto;min-width:100px;width:100%;margin-bottom:5px;" onchange="selectCategory(this.value);">
+                                            <apex:selectOptions value="{!categoryList}" />
+                                        </apex:selectList>
+                                    </apex:actionRegion>
+                                    <apex:outputPanel id="tpList">
+                                        <apex:selectList size="9" style="overflow: auto;min-width:100px;width:100%;" styleClass="selectedTemplate" onchange="PrepareTemplateMergeTag()">
+                                            <apex:selectOptions value="{!templatesList}"/>
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </div>
+                            </td>
+                            <td style="width:60%;">
+                                <div id="opTemplateInsert">
+                                    <div style="display:none; background-color: #fafafa;padding-left: 5px;padding-right: 5px;border: 1px solid #aaa;text-align: center;height:178px;">
+                                        <div style="margin-top: 50px;">You have selected:</div>
+                                        <div style="font-weight: bold;" class="mfield"></div>
+                                        <br />
+                                        <button onclick="doInsertTemplateAction();return false;" type="button" class="btn-insert ui-button ui-widget ui-corner-all ui-button-text-only" role="button">Insert</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </div>
+        <!-- Template List Popup End -->
+        
+        <!-- Header Part -->
+        <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <div class="bPageTitle">
+            <div class="ptBody">
+                <div class="content">
+                    <img src="/s.gif" alt="{!JSINHTMLENCODE($ObjectType.AdvoDoc_Template__c.label)}" class="pageTitleIcon" title="{!JSINHTMLENCODE($ObjectType.AdvoDoc_Template__c.label)}" />
+                    <h1 class="pageType">Design Template<span class="titleSeparatingColon">:</span></h1>
+                    <h2 class="pageDescription">{!advoDocTemp.Name}</h2>
+                    <div class="blank">&nbsp;</div>
+                </div>
+                <div class="links slds">
+                    <apex:commandButton styleClass="slds-button slds-button--brand" value="Save" onclick="beforeTextSave();" oncomplete="return false;" style="width:100px;font-size: 12px;font-family: 'Arial','Helvetica',sans-serif!important;"/>    
+                    <apex:commandButton styleClass="slds-button slds-button--neutral" value="Cancel" action="{!Cancel}" style="width:100px;font-size: 12px;font-family: 'Arial','Helvetica',sans-serif!important;"/>
+                </div>
+            </div>
+        </div>
+        </apex:outputPanel>
+        
+        <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="{!IF(ISBLANK(advpm__AdvoDoc_Template__c.Id),'New AdvoDoc Template','AdvoDoc Template Edit')}" 
+                                parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__AdvoDoc_Template__c.labelPlural)}" 
+                                parentEntityLink="{!$ObjectType.advpm__AdvoDoc_Template__c.keyPrefix}" 
+                                parentRecordName="{!advpm__AdvoDoc_Template__c.Name}" 
+                                parentRecordID="{!advpm__AdvoDoc_Template__c.Id}">
+                <div class="" style="margin-top:-45px;">
+                    <div class="slds-button-group" role="group">
+                        <apex:commandButton value="Save" onclick="beforeTextSave();" oncomplete="return false;" styleClass="slds-button slds-button--brand hd-btn firstbutton" />
+                        <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="slds-button slds-button--neutral hd-btn slds-button--last" />
+                    </div>    
+                </div>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <div class="{!IF(isLightning,'slds','')}" style="{!IF(isLightning,'margin:24px 24px;','margin-left:5px;margin-right:5px;')}">
+            <div id="contentLoading" style="display:none; ">
+                <img id="contentLoading1" src="/img/loading32.gif" alt="Loading..." />
+            </div>
+            <apex:inputTextarea id="msgpost" styleClass="bodyText" richText="false" value="{!advoDocTemp.advpm__BodyText__c}" />
+        </div>
+        
+        <script type = "text/javascript">
+            
+            CKEDITOR.replace( '{!$Component.msgpost}', {
+                defaultLanguage: 'en',
+                allowedContent: true,
+                //startupShowBorders: false,
+                entities: false,
+                enterMode: CKEDITOR.ENTER_BR,
+                shiftEnterMode: CKEDITOR.ENTER_P,
+                filebrowserBrowseUrl: '{!$Page.SiteFileBrowser}'+'?clickon=1',   
+                filebrowserImageBrowseUrl: '{!$Page.SiteFileBrowser}',
+                filebrowserWindowWidth: '40%',
+                filebrowserWindowHeight: '45%',
+                height: '500px'
+            });
+            
+            var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+            objEditor.on('change', function() { 
+                _isDirty = true;
+            });
+            
+            function beforeTextSave() {
+                var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+                //console.log(objEditor.getData());
+                document.getElementById('{!$Component.frm.msgpost}').value = objEditor.getData();
+                _isDirty = false;
+                SaveTemplate();
+            }
+            function beforeTextSaveAndPreview() {
+                var objEditor = CKEDITOR.instances['{!$Component.frm.msgpost}'];
+                //console.log(objEditor.getData());
+                document.getElementById('{!$Component.frm.msgpost}').value = objEditor.getData();
+                _isDirty = false;
+                SaveAndPreviewTemplate();
+            }
+        </script>     
+        <br/><br/>
+        
+        <apex:actionFunction name="SaveTemplate" action="{!createTemplateRecord}" status="loading" reRender="">
+        </apex:actionFunction>
+        <apex:actionFunction name="SaveAndPreviewTemplate" action="{!createTemplateRecordAndPreview}" status="loading" reRender="" oncomplete="previewAdvoDoc()">
+        </apex:actionFunction>
+        
+    </apex:form>
+</apex:page>

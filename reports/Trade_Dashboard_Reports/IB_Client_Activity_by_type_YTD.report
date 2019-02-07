@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_76224891</developerName>
+        <masterLabel>Team Region</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - Gauteng Corporate - CIB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Gauteng</sourceValue>
+            </sourceValues>
+            <value>Corporate</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - Gauteng North - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Gauteng North - Limpopo - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Gauteng North - Mpumalanga - BB</sourceValue>
+            </sourceValues>
+            <value>Gauteng North</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - Gauteng South - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Gauteng South - Free State - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Gauteng South - North West - BB</sourceValue>
+            </sourceValues>
+            <value>Gauteng South</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - KZN</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - KZN - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - KZN - CIB</sourceValue>
+            </sourceValues>
+            <value>KZN</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - Eastern Cape</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Eastern Cape - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Eastern Cape - CIB</sourceValue>
+            </sourceValues>
+            <value>EC</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - Western Cape</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Western Cape - BB</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>IB - Western Cape - CIB</sourceValue>
+            </sourceValues>
+            <value>WC</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>IB - SME</sourceValue>
+            </sourceValues>
+            <value>SME</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumnGrouped</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>Call_Report__c$Meeting_Date__c</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_TOP</location>
+        <secondaryGroupingColumn>Call_Report__c$Type__c</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>Call_Report__c$Owner</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Subject__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Meeting_Reason2__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Relationship__c.Name</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Call_Report__c.Attendees__r$Barclays_Attendee__c.Team__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>IB -</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>Call_Report__c$Meeting_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c$Type__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_76224891</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>IB Client Activity by type - YTD</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Call_Reports_with_Attendees_and_Clients__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Call_Report__c$Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_CURY</interval>
+    </timeFrameFilter>
+</Report>

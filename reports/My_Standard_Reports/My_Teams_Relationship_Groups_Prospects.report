@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Account$Name</field>
+    </columns>
+    <columns>
+        <field>Account$Owner</field>
+    </columns>
+    <columns>
+        <field>Account$Team_F__c</field>
+    </columns>
+    <columns>
+        <field>Account$Type</field>
+    </columns>
+    <columns>
+        <field>Account$Id</field>
+    </columns>
+    <currency>EUR</currency>
+    <description>Team view - Client Relationship teams I belong to.</description>
+    <filter>
+        <criteriaItems>
+            <column>Account$Type</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Prospect,Relationship Group</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <name>Relationship Groups &amp; Prospects (Team)</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>All_My_Organisations__c</reportType>
+    <scope>accountteam</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>Account$Name</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>Account$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

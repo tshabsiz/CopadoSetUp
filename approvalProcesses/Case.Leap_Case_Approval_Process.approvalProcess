@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowRecall>false</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>CaseNumber</field>
+        <field>Owner</field>
+        <field>LegalBusinessArea__c</field>
+        <field>LegalDivision__c</field>
+        <field>Subject</field>
+        <field>Description</field>
+        <field>SuggestedTags__c</field>
+        <field>Reason_for_Rejection__c</field>
+    </approvalPageFields>
+    <approvalStep>
+        <allowDelegate>false</allowDelegate>
+        <assignedApprover>
+            <approver>
+                <name>Content_Reviewer__c</name>
+                <type>relatedUserField</type>
+            </approver>
+            <whenMultipleApprovers>FirstResponse</whenMultipleApprovers>
+        </assignedApprover>
+        <label>Assigned Approver</label>
+        <name>Assigned_Approver</name>
+    </approvalStep>
+    <emailTemplate>AdvoLogix/BAGL_Legal_Artifact_Automation_ready_to_be_test</emailTemplate>
+    <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
+    <entryCriteria>
+        <criteriaItems>
+            <field>Case.RecordType</field>
+            <operation>equals</operation>
+            <value>Knowledge Request</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Case.Status</field>
+            <operation>equals</operation>
+            <value>Ready For UAT</value>
+        </criteriaItems>
+    </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>LEAP_Notify_KM_that_Knowledge_Request_is_Approved</name>
+            <type>Alert</type>
+        </action>
+        <action>
+            <name>LEAP_Reassign_to_KM_Team</name>
+            <type>FieldUpdate</type>
+        </action>
+        <action>
+            <name>Leap_Update_Status_to_Ready_For_Use</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalApprovalActions>
+    <finalApprovalRecordLock>false</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Email_Submitter_to_notify_that_KM_requested_is_Rejected</name>
+            <type>Alert</type>
+        </action>
+        <action>
+            <name>Leap_Update_Status_To_Rejected</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalRejectionActions>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <label>Leap  - Case Approval Process</label>
+    <recordEditability>AdminOrCurrentApprover</recordEditability>
+    <showApprovalHistory>false</showApprovalHistory>
+</ApprovalProcess>

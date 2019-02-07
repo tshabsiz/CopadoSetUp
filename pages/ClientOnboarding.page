@@ -1,0 +1,128 @@
+<apex:page standardController="Account" extensions="ClientOnbaording_Controller" sidebar="false" lightningStylesheets="true">
+    
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+        <style> span.dateFormat { display:none; } </style>
+        <head>
+            <meta charset="utf-8" />
+            <meta http-equiv="x-ua-compatible" content="ie=edge" />
+            <title>Client On-Boarding</title>
+            <apex:slds />
+            <!-- <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"/>-->            
+        </head>
+    </html>
+    <body>        
+        <apex:form >
+             <apex:pageMessages id="pageMsg"/>
+            <apex:actionstatus id="status">
+            <apex:facet name="start">
+                <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+                       height: 100%;opacity:0.65;width:100%;"> 
+                    <div class="waitingHolder" style="top: 74.2px; width: 91px;">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                        <span class="waitingDescription">Please Wait...</span>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionstatus>
+            
+            <apex:actionFunction name="Cancel" action="{!Cancel}" reRender="selectedValue">
+            </apex:actionFunction>
+            <apex:actionFunction name="SendToEsp" action="{!SendToEsp}" rerender="pageMsg" status="status" >
+            </apex:actionFunction>
+            <apex:actionFunction name="updateAccount" action="{!updateAccount}" rerender="pageMsg" status="status" >
+            </apex:actionFunction>
+            <div class="slds-scope"  style="background-color:#f2fbfc;">
+                <p class="slds-text-heading--label slds-m-bottom--small">
+                    New Client on-Boarding
+                </p>
+                <div class="slds-form-element" style="float:left;width: 300px;" >
+                    <label class="slds-form-element__label" for="text-input-01">Relation Name :</label>                    
+                    <div class="slds-form-element__control">
+                        <input  class="slds-input" type="text" id="text-input-01" value="{!currentAccount.Name}" />                        
+                    </div>
+                    <br/>
+                    <div>
+                        <label class="slds-form-element__label" for="CountryOfIncorporation">Country of Incorporation :</label>
+                        <apex:SelectList size="1" id="CountryOfIncorporation" styleClass="slds-select" value="{!selectedCountry}" >
+                            <apex:selectOptions value="{!CountryOptions}" />
+                        </apex:SelectList><br/>
+                      
+                    </div>
+                    <br/>
+                    <div class="slds-form-element__control">
+                        <label class="slds-form-element__label" for="legelEntity">Legal Entity :</label>
+                        <apex:SelectList size="1" id="legelEntity" styleClass="slds-select" value="{!selectedLegelEntity}" title="Select Client" >
+                            <apex:selectOptions value="{!LegalEntity}" />
+                        </apex:SelectList><br/>
+                    </div>   
+                    <br/>
+                    <div id="Buttons">
+                        <!--<apex:commandButton action="{!sendToESP}" value="Send"/>-->
+                        <button id="teamPanelAddButton" class="slds-button slds-button--brand slds-button--medium" onclick="SendToEsp();return false;" >
+                            Send to ESP
+                        </button>
+                        <button id="UpdateBtn" class="slds-button slds-button--brand slds-button--medium" onclick="updateAccount();return false;" >
+                            Update 
+                        </button>
+                    </div>
+                </div>                
+                <div class="slds-form-element" style="margin-left:50px;float:left;width: 300px" >
+                    <div>
+                        <label class="slds-form-element__label" for="ResigrationNumber">Resigration Number :</label>
+                        <apex:inputfield styleClass="slds-input"  id="ResigrationNumber" value="{!currentAccount.Registration_Number__c}" />
+                    </div>
+                    <br/>
+                    <div>
+                        <label class="slds-form-element__label" for="IdentificationType">Identification Type :</label>
+                        <apex:SelectList size="1" id="IDType" styleClass="slds-select" value="{!selectedIDType}" >
+                            <apex:selectOptions value="{!IDTypeOptions}" />
+                        </apex:SelectList><br/>
+                    </div>
+                    <br/>
+                    <div>
+                        <label class="slds-form-element__label" for="ClientGroup">Client Group :</label>
+                        <apex:SelectList size="1" id="ClientGroup" styleClass="slds-select" value="{!selectedClientGroup}" >
+                            <apex:selectOptions value="{!ClientGroupOptions}" />
+                        </apex:SelectList>
+                    </div>
+                    <br/>
+                    <button id="UpdateRelationship" class="slds-button slds-button--brand slds-button--medium" onclick="Cancel()" >
+                        Cancel
+                    </button>
+                </div>
+                <div class="slds-form-element" style="margin-left:50px;float:left;width: 300px" >
+                    <br/>
+                    <div>
+                        <label class="slds-form-element__label" for="FundNumber">Trust/Pension/Provident/Other fund number:</label>
+                        <input  class="slds-input" type="text" id="FundNumber" value="{!currentAccount.Trust_pension_provident_other_fund_numbe__c}" />
+                    </div>
+                    <br/>
+                    
+                    <!-- Datepicker -->
+                    <div class="slds-form-element" id="myPickerWrapper">
+                        <label class="slds-form-element__label" for="inputSample2">Date Established : </label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-input-has-icon slds-input-has-icon--right">
+                                
+                                <apex:inputField value="{!currentAccount.Date_Established__c}" styleClass="slds-input" id="myPicker"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="slds-form-element__label" for="ContactDetail">Contact Detail :</label>
+                        <apex:SelectList size="1" id="ContactDetail" styleClass="slds-select" value="{!selectedContactDetail}" >
+                            <apex:selectOptions value="{!ContactDetail}" />
+                        </apex:SelectList>
+                        <br/>
+                        <label class="slds-form-element__label" >Selected Contact :</label>
+                        <apex:selectList styleClass="slds-select" value="{!selectedContactID}" size="1">
+                            <apex:selectOptions value="{!ContactNames}" />
+                            <!--<apex:actionSupport event="onchange" action="{!showContacts}" reRender="relatedContactsBlock" />-->
+                        </apex:selectList><br/><br/>
+                    </div>
+                    <br/>                    
+                </div>                
+            </div>
+        </apex:form>
+    </body>
+</apex:page>

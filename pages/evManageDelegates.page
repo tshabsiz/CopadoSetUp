@@ -1,0 +1,268 @@
+<!-- Rudolf Niehaus - 2017-10-11 --->
+<apex:page controller="evManageDelegates_Controller">
+    
+    <head>
+        <apex:slds />
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" />
+        <apex:includeScript value="{!URLFOR($Resource.selectlistactions)}"/>
+        
+        <style>
+            .slds-scope .slds-dueling-list__options, .slds-scope .slds-picklist__options {
+            width: 30rem;
+            height: 20rem;
+            }
+            .slds-dueling-list__options option {
+            padding: .5rem .75rem;
+            }
+        </style>
+    </head>
+    
+ 
+    
+    <apex:form id="mainForm">
+        <div class="slds-page-header" style="">
+            <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-opportunity" title="Prioritise Delegates">
+                        <svg class="slds-icon" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/standard-sprite/svg/symbols.svg#orders')}"></use>
+                        </svg>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Prioritise Delegates">Manage Delegates</h1>
+                    <p class="slds-text-body_small slds-line-height_reset">{!EventRec.Name}</p>
+                    <apex:pagemessages ></apex:pagemessages>
+                </div>
+            </div>
+        </div>    
+        <div class="slds-m-top_xx-large">
+            
+            <div style="display:none" id="successMsg">
+                <div class="slds-spinner_container" onclick="hideSuccess();">
+                    <div class="slds-notify_container slds-is-relative">
+                        <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+                            <span class="slds-assistive-text">success</span>
+                            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#success')}" />
+                                </svg>
+                            </span>
+                            <div class="slds-notify__content">
+                                <h2 class="slds-text-heading_small ">Delegate priority has been updated.</h2>
+                            </div>
+                            <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="hideSuccess(); return false;">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#close')}" />
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+             <div style="display:none" id="successMsgDelete">
+                <div class="slds-spinner_container" onclick="hideSuccess();">
+                    <div class="slds-notify_container slds-is-relative">
+                        <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+                            <span class="slds-assistive-text">success</span>
+                            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#success')}" />
+                                </svg>
+                            </span>
+                            <div class="slds-notify__content">
+                                <h2 class="slds-text-heading_small ">The Selected Delegates has been deleted.</h2>
+                            </div>
+                            <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="hideSuccess(); return false;">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#close')}" />
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <apex:outputPanel id="delegateLists">
+                <div class="slds-dueling-list">
+                    <div class="slds-dueling-list__column">
+                        <span class="slds-text-heading--medium" id="label-39">A List</span>
+                        <select multiple="true" class="slds-dueling-list__options"  id="AList">
+                            <apex:repeat value="{!delegateAList}" var="del">
+                                <option class="number" value="{!del.Id}" >{!del.isFlaggedForDeletion__c} {!del.Contact__r.FirstName} {!del.Contact__r.LastName} ({!del.Contact__r.Job_title__c} - {!del.Contact__r.Account.Name}) : {!del.Host__r.Name}</option>
+                            </apex:repeat>
+                        </select>
+                        <div class="slds-form-element__help" id="error-message-unique-id">Please select a delegate to move</div>
+                    </div>
+                    <div class="slds-dueling-list__column">
+                        <button id='btnRight' class="slds-button slds-button_icon slds-button_icon-container" title="Up">
+                            <svg class="slds-button__icon" aria-hidden="true"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#right')}"></use></svg>
+                            <span class="slds-assistive-text">Move Selection to Second Category</span>
+                        </button>
+                        <button  id='btnLeft' class="slds-button slds-button_icon slds-button_icon-container" title="Down">
+                            <svg class="slds-button__icon" aria-hidden="true"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#left')}"></use></svg>
+                            <span class="slds-assistive-text">Move Selection to First Category</span>
+                        </button>
+                    </div>
+                    <div class="slds-dueling-list__column">
+                        <span class="slds-text-heading--medium" id="label-39">B List</span>
+                        <select multiple="true" class="slds-dueling-list__options" id="BList">
+                            <apex:repeat value="{!delegateBList}" var="del">
+                                <option class="number" value="{!del.Id}">{!del.isFlaggedForDeletion__c} {!del.Contact__r.FirstName} {!del.Contact__r.LastName} ({!del.Contact__r.Job_title__c} - {!del.Contact__r.Account.Name}) : {!del.Host__r.Name}</option>
+                            </apex:repeat>
+                        </select>
+                        <div class="slds-form-element__help" id="error-message-unique-id">Please select a delegate to move</div>
+                    </div>
+                    <div class="slds-dueling-list__column">
+                        <button id='btnUp' class="slds-button slds-button_icon slds-button_icon-container" title="Up">
+                            <svg class="slds-button__icon" aria-hidden="true"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#up')}"></use></svg>
+                            <span class="slds-assistive-text">Move Selection Up</span>
+                        </button>
+                        <button  id='btnDown' class="slds-button slds-button_icon slds-button_icon-container" title="Down">
+                            <svg class="slds-button__icon" aria-hidden="true"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/utility-sprite/svg/symbols.svg#down')}"></use></svg>
+                            <span class="slds-assistive-text">Move Selection Down</span>
+                        </button>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </div>
+        <br/>        
+        <div class="slds-form-element slds-float--center">
+            <apex:inputHidden value="{!confirmedBlist}" id="cblist"/>
+            <apex:inputHidden value="{!confirmedAlist}" id="calist"/>
+            <button id="btnconfirm" class="slds-button slds-button--brand" type="button" onclick="confirm();" >
+                Confirm
+            </button>
+            <button id="btncancel" class="slds-button slds-button--brand" type="button" onclick="cancel();" >
+                Back to Event
+            </button>
+            <a   class="slds-button slds-button--brand" href="/apex/evMassUpdateDelegate?retURL={!eventId}&wrapMassAction=1&scontrolCaching=1&id={!eventId}">
+                Mass Update Delegates
+            </a>
+            <button id="btndel" class="slds-button slds-button_destructive" type="button" onclick="deleteDelegates();" >
+                Delete
+            </button>
+            <apex:actionFunction action="{!confirm}" name="saveSelection" oncomplete="displaySuccess();" />
+            <apex:actionFunction action="{!cancel}" name="cancelTask" /> 
+            <apex:actionFunction action="{!delDelegate}" name="deleteDelegateFunction" reRender="delegateLists, mainForm" oncomplete="displaySuccessDelete();"> 
+                <apex:param id="combinedDelList" name="combinedDelList" value="" />
+            </apex:actionFunction>
+        </div>
+    </apex:form>
+    <script>
+    
+    function confirm(){
+        saveSelection();
+    };
+    function cancel(){
+        cancelTask();
+    };
+    
+    function deleteDelegates()
+    {
+        var A = '';
+        var B = '';
+        var BList = document.getElementById('BList').options.length;
+        
+        for (i=0; i<BList; i++) 
+        {
+            var BListOption = document.getElementById('BList').options[i];
+            if (BListOption.selected) 
+            { 
+                B = B + BListOption.value + ',';
+            }
+        }
+        
+        
+        console.log("B:" + B);
+        
+        var AList = document.getElementById('AList').options.length;
+        
+        for (i=0; i<AList; i++)
+        {
+            var AListOption = document.getElementById('AList').options[i];
+            if (AListOption.selected) 
+            {
+                
+                A = A + AListOption.value + ',';AListOption
+            }
+        }
+        var Combinedlist = A + ',' + B; 
+        console.log("Combinedlist :" + Combinedlist);
+        deleteDelegateFunction(Combinedlist);
+        
+    };
+    
+    function displaySuccess() {
+        document.getElementById("successMsg").style.display = "block";
+        $('#successMsg').delay(1000).fadeOut('fast');
+    }
+    
+     function displaySuccessDelete() {
+        document.getElementById("successMsgDelete").style.display = "block";
+        $('#successMsgDelete').delay(1000).fadeOut('fast');
+    }
+    
+    function hideSuccess() {
+        $('#successMsg').fadeOut('fast');
+    }
+    
+    //Buttons to move between list A and B
+    $('#btnRight').click(function (e) {
+        $('select').moveToListAndDelete('#AList', '#BList');
+        e.preventDefault();
+    });
+    
+    $('#btnLeft').click(function (e) {
+        $('select').moveToListAndDelete('#BList', '#AList');
+        e.preventDefault();
+    });
+    
+    //Buttons to control priority
+    $('#btnUp').click(function(e) {
+        $('select').moveUpDown('#BList', true, false);
+        e.preventDefault();
+    });
+    
+    $('#btnDown').click(function(e) {
+        $('select').moveUpDown('#BList', false, true);
+        e.preventDefault();
+    });
+    
+    //Update priority number when changes are made to the lists
+    $('#btnRight, #btnLeft, #btnDown, #btnUp').click(function (e){
+        var A = '';
+        var B = '';
+        var BList = document.getElementById('BList').options.length;
+        
+        for (i=0; i<BList; i++) {
+            var BListOption = document.getElementById('BList').options[i];
+            B = B + BListOption.value + ',';
+        }
+        
+        document.getElementById('{!$Component.mainForm.cblist}').value = B;
+        
+        console.log("B:" + B);
+        
+        var AList = document.getElementById('AList').options.length;
+        
+        for (i=0; i<AList; i++) {
+            var AListOption = document.getElementById('AList').options[i];
+            A = A + AListOption.value + ',';
+        }
+        
+        document.getElementById('{!$Component.mainForm.calist}').value = A;
+        
+        console.log("A:" + A);
+        
+        e.preventDefault();
+    });
+    
+    
+    
+    </script>    
+    
+</apex:page>

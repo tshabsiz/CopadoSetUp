@@ -1,0 +1,25 @@
+<!--
+*** CHANGE LOG ***
+
+01/02/2018 - TdB    - Create VF page.  
+
+-->
+<apex:page Controller="Participant_Mass_Email_Controller" tabStyle="advpm__Matter__c">
+    <apex:sectionHeader subtitle="Mass Email Participants" title="Mass Email"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Send Email" action="{!SendEmail}" />
+                <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" >
+                <apex:selectList label="From" value="{!selectedFromAddress}" size="1" multiselect="false"  >
+                    <apex:selectOptions value="{!FromEmailAddressList}" />
+                </apex:selectList>
+                <apex:inputText maxlength="100" required="true" label="Subject" value="{!emailSubject}" size="100" /> 
+                <apex:inputTextarea rows="20" required="true" richText="true" label="Body" value="{!emailBody}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

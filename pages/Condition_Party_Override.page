@@ -1,0 +1,45 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 26/06/2017 - PG    - Create VF page.  
+ 04/07/2017 - PG    - Added "Debug" block and page "Action".
+ 15/09/2017 - PG    - Changed to use Condition__c standard controller from Condition_Party__c
+ 02/11/2017 - PG    - Remove the need for standard controller.
+                                                           
+-->
+<apex:page controller="Condition_Party_Override" action="{!initialiseData}">     
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Condition Party Edit" subtitle="Update Condition Parties"/>  
+    
+    <apex:form >
+        <apex:pageBlock >
+            
+            <apex:pageMessages rendered="true" escape="false" />
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+                <apex:commandButton value="Cancel" action="{!actionCancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!partyWrappers}" var="wrapperItem"> 
+                
+                <apex:column headerValue="Select / Deselect"> 
+                    <apex:inputCheckbox value="{!wrapperItem.selected}" />
+                </apex:column>
+                <apex:column value="{!wrapperItem.party.Relationship__c}" />
+                <apex:column value="{!wrapperItem.party.Party_Type__c}" />
+                <apex:column value="{!wrapperItem.party.Conditions_Monitored_By__c}" /> 
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

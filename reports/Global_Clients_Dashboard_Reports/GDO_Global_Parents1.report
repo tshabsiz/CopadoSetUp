@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_11613542</developerName>
+        <masterLabel>Coverage Hub</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <sourceColumnName>User.Hub__c</sourceColumnName>
+        <useOther>false</useOther>
+        <values>
+            <value>SA Inland LLC / Midcorp</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Public Sector South Africa</sourceValue>
+            </sourceValues>
+            <value>SA Public Sector</value>
+        </values>
+        <values>
+            <value>Global Clients</value>
+        </values>
+        <values>
+            <value>SA Financial Services</value>
+        </values>
+        <values>
+            <value>SA Coastal</value>
+        </values>
+    </buckets>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>User.Team__c</field>
+    </columns>
+    <columns>
+        <field>Account.Segment__c</field>
+    </columns>
+    <columns>
+        <field>INDUSTRY</field>
+    </columns>
+    <columns>
+        <field>Account.Coverage_country__c</field>
+    </columns>
+    <columns>
+        <field>Account.Relationship_Corridor__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <booleanFilter>(1 OR 2) AND (3 OR 4)</booleanFilter>
+        <criteriaItems>
+            <column>User.Team__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>Global Development Organisation,gdo</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Account.Segment__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Global Development Organisation (GDO)</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>TYPE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Global Parent</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>ACCOUNT.NAME</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>global parent</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>USERS.NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>GDO Global Parents</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>AccountList</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>ACCOUNT.NAME</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

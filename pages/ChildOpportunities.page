@@ -1,0 +1,80 @@
+<apex:page standardController="Opportunity" extensions="ChildOpportunitiesController">
+    <script>
+         function NewChildOpportunity(){
+             window.open('/006/e?CF00N2400000JWyRZ={!JSENCODE(Opportunity.Name)}&CF00N2400000JWyRZ_lkid={!Opportunity.Id}&retURL=%2F{!Opportunity.Id}&RecordType={!Opportunity.RecordType}&ent=Opportunity');
+         }
+ 	</script>
+    <apex:form >
+        <apex:pageBlock id="no_records" rendered="{!!(opportunityItems.size > 0)}">
+            <table style="width:100%{!IF((Opportunity.Is_Parent_Opportunity__c == null || Opportunity.Is_Parent_Opportunity__c != 'Yes'), ';display: none;', '')}">
+                <tr>
+                    <td align="center">
+                        <apex:commandButton value="New Opportunity" onClick="NewChildOpportunity()"/>
+                    </td>
+                    <td><apex:pageMessages id="pgMsg1"/></td>
+  				</tr>
+        	</table>
+            <apex:outputText >No records to display</apex:outputText>
+        </apex:pageBlock>
+        <apex:pageBlock id="eco" rendered="{!!Editing && opportunityItems.size > 0}">
+            <table style="width:100%{!IF((Opportunity.Is_Parent_Opportunity__c == null || Opportunity.Is_Parent_Opportunity__c != 'Yes'), ';display: none;', '')}">
+                <tr>
+                    <td align="center">
+                        <apex:commandButton value="Edit" action="{!StartEditing}"/>
+                        <apex:commandButton value="New Opportunity" onClick="NewChildOpportunity()"/>
+                    </td>
+                    <td><apex:pageMessages id="pgMsg1"/></td>
+  				</tr>
+        	</table>
+            <apex:pageBlockTable value="{!opportunityItems}" var="item" rendered="{!opportunityItems.size > 0}">
+                <apex:column >
+                    <apex:inputCheckbox value="{!item.isSelected}" disabled="{!!item.isSelectable}" />
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Opportunity.fields.Name.Label}">
+                	<a href= "/{!item.opportunity.Id}" target="_blank">{!item.opportunity.Name}</a>
+                </apex:column>
+                <apex:column value="{!item.opportunity.Account.Name}"/>
+                <apex:column value="{!item.opportunity.Related_Group_Client__c}"/>
+                                <apex:column headerValue="{!$ObjectType.Product2.Label}" headerClass="floatHeader"
+                                         title="{!IF(item.opportunity.OpportunityLineItems.size > 0, item.opportunity.OpportunityLineItems[0].Product_Level_3__r.Name, '')}">
+                                <apex:outputField value="{!item.opportunity.OpportunityLineItems[0].Product_Level_3__r.Name}" 
+                                                  rendered="{!item.opportunity.OpportunityLineItems.size > 0}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                	<apex:outputField value="{!item.opportunity.Annualised_Income__c}"/>
+                </apex:column>
+                <apex:column value="{!item.opportunity.StageName}"/>
+                <apex:column headerValue="Close Date" value="{!item.opportunity.CloseDate}"/> 
+                <apex:column headerValue="Update Errors" rendered="{!ErrorsExist}">
+                	<apex:outputText value="{!item.error}" style="color:red"/>   
+                </apex:column>
+			</apex:pageBlockTable>
+            <table style="width:100%{!IF((Opportunity.Is_Parent_Opportunity__c == null || Opportunity.Is_Parent_Opportunity__c != 'Yes') && !(opportunityItems.size > 0), ';display: none;', '')}">
+                <tr>
+                    <td align="center">
+                        <apex:commandButton value="Edit" action="{!StartEditing}"/>
+                        <apex:commandButton value="New Opportunity" onClick="NewChildOpportunity()"/>
+                    </td>
+                    <td><apex:pageMessages id="pgMsg2"/></td>
+  				</tr>
+        	</table>
+        </apex:pageBlock>
+        <apex:pageBlock id="edit" rendered="{!Editing}">
+            <div align="center">
+            	<apex:commandButton value="Cancel" action="{!CancelEditing}"/>
+                <apex:commandButton value="Save" action="{!Save}"/>
+            </div>
+        	<apex:pageBlockSection columns="3" collapsible="false">
+               	<apex:inputField value="{!Opportunity.StageName}">
+                	<apex:actionSupport event="onchange" reRender="edit"/>
+               	</apex:inputField>
+               	<apex:inputField value="{!Opportunity.CloseDate}"/>
+                <apex:pageBlockSectionItem />
+	            <apex:inputField value="{!Opportunity.Reason_Won_Lost__c}" rendered="{!IF(Opportunity.StageName == 'Closed Won' || Opportunity.StageName == 'Closed Lost', true, false)}"/>
+                <apex:inputField value="{!Opportunity.Loss_Win_Description__c}" rendered="{!IF(Opportunity.StageName == 'Closed Won' || Opportunity.StageName == 'Closed Lost', true, false)}"/>
+                <apex:inputField value="{!Opportunity.Product_Code_Won_Opportunity__c}" rendered="{!IF(Opportunity.StageName == 'Closed Won' || Opportunity.StageName == 'Closed Lost', true, false)}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,152 @@
+<apex:page title="Matter Chart View: {!advpm__Matter__c.Name}" standardController="advpm__Matter__c" extensions="advpm.TimelineChartViewController" readOnly="true" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}">
+<apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Matter__c.Id))}">
+
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+
+<script type="text/javascript">
+Date.prototype.adjust = function(part, amount){
+    part = part.toLowerCase();
+    
+    var map = { 
+                years: 'FullYear', months: 'Month', weeks: 'Hours', days: 'Hours', hours: 'Hours', 
+                minutes: 'Minutes', seconds: 'Seconds', milliseconds: 'Milliseconds',
+                utcyears: 'UTCFullYear', utcmonths: 'UTCMonth', weeks: 'UTCHours', utcdays: 'UTCHours', 
+                utchours: 'UTCHours', utcminutes: 'UTCMinutes', utcseconds: 'UTCSeconds', utcmilliseconds: 'UTCMilliseconds'
+            },
+        mapPart = map[part];
+
+    if(part == 'weeks' || part == 'utcweeks')
+        amount *= 168;
+    if(part == 'days' || part == 'utcdays')
+        amount *= 24;
+    
+    this['set'+ mapPart]( this['get'+ mapPart]() + amount );
+
+    return this;
+}
+Date.prototype.each = function(endDate, part, step, fn, bind){
+    var fromDate = new Date(this.getTime()),
+        toDate = new Date(endDate.getTime()),
+        pm = fromDate <= toDate? 1:-1,
+        i = 0;
+
+    while( (pm === 1 && fromDate <= toDate) || (pm === -1 && fromDate >= toDate) ){
+        if(fn.call(bind, fromDate, i, this) === false) break;
+        i += step;
+        fromDate.adjust(part, step*pm);
+    }
+    return this;
+}
+</script>
+
+<apex:styleSheet value="{!URLFOR($Resource.advpm__jQuery_jqTimeline, 'css/jquery.jqtimeline.css')}" />
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_jqTimeline, 'js/jquery.jqtimeline(custom-adv).js')}" />
+
+<style type="text/css">
+    .gt-timeline, .gt-timeline .month { color: #002654 }
+    .gt-timeline div.main_line { border-top: 3px solid #002654 }
+    .gt-timeline div.odd-month, .gt-timeline div.even-month { border-left: 3px solid #002654 }
+    .gt-timeline div.even-month .month, .gt-timeline div.odd-month .month { position: relative;top: -18px;left: -10px }
+    .gt-timeline { top:5px;height:65px }
+    .gt-timeline div.e-message .msg a { text-decoration: none;}
+    .gt-timeline div.e-message .msg:hover{ text-decoration: underline;}
+    .gt-timeline div.e-message { top: 74px; }
+    .e-message .msg a,.e-message .msg a:link,.e-message .msg a:hover,.e-message .msg a:visited,.e-message .msg a:active { color:#ffffff }
+    .full-view-link { margin:0 auto;text-align:right;font-size:91.3%;top:65px;position:absolute;left:62px; }
+    .full-view-link a, .ptBreadcrumb a { color: #015ba7;text-decoration: none; }
+    .arrow-left.disabled, .arrow-right.disabled{opacity:.2;}
+    .arrow-left, .arrow-right{opacity:1;top:38px;}
+</style>
+
+<apex:outputPanel layout="none" rendered="{!!fullView}">
+<style type="text/css">
+    .arrow-left-container, .arrow-right-container {top: 25px;}
+</style>
+<apex:outputPanel layout="none" rendered="{!isLightning}">
+<style type="text/css">
+    #matterTimeline {left: 40px;}
+    .full-view-link {left:90px!important; }
+</style>
+</apex:outputPanel>
+</apex:outputPanel>
+
+<apex:outputPanel layout="none" rendered="{!isLightning}">
+    <c:includeSLDS />
+    <style type="text/css">
+        body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+        body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+        .gt-timeline {font-family: "Salesforce Sans", Arial, sans-serif;}
+        .arrow-left, .arrow-right{position: absolute;}
+        .arrow-left {left:0px;top:20px!important;}
+        .arrow-right {top:20px!important;}
+        #matterTimeline > div {display: inline-block;}
+    </style>
+</apex:outputPanel>
+
+<apex:sectionHeader title="Matter Chart View" subtitle="{!advpm__Matter__c.Name}" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" />
+<apex:outputPanel layout="block" rendered="{!$CurrentPage.parameters.fpw=='1'}" styleClass="ptBreadcrumb">
+    &#171;&nbsp;<a href="/{!Matter__c.Id}" target="_top">Back to matter</a>
+    <br /><br /><br /><br />
+</apex:outputPanel>
+<apex:pageMessages />
+
+<div id="matterTimeline"></div>
+<apex:outputPanel layout="block" rendered="{!$CurrentPage.parameters.fpw!='1'}" styleClass="full-view-link">
+    <apex:outputLink rendered="{!!isLightning}" value="{!URLFOR($Page.advpm__TimelineViewMatter,null,[id=advpm__Matter__c.Id,fpw=URLENCODE('1'),srcm=URLENCODE('1'),srcm_ovrr=URLENCODE('1')])}" target="_top">See more detail</apex:outputLink>
+    <apex:outputLink rendered="{!isLightning}" value="javascript:void(0);" onclick="moreDetails();return false;">See more detail</apex:outputLink>
+</apex:outputPanel>
+
+<script type="text/javascript">
+    $jtm = jQuery.noConflict();
+    
+    $jtm(document).ready(function(){
+        initTimeline();
+    });
+    $jtm(window).resize(function() {
+        initTimeline();
+    });
+    function moreDetails() {
+        var ur = "{!URLFOR($Page.advpm__TimelineViewMatter,null,[id=advpm__Matter__c.Id,fpw=URLENCODE('1'),srcm=URLENCODE('1'),srcm_ovrr=URLENCODE('1')])}";
+        sforce.one.navigateToURL(ur, true);
+    }
+    function initTimeline() {
+        $jtm('#matterTimeline').html('');
+        $jtm('#matterTimeline').jqtimeline({
+            events : timelineItems,
+            groupEventWithinPx: 0,
+            numYears: {!numYears},
+            numMonths: {!numMonths},
+            startYear: {!startYear},
+            startMonth: {!startMonth},
+            endYear: {!endYear},
+            endMonth: {!endMonth},
+            startDate: (new Date({!startYear}, {!startMonth}, 1)),
+            endDate: (new Date({!endYear}, {!endMonth}, 0)),
+            nScroll: false,
+            commUrl: '{!$Site.Prefix}',
+            leftImageUrl: "{!URLFOR($Resource.advpm__FontAwesome, 'img/play_reverse.png')}",
+            rightImageUrl: "{!URLFOR($Resource.advpm__FontAwesome, 'img/play.png')}",
+            fullView: {!fullView},
+            isLtng: {!isLightning},
+            click:function(e,event){
+                
+            }
+        });
+        $jtm('.full-view-link').css('width', $jtm('.gt-timeline-container').width());
+    }
+</script>
+<script type="text/javascript">
+    var timelineItems = JSON.parse("{!JSENCODE(TimelineJson)}");
+    for(var i in timelineItems) {
+        timelineItems[i].on = new Date(timelineItems[i].on);
+        timelineItems[i].onTime = new Date(timelineItems[i].onTime);
+    }
+</script>
+<div style="display:none;">
+<apex:form >
+    <apex:inputField value="{!advpm__Matter__c.advpm__Date_Filed__c}" />
+</apex:form>
+</div>
+
+</apex:outputPanel>
+</apex:page>

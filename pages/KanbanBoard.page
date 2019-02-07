@@ -1,0 +1,358 @@
+<apex:page standardStylesheets="false" showheader="false" sidebar="false" standardController="Initiative__c" extensions="KanbanBoardController" id="planbBlock">
+        <head>
+            <apex:includeScript value="{!URLFOR($Resource.Planomatic, 'js/jquery-1.3.2.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.Planomatic, 'js/jquery-ui-1.7.2.custom.min.js')}" />
+            <apex:stylesheet value="{!URLFOR($Resource.Planomatic, 'styles.css')}" />
+            <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+            <style> 
+            .glow, .loginInputBox, .loginStyledInputBox{
+        background:#F3F3F3 none repeat scroll 0 0;
+        border:1px solid #ddd;
+        font-size:14px;
+        line-height:20px;
+        margin:10;
+        padding:3px;
+    }
+    
+    .glow, .loginInputBox{
+        width:280px; 
+    }
+    
+    .glow:focus {
+        box-shadow: 0 0 8px rgba(108, 196, 227, 0.5);
+        -moz-box-shadow: 0 0 8px rgba(108, 196, 227, 0.5);
+        -webkit-box-shadow: 0 0 8px rgba(108, 196, 227, 0.5);           
+        background: none repeat scroll 0 0 #F0F8FE;
+        border-color: rgba(108, 196, 227, 0.75) !important;
+        outline: medium none;
+    }
+    #SprintLink{
+                padding-top: 10px;
+                padding-bottom: 20px;
+            }
+    .button {
+            position:relative;
+            align: right;
+            background: #009DDC;
+            background-color: #009DDC;
+            -moz-border-radius:0px;
+            -webkit-border-radius:0px;
+            border-radius:3px;
+            border:0px solid #268a16;
+            display:inline-block;
+            color: #FFFFFF;
+            font-family:arial;
+            font-size:14px;
+            font-weight:bold;
+            padding:6px 24px;
+            text-decoration:none;
+        }
+        .button:hover {
+            color: #FFFFFF;
+            background: #8de342;
+            background-color:#5cb811;
+            text-decoration: none;
+        }
+        .button:active {
+            position:relative;
+            top:1px;
+            }
+         .planningBlock{
+                width:350px;
+                min-height:100px;
+                background:#fff;
+                position:fixed;
+                z-index:99999999;
+                float:left;
+                border:Solid 1px #969696;
+                border-radius :3px;
+                -moz-border-radius:3px;
+                -webkit-border-radius:3px;
+                margin:10px 0px 10px 0;
+                padding:10px 10px 10px 10px;
+                font-family:arial; 
+                font-size:0.9em;
+            }
+         .column{
+                    min-height:200px;
+                    background: none;
+                    float:left;
+                    -moz-border-radius:3px;
+                    -webkit-border-radius:3px;
+                    margin:10px 0 10px 0;
+                }
+                
+                .column .dragbox{
+                    margin:5px 2px  20px;
+                    background:#fff;
+                    position:relative;
+                    border:1px solid #ddd;
+                    -moz-border-radius:3px;
+                    -webkit-border-radius:3px;
+                    width:350px;
+                    float:left;
+                    left:10%;
+                    height:auto;
+                    
+                }
+                .column .dragbox h2{
+                    margin:0;
+                    font-size:12px;
+                    padding:5px;
+                    background:#000000;
+                    border-bottom:1px solid #eee;
+                }
+                .dragbox-content-head{
+                    background: grey;
+                    color: white;
+                    overflow: hidden;
+                    height: 30px;
+                    cursor:move;
+                    font-family:arial;
+                    font-size:0.9em; 
+                    line-height:1.5em;
+                    margin: 1px;
+                    -moz-border-radius-topleft:3px;
+                    -moz-border-radius-topright:3px;
+                    border-top-left-radius:3px;
+                    border-top-right-radius:3px;
+                    -webkit-border-top-left-radius:3px;
+                    -webkit-border-top-right-radius:3px;
+                }
+                .dragbox-footer{
+                    background: grey;
+                    color: white;
+                    overflow: hidden;
+                    height: 20px;
+                    cursor:move;
+                    font-family:arial; 
+                    font-size:0.9em; 
+                    line-height:1.5em;
+                    margin: 1px;
+                    -moz-border-radius-bottomleft:3px;
+                    -moz-border-radius-bottomright:3px;
+                    border-bottom-left-radius:3px;
+                    border-bottom-right-radius:3px;
+                    -webkit-border-bottom-left-radius:3px;
+                    -webkit-border-bottom-right-radius:3px;
+                }
+                .dragbox-content-head-content{
+                    float:left;
+                    min-width:30px;
+                    height:100%;
+                    padding:0px 5px 0px 5px;
+                    color:white;
+                }
+                .dragbox-content{
+                    
+                    min-height:100px; margin:5px;
+                    font-family:arial; font-size:0.8em; line-height:1.5em;
+                }
+                .column  .placeholder{
+                    background: #F9F9F9;
+                    border:1px dashed #ddd;
+                    min-height:12000px
+                }
+                .dragbox h2.collapse{
+                    background:#F9F9F9 url({!URLFOR($Resource.Planomatic, 'collapse.png')}) no-repeat top right;
+                }
+                .dragbox h2 .configure{
+                    font-size:11px; font-weight:normal; font-family:arial;
+                    margin-right:30px; float:right;
+                }
+                .filterstext{
+                font-family:arial;font-size:14px;font-weight:bold;
+                }
+                /* link formats */
+                a:link {color: #FFFFFF;}
+                a:visited {color: #FFFFFF;}
+                a:hover {color: #FFFFFF;}
+                a:active {color: #FFFFFF;}
+            .color-green  {background:#8dc100;}
+            .color-orange {background:#F28705;}
+            .color-yellow {background:#f2bc00;}
+            .color-pink   {background:#F28280;}
+            .color-blue   {background:#52AED9;}
+            .color-white  {background:#FFFFFF;}
+            .color-sky    {background:#54D500;}
+            .color-lgrey  {background:#F9F9F9;}
+            .color-grey   {background:#DFDFDF;}
+            .ColumnHeader {font-family:Arial;font-size:1.2em;}
+            BODY {background-attachment: fixed;}
+            </style>
+             <script>
+                 
+                 $j = jQuery.noConflict(); 
+                 $j(document).ready(function() {
+                    $j("#productDetails").dialog({ autoOpen: false, modal: true, position: 'center',width: 320});
+                 });
+                 var userStoryId; 
+                 function showDialog(name){
+                
+                    $j("#productDetails").dialog("open");
+                    $j('#productDetails').dialog("option" , "title" , "Post Chatter to User Story");
+                    $j('#productDetails').dialog('option', 'position', 'center');
+                    userStoryId = name;
+                    return false;
+                 }
+                 
+                 function closeDialogAfterPost(){
+                    $j("#productDetails").dialog("close");
+                 }
+                 
+                 function filtespJS(){
+                   spfilter();
+                   document.getElementById('productDetails').style.display = "none";     
+                 }
+                 function hidechatterbx(){
+                   document.getElementById('productDetails').style.display = "none";     
+                 }
+                 function getcolorbyFA(vid,farea){     
+                 if(this.farea = 'Customer Services'){
+                     document.getElementById(vid).style.background = '#0b6fce';
+                     document.getElementById(vid+'_FA').style.background = '#0b6fce';    
+                 }
+                 else if(this.farea = 'Event / Medical'){
+                     document.getElementById(vid).style.background = '#78c953';
+                     document.getElementById(vid+'_FA').style.background = '#78c953';   
+                 }
+                 else if(this.farea = 'Market Access'){
+                     document.getElementById(vid).style.background = '#e27001';
+                     document.getElementById(vid+'_FA').style.background = '#e27001';  
+                 }
+                 else if(this.farea = 'Marketing / Multichannel'){
+                     document.getElementById(vid).style.background = '#a845dc';
+                     document.getElementById(vid+'_FA').style.background = '#a845dc';  
+                 }
+                 else if(this.farea = 'SFA'){
+                     document.getElementById(vid).style.background = '#f3d904';
+                     document.getElementById(vid+'_FA').style.background = '#f3d904';  
+                 }
+                 else if(this.farea = 'Analytics / Insights'){
+                     document.getElementById(vid).style.background = '#a53711';
+                     document.getElementById(vid+'_FA').style.background = '#a53711';  
+                 } 
+                 else {
+                 document.getElementById(vid).style.background = 'white';
+                     document.getElementById(vid+'_FA').style.background = 'white'; 
+                 }
+                 }
+             </script>
+        </head>
+        <body bgcolor="#E6E6FA">
+         <apex:form id="form" >
+            <apex:actionFunction name="updateUserStoriesJSFunction" action="{!updateUserStoriesSprint}" rerender="thepanel,planbBlock" >
+                
+                <apex:param name="UpdateSwing" value="" />
+                <apex:param name="UserStoryID" value="" />
+            </apex:actionFunction>
+           
+                
+            
+            
+                <apex:outputPanel id="fakeRerender"></apex:outputPanel>
+       
+        <div class="color-blue" id="toptitle1" style="width:100%;height:40px;color:white;line-height: 40px;text-align:center;vertical-align:middle;font-size:22px;font-family:arial;">
+        <strong>{!Initiative__c.Name}</strong>
+        </div>
+         
+        <div id="SprintLink">
+                <a class="button" href="/{!Initiative__c.Id}">Save and Close</a>
+        
+        
+        <div style="float:right;font-family:arial;">
+        <apex:commandLink styleclass="button" value="Hide descriptions"  id="hidelink" onclick="hidedescall();" reRender="fakeRerender"/>&nbsp;&nbsp;&nbsp;
+        <apex:commandLink styleclass="button" value="Show descriptions"  id="unhidelink" onclick="unhidedescall();" reRender="fakeRerender"/>
+        </div></div>
+        <br/>
+        
+        <apex:outputPanel id="thepanel">
+       <div id="UserStoryDiv" style="width:100%;padding-top: 15px;">
+       
+       
+         <apex:repeat value="{!allGroupedUserStories}" var="eachStatus">
+    
+            <div class="Column" style="float: left; width:{!columnWidth}%;text-align:center;font-family:arial;font-size:14px;font-weight:bold;">{!eachStatus.statusValue}
+            <div class="column" id="{!eachStatus.statusValue}" style="width:100%">
+              <apex:repeat value="{!eachStatus.relatedUserStories}" var="us">
+              <div class="dragbox" id="{!us.Id}" style="width:75%;height:auto;">
+                    <div class="dragbox-content-head" style="width:99%">
+                        <div class="dragbox-content-head-content">
+                            <strong><a href="/{!us.id}" style="color:white">{!us.Name}</a></strong>
+                        </div>
+                     </div>
+                    <div class="dragbox-content" style="width:95%">
+                        <p>{!us.Comments__c}</p>
+                    </div>
+                    
+                    <div class="dragbox-footer">
+                        <a id="{!us.Id}" href="#"  onclick="return showDialog('{!us.Id}')"><img style="vertical-align: text-bottom;" src="/img/feeds/feed16.png"/> Post Chatter</a>
+                    </div>
+                </div>
+            </apex:repeat>
+            </div>
+            </div>
+        </apex:repeat>
+               
+        </div>
+        
+        
+        
+        <script type="text/javascript">
+        
+        
+                            var $j = jQuery.noConflict();
+                            $j(function() {
+                                $j( "#dialog-modal" ).dialog( "close" );
+                                $j('.dragbox').each(function() {
+                                    $j(this).hover(function() {
+                                        // to add expand/collapse image when hovered over.
+                                        $j(this).find('.dragbox-content-head').addClass('collapse');
+                                    }, function() {
+                                        $j(this).find('.dragbox-content-head').removeClass('collapse');
+                                    }).find('.dragbox-content-head').hover(function() {
+                                        $j(this).find('.configure').css('visibility', 'visible');
+                                    }, function() {
+                                        $j(this).find('.configure').css('visibility', 'hidden');
+                                    }).click(function() {
+                                        $j(this).siblings('.dragbox-content').toggle();
+                                    }).end().find('.configure').css('visibility', 'hidden');
+                                });
+                                $j('.column').sortable({
+                                    connectWith : '.column',
+                                    handle : '.dragbox-content-head',
+                                    cursor : 'move',
+                                    placeholder : 'placeholder',
+                                    forcePlaceholderSize : true,
+                                    containment: 'document',
+                                    opacity : 0.4,
+                                    receive: function(event, ui) { 
+                                        updateUserStoriesJSFunction(event.target.id,$j(ui.item).attr('id'));                                    
+                                    }
+                                    
+                                }).disableSelection();
+                                
+                            });
+                            
+                            function hidedescall(){
+                                $j('.dragbox-content').hide();
+                                }
+                            function unhidedescall(){
+                            $j('.dragbox-content').show();
+                            }
+                        </script>
+                        <div id="productDetails">
+                        <div style="float: left; width: 99%">
+                            <textarea class="glow" id="chatterNote" rows="6" cols="50">
+                            </textarea>
+                            <input type="hidden" id="productID" name="productID" />
+                        </div>
+                        <div style="float:left; width: 99%">
+                            <input class="button" type="submit" value="Post Chatter" onclick="addChatterCommentJS();"></input>
+                        </div>
+                    </div>
+        </apex:outputPanel>
+        </apex:form>
+        </body>
+        
+        </apex:page>

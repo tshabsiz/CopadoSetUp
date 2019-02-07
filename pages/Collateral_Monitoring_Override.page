@@ -1,0 +1,82 @@
+<!-- 
+*** CHANGE LOG ***
+
+27/11/2017 - Tdb   - Created VF page.
+				   - Fields, add Page Block Sections for Participanys and Groups. Show/Hide fields based on Collateral Type selected
+
+-->
+
+<apex:page standardController="Collateral_Monitoring__c" extensions="Collateral_Monitoring_Override" showHeader="true" sidebar="true">
+    <apex:sectionHeader title="Collateral Monitoring Edit" subtitle="New Collateral Monitoring" />
+    <apex:form id="theForm">
+        <apex:pageBlock id="pblock" >
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pblocksec_info" title="Information" columns="2"> 
+                <apex:inputField value="{!collateralMonitoringRecord.Name}" required="true" rendered="true" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Deal" for="deal_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField style="" label="Deal" value="{!collateralMonitoringRecord.Deal__c}" id="deal_field" required="true">
+                            <apex:actionSupport event="onchange" rerender="pblocksec_participants" action="{!DealParticipants}"/>
+                        </apex:inputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!collateralMonitoringRecord.Person_Responsible__c}" />  
+                <apex:inputField value="{!collateralMonitoringRecord.Agreement__c}" required="true" />
+                <apex:inputField value="{!collateralMonitoringRecord.Description__c}" />
+                <apex:inputField value="{!collateralMonitoringRecord.Collateral__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_dependencies">
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Collateral Type" for="type_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField value="{!collateralMonitoringRecord.Collateral_Type__c}" id="type_field" required="true">
+                            <apex:actionSupport event="onchange" rerender="pblocksec_dependencies" />
+                        </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!collateralMonitoringRecord.Specify_Other__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Other', true, false )}" required="true" /> 
+                <apex:inputField value="{!collateralMonitoringRecord.Item_to_Monitor__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Other', false, true )}" required="true"/> 
+                <apex:inputField value="{!collateralMonitoringRecord.Account_Number__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}" required="true"/> 
+                <apex:outputText rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}" />
+                <apex:inputField value="{!collateralMonitoringRecord.Account_Type__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}" required="true"/> 
+                <apex:outputText rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c != 'Cash', true, false )}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_scheduling" title="Scheduling Information (optional)" >
+                <apex:inputField value="{!collateralMonitoringRecord.Frequency__c}" />
+                <apex:inputField id="DueDate" value="{!collateralMonitoringRecord.Due_Date__c}" />
+                <apex:inputField value="{!collateralMonitoringRecord.Relative_Date__c}" />
+                <apex:inputField value="{!collateralMonitoringRecord.Other_Relative_Date__c}" />
+                <apex:inputField value="{!collateralMonitoringRecord.Number_of_Days__c}" />
+                <apex:outputText ></apex:outputText>  
+                <apex:inputField value="{!collateralMonitoringRecord.Days__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_participants" title="Notification Participants" columns="1" rendered="{!IF(collateralMonitoringRecord.Id == null,True,False)}">
+                <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!participantWrapper.participant.Name}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+                </apex:pageBlockTable> 
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection id="pblocksec_groups" title="Notification Groups" columns="1" rendered="{!IF(collateralMonitoringRecord.Id == null,True,False)}">
+                <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />  
+                </apex:pageBlockTable> 
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

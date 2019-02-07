@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Contact.advpm__Participants__r$Name</field>
+    </columns>
+    <columns>
+        <field>Contact.advpm__Participants__r$advpm__Matter__c</field>
+    </columns>
+    <columns>
+        <field>Contact.advpm__Participants__r$advpm__Role__c</field>
+    </columns>
+    <columns>
+        <field>Contact.advpm__Participants__r$advpm__Comment__c</field>
+    </columns>
+    <crossFilters>
+        <operation>with</operation>
+        <primaryTableColumn>Contact$Id</primaryTableColumn>
+        <relatedTable>advpm__Participant__c</relatedTable>
+        <relatedTableJoinColumn>advpm__Contact__c</relatedTableJoinColumn>
+    </crossFilters>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Contact$Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Contacts With Multiple Participants</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>advpm__Contacts_with_Participants__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Contact$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

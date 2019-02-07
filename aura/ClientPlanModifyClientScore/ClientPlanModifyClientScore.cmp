@@ -1,0 +1,58 @@
+<aura:component controller="ClientPlanOverviewControllerMobile">
+    
+    <aura:attribute name="uniqueKey" type="String" required="true" />
+    <aura:attribute name="scoreType" type="String" required="true" />
+    <aura:attribute name="isEdit" type="Boolean" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:attribute name="planId" type="Id" required="false" />
+    <aura:attribute name="scoreId" type="Id" required="false" />
+    
+    <aura:attribute name="name" type="String" required="false" />
+    <aura:attribute name="value" type="String" required="false" />
+    
+    <aura:handler event="aura:doneRendering" action="{!c.onAfterRendering}"/>
+    
+    <ltng:require scripts="/resource/jquery_1_11" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    {!if(v.isEdit, 'Edit ', 'Add ')} {!v.scoreType}
+                </div>
+                
+                <div id="wholePage">
+                    
+                    <div id="nameElem" class="slds-form-element">
+                        <label class="slds-form-element__label" for="nameInput">
+                            {!v.scoreType}
+                        </label>
+                        <div class="slds-form-element__control">
+                            <input id="nameInput" class="{!v.uniqueKey + ' slds-input'}" type="text" value="{!if(v.isEdit, v.name, '')}"/>
+                            <span id="nameError" class="slds-form-element__help" style="display:none;">This field is required</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element marginTop1em">
+                        <label class="slds-form-element__label" for="descriptionArea">Description</label>
+                        <div class="slds-form-element__control">
+                            <textarea id="descriptionArea" class="{!'area' + v.uniqueKey + ' slds-textarea'}" rows="5" value="{!if(v.isEdit, v.value, '• ')}"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModifyScore}">Save</button>
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+	
+</aura:component>

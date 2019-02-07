@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Agreement Amendments</relationshipLabel>
+        <relationshipName>Agreeement_Amendments</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Amendment_Document_Uploaded__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Amendment Document Uploaded</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Amendment_Reason_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Amendment Reason Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Amendment_Reason_Type</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Amendment_Reason__c</fullName>
+        <description>Field used to prompt user to complete field when &apos;other&apos; is selected on amendment reason type</description>
+        <externalId>false</externalId>
+        <label>Amendment Reason</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Effective_date__c</fullName>
+        <externalId>false</externalId>
+        <label>Effective date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Matter__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Amendments</relationshipLabel>
+        <relationshipName>Amendments</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Name_of_Regulation__c</fullName>
+        <externalId>false</externalId>
+        <label>Name of Regulation</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Supporting_Agreement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Supporting Agreement</label>
+        <referenceTo>Supporting_Agreement__c</referenceTo>
+        <relationshipLabel>Amendments</relationshipLabel>
+        <relationshipName>Amendments</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Amendment</label>
+    <nameField>
+        <displayFormat>A-{0}</displayFormat>
+        <label>Amendment Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Amendments</pluralLabel>
+    <recordTypes>
+        <fullName>Agreement_Amendment</fullName>
+        <active>true</active>
+        <description>Amendments made on an agreement</description>
+        <label>Agreement Amendment</label>
+        <picklistValues>
+            <picklist>Amendment_Reason_Type__c</picklist>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Regulatory compliance</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Matter_Deal_Ammendment</fullName>
+        <active>true</active>
+        <description>Amendments made on a Matter/Deal</description>
+        <label>Matter/Deal Ammendment</label>
+        <picklistValues>
+            <picklist>Amendment_Reason_Type__c</picklist>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Regulatory compliance</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Supporting_Agreement_Amendment</fullName>
+        <active>true</active>
+        <description>Amendments made on a supporting agreement</description>
+        <label>Supporting Agreement Amendment</label>
+        <picklistValues>
+            <picklist>Amendment_Reason_Type__c</picklist>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Regulatory compliance</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>LIBRA_Documents_Uploaded_On_Amendment</fullName>
+        <active>true</active>
+        <description>Prompts CNSG to validate if the amendments documents have been uploaded.</description>
+        <errorConditionFormula>IF(Amendment_Document_Uploaded__c = FALSE, TRUE, FALSE)</errorConditionFormula>
+        <errorMessage>Please complete the Amendment Document Uploaded checkbox</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>LIBRA_Other_Amendment_Reason_Type</fullName>
+        <active>true</active>
+        <description>Prompts CNSG user to complete the amendment reason field when &apos;other&apos; is selected on the the amendment reason type field.</description>
+        <errorConditionFormula>AND(ISPICKVAL(Amendment_Reason_Type__c, &quot;Other&quot;) ,ISBLANK( 	Amendment_Reason__c))</errorConditionFormula>
+        <errorMessage>Please complete the reason for the amendment?</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>LIBRA_Regulatory_Compliance_Reason_Type</fullName>
+        <active>true</active>
+        <description>Prompts CNSG user to complete the regulation name and effective date when the reason is &quot;Regulatory Compliance&quot;.</description>
+        <errorConditionFormula>AND(ISPICKVAL(Amendment_Reason_Type__c, &quot;Regulatory Compliance&quot;), (ISBLANK(Name_of_Regulation__c) &amp;&amp; ISBLANK(Effective_date__c)))</errorConditionFormula>
+        <errorMessage>Please complete the Name of Regulation and Effective Date fields</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

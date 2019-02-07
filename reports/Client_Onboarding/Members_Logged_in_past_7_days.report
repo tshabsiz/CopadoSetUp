@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CollaborationGroup.GroupMembers$Member.LastLoginDate</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>CollaborationGroup$Name</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>Client Operations</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>CollaborationGroup.GroupMembers$Member</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Members Logged in past 7 days</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Users_and_Groups__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CollaborationGroup.GroupMembers$Member.Last_Login_Date__c</dateColumn>
+        <interval>INTERVAL_LAST7</interval>
+    </timeFrameFilter>
+</Report>

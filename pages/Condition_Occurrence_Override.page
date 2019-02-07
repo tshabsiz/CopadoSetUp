@@ -1,0 +1,222 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+  04/06/2017    - PG    - Create VF page. 
+  26/10/2017    - PG    - Changed some field labels.
+  18/01/2018    - TdB    - Change Person Responsible from User to Participant
+                                                           
+-->
+<apex:page standardController="Condition_Occurrence__c" extensions="Condition_Occurrence_Override" action="{!actionEditRoute}" sidebar="true">  
+    
+    <style>
+        .ratioSeperator {
+           font-weight:bold;
+           font-size: 20px;
+        }
+        .smallInput { 
+            width: 25px; 
+            margin-top:0px !important;
+            margin-bottom:5px !important;
+            padding: 0px 0px 0px 0px !important;
+        }
+        .dataCellStyle {
+            margin-top:0px !important;
+        }
+    </style>
+    
+    <apex:form >
+
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Condition Occurrence Edit" subtitle="{! IF(conditionOccurrenceObject.Id == null,'New Condition Occurrence',conditionOccurrenceObject.Name) }"/>
+    
+    <chatter:feedWithFollowers entityId="{!conditionOccurrenceObject.Id}"/>
+        
+    <!-- PAGE BLOCK TABLE -->
+    <apex:pageBlock title="Condition Occurrence Edit" mode="edit" id="thePage">
+        
+        <apex:pageMessages rendered="true" escape="false" />
+        
+        <!-- BUTTONS -->
+        <apex:PageBlockButtons >
+            <apex:CommandButton value="Save" action="{!save}" /> 
+            <apex:CommandButton value="Cancel" action="{!cancel}" />
+        </apex:PageBlockButtons>
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="Financial Covenant Information">
+            
+            <apex:inputField value="{!conditionOccurrenceObject.Name}" required="true" />
+            <apex:inputField value="{!conditionOccurrenceObject.Status__c}" />
+            <apex:inputField value="{!conditionOccurrenceObject.Condition__c}" required="true" />
+            <apex:inputField value="{!conditionOccurrenceObject.Due_Date__c}" />
+            <apex:inputField value="{!conditionOccurrenceObject.Person_Responsible__c}" />
+            <apex:inputTextArea value="{!conditionOccurrenceObject.Comments__c}" cols="60" rows="5" /> 
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- SECTION - CLAUSE -->
+        <apex:pageBlockSection title="Clause" columns="1"> 
+            <apex:inputTextArea value="{!conditionOccurrenceObject.Clause__c}" cols="130" rows="10" required="true"/> 
+        </apex:pageBlockSection>
+        <!-- / SECTION - CLAUSE-->
+        
+        <!-- SECTION - DOCUMENTATION -->
+        <apex:pageBlockSection title="Documentation" columns="2">
+           <!-- <apex:inputField value="{!conditionOccurrenceObject.Document_Description__c}" /> 
+            <apex:inputField value="{!conditionOccurrenceObject.Document_Status__c}" /> -->
+            <apex:inputField value="{!conditionOccurrenceObject.Supporting_Documentation_Uploaded__c}" /> 
+        </apex:pageBlockSection>
+        <!-- / SECTION - DOCUMENTATION-->
+        
+        <!-- SECTION - THRESHOLD INFO -->
+        <apex:pageBlockSection title="Threshold Information" columns="2">
+            <apex:outputField value="{!conditionOccurrenceObject.Threshold_Type_Text__c}" /> 
+            <apex:outputField value="{!conditionOccurrenceObject.Source_Text__c}" />
+            <apex:outputField value="{!conditionOccurrenceObject.Threshold_Category_Text__c}" /> 
+            <apex:outputField value="{!conditionOccurrenceObject.Threshold_Comparator_Text__c}" rendered="{!conditionOccurrenceObject.Threshold_Type_Text__c = 'Base'}" />
+            <apex:outputField value="{!conditionOccurrenceObject.Margin_Ratchet__c}" />
+        </apex:pageBlockSection>
+        <!-- / SECTION - THRESHOLD INFO -->
+        
+        <!-- SECTION - ACTUAL -->
+        <apex:pageBlockSection title="Actual Base Information" rendered="{!IF(conditionOccurrenceObject.Threshold_Type_Text__c == 'Base', true, false)}">
+            
+            <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Ratio'}">
+            <apex:outputLabel value="Actual Ratio" for="Actual_Base_Ratio_From__c" />
+            <apex:outputPanel >
+                <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Ratio_From__c}" id="Actual_Base_Ratio_From__c" styleClass="smallInput"/> 
+                <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Ratio_To__c}" styleClass="smallInput" /> 
+            </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Percentage__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Percentage'}" /> 
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Multiple__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Multiple'}" /> 
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Other__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Other'}" />
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Number__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Number'}" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="Actual Base Range Information" rendered="{!conditionOccurrenceObject.Threshold_Type_Text__c == 'Base Range'}">
+
+            <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Ratio'}">
+                <apex:outputLabel value="Actual Ratio" for="Actual_Base_Ratio_From__c" />
+                <apex:outputPanel >
+                    <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Ratio_From__c}" id="Actual_Base_Ratio_From__c" styleClass="smallInput"/> 
+                    <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                    <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Ratio_To__c}" styleClass="smallInput" /> 
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Percentage__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Percentage'}" /> 
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Multiple__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Multiple'}" /> 
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Other__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Other'}" />
+
+            <apex:inputField value="{!conditionOccurrenceObject.Actual_Base_Number__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c == 'Number'}" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- SECTION - REQUIRED BASE -->
+        <apex:pageBlockSection title="Required Base Information" columns="2" rendered="{!conditionOccurrenceObject.Threshold_Type_Text__c = 'Base'}">
+            
+            <!-- RANGE RATIO GROUP 1 -->
+            <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}">
+                <apex:outputLabel value="Required Base Ratio" for="Required_Base_Ratio_From_Num__c" />
+                <apex:outputPanel >
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Ratio_From_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" id="Required_Base_Ratio_From_Num__c"  />
+                    <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Ratio_To_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" />
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <!-- / RANGE RATIO GROUP 1 -->
+            
+            <!-- PERCENTAGE -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Percentage_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Percentage'}" /> 
+            <apex:outputField value="{!conditionOccurrenceObject.Threshold_Comparator_Text__c}" /> 
+
+            <!-- MULTIPLE -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Multiple_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Multiple'}" /> 
+
+            <!-- OTHER -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Other__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Other'}" />
+
+            <!-- NUMBER -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Number__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Number'}" />
+
+        </apex:pageBlockSection>
+        <!-- / SECTION - REQUIRED BASE -->
+        
+        <!-- SECTION - REQUIRED BASE RANGE -->
+        <apex:pageBlockSection title="Required Base Range Information" columns="2" rendered="{!conditionOccurrenceObject.Threshold_Type_Text__c = 'Base Range'}">
+            
+            <!-- RANGE RATIO GROUP 1 -->
+            <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}">
+                <apex:outputLabel value="Required Base Range Ratio From " for="Required_Base_Range_Ratio_From_Num__c" />
+                <apex:outputPanel >
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Ratio_From_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" id="Required_Base_Range_Ratio_From_Num__c"  />
+                    <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Ratio_To_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" />
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <!-- / RANGE RATIO GROUP 1 -->
+            
+            <!-- RANGE RATIO GROUP 2 -->
+            <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}">
+                <apex:outputLabel value="Required Base Range Ratio To" for="Required_Base_Range_Ratio_From_Two_Num__c" />
+                <apex:outputPanel >
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Ratio_From_Two_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" id="Required_Base_Range_Ratio_From_Two_Num__c"  />
+                    <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                    <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Ratio_To_Two_Num__c}" styleClass="smallInput" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Ratio'}" />
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <!-- / RANGE RATIO GROUP 2 -->
+            
+            <!-- MULTIPLE -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Multiple_From_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Multiple'}" /> 
+
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Multiple_To_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Multiple'}" /> 
+
+            <!-- PERCENTAGE -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Percentage_From_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Percentage'}" /> 
+
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Percentage_To_Num__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Percentage'}" /> 
+
+            <!-- OTHER -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Other__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Other'}" />
+
+            <!-- NUMBER -->
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Number_From__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Number'}" /> 
+
+            <apex:outputField value="{!conditionOccurrenceObject.Required_Base_Range_Number_To__c}" rendered="{!conditionOccurrenceObject.Threshold_Category_Text__c = 'Number'}" /> 
+
+        </apex:pageBlockSection>
+        <!-- / SECTION - REQUIRED BASE RANGE -->
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="System Information">
+           <apex:outputField value="{!conditionOccurrenceObject.RecordTypeId}" /> 
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK TABLE -->
+    
+    </apex:form>
+
+</apex:page>

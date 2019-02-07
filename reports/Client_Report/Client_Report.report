@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>User.Account$OwnerId$Name</field>
+    </columns>
+    <columns>
+        <field>User$Name</field>
+    </columns>
+    <columns>
+        <field>User*User$Team_Role__c</field>
+    </columns>
+    <columns>
+        <field>User$Email</field>
+    </columns>
+    <columns>
+        <field>User.Account$OwnerId$CIF__c</field>
+    </columns>
+    <columns>
+        <field>User.Account$OwnerId$ShippingAddress</field>
+    </columns>
+    <columns>
+        <field>User.Account$OwnerId$BillingAddress</field>
+    </columns>
+    <columns>
+        <field>User.Account$OwnerId$Registration_Number__c</field>
+    </columns>
+    <columns>
+        <field>User.Account$OwnerId$SDS__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>User*User$Team_Role__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Coverage Banker(RM),CSM (CMA/ARM)</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Client Report</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Accounts_with_Users__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>User$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

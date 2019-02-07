@@ -1,0 +1,35 @@
+<messaging:emailTemplate subject="You've been added as an attendee to Call Report {!relatedTo.Call_Report__r.Name}" recipientType="User" relatedToType="Attendee__c">
+<messaging:htmlEmailBody >
+<apex:image value="https://barclaysafrica.my.salesforce.com/servlet/servlet.ImageServer?id=01524000001uQDh&oid=00D24000000JOMz"/>
+
+<style>
+    .my_text
+    {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+    }
+</style>
+
+<div class='my_text'>
+
+<p>You have been added as an attendee to a Call Report with the following details:</p>
+
+<p>Client: {!relatedTo.Call_Report__r.Relationship__r.Name}</p>
+
+<p>Name: {!relatedTo.Call_Report__r.Name}</p>
+
+<p>Subject: {!relatedTo.Call_Report__r.Subject__c}</p>
+
+<p>Call Report Owner: {!relatedTo.Call_Report__r.Owner.Name}</p>
+
+<p>Meeting Date:&nbsp;<apex:outputText value="{0,date,yyyy/MM/dd}"> <apex:param value="{!relatedTo.Call_Report__r.Meeting_Date__c}" /></apex:outputText></p>
+
+<p>
+Click on the&nbsp;<apex:outputlink value="{!LEFT($Api.Partner_Server_URL_140,FIND('.com',$Api.Partner_Server_URL_140)+4)+relatedTo.Call_Report__r.Id}">link</apex:outputlink> to go to the Call Report.
+</p>
+
+</div>
+
+<apex:image value="https://barclaysafrica.my.salesforce.com/servlet/servlet.ImageServer?id=01524000001uPoX&oid=00D24000000JOMz"/>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

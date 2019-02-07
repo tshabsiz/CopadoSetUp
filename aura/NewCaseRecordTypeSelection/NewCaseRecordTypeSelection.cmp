@@ -1,0 +1,10 @@
+<aura:component  implements="lightning:hasPageReference,lightning:actionOverride,force:hasRecordId,force:hasSObjectName"  controller="lscNewCaseExt" >
+     <ltng:require scripts='../../soap/ajax/37.0/connection.js, ../../soap/ajax/37.0/apex.js,/support/console/35.0/integration.js'/>
+    <aura:attribute name="recordId" type="String" default=""/>
+     <aura:attribute name="tabId" type="String" default=""/>
+   
+    
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <lightning:workspaceAPI aura:id="workspace" />
+   
+</aura:component>

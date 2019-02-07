@@ -1,0 +1,146 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.BatchParticipantController" tabStyle="advpm__Participant__c" title="Matter: Batch Participant Entries">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+		<c:includeSLDS />
+		<style type="text/css">
+			.slds .slds-page-header {border-bottom: 0px solid #d8dde6;}
+            .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+            .lookupInput input {padding-right:1.5rem!important;}
+            .staff-input select {width: 20%!important;}
+            .staff-input input {width: 80%!important;}
+            input[type=checkbox]{clear: both;display: block;}
+            .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+            .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+            .uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+		</style>
+	</apex:outputPanel>
+	
+	<apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+		<c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="Participant Batch Entry" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Matter__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Matter__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Matter__c.Name}" 
+                            parentRecordID="{!advpm__Matter__c.ID}">
+            <div class="slds-button-group" role="group" style="margin-top:-45px;">
+                <input type="button" value="  Save " onclick="doSave();return false;" class="slds-button slds-button--brand" />
+                <input type="button" value="  Cancel " onclick="GoBack();return false;" class="slds-button slds-button--neutral" />
+            </div>
+        </c:slds_pageheader>
+	</apex:outputPanel>
+	
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <apex:sectionHeader title="{!advpm__Matter__c.Name}" subtitle="Participant Batch Entry" />
+        
+    	<apex:outputLink target="_top" value="/{!advpm__Matter__c.Id}">&laquo; Back to matter: {!advpm__Matter__c.Name}</apex:outputLink>
+    	<br /><br />
+    </apex:outputPanel>
+    
+    <script type="text/javascript">
+    	$j = jQuery.noConflict();
+        $j(document).ready(function(){
+            fixControls();
+        });
+        function GoBack() {
+    		if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+				sforce.one.navigateToSObject('{!Matter__c.Id}');
+			}
+    	}
+        function fixControls() {
+            $j('.slds-form-element .lookupInput a').removeClass('slds-input');
+            $j('.slds-form-element .multiSelectPicklistTable img').removeClass('slds-input');
+            $j('.slds-form-element .multiSelectPicklistTable').css('width','initial');
+            
+            $j('.slds-form-element .lookup-input select').addClass('slds-select');
+            $j('.slds-form-element .lookup-input .lookupInput input[type=text]').addClass('slds-input');
+            $j('.slds-form-element .lookup-input:not(input[type=text])').removeClass('slds-input');
+            
+            $j('.slds-form-element .staff-input select').addClass('slds-select');
+            $j('.slds-form-element .staff-input .lookupInput input[type=text]').addClass('slds-input');
+            $j('.slds-form-element .staff-input:not(input[type=text])').removeClass('slds-input');
+        }
+    </script>
+    
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+    <script type="text/javascript">
+        toggleButtons('{!$Component.theForm}', false);
+    </script>
+    
+    <apex:form id="theForm" styleClass="{!IF(isLightning,'slds','')}">
+    	<style type="text/css">
+            .dateFormat { display:none; }
+            .FormDataABiggerA {width:95%;overflow:hidden;height:16px;}
+            .FormDataAMed {width:80px;}
+            .colClass { vertical-align: top; }
+            .loadingText {
+                color: #666666;
+                font-size: 95%;
+                padding: 4px;
+            }
+            .loadingText {
+                /*font-size: 1.2em;*/
+                font-weight: bold;
+            }
+            table.multiSelectPicklistTable tr td {border: 0px solid #ededed!important;padding-left: 0px!important;}
+            .slds table.slds-table tr.headerRow th {border-top-width: 1px!important;}
+            .slds table.messageTable td:first-child {width:30px!important;}
+        </style>
+        <apex:actionFunction name="doSave" action="{!save}" />
+        <apex:pageBlock mode="edit" id="thePageBlock">
+            <apex:facet name="header">
+                <apex:panelGrid columns="2" columnClasses="pbTitle,pbButton" rendered="{!!isLightning}">
+                    <h2 class="mainTitle">Enter Participants</h2>
+                    <apex:outputPanel >
+                        <apex:commandButton value="  Save  " action="{!save}" styleClass="slds-button slds-button--neutral showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                        <apex:commandButton value="  Cancel " action="{!cancel}" immediate="true" styleClass="slds-button slds-button--neutral showOnEditButton" />
+                        <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                        <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                    </apex:outputPanel>
+                </apex:panelGrid>
+            </apex:facet>
+            <apex:facet name="footer">
+                <apex:panelGrid columns="2" columnClasses="pbTitle,pbButton" rendered="{!!isLightning}">
+                    <h2 class="mainTitle">&nbsp;</h2>
+                    <apex:outputPanel >
+                        <apex:commandButton value="  Save  " action="{!save}" styleClass="slds-button slds-button--neutral showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                        <apex:commandButton value="  Cancel " action="{!cancel}" immediate="true" styleClass="slds-button slds-button--neutral showOnEditButton" />
+                        <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                        <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                    </apex:outputPanel>
+                </apex:panelGrid>
+            </apex:facet>
+            <apex:pageMessages id="msgs" />
+            <apex:pageblockTable id="pbTable" value="{!partrecords}" var="p" columnsWidth="22%,22%,22%,22%,12%" columnClasses="colClass" styleClass="slds-table">
+                <apex:column headerValue="Record Type" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-form-element">
+                    <apex:inputField value="{!p.part.RecordTypeId}" styleClass="slds-select" required="false" style="width:90%;">
+                        <apex:actionSupport event="onchange" action="{!p.ChangeRecordType}" status="changeRecType" rerender="pbTable,msgs">
+                            <apex:param name="recTypeId" value="{!p.part.RecordTypeId}" />
+                        </apex:actionSupport>
+                    </apex:inputField>
+                    <apex:actionStatus id="changeRecType" onstop="fixControls()"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+                </apex:column>
+                <apex:column headerValue="Lookup" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-form-element">
+                    <apex:inputField value="{!p.part.advpm__Account__c}" styleClass="slds-input" required="false" rendered="{!map_recType[p.part.RecordTypeId] == 'Account'}" />
+                    <apex:inputField value="{!p.part.advpm__Contact__c}" styleClass="slds-input" required="false" rendered="{!map_recType[p.part.RecordTypeId] == 'Contact'}" />
+                    <apex:inputField value="{!p.part.advpm__Staff__c}" styleClass="slds-input staff-input" required="false" rendered="{!map_recType[p.part.RecordTypeId] == 'Staff'}" />
+                </apex:column>
+                <apex:column headerValue="Role" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-form-element">
+                    <apex:inputField value="{!p.part.advpm__Role__c}" styleClass="slds-input" required="false" />
+                </apex:column>
+                <!-- <apex:column headerValue="Primary Client?" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-form-element uiInput--checkbox">
+                    <apex:inputField value="{!p.part.Primary_Client__c}" required="false" />
+                </apex:column> -->
+                <apex:column width="40px" style="text-align:center;" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:commandLink action="{!removePrec}" rerender="pbTable,msgs" >
+                        <apex:param name="ind" value="{!p.index}" />
+                        
+                        <apex:image style="max-width: 16px;" height="16" width="16" url="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility/close_60.png')}" title="Remove" />
+                    </apex:commandLink>
+                </apex:column>
+            </apex:pageblockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

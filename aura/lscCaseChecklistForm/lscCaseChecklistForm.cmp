@@ -1,0 +1,70 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="lscCaseQAExt">
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="caseChecklist" type="Object[]"/>
+    <aura:attribute name="templateId" type="String"/> 
+    <aura:attribute name="caseId" type="String"/> 
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInIt}" />
+    
+
+
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <div class="slds-panel">
+        <div class="slds-panel__section">
+            <aura:iteration items="{!v.caseChecklist}" var="checkList" indexVar="headingIndex">
+                
+                <div class="slds-size_1-of-1 slds-col--padded slds-form-element slds-m-bottom_x-small">				
+                    <h3 class="slds-section-title--divider slds-align_absolute-center">{!checkList.heading}</h3>
+                </div>  
+                <aura:iteration items="{!checkList.questions}" var="val" indexVar="questionIndex">
+                    <div class="slds-grid respContent">
+                    <div class="slds-size_4-of-6 slds-col--padded slds-form-element">
+                        <div  title="question">{!val.question}</div>
+                    </div>
+                    <div class="slds-size_2-of-6 slds-col--padded slds-form-element">	
+                        <fieldset class="slds-form-element" id="{!val.question}">
+                            <div class="slds-form-element__control">
+                                <div class="slds-radio_button-group slds-m-bottom_x-small">
+                                    <span class="slds-button slds-radio_button">
+                                        <input type="radio" name="{!val.question}" id="{!val.questionId + '_yes'}" data-qid="{!headingIndex + '-' + questionIndex}" data-choice = "Yes" checked="{!equals(val.selectedChoice,'Yes')}" onclick="{!c.onRadioButtonClick}"/>
+                                        
+                                        <label class="slds-radio_button__label" for="{!val.questionId + '_yes'}">
+                                            <span class="slds-radio_faux">Yes</span>
+                                        </label>
+                                    </span>
+                                    <span class="slds-button slds-radio_button">
+                                        <input type="radio" name="{!val.question}" id="{!val.questionId + '_no'}" data-qid="{!headingIndex + '-' + questionIndex}" data-choice = "No" checked="{!equals(val.selectedChoice,'No')}" onclick="{!c.onRadioButtonClick}"/>
+                                        <label class="slds-radio_button__label" for="{!val.questionId + '_no'}">
+                                            <span class="slds-radio_faux">No</span>
+                                        </label>
+                                    </span>
+                                    <span class="slds-button slds-radio_button">
+                                        <input type="radio" name="{!val.question}" id="{!val.questionId + '_na'}" data-qId="{!headingIndex + '-' + questionIndex}"  data-choice = "NA" checked="{!equals(val.selectedChoice,'NA')}" onclick="{!c.onRadioButtonClick}"/>
+                                        <label class="slds-radio_button__label" for="{!val.questionId + '_na'}">
+                                            <span class="slds-radio_faux">N/A</span>
+                                        </label>
+                                    </span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    </div>
+                </aura:iteration>
+            </aura:iteration>
+            
+            <lightning:button variant="brand" class="slds-align_absolute-center" label="Save" onclick="{!c.save}" disabled="{caseChecklist.length  == 0}"/>
+        </div>
+    </div>
+    
+</aura:component>

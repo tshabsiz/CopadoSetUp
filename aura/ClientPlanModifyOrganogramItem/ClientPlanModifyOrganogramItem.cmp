@@ -1,0 +1,43 @@
+<aura:component controller="ClientPlanOverviewControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="relatedTo" type="String" required="true" />
+    
+    <aura:attribute name="value" type="String" required="false" />
+    <aura:attribute name="itemId" type="Id" required="false" />
+    
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    {!if(v.itemId == null, 'ADD DEPARTMENT', 'EDIT DEPARTMENT')}
+                </div>
+                
+                <div id="wholePage">
+                    
+                    <div id="departmentElem" class="slds-form-element">
+                        <label class="slds-form-element__label" for="nameInput">Department</label>
+                        <div class="slds-form-element__control">
+                            <ui:inputText aura:id="departmentInput" value="{!v.value}" />
+                            <span id="departmentError" class="slds-form-element__help" style="display:none;">This field is required</span>
+                        </div>
+                    </div>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModifyItem}">Save</button>
+                    </div>
+                    
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

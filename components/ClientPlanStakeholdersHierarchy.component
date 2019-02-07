@@ -1,0 +1,1358 @@
+<apex:component controller="ClientPlanStakeholdersHierarchyCtr">
+
+    <apex:attribute name="planId" description="Client Plan Id" type="string" required="true"/>
+    <apex:attribute name="orgId" description="Organisation Id" type="string" required="true"/>
+
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}"/>
+
+    <apex:includeScript value="{!URLFOR($Resource.primitives, 'primitives/primitives.latest.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.primitives, 'primitives/primitives.latest.css')}"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.chroma)}"/>
+    
+    <script type='text/javascript'>
+      var plusTemplate = 'plusTemplate';
+        var contactTemplate = 'contactTemplate';
+        var parentIdToAdd = '';
+        var relationshipIdToAdd = '';
+    
+        var commentModalContactId;
+        var chromaScale;
+        var j$ = jQuery.noConflict();
+        
+        $('document').ready(function() {
+            chromaScale = chroma.scale(['#ff0000', '#00AEEF']);
+            prepareOnClicks();
+            prepareAutocomplete();
+
+        });
+        
+        $(window).load(function () {
+            $('.basicDiagramPanel').hide();
+            $('.addRootContactPanel').show();
+            createDiagram();
+        });
+
+        function showAddContactModal() {
+            $('#addContactModal').show();
+            $('#addBarclaysContactModal').hide();
+
+            $('#searchPanel').show();
+            $('#noTypeaheadResult').hide();
+            $('#newContactPanel').hide();
+
+            $('#addExistingContactButton').show();
+            $('#showNewContactPanelButton').hide();
+            $('#addNewContactButton').hide();
+        }
+
+        function showEditContactModal(relationshipId, contactName, clientStrength) {
+            $("#relationship-id").val(relationshipId);
+            $("#contactName").val(contactName);
+            $("#clientStrength").val(clientStrength);
+            $('#editContactModal').show();
+        }
+        
+        function closeAddContactModal() {
+            $('#addContactModal').hide();
+
+            $("#searchContactsInput").val('');
+            $("#searchContactsId").val('');
+        }
+
+        function closeEditContactModal() {
+            $('#editContactModal').hide();
+        }
+
+        function showCreateNewContactModal() {
+            $('#searchPanel').hide();
+            $('#newContactPanel').show();
+            $('#showNewContactPanelButton').hide();
+            $('#addNewContactButton').show();
+            var name = $("#searchContactsInput").val().split(" ");
+            $('#newContactFirstName').val(name[0]);
+            if(name.length > 1){
+              $('#newContactLastName').val(name[1]);
+            } else{
+              $('#newContactLastName').val('');
+            }
+            $('#newContactJobTitle').val('');
+            $('#newContactJobRole').val('');
+            $('#newContactEmail').val('');
+            $('#newContactPhone').val('');
+            $('#newContactMobile').val('');
+        }
+
+        function showAddBarclaysContactModal(relationshipId) {
+            $("#relationship-id").val(relationshipId);
+            $('#newBarclaysContactId').val('');
+            $("#newBarclaysContactName").val('');
+            $("#newBarclaysContactName").removeAttr("readonly");
+            $('#newBarclaysContactRelationshipStrength').val('');
+            $('#primary-no').prop('checked', true);
+
+            $('#addContactModal').hide();
+            $('#addBarclaysContactModal').show();
+            $('#addBarclaysContactModal h2').text('Add Barclays contact');
+            $('#addBarclaysContactButton').show();
+            $('#editBarclaysContactButton').hide();
+        }
+
+        function showEditBarclaysContactModal(relationshipItemId, barclaysContactName, relationshipStrength, primary) {
+            $("#relationship-item-id").val(relationshipItemId);
+            $("#newBarclaysContactName").attr("readonly", "readonly");
+            $("#newBarclaysContactName").val(barclaysContactName);
+            $('#newBarclaysContactRelationshipStrength').val(relationshipStrength);
+            if(primary){
+              $('#primary-yes').prop('checked', true);
+            } else{
+              $('#primary-no').prop('checked', true);
+            }
+
+            $('#addContactModal').hide();
+            $('#addBarclaysContactModal').show();
+            $('#addBarclaysContactModal h2').text('Edit Barclays contact');
+            $('#addBarclaysContactButton').hide();
+            $('#editBarclaysContactButton').show();
+        }
+
+        function closeAddBarclaysContactModal() {
+            $("#relationship-id").val('');
+            $('#addBarclaysContactModal').hide();
+            closeToast();
+        }
+
+        function addRelatedContact(parentId, relationshipId){
+            if(parentId != 'null'){
+              parentIdToAdd = parentId;
+            } else{
+              parentIdToAdd = null;
+            }
+            if(relationshipId != 'null'){
+              relationshipIdToAdd = relationshipId;
+            } else{
+              relationshipIdToAdd = null;
+            }
+            //relationshipIdToAdd = relationshipId;
+            
+            showAddContactModal();
+        }
+
+        function editContact(){
+            var relationshipId = $('#relationship-id').val();
+            var clientStrength = $('#clientStrength').val();
+            ClientPlanStakeholdersHierarchyCtr.editContact(relationshipId, clientStrength, function(result) {
+                if(result != null){
+                    showToast(result);
+                } else{
+                    refreshHierarchy();
+                    closeEditContactModal();
+                }
+            });
+        }
+
+        function addNewBarclaysContact() {
+            var relationshipId = $('#relationship-id').val();
+            var userId = $('#newBarclaysContactId').val();
+            var relationshipStrength = $('#newBarclaysContactRelationshipStrength').val();
+            var isPrimary = $('#primary-yes').prop('checked');
+
+            ClientPlanStakeholdersHierarchyCtr.addNewBarclaysContact(userId, relationshipStrength, relationshipId, isPrimary, function(result) {
+                if(result != null){
+                    showToast(result);
+                } else{
+                    refreshHierarchy();
+                    closeAddBarclaysContactModal();
+                }
+            });
+        }
+
+        function removeBarclaysContact(relationshipItemId) {
+
+            if(confirm('{!$Label.msg_RemoveContactConfirm}')) {
+                startLoading('{!$Label.lbl_RemovingContact}');
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.removeBarclaysContact}',
+                    relationshipItemId,
+                
+                    function(result, event) {
+                        refreshHierarchy();
+                    },
+                    { escape: false }
+                );
+            }
+        }
+
+        function editBarclaysContact() {
+            var relationshipItemId = $('#relationship-item-id').val();
+            var relationshipStrength = $('#newBarclaysContactRelationshipStrength').val();
+            var isPrimary = $('#primary-yes').prop('checked');
+
+            startLoading('{!$Label.lbl_RemovingContact}');
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.editBarclaysContact}',
+                relationshipItemId, relationshipStrength, isPrimary,
+                
+                function(result, event) {
+                    if(result != null){
+                        showToast(result);
+                        endLoading();
+                    } else{
+                        refreshHierarchy();
+                        closeAddBarclaysContactModal();
+                    }
+                },
+                { escape: false }
+            );
+        }
+
+        function addExistingContact() {
+            //var parentId = $('#parent-id').val();
+            //var childId = $('#child-id').val();
+
+            
+            var contactId = $("#searchContactsId").val();
+            var influence = $("#existContactClientStrength").val();
+            if(contactId != undefined) {
+                //var contactIds = [];
+                //contactIds.push(contactId);
+                startLoading();
+                addRelationship(parentIdToAdd, relationshipIdToAdd, contactId, influence);
+                closeAddContactModal();
+            } else {
+                showToast('{!$Label.errMsg_NameRequired}');
+            }
+        }
+
+        function addNewContact() {
+          /*
+            var parentId = $('#parent-id').val();
+            if(parentId == undefined) {
+                parentId = null;
+            }
+          */
+            var firstName = $('#newContactFirstName').val();
+            var lastName = $('#newContactLastName').val();
+            var jobTitle = $('#newContactJobTitle').val();
+            var jobRole = $('#newContactJobRole').val();
+            var email = $('#newContactEmail').val();
+            var phone = $('#newContactPhone').val();
+            var mobile = $('#newContactMobile').val();
+            var clientStrength = $('#newContactClientStrength').val();
+
+            ClientPlanStakeholdersHierarchyCtr.addNewContact(firstName, lastName, jobTitle, jobRole, email, phone, mobile, clientStrength, '{!planId}', parentIdToAdd, relationshipIdToAdd, function(result) {
+                if(result != null){
+                    showToast(result);
+                } else{
+                    refreshHierarchy();
+                    closeAddContactModal();
+                }
+            });
+        }
+
+        function addRelationship(parentId, relationshipId, contactId, influence) {
+            
+            hideStakeholderMessage();
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.addRelationship}',
+                '{!planId}', parentId, relationshipId, contactId, influence,
+                
+                function(result, event) {
+                  if(result != null){
+                    showAlert(result);
+                    endLoading();
+                  } else{
+                    refreshHierarchy();
+                    prepareScrollTo(contactId);
+                  }
+                },
+                { escape: false }
+            );
+        }
+
+        function openContact(contactId) {
+            window.open('/' + contactId, '_blank');
+        }
+
+        function removeContact(contactId) {
+            removeRel(contactId);
+        }
+
+        function prepareAutocomplete() {
+
+            j$('#newBarclaysContactName').autocomplete({
+                minLength: 1,
+                delay: 500,
+                appendTo: "#barclaysContactsToAdd", //this magic let us use autocomplete in modals :)
+                source: function( request, response ) {
+                    
+                    ClientPlanStakeholdersHierarchyCtr.searchBarclaysContactUser(request.term, function(result) {
+                        if (result.length > 0 && result[0].value != 'value') {
+                            response(result);
+                        } else {
+                            result = [];
+                            response(result);
+                        }
+                    });
+                },
+                focus: function(event, ui) {
+                    // prevent autocomplete from updating the textbox
+                    event.preventDefault();
+                },
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $("#newBarclaysContactName").val(ui.item.label);
+                    $("#newBarclaysContactId").val(ui.item.value);
+                }
+            });
+        
+            j$('#searchContactsInput').autocomplete({
+                minLength: 1,
+                delay: 500,
+                appendTo: "#contactsToAdd", //this magic let us use autocomplete in modals :)
+                source: function( request, response ) {
+                    var searchAllAcc = $('#searchAllAccCheckbox').prop('checked');
+                    
+                    var items = jQuery("#basicdiagram").orgDiagram("option", "items");
+                    var existingItems = [];
+                    for (var i = 0; i < items.length; i++) {
+                        existingItems.push(items[i].id);
+                    }
+                    
+                    hideStakeholderMessage();
+                    
+                    ClientPlanStakeholdersHierarchyCtr.search(request.term, searchAllAcc, existingItems, '{!planId}', function(result) {
+                        if (result.length > 0 && result[0].value != 'value') {
+                            $('#noTypeaheadResult').hide();
+                            $('#addExistingContactButton').show();
+                            $('#showNewContactPanelButton').hide();
+                            response(result);
+                        } else {
+                            $('#noTypeaheadResult').show();
+                            $('#addExistingContactButton').hide();
+                            $('#showNewContactPanelButton').show();
+                            result = [];
+                            response(result);
+                        }
+                    });
+                },
+                focus: function(event, ui) {
+                    // prevent autocomplete from updating the textbox
+                    event.preventDefault();
+                },
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $("#searchContactsInput").val(ui.item.label);
+                    $("#searchContactsId").val(ui.item.value);
+                }
+            });
+        }
+        
+        function prepareOnClicks() {
+            $("#contactsToAdd").on("click", "a", function() {
+                $("#searchContactsInput").val($(this).text());
+                $("#searchContactsInput").attr('aria-activedescendant', this.id);
+            });
+
+        }
+        
+        function prepareContactIds() {
+            var contactIds = new Array();
+            
+            $('#contactsToAdd li').each(function() {
+                var contactId = $(this).prop('id');
+                contactIds.push(contactId);
+            });
+            return contactIds;
+        }
+        
+        
+        function prepareScrollTo(contactId) {
+            var selector = '#contact-' + contactId;
+            $('#scrollToButton a').prop('href', selector);
+            $('#scrollToButton').show();
+            
+            setTimeout( function() {
+                $('#scrollToButton').fadeOut(5000, function() {
+                    $('#scrollToButton').hide();
+                });
+            }, 3000);
+        }
+
+        function createDiagram() {
+            startLoading('{!$Label.lbl_Loading}');
+            
+            setDiagramWidth();
+
+            var options = new primitives.orgdiagram.Config();
+            
+            options.templates = [getPlusTemplate(),getContactTemplate()];
+            options.onItemRender = onTemplateRender;
+            options.onCursorRender = onCursorRender;
+            options.onMouseClick = onMouseClick;
+            options.hasButtons = primitives.common.Enabled.False; //True -> always displied
+            options.hasSelectorCheckbox = primitives.common.Enabled.False;
+            options.leavesPlacementType = primitives.orgdiagram.ChildrenPlacementType.Matrix;
+            options.pageFitMode = primitives.common.PageFitMode.None;
+            options.orientationType = primitives.common.OrientationType.Top;
+            options.horizontalAlignment = primitives.common.HorizontalAlignmentType.Center;
+            options.onButtonClick = function (e, /*primitives.orgdiagram.EventArgs*/ data) {
+                switch (data.name) {
+                    case "add":
+                        $('#searchContactsModal').modal('show');
+                        $("#parent-id").val(data.context.id);
+                        break;
+                    case "comment":
+                        showCommentModal(data.context.id, data.context.comment);
+                        break;
+                    case "contact":
+                        window.open('/' + data.context.id, '_blank');
+                        break;
+                }
+            };
+            
+            var items = new Array();
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.getHierarchyChartData}',
+                '{!planId}',
+                function(result, event) {
+                    if(result.length > 0){
+                        var arrayElements = JSON.parse(result);
+                        arrayElements = addPlusesToElements(arrayElements);
+
+                        for (var i = 0; i < arrayElements.length; i++) {
+                            var el = arrayElements[i];
+                            
+                            items.push(new primitives.orgdiagram.ItemConfig({
+                                id: el.id,
+                                aprId: el.aprId,
+                                parent: el.parent,
+                                title: el.title,
+                                jobRole: el.jobRole,
+                                jobTitle: el.jobTitle,
+                                clientStrength: el.clientStrength,
+                                templateName: el.templateName,
+                                clientStrength: el.clientStrength,
+                                comment: el.comment,
+                                barclaysContacts: el.barclaysContacts
+                            }));
+                        }
+
+                        $('.basicDiagramPanel').show();
+                        $('.addRootContactPanel').hide();
+                    }
+
+                    options.items = items;
+
+                    j$('#basicdiagram').orgDiagram(options);
+                    
+                    //renderMapSliders(false);
+                    
+                    checkIfOnContactCreated();
+
+                    endLoading();
+                },
+                { escape: false }
+            );
+        }
+        
+        function onTemplateRender(event, data) {
+        
+            var itemConfig = data.context;
+            if (data.templateName == contactTemplate) {
+                data.element.find('.mapSlider').attr({"data-slider-value": itemConfig.clientStrength});
+                data.element.find('.mapSlider').attr({"aprid": itemConfig.aprId});
+
+                var editButton = data.element.find('#menu-27-0');
+                editButton.attr('onclick', 'showEditContactModal(\'' + itemConfig.aprId +'\', \'' 
+                                                                    + itemConfig.title + '\', \'' 
+                                                                    + itemConfig.clientStrength + '\');return false;');
+                var removeButton = data.element.find('#menu-27-1');
+                removeButton.attr('onclick', 'removeContact(\'' + itemConfig.id +'\');return false;');
+                var goToContactButton = data.element.find('#menu-27-2');
+                goToContactButton.attr('onclick', 'openContact(\'' + itemConfig.id +'\');return false;');
+
+                var progressBar = data.element.find('#influence');
+                var strength = itemConfig.clientStrength;
+                if (strength == '1 - Weak') {
+                    strength = '1';
+                } else if (strength == '5 - Strong') {
+                    strength = '5';
+                }
+                progressBar.val(strength*20);
+                
+                var fields = ["title", "jobRole", "jobTitle", "clientStrength"];
+                for (var index = 0; index < fields.length; index++) {
+                    var field = fields[index];
+                    
+                    var element = data.element.find("[name=" + field + "]");
+                    if (element.text() != itemConfig[field]) {
+                        element.text(itemConfig[field]);
+                        element.attr("title", itemConfig[field]);
+                    }
+                }
+
+                data.element.find('.barclays-contacts').empty();
+                var barclaysContacts = itemConfig.barclaysContacts;
+                if(barclaysContacts != null && barclaysContacts.length > 0){
+                    data.element.find('.barclays-contacts').append(
+                        '<div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">'
+                        +  '<span class="slds-tile__title slds-truncate">Barclays contacts ('+barclaysContacts.length+')</span>'
+                        +'</div>'
+                    );
+                } else{
+                    data.element.find('.barclays-contacts').append(
+                        '<div>'
+                        +  '<button class="slds-button slds-button--neutral slds-button--small" onclick="showAddBarclaysContactModal(\''+itemConfig.aprId+'\');return false;">Add Barclays contact</button>'
+                        +'</div>'
+                    );
+                }
+            }
+
+            if(data.templateName == plusTemplate){
+                var button = data.element.find('button');
+                button.attr('onclick', 'addRelatedContact(\'' + itemConfig.parent + '\', \'' + itemConfig.aprId + '\');return false;');
+            }
+        }
+        
+        function onCursorRender(event, data) {
+            var itemConfig = data.context;
+            var barclaysContacts = itemConfig.barclaysContacts;
+            //data.element.find('.commentArea').val(itemConfig.comment);
+            //data.element.find('.itemAdditional button').attr({"id": itemConfig.aprId});
+
+            data.element.find('.barclays-contacts-list').empty();
+            data.element.find('.barclays-contacts-list').attr("id", itemConfig.id);
+            if(barclaysContacts != null){
+                if(barclaysContacts.length > 0){
+                    for(var i=0; i<barclaysContacts.length; i++){
+                        data.element.find('.barclays-contacts-list').append(
+                            '<div style="padding-bottom: 12px;">'
+                            +  '<div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">'
+                            +    '<span class="slds-tile__title slds-truncate">'+barclaysContacts[i].name+'</span>'
+                            +    '<div class="slds-dropdown-trigger">'
+                            +      '<button class="slds-button slds-button--icon-bare">'
+                            +        '<svg aria-hidden="true" class="slds-button__icon">'
+                            +          '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>'
+                            +        '</svg>'
+                            +      '</button>'
+                            +      '<div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">'
+                            +        '<ul class="slds-dropdown__list" role="menu">'
+                            +          '<li id="menu-28-0" href="#" class="slds-dropdown__item">'
+                            +            '<a class="slds-truncate" role="menuitem" onclick="showEditBarclaysContactModal(\''+barclaysContacts[i].id
+                                                                                            +'\', \''+barclaysContacts[i].name
+                                                                                            +'\', \''+barclaysContacts[i].clientStrength
+                                                                                            +'\', '+barclaysContacts[i].primary
+                                                                                        +');return false;">{!$Label.lbl_Edit}</a>'
+                            +          '</li>'
+                            +          '<li id="menu-28-1" href="#" class="slds-dropdown__item">'
+                            +            '<a class="slds-truncate" role="menuitem" onclick="removeBarclaysContact(\''+barclaysContacts[i].id+'\');return false;">{!$Label.lbl_Remove}</a>'
+                            +          '</li>'
+                            +        '</ul>'
+                            +      '</div>'          
+                            +    '</div>'
+                            +  '</div>'
+                            +  '<div class="slds-form--stacked">'
+                            +    '<div class="slds-form-element">'
+                            +      '<label class="slds-form-element__label">Relationship strength</label>'
+                            +      '<div class="slds-form-element__control">'
+                            +        '<p>'+barclaysContacts[i].clientStrength+'</p>'
+                            +      '</div>'
+                            +    '</div>'
+                            +    '<div class="slds-form-element"' + (barclaysContacts[i].seniorSponsor ? ' style="display:block"' : ' style="display:none"') + '>'
+                            +      '<label class="slds-form-element__label">SENIOR SPONSOR</label>'
+                            +    '</div>'
+                            +  '</div>'
+                            +'</div>'
+                        );
+                    }
+                    data.element.find('.barclays-contacts-list').append(
+                        '<div>'
+                        +  '<button class="slds-button slds-button--neutral slds-button--small" onclick="showAddBarclaysContactModal(\''+itemConfig.aprId+'\');return false;">Add Barclays contact</button>'
+                        +'</div>'
+                    );
+                }
+            }
+        }
+
+        function getPlusTemplate() {
+            var result = new primitives.orgdiagram.TemplateConfig();
+            result.name = plusTemplate;
+            result.itemSize = new primitives.common.Size(35, 35);
+            result.minimizedItemSize = new primitives.common.Size(0,0,0,0);
+            result.highlightPadding = new primitives.common.Thickness(0,0,0,0);
+            result.cursorPadding = new primitives.common.Thickness(0,0,0,0);
+            
+            var itemTemplate = jQuery(
+                '<div class="bp-item bp-corner-all bt-item-frame" style="border-radius: 50%;background-color: #F4F6F9;">'
+                +    '<button class="slds-button" style="left: 6px;">'
+                +        '<svg aria-hidden="true" class="slds-icon slds-icon--small slds-icon-text-default" style="fill: #0070d2;">'
+                +            '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#add')}"></use>'
+                +        '</svg>'
+                +    '</button>'
+                + '</div>'
+                ).css({
+                    width: result.itemSize.width + "px",
+                    height: result.itemSize.height + "px"
+                }).addClass("bp-item bp-corner-all bt-item-frame");
+                
+            result.itemTemplate = itemTemplate.wrap('<div>').parent().html();
+            var cursorTemplate = jQuery('<div></div>');
+            result.cursorTemplate = cursorTemplate.wrap('<div>').parent().html();
+            
+            return result;
+        }
+        
+        function getContactTemplate() {
+            var result = new primitives.orgdiagram.TemplateConfig();
+            result.name = contactTemplate;
+            
+            var buttons = [];
+            //buttons.push(new primitives.orgdiagram.ButtonConfig("add", "ui-icon-person", "Add Subordinate"));
+            buttons.push(new primitives.orgdiagram.ButtonConfig("comment", "ui-icon-comment", "Comment"));
+            //buttons.push(new primitives.orgdiagram.ButtonConfig("contact", "ui-icon-info", "Go to Contact"));
+            
+            result.buttons = buttons;
+            
+            result.itemSize = new primitives.common.Size(220, 200);
+            result.minimizedItemSize = new primitives.common.Size(3, 3);
+            //result.highlightPadding = new primitives.common.Thickness(2, -200, 2, 200);
+            
+            var itemTemplate = jQuery(
+                '<div class="bp-item bp-corner-all bt-item-frame">'
+                +  '<div name="id" class="slds-grid slds-wrap" style="height: '+result.itemSize.height+'px; padding: 6px;">'
+                +    '<div class="slds-col slds-size--1-of-1 slds-align-top">'
+                +      '<div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">'
+                +        '<div class="slds-media slds-tile slds-hint-parent">'
+                +          '<div class="slds-media__figure">'
+                +            '<span class="slds-avatar slds-avatar--circle slds-avatar--small">'
+                +              '<img src="{!URLFOR($Resource.SLDS092, 'assets/images/avatar2.jpg')}" alt="" />'
+                +            '</span>'
+                +          '</div>'
+                +          '<div class="slds-media__body">'
+                +            '<p name="title" class="slds-tile__title slds-text-body--regular"></p>'
+                +            '<div class="slds-tile__detail slds-text-body--small">'
+                +              '<p name="jobTitle" class="slds-tile__detail slds-text-body--small"></p>'
+                +            '</div>'
+                +          '</div>'
+                +        '</div>'
+                +        '<div class="slds-dropdown-trigger">'
+                +          '<button class="slds-button slds-button--icon-border-filled slds-button--icon-small" onclick="return false;">'
+                +            '<svg aria-hidden="true" class="slds-button__icon">'
+                +              '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>'
+                +            '</svg>'
+                +          '</button>'
+                +          '<div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">'
+                +            '<ul class="slds-dropdown__list" role="menu">'
+                +              '<li id="menu-27-0" href="#" class="slds-dropdown__item">'
+                +                '<a class="slds-truncate" role="menuitem">{!$Label.lbl_Edit}</a>'
+                +              '</li>'
+                +              '<li id="menu-27-1" href="#" class="slds-dropdown__item">'
+                +                '<a class="slds-truncate" role="menuitem">{!$Label.lbl_Remove}</a>'
+                +              '</li>'
+                +              '<li id="menu-27-2" href="#" class="slds-dropdown__item">'
+                +                '<a class="slds-truncate" role="menuitem">Go to contact</a>'
+                +              '</li>'
+                +            '</ul>'
+                +          '</div>'          
+                +        '</div>'
+                +      '</div>'
+                +    '</div>'
+                +    '<div class="slds-col slds-size--1-of-1 slds-align-middle">'
+                +      '<dl class="dl--horizontal slds-text-body--small">'
+                +        '<dt class="slds-dl--horizontal__label">'
+                +          '<p class="slds-truncate">Influence</p>'
+                +        '</dt>'
+                +        '<dd class="slds-dl--horizontal__detail slds-tile__meta">'
+                //+          '<div name="clientStrength"></div>'
+                +           '<progress id="influence" value="80" max="100"></progress>'
+                +        '</dd>'
+                +      '</dl>'
+                +      '<dl class="dl--horizontal slds-text-body--small">'
+                +        '<dt class="slds-dl--horizontal__label">'
+                +          '<p class="slds-truncate">Job role</p>'
+                +        '</dt>'
+                +        '<dd class="slds-dl--horizontal__detail slds-tile__meta">'
+                +          '<div name="jobRole"></div>'
+                +        '</dd>'
+                +      '</dl>'
+                +    '</div>'
+                +    '<div class="slds-col slds-size--1-of-1 slds-align-bottom">'
+                +      '<div class="barclays-contacts">'
+                +      '</div>'
+                +    '</div>'
+                +  '</div>'
+                + '</div>'
+                ).addClass("bp-item bp-corner-all bt-item-frame");
+                
+            result.itemTemplate = itemTemplate.wrap('<div>').parent().html();
+            
+            result.cursorPadding = new primitives.common.Thickness(2, 2, 2, result.itemSize.height);
+            var cursorTemplate = jQuery('<div class="barclays-contacts-panel"><div class="barclays-contacts-list slds-scrollable--y"></div></div>');
+            
+            result.cursorTemplate = cursorTemplate.wrap('<div>').parent().html();
+            
+            return result;
+        }
+
+        function addPlusesToElements(elems) {
+            var pluses = new Array();
+            var elem;
+            
+            for (var i = 0; i < elems.length; i++) {
+                elem = elems[i];
+                elem.templateName = contactTemplate;
+                
+                //plus above root element
+                if (elem.parent == null) {
+                    var plusAbove = {};
+                    plusAbove.id = 'above-' + elem.id;
+                    plusAbove.aprId = elem.aprId;
+                    plusAbove.parent = null;
+                    plusAbove.title = elem.title;
+                    plusAbove.jobRole = '';
+                    plusAbove.jobTitle = '';
+                    plusAbove.clientStrength = '';
+                    plusAbove.templateName = plusTemplate;
+                    plusAbove.comment = '';
+                    plusAbove.barclaysContacts = [];
+                    pluses.push(plusAbove);
+                    
+                    elem.parent = plusAbove.id;
+                }
+                
+                pluses.push(elem);
+                
+                var plus = {};
+                plus.id = 'sub-'+elem.id;
+                plus.aprId = elem.aprId;
+                plus.parent = elem.id;
+                plus.title = elem.title;
+                plus.jobRole = '';
+                plus.jobTitle = '';
+                plus.templateName = plusTemplate;
+                plus.clientStrength = '';
+                plus.comment = elem.comment;
+                plus.barclaysContacts = [];
+                pluses.push(plus);
+            }
+            return pluses;
+        }
+
+        function saveComment() {
+            $('#commentModal').modal('hide');
+            startLoading('{!$Label.lbl_SavingComment}');
+            var comment = $('#commentModalArea').val();
+            
+            hideStakeholderMessage();
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.saveComment}',commentModalContactId, '{!planId}', comment,
+                function(result, event) {
+                    if (result) {
+                        var items = jQuery('#basicdiagram').orgDiagram("option", "items");
+                        for (var i = 0; i < items.length; i++) {
+                            if (items[i].id == commentModalContactId) {
+                                items[i].comment = comment;
+                                jQuery('#basicdiagram').orgDiagram("update", primitives.orgdiagram.UpdateMode.Recreate);
+                                startRenderingMapSliders(items.length);
+                                break;
+                            }
+                        }
+                    } else {
+                        showStakeholderMessage('{!$Label.errMsg_ErrorDuringSaving}');
+                    }
+                    endLoading();
+                }
+            );
+        }
+        
+        function onMouseClick(event, data) {
+          /*
+            var target = jQuery(event.originalEvent.target);
+            if(target.hasClass('slds-tile__title')) {
+                //$('#basicdiagram').find('.barclays-contacts-panel').remove();
+                //$('#basicdiagram').find('.Layer6').remove();
+                refreshHierarchy();
+            }
+          */
+        }
+        
+        function clearModal() {
+            $('#contactsToAdd').html('');
+        }
+        
+        function setDiagramWidth() {
+            var width = $(window).width();
+            width -= 45;
+            $('#basicdiagram').width(width + 'px');
+        }
+        
+        function saveMapSliders() {
+            startLoading('{!$Label.lbl_Saving}');
+            var values = [];
+            $('input.mapSlider').each(function () {
+                var val = $(this).slider('getValue');
+                var currentId = $(this).attr('aprid');
+                
+                var obj = {
+                    value: val,
+                    record: currentId
+                };
+                values.push(obj);
+            });
+            
+            hideStakeholderMessage(JSON.stringify(values));
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.saveMapSliders}', values,
+                
+                function(result, event) {
+                    if (!result) {
+                        showStakeholderMessage('{!$Label.errMsg_ErrorDuringSaving}');
+                    }
+                    renderMapSliderColors();
+                    endLoading();
+                },
+                { escape: false }
+            );
+        }
+
+        function refreshHierarchy() {
+            var items = [];
+            
+            hideStakeholderMessage();
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.ClientPlanStakeholdersHierarchyCtr.getHierarchyChartData}',
+                '{!planId}',
+                function(result, event) {
+                
+                    var itemsCount = 0;
+                    if (result.length > 0) {
+                        var arrayElements = JSON.parse(result);
+                        arrayElements = addPlusesToElements(arrayElements);
+
+                        itemsCount = arrayElements.length;
+                        
+                        for (var i = 0; i < arrayElements.length; i++) {
+                            var el = arrayElements[i];
+                            
+                            items.push(new primitives.orgdiagram.ItemConfig({
+                                id: el.id,
+                                aprId: el.aprId,
+                                parent: el.parent,
+                                title: el.title,
+                                jobRole: el.jobRole,
+                                jobTitle: el.jobTitle,
+                                templateName: el.templateName,
+                                clientStrength: el.clientStrength,
+                                comment: el.comment,
+                                barclaysContacts: el.barclaysContacts
+                            }));
+
+                            $('.basicDiagramPanel').show();
+                            $('.addRootContactPanel').hide();
+                        }
+                    }
+
+                    jQuery("#basicdiagram").orgDiagram({
+                        items: items,
+                    });
+                    jQuery("#basicdiagram").orgDiagram("update", primitives.common.UpdateMode.Recreate);
+                    
+                    startRenderingMapSliders(itemsCount);
+
+                    endLoading();
+                },
+                { escape: false }
+            );
+        }
+        
+        
+        //map sliders functions
+        
+        function startRenderingMapSliders(itemsCount) {
+            
+            var elemsCount = $('#basicdiagram .Layer7 > .bp-item').length;
+            
+            if (elemsCount == itemsCount) {
+                $('.mapSliderWrapper .slider').each( function() {
+                    $(this).remove();
+                });
+                
+                //renderMapSliders(true);
+            } else {
+                setTimeout( function() {
+                    startRenderingMapSliders(itemsCount);
+                }, 1000);
+            }
+        }
+        
+        function renderMapSliders(repair) {
+            $('.mapSlider').slider({
+                tooltip: 'hide'
+            });
+            $('.mapSlider').change( function() {
+                saveMapSliders();
+            });
+            
+            renderMapSliderColors();
+            
+            if (repair) {
+                $('.mapSliderWrapper').each( function() {
+                    removeMapSliders(this);
+                });
+            }
+        }
+        
+        function removeMapSliders(elem) {
+            var count = $(elem).find('.slider').length;
+            if (count == 2) {
+                
+                //removing damaged slider
+                var slider = $(elem).find('.slider:first-child');
+                $(slider).remove();
+                
+                //showing correct slider
+                slider = $(elem).find('.slider:first-child');
+                $(slider).show();
+            } else {
+                setTimeout( function() {
+                    removeMapSliders(elem);
+                }, 1000);
+            }
+        }
+        
+        function renderMapSliderColors() {
+            $('.mapSlider').each( function() {
+                var value = $(this).val();
+                var color = chromaScale(value / 5).hex();
+                
+                var slider = $(this).siblings('.slider').find('.slider-selection').css('background', color);
+            });
+        }
+        
+        function checkIfOnContactCreated() {
+            var contactId = getParameterByName('newid');
+            var parentId = getParameterByName('parentid');
+            $("#parent-id").val(parentId);
+            
+            if (contactId != '' && parentId != '') {
+                ClientPlanStakeholdersHierarchyCtr.getContactById(contactId, onContactLoaded);
+            } else {
+                endLoading();
+            }
+        }
+        
+        function onContactLoaded(result, event) {
+            if (result != null) {
+                var content = '<li class="list-group-item" id="' + result.value + '">' + result.label + '</li>'
+                $('#contactsToAdd').append(content);
+                
+                $('#searchContactsModal').modal('show');
+            } else {
+                showStakeholderMessage('{!$Label.errMsg_NoContactWithGivenId}');
+            }
+            endLoading();
+        }
+        
+        function showStakeholderMessage(message) {
+            $('#stakeholderMessage').text(message);
+            $('#stakeholderAlert').show();
+        }
+        
+        function hideStakeholderMessage() {
+            $('#stakeholderAlert').hide();
+        }
+        
+        function getParameterByName(name) {
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+            var results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        
+        function onContactClientStrengthChanged() {
+            var value = $('#existContactClientStrength option:selected').text();
+            $('#newContactClientStrength').val(value);
+        }
+        
+    </script>
+
+    <style>
+        .slds-card__header {
+            display: inherit !important;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .slds-card--empty {
+            background-color: white !important;
+            margin-left: 40%;
+            margin-right: 40%;
+        }
+        .slds-card__body {
+            margin: 40px;
+        }
+        .slds-card__footer {
+            height: 200px;
+        }
+
+        .slds-modal__container {
+            width: 30em !important;
+        }
+
+        .slds-dropdown__item {
+          margin: 0;
+          text-align: center;
+        }
+        
+        /***************basicdiagram*******************/
+        #basicdiagram {
+            border: 2px solid #ddd;
+            margin-bottom: 20px;
+            height: 600px;
+            width: 100%;
+        }
+        .orgdiagrambutton {
+            margin-left: 0;
+            padding-left: 0;
+        }
+        .bt-item-frame {
+            background-color: white;
+            padding: 6px;
+        }
+        .bp-title {
+            color: #333;
+        }
+        
+        div[name=description] {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .barclays-contacts-panel {
+            border: 1px solid #dddddd;
+            background-color: white;
+        }
+        .barclays-contacts-list {
+            padding-left: 6px;
+            padding-right: 6px;
+            padding-top: 210px;
+        }
+
+        .barclays-contacts-list p {
+            font-size: 12px;
+            line-height: 1;
+        }
+        /***************basicdiagram*******************/
+        .mapSliderWrapper {
+            position: absolute;
+            top: 66px;
+            left: 5px;
+        }
+        
+        .mapSliderWrapper .slider-handle {
+            display: none;
+        }
+
+        #noTypeaheadResult {
+            display: none;
+        }
+        
+        #noTypeaheadResult .alert {
+            margin-top: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        
+    </style>
+
+    <apex:outputPanel layout="block" >
+    <input id="relationship-id" type="hidden" />
+    <input type="hidden" id="searchContactsId"/>
+    <input type="hidden" id="newBarclaysContactId"/>
+    
+    <input id="parent-id" type="hidden" />
+    <input id="child-id" type="hidden" />
+
+
+    <div class="basicDiagramPanel" style="display:none;">
+      <div class="slds-card__header slds-grid grid--flex-spread">
+        <h2 class="slds-text-heading--small slds-truncate">{!$Label.lbl_PoliticalMap}</h2>
+      </div>
+      <div id="basicdiagram" />
+    </div>
+    
+    <div class="addRootContactPanel" style="display:none;">
+      <div class="slds-card__header slds-grid grid--flex-spread">
+        <h2 class="slds-text-heading--small slds-truncate">{!$Label.lbl_PoliticalMap}</h2>
+      </div>
+      <div class="slds-card slds-card--empty">
+        <div class="slds-card__body">
+            <div class="slds-media__figure">
+              <h3 class="slds-p-top--large slds-p-bottom--large">
+                <span class="slds-avatar slds-avatar--circle slds-avatar--medium">
+                  <img src="{!URLFOR($Resource.SLDS092, 'assets/images/avatar2.jpg')}" alt="" />
+                </span>
+              </h3>
+            </div>
+            <button id="addRootButton" class="slds-button slds-button--brand slds-button--small" onclick="showAddContactModal();return false;">{!$Label.lbl_AddStakeholder}</button>
+        </div>
+      </div>
+      <div class="slds-card__footer"></div>
+    </div>
+    
+    <div id="stakeholderAlert" class="alert alert-danger" role="alert" style="display:none;">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span id="stakeholderMessage"/>
+    </div>
+        
+    </apex:outputPanel> 
+
+    <apex:outputPanel id="addContactModalPanel">
+        <div id="addContactModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                  xmlns:xlink="http://www.w3.org/1999/xlink">
+
+            <div class="slds-modal__container">
+              <div class="slds-modal__header">
+                    <h2 class="slds-text-heading--medium">{!$Label.lbl_AddContact}</h2>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeAddContactModal();return false;">
+                      <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                      </svg>
+                    </button>
+              </div>
+
+              <div class="slds-modal__content" style="height: 500px;">
+              <div id="searchPanel" class="slds-form--stacked">
+                <div class="slds-form-element">
+                  <div class="slds-lookup" data-select="multi" data-scope="single" data-typeahead="true">
+                    <div class="slds-form-element">
+                      <label class="slds-form-element__label" for="searchContactsInput">Contact name</label>
+                      <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                        <svg aria-hidden="true" class="slds-input__icon">
+                          <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                        </svg>
+                        <input type="text" id="searchContactsInput" class="slds-input" role="combobox" />
+                      </div>
+                      <div id="contactsToAdd"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-checkbox" for="searchAllAccCheckbox">
+                    <input name="checkbox" type="checkbox" id="searchAllAccCheckbox" />
+                    <span class="slds-checkbox--faux"></span>
+                    <span class="slds-form-element__label">{!$Label.lbl_SearchAllOrgs}</span>
+                  </label>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactJobRole">Influence</label>
+                  <div class="slds-form-element__control">
+                    <select id="existContactClientStrength" class="slds-select" onchange="onContactClientStrengthChanged();">
+                        <apex:repeat value="{!influenceOptions}" var="influence">
+                            <option>{!influence.value}</option>
+                        </apex:repeat>
+                    </select>
+                  </div>
+                </div>
+                    <div id="noTypeaheadResult">
+                        <div class="alert alert-danger" role="alert">
+                            <span id="noResultMsg">
+                                <apex:outputText value="We couldn't find this user, would you like to add them?"/>
+                            </span>
+                        </div>
+                    </div>
+              </div>
+              <div id="newContactPanel" class="slds-form--stacked">
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactFirstName">{!$ObjectType.Contact.fields.FirstName.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactFirstName" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactLastName">{!$ObjectType.Contact.fields.LastName.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactLastName" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactJobTitle">{!$ObjectType.Contact.fields.Job_title__c.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactJobTitle" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactJobRole">{!$ObjectType.Contact.fields.Job_Role__c.Label}</label>
+                  <div class="slds-form-element__control">
+                    <select id="newContactJobRole" class="slds-select">
+                        <apex:repeat value="{!jobRoleOptions}" var="jobRole">
+                            <option>{!jobRole.value}</option>
+                        </apex:repeat>
+                    </select>
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactEmail">{!$ObjectType.Contact.fields.Email.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactEmail" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactPhone">{!$ObjectType.Contact.fields.Phone.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactPhone" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactMobile">{!$ObjectType.Contact.fields.MobilePhone.Label}</label>
+                  <div class="slds-form-element__control">
+                    <input id="newContactMobile" class="slds-input" type="text" />
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newContactJobRole">Influence</label>
+                  <div class="slds-form-element__control">
+                    <select id="newContactClientStrength" class="slds-select">
+                        <apex:repeat value="{!influenceOptions}" var="influence">
+                            <option>{!influence.value}</option>
+                        </apex:repeat>
+                    </select>
+                  </div>
+                </div>
+              </div>
+    
+              </div>
+
+              <div class="slds-modal__footer">
+                <button class="slds-button slds-button--neutral" onclick="closeAddContactModal();return false;">Cancel</button>
+                <button id="addExistingContactButton" class="slds-button slds-button--neutral slds-button--brand" onclick="addExistingContact();return false;">Add</button>
+                <button id="addNewContactButton" class="slds-button slds-button--neutral slds-button--brand" onclick="addNewContact();return false;">Add New Contact</button>
+                <button id="showNewContactPanelButton" class="slds-button slds-button--neutral slds-button--brand" onclick="showCreateNewContactModal();return false;">{!$Label.lbl_NewContact}</button>
+              </div>
+            </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="editContactModalPanel">
+        <div id="editContactModal" style="display:none;">
+          <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <div class="slds-modal__container">
+              <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">Edit Contact</h2>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeEditContactModal();return false;">
+                  <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="slds-modal__content">
+                <div id="searchPanel" class="slds-form--stacked">
+                  <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="searchContactsInput">Contact name</label>
+                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                      <svg aria-hidden="true" class="slds-input__icon">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                      </svg>
+                      <input type="text" id="contactName" class="slds-input" readonly="readonly" />
+                    </div>
+                  </div>
+                  <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="newContactJobRole">Influence</label>
+                    <div class="slds-form-element__control">
+                      <select id="clientStrength" class="slds-select">
+                        <apex:repeat value="{!influenceOptions}" var="influence">
+                          <option>{!influence.value}</option>
+                        </apex:repeat>
+                      </select>
+                    </div> 
+                  </div>
+                </div>
+              </div>
+              <div class="slds-modal__footer">
+                <button class="slds-button slds-button--neutral" onclick="closeEditContactModal();return false;">Cancel</button>
+                <button id="editContactButton" class="slds-button slds-button--neutral slds-button--brand" onclick="editContact();return false;">Save</button>
+              </div>
+            </div>
+          </div>
+          <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="addBarclaysContactModalPanel">
+        <div id="addBarclaysContactModal" style="display:none;">
+            <input id="relationship-item-id" type="hidden" />
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+                  xmlns:xlink="http://www.w3.org/1999/xlink">
+            <div class="slds-modal__container">
+              <div class="slds-modal__header">
+                    <h2 class="slds-text-heading--medium"></h2>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeAddBarclaysContactModal();return false;">
+                      <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                      </svg>
+                    </button>
+              </div>
+              <div class="slds-modal__content">
+              <div id="newBarclaysContactPanel" class="slds-form--stacked">
+                <div class="slds-form-element">
+                  <div class="slds-lookup" data-select="multi" data-scope="single" data-typeahead="true">
+                    <div class="slds-form-element">
+                      <label class="slds-form-element__label" for="newBarclaysContactName">{!$ObjectType.Client_Plan_Relationship_Item__c.fields.Barclays_Contact_User__c.Label}</label>
+                      <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                        <svg aria-hidden="true" class="slds-input__icon">
+                          <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                        </svg>
+                        <input type="text" id="newBarclaysContactName" class="slds-input" role="combobox" />
+                      </div>
+                      <div id="barclaysContactsToAdd"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-form-element">
+                  <label class="slds-form-element__label" for="newBarclaysContactRelationshipStrength">{!$ObjectType.Client_Plan_Relationship_Item__c.fields.Strength_of_Relationship__c.Label}</label>
+                  <div class="slds-form-element__control">
+                    <select id="newBarclaysContactRelationshipStrength" class="slds-select">
+                        <apex:repeat value="{!relationshipStrengthOptions}" var="relationshipStrength">
+                            <option>{!relationshipStrength.value}</option>
+                        </apex:repeat>
+                    </select>
+                  </div>
+                </div>
+                <fieldset class="slds-form-element">
+                    <legend class="slds-form-element__label">{!$ObjectType.Client_Plan_Relationship_Item__c.fields.Primary_Contact__c.Label}</legend>
+                    <div class="slds-form-element__control">
+                        <label class="slds-radio" for="primary-yes">
+                            <input type="radio" name="primary" id="primary-yes"/>
+                            <span class="slds-radio--faux"></span>
+                            <span class="slds-form-element__label">Yes</span>
+                        </label>
+                        <label class="slds-radio" for="primary-no">
+                            <input type="radio" name="primary" id="primary-no"/>
+                            <span class="slds-radio--faux"></span>
+                            <span class="slds-form-element__label">No</span>
+                        </label>
+                    </div>
+                </fieldset>
+              </div>
+              </div>
+              <div class="slds-modal__footer">
+                <button class="slds-button slds-button--neutral" onclick="closeAddBarclaysContactModal();return false;">Cancel</button>
+                <button id="addBarclaysContactButton" class="slds-button slds-button--neutral slds-button--brand" onclick="addNewBarclaysContact();return false;">Save</button>
+                <button id="editBarclaysContactButton" class="slds-button slds-button--neutral slds-button--brand" onclick="editBarclaysContact();return false;">Edit</button>
+              </div>
+            </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>        
+
+</apex:component>

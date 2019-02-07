@@ -1,0 +1,131 @@
+<apex:page controller="advpm.ContentDrop_Upload" showHeader="false" sidebar="false" standardStyleSheets="false"><html>
+<head>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.js')}" />
+    
+	<!-- Bootstrap styles -->
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'bootstrap-3.0.0/css/bootstrap.min.css')}" />
+	<!-- Generic page styles -->
+	<!-- <apex:stylesheet value="{!URLFOR($Resource.jQuery_FileUpload, 'jQuery-File-Upload-8.9.0/css/style.css')}" /> -->
+	<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_FileUpload, 'jQuery-File-Upload-8.9.0/css/jquery.fileupload.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_FileUpload, 'jQuery-File-Upload-8.9.0/css/jquery.fileupload-ui.css')}" />
+	
+    <style type="text/css">
+		.message {
+		    border-radius: 4px 4px 4px 4px;
+		}
+		.errorM6, .errorM4, .errorM3, .errorM2, .errorS1 {
+		    /*border-color: transparent;*/
+		}
+		.message {
+		    /*background-color: transparent;
+		    border-style: none;
+		    border-width: 0px;
+		    color: #000000;
+		    margin: 0px;
+		    padding: 0px;*/
+		}
+		.PortalComponent { display: none; }
+		.errorM3 .msgIcon, .errorSmall {
+		    /*background-image: url(/img/samples/flag_red.gif) !important;*/
+		}
+		.myCustomMessage .message {
+		    /*background: none  !important;
+		    border: none !important;*/
+		    overflow: auto; 
+		    max-height: 35px;
+		    /*max-width: 500px;*/
+		}
+		.message .messageText h4 { display: none !important; }
+		.message {
+			/*padding: 0px;
+			margin: 0px;*/
+		}
+		#dropzone { width: 100%;background-color: #F8F8F8;border: 2px dashed #BBBBBB;border-radius: 5px 5px 5px 5px;color: #333333;font-size: 12px;text-align: center; }
+		#dropzone.in {/*width: 600px;height: 200px;line-height: 200px;font-size: larger;*/}
+		#dropzone.hover {background: #FFF380;}
+		#dropzone.fade {-webkit-transition: all 0.3s ease-out;-moz-transition: all 0.3s ease-out;-ms-transition: all 0.3s ease-out;-o-transition: all 0.3s ease-out;transition: all 0.3s ease-out;opacity: 1;}
+		.library-container { margin-top: 6px; }
+		.progress { margin-bottom: 0px; }
+		.displayBlock { display: block; }
+		.displayNone { display: none; }
+	</style>
+	
+	<script type="text/javascript">
+		$j 				= jQuery.noConflict();
+        var parentId	= "{!IF(JSINHTMLENCODE($CurrentPage.parameters.sourceisportal) == '1',selectedWorkspace,IF(JSINHTMLENCODE($CurrentPage.parameters.workid) != null && JSINHTMLENCODE($CurrentPage.parameters.workid) != '',JSINHTMLENCODE($CurrentPage.parameters.workid),$User.Id))}";
+        
+        
+        $j(document).ready(function(){
+        	$j(".button-add").click(function(e) {
+				parent.showNewVersionWindow('','{!JSINHTMLENCODE($User.Id)}','{!JSINHTMLENCODE($CurrentPage.parameters.cat)}');
+			});
+        });
+	</script>
+</head>
+<body>
+<div style="padding:3px 3px 3px 5px;">
+	<apex:form > <!--  encType="multipart/form-data" -->
+		<apex:outputPanel rendered="{!!HasMsgs}" styleClass="fileUpload uploadBand blockui">
+			<div id="dropzone" class="fade">
+				<table align="center" class="uploadTable normal" width="100%" cellspacing="3" cellpadding="3">
+			        <tr align="center">
+			            <td align="left" nowrap="nowrap" width="30%" valign="middle">
+			            	&nbsp;
+			            </td>
+			            <td class="buttonTD" align="center" nowrap="nowrap" valign="middle">
+			                <span class="btn btn-success btn-sm fileinput-button button-add">
+			                    <i class="glyphicon glyphicon-plus"></i>
+			                    <span>Add file...</span>
+			                </span>
+			            </td>
+			            <td align="right" nowrap="nowrap" width="30%" valign="middle">
+			                <apex:outputLink target="_top" value="{!$Page.advpm__ContentDrop}?id={!JSINHTMLENCODE($CurrentPage.parameters.matid)}&p=1" rendered="{!NOT(JSINHTMLENCODE($CurrentPage.parameters.p) == '1')}">[Full View]</apex:outputLink>
+			            </td>
+			        </tr>
+				</table>
+			</div>
+    	</apex:outputPanel>
+    	<apex:outputPanel rendered="{!HasMsgs}" styleClass="">
+    		<table align="center" class="normal" width="100%" cellspacing="0" cellpadding="0">
+    			<tr>
+    				<td>
+    					<apex:outputPanel styleClass=""><apex:pageMessages /></apex:outputPanel>
+    				</td>
+    				<td align="right" nowrap="nowrap" width="100px">
+	    				<apex:commandLink value="[Clear Messages]" style="font-weight: bold;color: #c00;" />
+	    			</td>
+	    		</tr>
+	    	</table>
+    	</apex:outputPanel>
+    	<!-- Portal Upload Screen -->
+    	<!-- <div id="divSelectWorkspace" class="PortalComponent">
+			<table align="center" class="normal" cellspacing="3" cellpadding="3">
+				<tr>
+	    			<td align="right">
+	    				<span id="fileUpload_portal" style="display:none;"></span>
+	    				<span class="normal" style="font-weight:bold;display:inline;">Select Library:</span>
+	    			</td>
+	    			<td align="left">
+	    				<div class="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:selectList size="1" styleClass="select-lib" value="{!selectedWorkspace}" style="width:140px;">
+								<apex:selectOptions value="{!WorkspacesDropdown}" />
+							</apex:selectList>
+						</div>
+	    			</td>
+	    			<td align="left" colspan="2">
+				        <span >
+							<input class="btnPrimary publishersharebutton btn" id="upload_btn_portal" name="upload_btn_portal" title="Upload" type="button" value="  Continue  " />
+							<input class="btn" id="cancel_btn" name="cancel_btn" title="Cancel" type="button" value=" Cancel " />
+				        </span>
+	    			</td>
+	    		</tr>
+	    	</table>
+    	</div> -->
+    	<!-- <apex:actionFunction action="{!UploadFile}" name="doUpload" /> -->
+	</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

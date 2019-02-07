@@ -1,0 +1,9 @@
+<apex:page >
+    <script>
+        function refreshPage(){
+            var url = (window.location != window.parent.location)? document.referrer: document.location.href;
+            window.top.location.href = '/{!$CurrentPage.parameters.oppId}';
+        }
+        refreshPage();
+	</script>
+</apex:page>

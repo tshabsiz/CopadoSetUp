@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify users when are not marked as Complete within 7 days</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Conditions Overdue</name>
+    <style>freeForm</style>
+    <subject>Conditions Overdue</subject>
+    <textOnly>Dear {!Condition__c.Client__c}
+
+Please be aware that the following conditions {!Condition_Occurrence__c.Name} expected on the {!Condition_Occurrence__c.Due_Date__c} has not been uploaded.
+
+Conditions ID: {!Condition_Occurrence__c.ConditionId__c}
+Description: {!Condition__c.Clause__c}
+
+Please contact the following Asset Manager contacts for further information.
+
+Regards</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

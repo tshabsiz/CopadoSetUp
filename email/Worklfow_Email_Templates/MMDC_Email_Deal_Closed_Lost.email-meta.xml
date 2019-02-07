@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Money Market Deposit Campaign Opportunity - Deal Closed Lost</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>MMDC Email Deal Closed Lost</name>
+    <style>freeForm</style>
+    <subject>Money Market Deposit Campaign Opportunity - Deal Closed Lost</subject>
+    <textOnly>Dear{!Opportunity.Accountable_Banker__c}
+This is to notify you that you that the following deal has been Closed: Lost
+
+Opportunity Name: {!Opportunity.Name}
+
+Opportunity Owner: {!Opportunity.OwnerFullName}
+
+Organisation: {!Opportunity.Account}
+
+Stage: {!Opportunity.StageName}
+
+Investment value: {!Opportunity.Total_Balance_Facility_Size__c}
+
+Link to the Opportunity: {!Opportunity.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

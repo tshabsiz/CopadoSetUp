@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>User$Name</field>
+    </columns>
+    <columns>
+        <field>User$UserRole</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Matter__c$CreatedById$Name</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Matter__c$CreatedById$CreatedDate</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Matter__c$CreatedById$Start_Date__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>Matters Created per User</description>
+    <filter>
+        <criteriaItems>
+            <column>User$UserRole</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>COO Legal</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>LEAP Matter Report per User</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Users_with_Matters__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>User.advpm__Matter__c$CreatedById$CreatedDate</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>User.advpm__Matter__c$CreatedById$Start_Date__c</dateColumn>
+        <interval>INTERVAL_LASTMONTH</interval>
+    </timeFrameFilter>
+</Report>

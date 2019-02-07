@@ -1,0 +1,70 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_CheckPresenceController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+
+	<style>
+		.grid-view {
+			border-collapse: collapse;
+			margin-left: 1%;
+			width: 50%;
+		}
+		.grid-view td, th {
+			border: 1px solid #999;
+  			padding: 4px;
+  			text-align: left;
+		}
+		.grid-view th {
+			background-color: whitesmoke;
+			font-weight: bold;
+		}
+		.grid-view caption {
+			text-align: left;
+		}
+		.label {
+			font-weight: bold;
+			margin-left: 10%;
+			margin: 12px;
+			color: #999;
+		}
+	</style>
+	<apex:form >
+		<apex:pageBlock id="pb" mode="maindetail">
+			<apex:pageMessages id="pageMsg"/>
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+				border: 'none', 
+				padding: '15px', 
+				backgroundColor: '#000', 
+				'-webkit-border-radius': '10px', 
+				'-moz-border-radius': '10px', 
+				opacity: .5, 
+				color: '#fff' 
+			} });" onstop="$.unblockUI();" />
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!save}" status="processing" reRender="pb"/>
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+			
+			<apex:outputPanel >
+				<apex:panelGrid columns="1" width="100%">
+					<apex:panelGroup id="jloc-attendees-panel">
+						<div class="label">JLOC Attendees</div>
+						<table class="grid-view">
+							<tr>
+								<th>{!$ObjectType.JLOC_Attendee__c.fields.Group__c.Label}</th>
+								<th>{!$ObjectType.JLOC_Attendee__c.fields.User__c.Label}</th>
+								<th>{!$ObjectType.JLOC_Attendee__c.fields.Present__c.Label}</th>
+							</tr>
+							<apex:repeat value="{!jlocAttendees}" var="attendee">
+    							<tr>
+    								<td><apex:outputField value="{!attendee.Group__c}" /></td>
+    								<td><apex:outputField value="{!attendee.User__c}" /></td>
+    								<td><apex:inputField value="{!attendee.Present__c}" /></td>
+    							</tr>
+    						</apex:repeat>
+						</table>
+					</apex:panelGroup>
+				</apex:panelGrid>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

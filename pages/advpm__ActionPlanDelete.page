@@ -1,0 +1,99 @@
+<apex:page standardController="advpm__ActionPlan__c" tabstyle="advpm__ActionPlan__c" extensions="advpm.ActionPlanDeleteController">
+	<apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS sldsV2="true" />
+    </apex:outputPanel>
+    <apex:form id="theForm" >
+        <apex:outputPanel layout="none" rendered="{!!isLightning}">
+    		<apex:sectionHeader title="Action Plan" subtitle="Delete: {!advpm__ActionPlan__c.Name}" rendered="{!!batchDeleteMode}" />
+    		<apex:sectionHeader title="Action Plans" subtitle="Batch Delete" rendered="{!batchDeleteMode}" />
+            <br />
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!isLightning}">
+            <c:slds_pageheader pageHeaderType="RECORD"
+                                headerTitle="{!IF(!batchDeleteMode,'Action Plan','Action Plans')}" 
+                                headerSubTitle="{!IF(!batchDeleteMode,'Delete: ' + advpm__ActionPlan__c.Name,'Batch Delete')}"
+                                headerIconCSS="slds-icon-custom-11"
+                                headerIconPath="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#custom11')}" />
+        </apex:outputPanel>
+        
+        <style type="text/css">
+            .slds .slds-notify h2 { font-size: 1.2em; }
+        </style>
+        
+	    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+            <div class="slds-notify slds-notify--alert">
+                <h2>
+                    <c:svg styleClass="slds-icon icon-text-email slds-icon--small slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}" />
+                    You have chosen to delete an Action Plan with associated Activities.<br />How would you like to handle these Activities?
+                </h2>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!!isLightning}">
+            <apex:pageMessage escape="false" summary="You have chosen to delete an Action Plan with associated Activities.<br />How would you like to handle these Activities?" severity="warning" strength="1" />
+        </apex:outputPanel>
+        
+        <apex:outputPanel layout="none" rendered="{!isLightning}">
+            <div style="padding: 12px 24px;" class="slds">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <label class="slds-radio" for="ActionPlanOnly">
+                            <input type="radio" name="delOption" id="ActionPlanOnly" value="ActionPlanOnly" checked="checked" onchange="javascript:changeOpt(this);" />
+                            <span class="slds-radio--faux"></span>
+                            <span class="slds-form-element__label">Keep all associated Activities</span>
+                        </label>
+                        <label class="slds-radio" for="ActionPlanWithIncompleteActivitiesOnly">
+                            <input type="radio" name="delOption" id="ActionPlanWithIncompleteActivitiesOnly" value="ActionPlanWithIncompleteActivitiesOnly" onchange="javascript:changeOpt(this);" />
+                            <span class="slds-radio--faux"></span>
+                            <span class="slds-form-element__label">Keep completed Activities. (past Events, completed Tasks)</span>
+                        </label>
+                        <label class="slds-radio" for="ActionPlanWithAllActivities">
+                            <input type="radio" name="delOption" id="ActionPlanWithAllActivities" value="ActionPlanWithAllActivities" onchange="javascript:changeOpt(this);" />
+                            <span class="slds-radio--faux"></span>
+                            <span class="slds-form-element__label">Delete all associated Activities.</span>
+                        </label>
+                        <apex:inputText value="{!deleteAction}" id="hdDelOpt" styleClass="hdDelOpt" style="display:none;" />
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!!isLightning}">
+            <div style="padding-left:10px;">
+                <apex:selectRadio value="{!deleteAction}" layout="pageDirection">
+                    <apex:selectOption itemValue="ActionPlanOnly" itemLabel="Keep all associated Activities" />
+                    <apex:selectOption itemValue="ActionPlanWithIncompleteActivitiesOnly" itemLabel="Keep completed Activities. (past Events, completed Tasks)" />
+                    <apex:selectOption itemValue="ActionPlanWithAllActivities" itemLabel="Delete all associated Activities." />
+                </apex:selectRadio>
+            </div>
+        </apex:outputPanel>
+	    
+        <div style="width:100%;" class="{!IF(isLightning,'slds','')}">
+			<apex:outputPanel layout="block" rendered="{!isLightning}" style="width:40%;display:inline-block;text-align:right;">
+            	<button onClick="doDelete(); return false;" class="slds-button slds-button--brand">Confirm Delete?</button>
+				<button onClick="doCancel(); return false;" class="slds-button slds-button--neutral">Cancel</button>
+			</apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!!isLightning}" style="width:40%;display:inline-block;text-align:right;">
+                <apex:commandButton action="{!deleteActionPlan}" value="  Confirm Delete?  " styleClass="btnPrimary publishersharebutton" />
+                <apex:commandButton action="{!cancel}" value="  Cancel  " style="margin-left:1.0em;" />
+            </apex:outputPanel>
+			<div style="width:60%;display:inline-block;text-align:right;">&nbsp;</div>
+		</div>
+        
+        <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+            <apex:messages styleClass="slds-notify slds-notify--alert slds-theme--error" />
+        </apex:outputPanel>
+		<apex:outputPanel layout="block" rendered="{!!isLightning}">
+            <apex:pageMessages />
+		</apex:outputPanel>
+        
+        <script type="text/javascript">
+            function changeOpt(obj) {
+                document.getElementById('{!$Component.theForm.hdDelOpt}').value = obj.value;
+            }
+        </script>
+        
+        <apex:actionFunction name="doDelete" action="{!deleteActionPlan}" />
+        <apex:actionFunction name="doCancel" action="{!cancel}" />
+        
+        
+	</apex:form>
+</apex:page>

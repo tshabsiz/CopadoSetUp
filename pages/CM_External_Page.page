@@ -1,0 +1,579 @@
+<!--
+2017-03-32 : RN - CloudSmiths
+-->
+<apex:page standardController="Case" extensions="CM_External_Page_Ext"  showHeader="false" sidebar="false" >
+    <head>
+        <script src="../../soap/ajax/37.0/connection.js" type="text/javascript">
+        </script>
+        <script src="../../soap/ajax/37.0/apex.js" type="text/javascript">
+        </script> 
+        
+        <style>
+        .search_box{
+     
+       position:absolute;
+        left: 18%;
+        backgound:#FFFFFF;
+        }
+        
+        td{
+        left: 18%;
+        }
+        .searchBoxWidth{
+        left: 18%;
+        }
+        table{
+        left: 18%;
+        width:100%
+        }
+         </style>
+        
+        
+    </head>
+    
+    <apex:form id="newCaseForm">
+      
+        <apex:pageMessages id="pagemsg"></apex:pageMessages>
+         <apex:pageBlock id="pgblockHeader" tabStyle="Account" >
+             <div id="header" style="font-size:large;" align="center" >
+                 {!header}
+             </div>
+             <div id="headersub" style="font-size:small;white-space:pre-line;" align="left">
+                 <text>{!subscript}</text>
+             </div>
+        </apex:pageBlock>
+        <table style="align:center; width:200px;" align="center">
+            <tr>
+                <td>
+                    <apex:outputPanel id="pgmsgs" rendered="{!caseCreated == True}">
+                        <span id="done">
+                            <button type="button" id="donebtn" onclick="goHome();">
+                                Done
+                            </button> 
+                        </span>
+                    </apex:outputPanel>
+                    </td>
+                	<td>
+                    <apex:outputPanel id="pgmsgs2" rendered="{!caseCreated == True}">
+                        <span id="newcase">
+                            <button type="button" id="newbtn" onClick="refreshPage();">
+                                New Complaint
+                            </button> 
+                        </span>
+                    </apex:outputPanel>
+                    </td>
+                </tr>
+        </table>
+        <br/>
+        <table styleClass="search_box">
+        <tr>
+        <td>
+        <apex:pageBlock id="pgblockStaRel" tabStyle="Account">
+            <apex:pageBlockSection id="blocksecStdRel" columns="1">
+                <apex:outputLabel value="Relationship Name (SDS ID)" />
+                <c:Typeahead style="width:90%;" searchBoxId="acctSearchBox" object="Account" primaryField="Name" secondaryField="SDS__c" 
+                searchScope="NAME" placeholder="Enter the relationship name....." minSearchLength="3" 
+                destinationForSelectedId="accountId" destinationForSelectedValue="accountName" stealFocus="false" /> 
+                <input type="hidden" name="accountId" id="accountId" />   
+                <input type="hidden" name="accountName" id="accountName"  />
+            </apex:pageBlockSection>    
+     
+        </apex:pageBlock>
+        </td>
+        </tr>
+        </table>
+        
+         
+        <apex:pageBlock tabStyle="Account" id="pgblockA" >
+            <apex:pageBlockSection id="blocksecA" columns="2" >
+                <apex:inputField id="logger" label="Logger Name" value="{!theCase.SuppliedName}" onchange="updateStyle(this);"/>
+                <apex:inputField id="sta" value="{!theCase.Status}" onchange="updatePageSection(this);"/>
+                <apex:inputField id="loggermail" label="Logger Email" value="{!theCase.SuppliedEmail}" />
+                <apex:inputField id="pri" value="{!theCase.Priority}" onchange="updateStyle(this);"/>
+                <!--<apex:outputText value="" /> -->
+                <apex:inputField id="loggerDepartment" value="{!theCase.Loggers_Department__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="cor" value="{!theCase.Origin__c}"  onchange="updateStyle(this);"/>
+                
+                <apex:inputField id="cont" value="{!theCase.Email_Sender_Name__c}" onchange="updateStyle(this);" />
+                <apex:outputText value="" />
+                <apex:inputField id="contemail" value="{!theCase.Email_From_Address__c}" onchange="updateStyle(this);" />
+                <apex:outputText value="" />
+                <apex:inputField id="suack" value="{!theCase.Suppress_Acknowledge_Alert__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+                <apex:inputField id="indate" value="{!theCase.Incident_Date__c}" onchange="updateStyle(this);" />
+                
+               <apex:outputText value="" />
+            </apex:pageBlockSection> 
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockC" >
+            <apex:pageBlockSection id="blocksecC" columns="1"> 
+                <apex:inputField id="sject" value="{!theCase.Subject}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+                <apex:inputField id="desc" value="{!theCase.Description}" style="width: 450px; height: 150px" />
+                <apex:outputText value="" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockD">
+             <apex:pageBlockSection id="blocksecD" columns="2"> 
+                <apex:inputField id="servcat" value="{!theCase.Complaint_Service_Category__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingArea" value="{!theCase.Resolving_Area__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servtype" value="{!theCase.Complaint_Service_Type__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingTeam" value="{!theCase.Resolving_Team__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servsub" value="{!theCase.Complaint_Service_Sub_Category__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="cha" value="{!theCase.Complaint_Channel__c}"  onchange="updateStyle(this);"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+         <apex:pageBlock tabStyle="Account" id="pgblockstaff">
+            <apex:pageBlockSection id="blocksecstaff" columns="2"> 
+                <apex:inputField id="stafferror" value="{!theCase.Staff_Error__c}" onchange="updateStyle(this);"/>
+                 <apex:inputField id="mnpi" value="{!theCase.MNPI__c}"  />
+                <apex:inputField id="errdesc" value="{!theCase.Staff_Error_Description__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="mnpiopp" value="{!theCase.Opportunity_Name__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="satffname" value="{!theCase.Staff_Member_Name__c}" onchange="updateStyle(this);"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+        <apex:pageBlock tabStyle="Account" id="pgblockE">
+            <apex:pageBlockSection id="blocksecE" columns="2" > 
+                <apex:inputField id="desiredAction" value="{!theCase.Desired_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootcc" value="{!theCase.Root_Cause_Category__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="actionTaken" value="{!theCase.Action_Taken__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootc" value="{!theCase.Root_Cause__c}"/>
+                <apex:inputField id="businessOwnerAction" value="{!theCase.Business_Owner_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="resolutionDetail" value="{!theCase.Resolution_Detail__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="ResolvedInFavourOf" value="{!theCase.Resolved_In_Favour_Of__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <br/>
+        <table style="align:center; width:200px;" align="center">
+        <tr>
+        <td >
+        <span  id="creatcase">
+            <button  type="button" id="buttonNewCase" onclick="newCase();" >
+            Submit Complaint
+            </button>     
+            <apex:actionFunction name="insertCase" action="{!submitCase}" >
+                <apex:param name="myParam" assignTo="{!myAccountId}" value="" />
+            </apex:actionFunction>
+        </span>
+        </td>
+        <td> 
+         </td>
+         </tr>  
+         </table> 
+         <apex:pageBlock id="pgblockFooter" tabStyle="Account">
+             <div id="footer" style="font-size:medium" align="center">
+                {!footer}
+             </div>
+        </apex:pageBlock>
+       
+    </apex:form>
+    <script type="text/javascript">
+    
+    // Overwrite std SF styling
+    //---------------------------------------------------------------------------------
+    document.getElementById('buttonNewCase').style.background = '#0070d2';
+    document.getElementById('buttonNewCase').style.borderColor = '#0070d2';
+    document.getElementById('buttonNewCase').style.font = '13.3333px Arial';
+    document.getElementById('buttonNewCase').style.color = 'white';
+    document.getElementById('buttonNewCase').style.borderRadius = '4px';
+    document.getElementById('buttonNewCase').style.padding = '10px 10px 10px 10px';
+    document.getElementById('buttonNewCase').style.cursor = 'pointer';
+    
+    document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+    if(document.getElementById('buttonNewCase').disabled){
+        document.getElementById('buttonNewCase').disabled = false;
+    }
+        
+    document.getElementById('donebtn').style.background = '#0070d2';
+    document.getElementById('donebtn').style.borderColor = '#0070d2';
+    document.getElementById('donebtn').style.font = '13.3333px Arial';
+    document.getElementById('donebtn').style.color = 'white';
+    document.getElementById('donebtn').style.borderRadius = '4px';
+    document.getElementById('donebtn').style.padding = '10px 10px 10px 10px';
+    document.getElementById('donebtn').style.cursor = 'pointer';
+        
+    document.getElementById('newbtn').style.background = '#0070d2';
+    document.getElementById('newbtn').style.borderColor = '#0070d2';
+    document.getElementById('newbtn').style.font = '13.3333px Arial';
+    document.getElementById('newbtn').style.color = 'white';
+    document.getElementById('newbtn').style.borderRadius = '4px';
+    document.getElementById('newbtn').style.padding = '10px 10px 10px 10px';
+    document.getElementById('newbtn').style.cursor = 'pointer';
+    
+    //document.getElementById('refpage').style.background = '#0070d2';
+    //document.getElementById('refpage').style.borderColor = '#0070d2';
+    //document.getElementById('refpage').style.font = '13.3333px Arial';
+    //document.getElementById('refpage').style.color = 'white';
+    //document.getElementById('refpage').style.borderRadius = '4px';
+    //document.getElementById('refpage').style.padding = '10px 10px 10px 10px';
+    //document.getElementById('refpage').style.cursor = 'pointer';
+    
+    
+    document.getElementById('newcase').style.display = 'block';
+    
+    //document.getElementById('newcase').style.display = 'none';
+    
+    //greate a new AJAX Case object and assign the current std controller ID to this Case
+    //var theCase = new sforce.SObject("Case");
+    //theEmail.id = '{!Case.Id}';theCase
+    
+    var caseId;
+    var caseNumber;
+    var pId;
+    var isDataOk = false;
+   
+
+    function newCase() {
+        
+        sforce.connection.sessionId= '{!$Api.Session_ID}';
+		
+        document.getElementById('buttonNewCase').disabled = true;
+        document.getElementById('{!$Component.newCaseForm}').style.cursor = 'wait';
+        
+        //user input validation section 
+        //---------------------------------------------------------------------------------
+        var relID = '';
+        var stdRelID = document.getElementById('accountId');
+        var stdRelElement = document.getElementById('acctSearchBox');
+        //var stdRelName = document.getElementById('accountName');
+        
+        //alert(stdRelID.value);
+        //alert(stdRelName.value);
+        
+        //stdRelID = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}_lkid');   
+        //stdRelElement = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}');
+        
+        //Block A
+        var logger = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.logger}');
+        var loggermail = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.loggermail}');
+        var suack = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.suack}');
+        var contName = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cont}');
+        var loggerDepartment = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.loggerDepartment}');
+        var contEmail = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.contemail}');
+        var sta = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.sta}');
+        var prio = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.pri}');
+        var cor = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cor}');
+        var indate = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.indate}');
+        
+        
+        
+        //Block C
+        var sject = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.sject}');
+        var desc = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.desc}');           
+        
+        //Block D
+        var resolvingArea = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingArea}');
+        var resolvingTeam = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingTeam}');
+        var srvtype = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servtype}');
+        var cha = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.cha}');
+        var subCat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servsub}');
+        var cat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servcat}');
+        
+        //Block E
+       var desiredAction,rootcc,actionTaken,businessOwnerAction,rootc,resolutionDetail,resolvedInFavourOf;
+        
+		if(sta.value.includes('Closed')){
+            desiredAction = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.desiredAction}');
+            rootcc = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.rootcc}');
+            actionTaken = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.actionTaken}');
+            rootc = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.rootc}');
+            businessOwnerAction = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.businessOwnerAction}');
+            resolutionDetail = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.resolutionDetail}');
+            resolvedInFavourOf = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.resolvedInFavourOf}');
+        }       
+        
+        //Staff Block
+        var stafferror = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.stafferror}');
+        var errdec = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.errdesc}');
+        var staffname = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.satffname}');
+        var staffSection = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff}');
+        //MNPI Section
+        var mnpi = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.mnpi}');
+        var mnpiopp = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.mnpiopp}'); 
+
+        if(stdRelID.value == null || stdRelID.value == ''){
+                
+                //alert("Please link a Relationship to this record first");
+                stdRelElement.style.backgroundColor = "#ffe6e6";
+                stdRelElement.style.borderColor = 'red';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                stdRelElement.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+               		document.getElementById('buttonNewCase').disabled = false;
+            	}
+                return null;
+        }
+        if(logger.value == null || logger.value == ''){
+            logger.style.borderColor = 'red';
+            logger.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            logger.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+               		document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(loggermail.value != null || loggermail.value != ''){
+            //check if valid email address
+            if(!validateEmail(loggermail.value)){
+                
+                alert('Please enter a valid email address');
+                
+                loggermail.style.borderColor = 'red';
+            	loggermail.style.backgroundColor = "#ffe6e6";
+            	document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            	loggermail.focus();
+            	if(document.getElementById('buttonNewCase').disabled){
+               		document.getElementById('buttonNewCase').disabled = false;
+            	}
+                
+            	return null;
+            }
+        }
+        if(contName.value == null || contName.value == ''){
+            contName.style.borderColor = 'red';
+            contName.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            contName.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+               		document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(contEmail.value == null || contEmail.value == ''){
+            contEmail.style.borderColor = 'red';
+            contEmail.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            contEmail.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }else{
+        	//check if valid email address
+            if(!validateEmail(contEmail.value)){
+                
+                alert('Please enter a valid email address');
+                
+                contEmail.style.borderColor = 'red';
+            	contEmail.style.backgroundColor = "#ffe6e6";
+            	document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            	contEmail.focus();
+            	if(document.getElementById('buttonNewCase').disabled){
+               		document.getElementById('buttonNewCase').disabled = false;
+            	}
+                
+            	return null;
+            }
+        }
+        if(indate.value == null || indate.value == ''){
+            indate.style.borderColor = 'red';
+            indate.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            indate.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(prio.value == null || prio.value == '' || prio.value == '--None--'){
+            prio.style.borderColor = 'red';
+            prio.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            prio.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(cor.value == null || cor.value == '' || cor.value == '--None--'){
+            cor.style.borderColor = 'red';
+            cor.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            cor.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        
+        if(mnpi.checked){
+            if(mnpiopp.value == null || mnpiopp.value == ''){
+                mnpiopp.style.borderColor = 'red';
+                mnpiopp.style.backgroundColor = "#ffe6e6";
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                mnpiopp.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+                return null;
+            }
+        }
+        
+        if(sject.value == null || sject.value == ''){
+            sject.style.borderColor = 'red';
+            sject.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            sject.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+       
+        if(srvtype.value == null || srvtype.value == '' || srvtype.value == '--None--'){
+            srvtype.style.borderColor = 'red';
+            srvtype.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            srvtype.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }else if(srvtype.value != ''){
+            if(subCat.value == null || subCat.value == '' || subCat.value == '--None--'){
+                subCat.style.borderColor = 'red';
+                subCat.style.backgroundColor = "#ffe6e6";
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                subCat.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+            		document.getElementById('buttonNewCase').disabled = false;
+            	}
+                return null;
+            }else if(subCat != ''){
+                if(cat.value == null || cat.value == '' || cat.value == '--None--'){
+                    cat.style.backgroundColor = "#ffe6e6";
+                    cat.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    cat.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+            			document.getElementById('buttonNewCase').disabled = false;
+            		}
+                    return null;
+                }
+            } 
+         }
+		
+        if(srvtype.value == 'Staff Related Issues' && (stafferror.checked == false || errdec.value == null || errdec.value == '' || staffname.value == null || staffname.value == '')){
+            alert('You have to complete ALL the fields under the \'Staff Error\' page section, if you have selected \'Staff Related Issues\' as a service type');
+           staffSection.style.backgroundColor = "#ffe6e6";
+           document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+           errdec.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+            	document.getElementById('buttonNewCase').disabled = false;
+            }
+           return null;
+        }
+        
+        if(sta.value.includes('Closed')){
+            if(desiredAction.value == null || desiredAction.value == '' || desiredAction.value == '--None--'){
+                    desiredAction.style.backgroundColor = "#ffe6e6";
+                    desiredAction.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    desiredAction.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(rootcc.value == null || rootcc.value == '' || rootcc.value == '--None--'){
+                    rootcc.style.backgroundColor = "#ffe6e6";
+                    rootcc.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    rootcc.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(actionTaken.value == null || actionTaken.value == '' || actionTaken.value == '--None--'){
+                    actionTaken.style.backgroundColor = "#ffe6e6";
+                    actionTaken.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    actionTaken.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(rootc.value == null || rootc.value == '' || rootc.value == '--None--'){
+                    rootc.style.backgroundColor = "#ffe6e6";
+                    rootc.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    rootc.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(businessOwnerAction.value == null || businessOwnerAction.value == '' || businessOwnerAction.value == '--None--'){
+                    businessOwnerAction.style.backgroundColor = "#ffe6e6";
+                    businessOwnerAction.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    businessOwnerAction.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(resolutionDetail.value == null || resolutionDetail.value == '' || resolutionDetail.value == '--None--'){
+                    resolutionDetail.style.backgroundColor = "#ffe6e6";
+                    resolutionDetail.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    resolutionDetail.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(resolvedInFavourOf.value == null || resolvedInFavourOf.value == '' || resolvedInFavourOf.value == '--None--'){
+                resolvedInFavourOf.style.backgroundColor = "#ffe6e6";
+                resolvedInFavourOf.style.borderColor = 'red';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                resolvedInFavourOf.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+            }
+        }
+        
+        
+        var stdRelationshipId  =stdRelID.value;
+        
+        insertCase(stdRelationshipId);
+    };
+    //RN - CloudSmiths
+    function validateEmail(email){      
+        var emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return emailReg.test(email); 
+    }; 
+    function updatePageSection(status)
+    {        
+        if(status.value.includes('Closed'))
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='block';
+        }
+        else
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+        }
+    }
+    function goHome(){
+       window.location.href='https://now.barclays.com';
+    };
+    function refreshPage(){
+        window.location.href='http://complaints';
+    };
+    function updateStyle(veld){
+        veld.style.borderColor = '#e6e6e6';
+        veld.style.backgroundColor = '#ffffff';
+        veld.placeholder = '';
+    };
+    </script>
+</apex:page>

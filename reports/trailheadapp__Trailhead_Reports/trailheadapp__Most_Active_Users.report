@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__User_Badge__c.trailheadapp__First_Attempted_Date__c</field>
+    </columns>
+    <description>Report on users who have the most trailhead activity</description>
+    <filter>
+        <criteriaItems>
+            <column>trailheadapp__User_Badge__c.trailheadapp__First_Attempted_Date__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>notEqual</operator>
+            <value></value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>trailheadapp__User_Badge__c.trailheadapp__User__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Most Active Users</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$trailheadapp__Badge__c$trailheadapp__User_Badge__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <sortColumn>CUST_NAME</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>trailheadapp__User_Badge__c.trailheadapp__First_Attempted_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

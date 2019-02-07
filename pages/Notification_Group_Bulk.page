@@ -1,0 +1,27 @@
+<!--
+ *** CHANGE LOG ***
+ 
+ 16/11/2017 - TdB    - Create VF page.  
+                                                           
+-->
+
+<apex:page Controller="Notification_Group_Bulk">
+    <apex:sectionHeader title="Notification Group Edit" subtitle="New Group Participants"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />  
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

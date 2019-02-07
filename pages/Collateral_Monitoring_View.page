@@ -1,0 +1,105 @@
+<!-- 
+*** CHANGE LOG ***
+
+27/11/2017 - Tdb   - Created VF page.
+				   - Fields, add Page Block Sections for Participanys and Groups. Show/Hide fields based on Collateral Type selected
+18/02/2018 - KK    - Add Box custom UI and iframe size
+
+-->
+
+<apex:page id="collateralMonitoringPage" standardController="Collateral_Monitoring__c" extensions="Collateral_Monitoring_Override" showHeader="true" sidebar="true">
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    
+    <apex:sectionHeader title="Collateral Monitoring" subtitle="{! IF(collateralMonitoringRecord.Id == null,'New Collateral Monitoring',collateralMonitoringRecord.Name) }" />
+    <apex:form id="theForm">
+        <apex:actionFunction name="callBox" action="{!createBoxPermission}" rerender="out"/>
+        <apex:pageBlock id="pblock" mode="maindetail">
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:CommandButton value="Edit" action="{!edit}" /> 
+                <apex:CommandButton value="Delete" action="{!delete}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pblocksec_info" title="Information" columns="2"> 
+                <apex:outputField value="{!collateralMonitoringRecord.Name}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Deal" for="deal_field"/>
+                    <apex:actionRegion >
+                        <apex:outputField style="" label="Deal" value="{!collateralMonitoringRecord.Deal__c}" id="deal_field">
+                            <apex:actionSupport event="onchange" rerender="pblocksec_participants" action="{!DealParticipants}"/>
+                        </apex:outputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!collateralMonitoringRecord.Person_Responsible__c}" />  
+                <apex:outputField value="{!collateralMonitoringRecord.Agreement__c}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Description" for="desc"/>
+                    <apex:outputField id="desc" value="{!collateralMonitoringRecord.Description__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Collateral" for="collateral"/>
+                    <apex:outputField id="collateral"  value="{!collateralMonitoringRecord.Collateral__c}" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_dependencies">
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Collateral Type" for="type_field"/>
+                    <apex:actionRegion >
+                        <apex:outputField value="{!collateralMonitoringRecord.Collateral_Type__c}" id="type_field">
+                            <apex:actionSupport event="onchange" rerender="pblocksec_dependencies" />
+                        </apex:outputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!collateralMonitoringRecord.Specify_Other__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Other', true, false )}" /> 
+                <apex:outputField value="{!collateralMonitoringRecord.Item_to_Monitor__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Other', false, true )}"/> 
+                <apex:outputField value="{!collateralMonitoringRecord.Account_Number__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}"/> 
+                <apex:outputText rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Account_Type__c}" rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c == 'Cash', true, false )}"/> 
+                <apex:outputText rendered="{!IF(collateralMonitoringRecord.Collateral_Type__c != 'Cash', true, false )}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_scheduling" title="Scheduling Information (optional)" >
+                <apex:outputField value="{!collateralMonitoringRecord.Frequency__c}" />
+                <apex:outputField id="DueDate" value="{!collateralMonitoringRecord.Due_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Relative_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Other_Relative_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Number_of_Days__c}" />
+                <apex:outputText ></apex:outputText>  
+                <apex:outputField value="{!collateralMonitoringRecord.Days__c}" />
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_Dates" title="Dates" >
+                <apex:outputField value="{!collateralMonitoringRecord.Effective_Date__c}" />
+                <apex:outputField id="DueDate" value="{!collateralMonitoringRecord.Schedule_Start_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Signature_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Schedule_End_Date__c}" />
+                <apex:outputField value="{!collateralMonitoringRecord.Financial_Year_End__c}" />
+                <apex:outputText ></apex:outputText>  
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksec_SystemInfo" title="System Information" >
+                <apex:outputField value="{!collateralMonitoringRecord.CreatedById}" />
+                <apex:outputField value="{!collateralMonitoringRecord.LastModifiedById}" />
+                <apex:outputField value="{!collateralMonitoringRecord.CreatedDate}" />
+                <apex:outputField value="{!collateralMonitoringRecord.LastModifiedDate}" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <!--/  BOX -->
+    <div class="boxStyle">
+        <iframe id="boxIFrame" frameborder="0" height="500px" width="100%" src="/apex/BxdDocumentsFramed?Id={!$CurrentPage.Parameters.id}&IsFramed=1&boxService=BxdCollateralMonitoringService"></iframe>
+    </div>
+    
+    <apex:relatedList id="watcherList" list="Watchers__r" pageSize="5"/>
+    <apex:relatedList id="participantsList" list="Notification_Participants__r" />
+    <apex:relatedList id="groupList" list="Notification_Groups__r" />
+    <apex:relatedList id="activityList" list="OpenActivities" />
+    <apex:relatedList id="activityHistoryList" list="ActivityHistories" />
+    
+    <script>
+    j$ = jQuery.noConflict();
+    
+    j$(document).ready(function() {
+        callBox();
+    });
+    </script>
+</apex:page>

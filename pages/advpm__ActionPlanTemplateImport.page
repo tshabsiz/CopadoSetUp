@@ -1,0 +1,70 @@
+<apex:page id="importTemplate" tabStyle="Action_Plans_Template_Import__tab" controller="advpm.ImportTemplateController">
+
+	<apex:sectionHeader title="{!$Label.advpm__ap_action_plan}" subtitle="{!$Label.advpm__ap_importexport_subtitle}" help="{!URLFOR($Page.advpm__HelpActionPlanTemplate)}" />
+    
+    <div id="rptminitabsall">
+        <div id="rptminitabstabs">
+            <div class="miniTab secondaryPalette">
+                <ul class="miniTabList">
+                    <li class="currentTab">
+                    	<apex:outputLink id="minitab_2" value="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateImport">{!$Label.advpm__ap_import}</apex:outputLink>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <br/>
+    
+    <apex:form id="theForm" onSubmit="return fileUpload.verify();">
+      <apex:pageBlock id="pageBlock" mode="edit">
+          <apex:pageBlockSection id="blockSection" columns="1" >
+          	
+          	<b>{!$Label.ap_import_file}</b><br /><br />
+            <apex:inputFile id="fileInput" value="{!attachment.body}" filename="{!attachment.name}"/>
+            <br />
+            <apex:commandButton id="btnImport" value="{!$Label.advpm__ap_import}" action="{!importTemplate}"/>
+            <apex:messages id="errorMsg" style="color:red;"/>
+            <div id="errors" style="color:red;"></div>
+          </apex:pageBlockSection>
+       </apex:pageBlock>
+    </apex:form>
+    
+    <script type="text/javascript">
+    
+    	fileUpload = {
+    		verify : function(){
+				var file 	= document.getElementById('importTemplate:theForm:pageBlock:blockSection:fileInput').getElementsByTagName('input')[0];	
+				var error 	= document.getElementById('errors');
+				var error_field = document.getElementById('importTemplate:theForm:pageBlock:blockSection:errorMsg');
+				if (error_field){
+					error_field.innerHTML = '';
+				}
+				
+				
+				if( file.files.length == 0 ){
+					error.innerHTML = "{!$Label.ap_Errors_SelectXML}";
+					return false;
+				}	
+				else{
+					var fileName 		= file.files[0].fileName;
+					var filenameSplit 	= fileName.split('.');
+					
+					if( filenameSplit.length == 1){
+						error.innerHTML = "{$Label.ap_Errors_SelectCorrectXML}";
+						return false;
+					}
+					else{
+						if( filenameSplit[ filenameSplit.length -1 ] != 'xml' ){
+							error.innerHTML = "{!$Label.ap_Errors_SelectCorrectXMLExtension}";
+							return false;
+						}
+						else{
+							return true;
+						}
+					}
+				}
+    		}
+    	}
+    </script>
+</apex:page>

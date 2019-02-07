@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>TMG - Drawdown Cancelled (Private)</name>
+    <style>freeForm</style>
+    <subject>Cancellation of Drawdown Request from {!Drawdown__c.Relationship__c} for {!Drawdown__c.Deal__c}</subject>
+    <textOnly>Good Day,
+
+Please be advised that the Drawdown Request from {!Drawdown__c.Relationship__c} for {!Drawdown__c.Deal__c} from {!Drawdown__c.Agreement__c} has been cancelled.
+
+Deal Name : {!Drawdown__c.Deal__c}
+Agreement Name : {!Drawdown__c.Agreement__c}
+Facility : {!Drawdown__c.Facility__c}
+Facility Tranche : {!Drawdown__c.Facility_Tranche__c}
+Limit : {!Drawdown__c.Facility_Limit__c}
+Current Utilisation : {!Drawdown__c.Current_Utilisation__c}
+Request Date :  {!Drawdown__c.Request_Date__c}
+Advance Date : {!Drawdown__c.Advance_Date__c}
+Advance Currency : {!Drawdown__c.CurrencyIsoCode}
+Advance Amount : {!Drawdown__c.Advance_Amount__c}
+Interest Type : {!Drawdown__c.Interest_Type__c}
+Interest Period :  {!Drawdown__c.Interest_Period__c}
+Our Portion : {!Drawdown__c.Our_Portion__c}
+Agent Notice Date : {!Drawdown__c.Agent_Notice_Date__c}
+
+Receiving Account Details:
+
+Bank : {!Drawdown__c.Account_Bank__c}
+Account Name :  {!Drawdown__c.Account_Name__c}
+Account Number : {!Drawdown__c.Account_Number__c}
+Branch : {!Drawdown__c.Account_Branch__c}
+Reference : {!Drawdown__c.Reference__c}
+SWIFT ID : {!Drawdown__c.SWIFT_ID__c}
+
+Kind regards,
+Transaction Management Group
+
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

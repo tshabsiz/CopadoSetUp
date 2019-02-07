@@ -1,0 +1,82 @@
+<apex:page standardController="Case" extensions="CSC_Quick_Action_Transfer_Case_Cont" sidebar="false" showHeader="false" standardStylesheets="true" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <!--<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />-->
+            <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        </head>
+        
+        <apex:form id="theForm">
+            <div class="slds">
+                <div class="slds-form--stacked">
+                    <div class="slds-form-element">
+                         <label class="slds-form-element__label">Queue</label>
+                            <div class="slds-form-element__control">
+                                <apex:inputField id="queue" value="{!actionCase.Queue__c}" styleclass="slds-select" ></apex:inputField>
+                            </div>
+                    </div>
+                    <div class="slds-form-element slds-float--right">
+                        <button id="btn" class="slds-button slds-button--brand" type="button" onclick="transferCase('{!actionCase.Id}');" >
+                            Transfer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <apex:actionFunction action="{!updateCase}" name="transferTheCase" />
+        </apex:form>
+        
+        <apex:includeScript value="/support/console/35.0/integration.js"/>
+        <script type="text/javascript">
+        
+        var caseId;
+        var pID;
+        var btn = document.getElementById('btn');
+        
+        if(btn.disabled){
+            btn.disabled = false;
+        }
+        
+        function transferCase(id) {
+            btn.disabled = true;
+            document.getElementById('{!$Component.theform}').style.cursor = 'wait';
+            
+            //var q = document.getElementById('theForm:queue');
+            var q = document.getElementById('{!$Component.theForm.queue}');
+            if(q.value == null || q.value == ''){
+                
+                alert('Please select a Queue Name in order to transfer this Email to a new Queue ');
+                
+                document.getElementById('{!$Component.theform}').style.cursor = 'default';
+            
+                if(btn.disabled){
+                    btn.disabled = false;
+                }
+                
+                return null;
+                
+            }else{
+                caseId = id;
+                transferTheCase();
+                setTimeout(transferCase, 5000);
+            }
+             //are we in the console?
+            if (sforce.console.isInConsole()) {
+                pID = sforce.console.getFocusedPrimaryTabId(curTabId);
+            }else{
+                window.top.location='/' + caseId;
+            }
+        };
+        
+        var curTabId = function curTabId(result) {
+            
+            sforce.console.getFocusedPrimaryTabId(closetab);
+            sforce.console.refreshNavigationTab();
+            sforce.console.focusNavigationTab();
+        };
+        var closetab = function closetab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+        };
+        </script>   
+    </html>
+</apex:page>

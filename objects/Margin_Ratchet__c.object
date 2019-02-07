@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>Margin_Ratchet_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>General_Deal_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Actual__c</fullName>
+        <externalId>false</externalId>
+        <label>Actual</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Adjusted_Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(ISPICKVAL(Days__c, &apos;Days After&apos;) ,  Start_Date__c   + Number_of_Days__c  ,  Start_Date__c - Number_of_Days__c  )</formula>
+        <label>Adjusted Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Margin Ratchets</relationshipLabel>
+        <relationshipName>Margin_Ratchets</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Comments__c</fullName>
+        <externalId>false</externalId>
+        <label>Comments</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Days</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Scheduling_Days</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>131072</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Due_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Due Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Effective_Date__c</fullName>
+        <description>Get effective date from the lowest level (Agreement, Facility or  Facility Tranche)</description>
+        <externalId>false</externalId>
+        <formula>IF( Facility_Tranche__c != null,  Facility_Tranche__r.Availability_Start_Date__c ,  IF( Facility__c != null,  Facility__r.Availability_Start_Date__c ,  IF( Agreement__c != null,  Agreement__r.Effective_Date__c , null) ) )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Effective Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Event_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Event Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Type__c</controllingField>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Rating</fullName>
+                    <default>false</default>
+                    <label>Rating</label>
+                </value>
+                <value>
+                    <fullName>Project Status</fullName>
+                    <default>false</default>
+                    <label>Project Status</label>
+                </value>
+                <value>
+                    <fullName>Utilisation</fullName>
+                    <default>false</default>
+                    <label>Utilisation</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Event</controllingFieldValue>
+                <valueName>Rating</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Event</controllingFieldValue>
+                <valueName>Project Status</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Event</controllingFieldValue>
+                <valueName>Utilisation</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Facility_Tranche__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility Tranche</label>
+        <referenceTo>Facility_Tranche__c</referenceTo>
+        <relationshipLabel>Margin Ratchets</relationshipLabel>
+        <relationshipName>Margin_Ratchets</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Facility__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility</label>
+        <referenceTo>Facility__c</referenceTo>
+        <relationshipLabel>Margin Ratchets</relationshipLabel>
+        <relationshipName>Margin_Ratchets</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Financial_Year_End__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JANUARY&quot;), 
+DATE( YEAR( TODAY() ), 01 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;FEBRUARY&quot;), 
+DATE( YEAR( TODAY() ), 02 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;MARCH&quot;), 
+DATE( YEAR( TODAY() ), 03 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;APRIL&quot;), 
+DATE( YEAR( TODAY() ), 04 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;MAY&quot;), 
+DATE( YEAR( TODAY() ), 05 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JUNE&quot;), 
+DATE( YEAR( TODAY() ), 06 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JULY&quot;), 
+DATE( YEAR( TODAY() ), 07 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;AUGUST&quot;), 
+DATE( YEAR( TODAY() ), 08 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;SEPTEMBER&quot;), 
+DATE( YEAR( TODAY() ), 09 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;OCTOBER&quot;), 
+DATE( YEAR( TODAY() ), 10 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;NOVEMBER&quot;), 
+DATE( YEAR( TODAY() ), 11 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;DECEMBER&quot;), 
+DATE( YEAR( TODAY() ), 12, 31 ), null) ) ) ) ) ) ) ) ) ) ) )</formula>
+        <label>Financial Year End</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Frequency__c</fullName>
+        <externalId>false</externalId>
+        <label>Frequency</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Frequency</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Matter_Deal__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Matter/Deal</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Margin Ratchets</relationshipLabel>
+        <relationshipName>Margin_Ratchets</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Number_of_Days__c</fullName>
+        <defaultValue>0</defaultValue>
+        <description>The number of days BEFORE or AFTER the selected date.</description>
+        <externalId>false</externalId>
+        <label>Number of Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Other_Relative_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Other Relative Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Person_Responsibles__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Person Responsible</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>advpm__Participant__c.advpm__Matter__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Matter_Deal__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>advpm__Participant__c</referenceTo>
+        <relationshipLabel>Margin Ratchets</relationshipLabel>
+        <relationshipName>Margin_Ratchets</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relative_Date__c</fullName>
+        <description>A relative date on an agreement or generic other date.</description>
+        <externalId>false</externalId>
+        <label>Relative Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Frequency__c</controllingField>
+            <restricted>true</restricted>
+            <valueSetName>Scheduling_Dates</valueSetName>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Effective Date</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Signature Date</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Financial Year End</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Other</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Schedule_End_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Schedule End Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Schedule_Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Schedule Start Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Signature_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Facility_Tranche__c != null, Facility_Tranche__r.Signature_Date__c , IF( Facility__c != null, Facility__r.Signature_Date__c ,  Agreement__r.Signature_Date__c) )</formula>
+        <label>Signature Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Start_Date_End_Date_Changed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Start Date/End Date Changed</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(ISPICKVAL(Relative_Date__c, &apos;Effective Date&apos;) ,  Effective_Date__c ,  IF(ISPICKVAL(Relative_Date__c, &apos;Signature Date&apos;) ,   Signature_Date__c  ,  IF(ISPICKVAL(Relative_Date__c, &apos;Financial Year End&apos;) ,    Financial_Year_End__c ,  IF(ISPICKVAL(Relative_Date__c, &apos;Other&apos;) ,   Other_Relative_Date__c  ,  Due_Date__c )) ))</formula>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Fulfilled</fullName>
+                    <default>false</default>
+                    <label>Fulfilled</label>
+                </value>
+                <value>
+                    <fullName>Breached</fullName>
+                    <default>false</default>
+                    <label>Breached</label>
+                </value>
+                <value>
+                    <fullName>Breached with Action</fullName>
+                    <default>false</default>
+                    <label>Breached with Action</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Event</fullName>
+                    <default>false</default>
+                    <label>Event</label>
+                </value>
+                <value>
+                    <fullName>Covenant</fullName>
+                    <default>false</default>
+                    <label>Covenant</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Margin Ratchet</label>
+    <nameField>
+        <label>Margin Ratchet Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Margin Ratchets</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Covenant</fullName>
+        <active>true</active>
+        <label>Covenant</label>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Event_Type__c</picklist>
+            <values>
+                <fullName>Project Status</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rating</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Utilisation</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Frequency__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Relative_Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Breached</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Breached with Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fulfilled</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Type__c</picklist>
+            <values>
+                <fullName>Covenant</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Event</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event</fullName>
+        <active>true</active>
+        <label>Event</label>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>true</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Event_Type__c</picklist>
+            <values>
+                <fullName>Project Status</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rating</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Utilisation</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Frequency__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Relative_Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Breached</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Breached with Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fulfilled</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Type__c</picklist>
+            <values>
+                <fullName>Covenant</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Event</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Due_Date_In_The_Past</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND
+(
+ISCHANGED(Due_Date__c)
+,
+Due_Date__c &lt; TODAY()
+,ISPICKVAL( Frequency__c , &apos;Once Off&apos;)
+)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>You may not change a Once Off Margin Ratchet Due Date to be in the past.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_Required</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF( ISPICKVAL( Frequency__c , &apos;Once Off&apos;) &amp;&amp;  ISNULL( Due_Date__c ) , TRUE, FALSE)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>Due Date required for Once Off Margin Ratchet</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_Specified_On_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND
+(
+ISPICKVAL( Relative_Date__c ,&quot;Other&quot;),
+NOT(ISBLANK(Due_Date__c))
+)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>You may not specify a Due Date on a Margin Ratchet based on an Other relative date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_on_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(!ISPICKVAL(Frequency__c, &apos;Once Off&apos;) &amp;&amp;  !ISBLANK(Due_Date__c)  , True, False)</errorConditionFormula>
+        <errorMessage>Due Date can only be specified on Once Off Margin Ratchets</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_or_Other_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISBLANK(Due_Date__c) = FALSE &amp;&amp;  ISBLANK(Other_Relative_Date__c) = FALSE, TRUE, FALSE)</errorConditionFormula>
+        <errorMessage>You may specify either a Due Date or a Other Relative Date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Other_Relative_Date_In_The_Past</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND 
+( 
+ISCHANGED(Other_Relative_Date__c ) == TRUE, 
+NOT(ISBLANK( Other_Relative_Date__c )), 
+Other_Relative_Date__c &lt; TODAY()
+)</errorConditionFormula>
+        <errorDisplayField>Other_Relative_Date__c</errorDisplayField>
+        <errorMessage>Other Relative Date can not be in the past</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Other_Relative_Date_Not_Specified</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND
+(
+ISPICKVAL(Relative_Date__c,&quot;Other&quot;),
+ISBLANK(Other_Relative_Date__c)
+)</errorConditionFormula>
+        <errorDisplayField>Other_Relative_Date__c</errorDisplayField>
+        <errorMessage>You must specify an Other Relative Date for Margin Ratchet based on an Other relative date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Relative_Date_Fields</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(
+NOT(ISBLANK(TEXT(Relative_Date__c))),
+OR(ISBLANK(TEXT(Days__c)),ISBLANK(TEXT( Frequency__c )),ISBLANK(Number_of_Days__c)))</errorConditionFormula>
+        <errorMessage>Relative Date Fields Required - You must provide values for Number of Days and Days</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Relative_Date_Required</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(!ISPICKVAL(Frequency__c, &apos;Once Off&apos;) &amp;&amp;  ISPICKVAL( Relative_Date__c , &apos;None&apos;), TRUE, FALSE)</errorConditionFormula>
+        <errorDisplayField>Relative_Date__c</errorDisplayField>
+        <errorMessage>Relative Date required for Margin Ratchets that&apos;s not Once Off</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Effective_Date_on_Agreement</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Effective Date&apos;) &amp;&amp;  ISBLANK(Effective_Date__c) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Margin Ratchet without a Effective Date on the Agreement</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Financial_Year_Date_on_Agreemen</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Financial Year End&apos;) &amp;&amp;  ISBLANK( Financial_Year_End__c ) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Margin Ratchet without a Financial Year End on the Deal</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND 
+( 
+NOT(ISPICKVAL(Relative_Date__c ,&quot;Other&quot;)), 
+NOT(ISBLANK( Other_Relative_Date__c )) 
+)</errorConditionFormula>
+        <errorMessage>You may not specify a Other Relative Date if Relative Date is not Other</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Signature_Date_on_Agreement</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Signature Date&apos;) &amp;&amp;  ISBLANK(Signature_Date__c) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Margin Ratchet without a Signature Date on the Agreement</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

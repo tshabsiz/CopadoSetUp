@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>ABS(Status_Tracking__c.Duration__c:SUM)</calculatedFormula>
+        <datatype>number</datatype>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Total Time for Report Preparation</masterLabel>
+        <scale>0</scale>
+    </aggregates>
+    <columns>
+        <field>Collateral__c$Account__c</field>
+    </columns>
+    <columns>
+        <field>Collateral__c.Collateral_Valuations__r$Preparer_Name__c</field>
+    </columns>
+    <columns>
+        <field>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_From__c</field>
+    </columns>
+    <columns>
+        <field>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_To__c</field>
+    </columns>
+    <columns>
+        <field>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Duration__c</field>
+    </columns>
+    <columns>
+        <field>Collateral__c.Collateral_Valuations__r.Watchers__r$Comments__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <booleanFilter>(1 AND 2) Or (3 AND 4) Or (5 AND 6)</booleanFilter>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_From__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Report in Progress</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_To__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Review in Progress</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_From__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Review in Progress</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_To__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Review Completed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_From__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Review Completed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Collateral__c.Collateral_Valuations__r.Watchers__r.Status_Tracking__r$Status_To__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Report Completed</value>
+        </criteriaItems>
+    </filter>
+    <format>Matrix</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Collateral__c.Collateral_Valuations__r$Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Reports Issued</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Collateral_with_Valuations_Watcher_Tracking__c</reportType>
+    <scope>team</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Collateral__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

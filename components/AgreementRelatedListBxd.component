@@ -1,0 +1,194 @@
+<apex:component controller="RelatedListBxd" allowDML="true" >
+        <head>
+        <style type="text/css">
+            .custom-block-button {
+            min-width: 75px;
+            }
+            .pbHeader {
+            background-color: {!If((showStyle),' #bf0202 !important',' #bf0202')};
+            color: {!If((showStyle),' white !important',' black')};         
+            font-size: {!If((showStyle),' 115% !important',' 100%')};
+            padding: {!If((showStyle),' 10px 6px 10px 6px !important',' 10px 6px 10px 6px !important')};
+            }
+        </style>
+        
+    </head>
+    <!-- JS LIB -->
+    <apex:stylesheet value="{!URLFOR($Resource.easytabs, 'style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.easytabs, 'jquery.easytabs.js')}"/>
+    
+    <apex:includeScript value="/soap/ajax/35.0/connection.js" />
+    <apex:includeScript value="/soap/ajax/35.0/apex.js" />
+    <apex:includeScript value="/apex/dsfs__DocuSign_JavaScript" />
+    <!-- / JS LIB -->
+    <script type="text/javascript"> 
+    $(document).ready(function(){ $('#tab-container').easytabs(); });
+    </script> 
+    
+    <apex:form >
+    <apex:outputPanel id="jspanel"> 
+    <script type="text/javascript">
+  
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+	};
+    
+   	function sendToDocusign () {
+        var customRecipientList = "";
+        var sourceId = getUrlParameter('Id');
+        var relatedQuotesDocument = DSGetPageIDFromHref();
+        var loadAttachments = "1"; 
+        var relatedContent = "";
+        var docuSignTemplate = "DSGUID";
+        var customContactTypeMap = "Signer 1~Signer;Signer 2~Carbon Copy";
+        customRecipientList = '{!DocusignUrlRedirect}';
+		window.top.location.href = "/apex/dsfs__DocuSign_CreateEnvelope?DSEID=0&RQD="+relatedQuotesDocument+"&SourceID="+sourceId+"&CRL="+customRecipientList+"&LA="+loadAttachments+"&RC="+relatedContent+"&CCTM="+customContactTypeMap;
+       	return false;
+   	}
+	</script>
+    </apex:outputPanel>
+        <div id="tab-container" class="tab-container">
+            <ul class="tabs">
+                <li class="tab"><a href="#list-document-tab">List View</a></li>
+                <li class="tab"><a href="#tree-document-tab">Tree View</a></li>
+            </ul>
+            <div class='panel-container'>
+                <div id="list-document-tab">
+                    <table width="100%" border="0">
+                        <tr>  
+                            <td width="200" valign="top">                   
+                                <apex:pageBlock title="Filter" mode="edit" id="criteria">
+                                    <apex:facet name="header"><b>Filter</b></apex:facet>
+                                    <script>function setFocusOnLoad() {}</script>
+                                    <table cellpadding="2" cellspacing="2">
+                                        <tr>
+                                            <td style="font-weight:bold;">Document Number<br/>
+                                                <apex:inputText id="docnumber" value="{!documentNumber}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:bold;">Name<br/>
+                                                <apex:inputField id="docname" value="{! boxDocument.Name}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:bold;">Type<br/>
+                                                <c:DocumentTypeSelect allowClear="true" importJquery="false" syncManualEntry="false" labelField="DocumentType__c" SObject="BoxDocumentType__c" valueField="Name" targetField="{!boxDocument.Type__c}" style="width:161px"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight:bold;">Status<br/>
+                                                <apex:inputField id="docstatus" value="{! boxDocument.Status__c}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <apex:pageBlockSection > <!-- empty selectItem--> <apex:pageBlockSectionItem /> </apex:pageBlockSection>
+                                    <div>
+                                        <span style="float: left"> 
+                                            <apex:commandButton styleClass="custom-block-button" value="Clear Filter" action="{! clearFilterList}"/>
+                                        </span>
+                                        <span style="float: right"> 
+                                            <apex:commandButton styleClass="custom-block-button" value="Search" action="{! filterList}" />
+                                        </span>                         
+                                    </div>
+                                    <apex:pageBlockSection > <!-- empty selectItem--> <apex:pageBlockSectionItem /> </apex:pageBlockSection>
+                                </apex:pageBlock>
+                                
+                            </td>
+                            <td valign="top">
+                                <apex:pageBlock title="Documents List" id="documents_list">
+                                    <apex:facet name="header"><b>Documents List</b></apex:facet>
+                                    <apex:commandLink value="New" action="{! editnew}" styleClass="btn" rendered="{!showNew}" style="text-decoration:none;padding: 4px 24px 4px 24px;">
+                                    </apex:commandLink>
+                                    <apex:pageBlockSection > <!-- empty selectItem--> <apex:pageBlockSectionItem /> </apex:pageBlockSection>                       
+                                    <apex:pageBlockTable value="{! AgreementsbxdRecords}" var="doc">
+                                        
+                                        <apex:column headerValue="Docusign" >
+                                             <apex:inputField id="sendToDocusgn" value="{! doc.send_to_docusign__c}"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Action" >
+                                            <apex:commandLink value="Edit" action="{! edit}" style="font-weight:bold;">
+                                                <apex:param name="bxdId" value="{! doc.id}" />
+                                            </apex:commandLink>&nbsp;&nbsp;|&nbsp;&nbsp;
+                                            <apex:commandLink value="View" action="{! view}" style="font-weight:bold;">
+                                                <apex:param name="bxdId" value="{! doc.id}" />
+                                            </apex:commandLink>
+                                        </apex:column>
+                                        <apex:column value="{! doc.Document_Number__c}" >
+                                            <apex:facet name="header">
+                                                <apex:commandLink value="Document Number" action="{! sortList}">
+                                                    <apex:param name="sortField" value="Document_Number__c" />
+                                                </apex:commandLink>
+                                            </apex:facet>
+                                        </apex:column>
+                                        <apex:column value="{! doc.Name}" >
+                                            <apex:facet name="header">
+                                                <apex:commandLink value="Name" action="{! sortList}">
+                                                    <apex:param name="sortField" value="Name" />
+                                                </apex:commandLink>
+                                            </apex:facet>
+                                        </apex:column>
+                                        <apex:column value="{! doc.ParentName__c}" />
+                                        <apex:column value="{! doc.Type__c}" >
+                                            <apex:facet name="header">
+                                                <apex:commandLink value="Type" action="{! sortList}" >
+                                                    <apex:param name="sortField" value="Type__c" />
+                                                </apex:commandLink>
+                                            </apex:facet>
+                                        </apex:column>                          
+                                        <apex:column value="{! doc.Status__c}" >
+                                            <apex:facet name="header">
+                                                <apex:commandLink value="Status" action="{! sortList}" >
+                                                    <apex:param name="sortField" value="Status__c" />
+                                                </apex:commandLink>
+                                            </apex:facet>
+                                        </apex:column>
+                                        <apex:column value="{! doc.Box_Location__c}" />
+                                        
+                                    </apex:pageBlockTable>                 
+                                    <table style="width: 100%">
+                                        <tr>
+                                          <td>
+                                           	<span style="float: left">
+                                                <apex:actionFunction name="sendDoc" action="{!sendDocumentstoDocusign}" rerender="jspanel"/>         
+                                            	<apex:commandButton id="sendDocs" styleClass="custom-block-button" value="Send for Signature" onclick="sendDoc();" oncomplete="sendToDocusign();"/>
+                                        	</span>     
+                                        </td>
+                                        </tr>
+                                        <tr>
+
+                                            <td>
+                                                Page: <apex:outputText value=" {!PageNumber} of {! CEILING(ssc.ResultSize / ssc.PageSize) }"/>
+                                            </td>            
+                                            <td align="right">
+                                                <!-- Previous page -->
+                                                <!-- active -->
+                                                <apex:commandLink action="{! Previous }" value="« Previous" rendered="{! HasPrevious }" style="font-weight:bold;"/>
+                                                <!-- inactive (no earlier pages) -->
+                                                <apex:outputText style="color: #ccc;" value="« Previous" rendered="{! NOT(HasPrevious) }"/>
+                                                &nbsp;&nbsp; 
+                                                
+                                                <!-- Next page -->
+                                                <!-- active -->
+                                                <apex:commandLink action="{! Next }" value="Next »" rendered="{! HasNext }" style="font-weight:bold;"/>
+                                                <!-- inactive (no more pages) -->
+                                                <apex:outputText style="color: #ccc;" value="Next »" rendered="{! NOT( HasNext) }"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:pageBlock>    
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="tree-document-tab">
+                    <c:BxdDocumentTreeView />
+                </div>
+            </div>
+        </div>
+    </apex:form>
+</apex:component>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>advpm__Time__c.advpm__Entry_Date__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>advpm__Time__c.advpm__Time_In_Hours__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Time__c.advpm__Timekeeper__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Time__c.advpm__Activity__c</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Time__c.advpm__My_Timekeeper_Time__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>True</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>FK_NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>My Time This Quarter</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$advpm__Time__c@advpm__Time__c.advpm__Matter__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>advpm__Time__c.advpm__Entry_Date__c</dateColumn>
+        <interval>INTERVAL_CURRENT</interval>
+    </timeFrameFilter>
+</Report>

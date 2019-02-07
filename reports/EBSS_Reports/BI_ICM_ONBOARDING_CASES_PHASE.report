@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>OWNER</field>
+    </columns>
+    <columns>
+        <field>Case.Service_Type__c</field>
+    </columns>
+    <columns>
+        <field>Case.Channel__c</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
+    <columns>
+        <field>AGE</field>
+    </columns>
+    <columns>
+        <field>OPEN</field>
+    </columns>
+    <columns>
+        <field>CLOSED</field>
+    </columns>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>CASE_NUMBER</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Case.Department__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>EBSS</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.Queue__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>EBSS - Absa Global,EBSS - Activations,EBSS - Approvals,EBSS - B.Net Amendments,EBSS - B.Net CSC Onboarding,EBSS - B.Net Processing,EBSH - B.Net Rest of Africa,EBSH - B.Net SA,EBSS - Billing &amp; Limits,EBSS - Cash Deposita,EBSS Complaints,EBSS - CSC Documentation,EBSS - GCP - Payments,EBSS - New Registrations,EBSS - Onboarding,EBSS - Sweeping,EBSS_Working_Capital</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.Service_Type__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Complex Channel Onboarding,Simple Channel Onboarding</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.Channel__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>BII ICM,Channel BII M,Manual BII M,BI ICM</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>STATUS</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>New,In Progress,Awaiting Feedback - Client,Awaiting Feedback - Internal,Awaiting Feedback - 3rd Party</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Case.Service_Sub_Category__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>BI ICM ONBOARDING CASES PHASE</name>
+    <params>
+        <name>units</name>
+        <value>d</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CaseList</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATEONLY</dateColumn>
+        <interval>INTERVAL_CURFY</interval>
+    </timeFrameFilter>
+</Report>

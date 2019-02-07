@@ -1,0 +1,51 @@
+<apex:page standardController="Annual_Pricing__c" extensions="APT_GeneratePricingLetterController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<apex:form >
+		<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } });" onstop="$.unblockUI();"/>
+
+        <apex:pageBlock id="pb" mode="edit">
+        	<apex:pageMessages id="pageMsg"/>
+        	<apex:inputHidden value="{!Annual_Pricing__c.Organisation__r.Name}" />
+        	<apex:inputHidden value="{!Annual_Pricing__c.Organisation__r.BillingStreet}" />
+        	<apex:inputHidden value="{!Annual_Pricing__c.Organisation__r.BillingCity}" />
+        	<apex:inputHidden value="{!Annual_Pricing__c.Organisation__r.BillingPostalCode}" />
+
+        	<apex:actionFunction action="{!quicksave}" name="quicksave" status="processing" reRender="pageMsg"/>
+        	<apex:actionFunction action="{!generateMsWord}" name="generateMsWord" status="processing" reRender="pageMsg" />
+        	<apex:actionFunction action="{!generatePdf}" name="generatePdf" status="processing" reRender="pageMsg" />
+
+        	<apex:pageBlockButtons >
+				<apex:commandButton id="btn-ms-word" onclick="quicksave();" value="Generate Letter in MS Word" oncomplete="generateMsWord();" />
+				<apex:commandButton id="btn-pdf" onclick="quicksave();" value="Generate Letter in PDF" oncomplete="generatePdf();" />
+				<apex:commandButton id="cancel" action="{!cancel}" value="Cancel" status="processing" reRender="pb"/>
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockSection columns="1" title="{!$Label.lbl_ClientAddress}">
+				<apex:inputField value="{!Annual_Pricing__c.Billing_Street__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Billing_City__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Billing_Zip_Postal_Code__c}" required="true"/>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" title="{!$Label.lbl_OtherDetails}">
+				<apex:inputField value="{!Annual_Pricing__c.Greeting__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Signer_1__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.The_Signer_Role_1__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Signer_2__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.The_Signer_Role_2__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Name_of_group_of_companies__c}" required="true"/>
+				<apex:inputField value="{!Annual_Pricing__c.Name_of_holding_company__c}" required="true"/>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" title="Comparative Prices">
+				<apex:inputField value="{!Annual_Pricing__c.Show_Previous_Comparative__c}" />
+			</apex:pageBlockSection>
+        </apex:pageBlock>
+	</apex:form>
+</apex:page>

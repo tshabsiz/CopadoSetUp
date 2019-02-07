@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>ClientPlanDetails</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Budget_Revenues_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Budget Revenues Count</label>
+        <summaryForeignKey>Budget_Revenue__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Client_Overview__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Overview</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Country_Presence_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Country Presence Count</label>
+        <summaryForeignKey>Country_Presence__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Country_Presence_Image_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Country Presence Image ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Coverage_Banker__c</fullName>
+        <externalId>false</externalId>
+        <formula>Relationship__r.Owner.FirstName &amp;&quot; &quot;&amp; Relationship__r.Owner.LastName</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Coverage Banker</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DG_Last_Pulled_From_SPEAR__c</fullName>
+        <description>This is the last date and time that the DG field was refreshed from the SPEAR service</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This is the last date and time that the DG field was refreshed from the SPEAR service</inlineHelpText>
+        <label>Last Refresh Date:</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>DG__c</fullName>
+        <externalId>false</externalId>
+        <label>DG</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>- Not Available -</fullName>
+                    <default>false</default>
+                    <label>- Not Available -</label>
+                </value>
+                <value>
+                    <fullName>1</fullName>
+                    <default>false</default>
+                    <label>1</label>
+                </value>
+                <value>
+                    <fullName>2</fullName>
+                    <default>false</default>
+                    <label>2</label>
+                </value>
+                <value>
+                    <fullName>3</fullName>
+                    <default>false</default>
+                    <label>3</label>
+                </value>
+                <value>
+                    <fullName>4</fullName>
+                    <default>false</default>
+                    <label>4</label>
+                </value>
+                <value>
+                    <fullName>5</fullName>
+                    <default>false</default>
+                    <label>5</label>
+                </value>
+                <value>
+                    <fullName>6</fullName>
+                    <default>false</default>
+                    <label>6</label>
+                </value>
+                <value>
+                    <fullName>7</fullName>
+                    <default>false</default>
+                    <label>7</label>
+                </value>
+                <value>
+                    <fullName>8</fullName>
+                    <default>false</default>
+                    <label>8</label>
+                </value>
+                <value>
+                    <fullName>9</fullName>
+                    <default>false</default>
+                    <label>9</label>
+                </value>
+                <value>
+                    <fullName>10</fullName>
+                    <default>false</default>
+                    <label>10</label>
+                </value>
+                <value>
+                    <fullName>11</fullName>
+                    <default>false</default>
+                    <label>11</label>
+                </value>
+                <value>
+                    <fullName>12</fullName>
+                    <default>false</default>
+                    <label>12</label>
+                </value>
+                <value>
+                    <fullName>13</fullName>
+                    <default>false</default>
+                    <label>13</label>
+                </value>
+                <value>
+                    <fullName>14</fullName>
+                    <default>false</default>
+                    <label>14</label>
+                </value>
+                <value>
+                    <fullName>15</fullName>
+                    <default>false</default>
+                    <label>15</label>
+                </value>
+                <value>
+                    <fullName>16</fullName>
+                    <default>false</default>
+                    <label>16</label>
+                </value>
+                <value>
+                    <fullName>17</fullName>
+                    <default>false</default>
+                    <label>17</label>
+                </value>
+                <value>
+                    <fullName>18</fullName>
+                    <default>false</default>
+                    <label>18</label>
+                </value>
+                <value>
+                    <fullName>19</fullName>
+                    <default>false</default>
+                    <label>19</label>
+                </value>
+                <value>
+                    <fullName>20</fullName>
+                    <default>false</default>
+                    <label>20</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Executive_Summary__c</fullName>
+        <externalId>false</externalId>
+        <label>Executive Summary</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Expansion_Policy__c</fullName>
+        <externalId>false</externalId>
+        <label>Credit Exposure Policy</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Expand</fullName>
+                    <default>false</default>
+                    <label>Expand</label>
+                </value>
+                <value>
+                    <fullName>Maintain</fullName>
+                    <default>false</default>
+                    <label>Maintain</label>
+                </value>
+                <value>
+                    <fullName>Reduce</fullName>
+                    <default>false</default>
+                    <label>Reduce</label>
+                </value>
+                <value>
+                    <fullName>Exit</fullName>
+                    <default>false</default>
+                    <label>Exit</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>FAIS_Status_Comment__c</fullName>
+        <externalId>false</externalId>
+        <label>FAIS Status Comment</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>FAIS_Status__c</fullName>
+        <externalId>false</externalId>
+        <label>FAIS Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Applicable</fullName>
+                    <default>false</default>
+                    <label>Applicable</label>
+                </value>
+                <value>
+                    <fullName>Not Applicable</fullName>
+                    <default>false</default>
+                    <label>Not Applicable</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>FinancialCommentary__c</fullName>
+        <description>Financial Commentary on the client plan provides insight into the financial information</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Financial Commentary on the client plan provides insight into the financial information</inlineHelpText>
+        <label>Financial Commentary</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Financial_Information_Image_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Financial Information Image ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Financial_Year_End__c</fullName>
+        <externalId>false</externalId>
+        <label>Financial Year End</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>January</fullName>
+                    <default>false</default>
+                    <label>January</label>
+                </value>
+                <value>
+                    <fullName>February</fullName>
+                    <default>false</default>
+                    <label>February</label>
+                </value>
+                <value>
+                    <fullName>March</fullName>
+                    <default>false</default>
+                    <label>March</label>
+                </value>
+                <value>
+                    <fullName>April</fullName>
+                    <default>false</default>
+                    <label>April</label>
+                </value>
+                <value>
+                    <fullName>May</fullName>
+                    <default>false</default>
+                    <label>May</label>
+                </value>
+                <value>
+                    <fullName>June</fullName>
+                    <default>false</default>
+                    <label>June</label>
+                </value>
+                <value>
+                    <fullName>July</fullName>
+                    <default>false</default>
+                    <label>July</label>
+                </value>
+                <value>
+                    <fullName>August</fullName>
+                    <default>false</default>
+                    <label>August</label>
+                </value>
+                <value>
+                    <fullName>September</fullName>
+                    <default>false</default>
+                    <label>September</label>
+                </value>
+                <value>
+                    <fullName>October</fullName>
+                    <default>false</default>
+                    <label>October</label>
+                </value>
+                <value>
+                    <fullName>November</fullName>
+                    <default>false</default>
+                    <label>November</label>
+                </value>
+                <value>
+                    <fullName>December</fullName>
+                    <default>false</default>
+                    <label>December</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Group_Structure_Image_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Group Structure Image ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>LGD__c</fullName>
+        <externalId>false</externalId>
+        <label>LGD (%)</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Last_Review_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Last Review Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Latest_Audited_Financial_Statement__c</fullName>
+        <description>Date of latest audited financial statement on file</description>
+        <externalId>false</externalId>
+        <label>Latest Audited Financial Statement</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Opportunities_Count__c</fullName>
+        <description>Counts the amount of opportunities associated to a client plan from the Client Score entity</description>
+        <externalId>false</externalId>
+        <label>Opportunities Count</label>
+        <summaryFilterItems>
+            <field>Client_Score__c.Score_Type__c</field>
+            <operation>equals</operation>
+            <value>Opportunity</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Client_Score__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Org_Structure_Image_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>Org Structure Image ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Org_Structure_Items_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Org Structure Items Count</label>
+        <summaryForeignKey>Organisation_Structure_Item__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Override_Pull_DG_From_SPEAR__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Determines whether we are pulling the DG from SPEAR or not</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Override retrieving DG from SPEAR?</inlineHelpText>
+        <label>Override</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Potential_Opportunities_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Potential Opportunities Count</label>
+        <summaryForeignKey>Potential_Opportunity__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Progress__c</fullName>
+        <description>Holds the current progress of the client plan</description>
+        <externalId>false</externalId>
+        <label>Progress</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Relationship__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Client Plans</relationshipLabel>
+        <relationshipName>ClientPlans</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relationships_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Relationships Count</label>
+        <summaryForeignKey>Client_Plan_Relationship__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>RoRWA_Existing__c</fullName>
+        <externalId>false</externalId>
+        <label>Relationship RoRWA (Existing)</label>
+        <precision>7</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>SDS__c</fullName>
+        <description>SDS used to pull from various integration systems eg. SPEAR</description>
+        <externalId>true</externalId>
+        <inlineHelpText>SDS used to pull from various integration systems eg. SPEAR</inlineHelpText>
+        <label>Source SDS Id for DG retrieval</label>
+        <length>15</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sector_Overview__c</fullName>
+        <externalId>false</externalId>
+        <label>Sector Overview</label>
+        <length>32768</length>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Stage</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Growth client</fullName>
+                    <default>false</default>
+                    <label>Growth client</label>
+                </value>
+                <value>
+                    <fullName>Maintain client</fullName>
+                    <default>false</default>
+                    <label>Maintain client</label>
+                </value>
+                <value>
+                    <fullName>Exit client</fullName>
+                    <default>false</default>
+                    <label>Exit client</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Strategies_Count__c</fullName>
+        <externalId>false</externalId>
+        <label>Strategies Count</label>
+        <summaryForeignKey>Client_Plan_Strategy__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Strengths_Count__c</fullName>
+        <description>Counts the number of strengths in the client plan</description>
+        <externalId>false</externalId>
+        <label>Strengths Count</label>
+        <summaryFilterItems>
+            <field>Client_Score__c.Score_Type__c</field>
+            <operation>equals</operation>
+            <value>Strength</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Client_Score__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>TFL__c</fullName>
+        <externalId>false</externalId>
+        <label>TFL</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Threat_Count__c</fullName>
+        <description>Counts the amount of threats associated to a client plan</description>
+        <externalId>false</externalId>
+        <label>Threat Count</label>
+        <summaryFilterItems>
+            <field>Client_Score__c.Score_Type__c</field>
+            <operation>equals</operation>
+            <value>Threat</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Client_Score__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Weakness_Count__c</fullName>
+        <description>Counts the amount of weaknesses associated to a given client plan</description>
+        <externalId>false</externalId>
+        <label>Weakness Count</label>
+        <summaryFilterItems>
+            <field>Client_Score__c.Score_Type__c</field>
+            <operation>equals</operation>
+            <value>Weakness</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Client_Score__c.Client_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <label>Client Plan</label>
+    <nameField>
+        <displayFormat>PL{00000}</displayFormat>
+        <label>Plan Name</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Client Plans</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <sharingReasons>
+        <fullName>Client_Plan_Manager__c</fullName>
+        <label>Client Plan Manager</label>
+    </sharingReasons>
+    <validationRules>
+        <fullName>Not_in_future</fullName>
+        <active>true</active>
+        <errorConditionFormula>Latest_Audited_Financial_Statement__c &gt; TODAY()</errorConditionFormula>
+        <errorMessage>Date can not be in future.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>New</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>New</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/33.0/connection.js&quot;)} 
+
+var plan = new sforce.SObject(&quot;Client_Plan__c&quot;);
+var ownerName = &quot;{!Account.OwnerFullName}&quot;;
+var businessSegment = &quot;{!Account.Segment__c}&quot;;
+plan.Relationship__c = &apos;{!Account.Id}&apos;;
+if(ownerName==&apos;Coverage Unmanaged&apos; &amp;&amp; businessSegment!=&apos;Business Banking&apos;)
+{
+alert(&apos;Client plans have been disabled for Relationships owned by Coverage Unmanaged &apos;);
+}
+else
+{
+var result = sforce.connection.create([plan]);
+
+
+if (result[0].success == &quot;false&quot;) {
+  alert(&apos;You cannot create a Client Plan for this relationship because one already exists or you are not a member of the Client Relationship Team.&apos;);
+} else {
+
+ var planId = result[0].id;
+  var url = &apos;/apex/ClientPlanDetails?planId=&apos; + planId + &apos;&amp;newPlan=true&apos;;
+  window.location.href = url;
+
+ 
+}
+}</url>
+    </webLinks>
+</CustomObject>

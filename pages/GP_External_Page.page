@@ -1,0 +1,300 @@
+<!--
+2018-11-13 : Nakedi Mashapa 
+-->
+<apex:page standardController="Case" extensions="GP_External_Page_Ext"  showHeader="false" sidebar="false" >
+    <head>
+        <script src="../../soap/ajax/37.0/connection.js" type="text/javascript">
+        </script>
+        <script src="../../soap/ajax/37.0/apex.js" type="text/javascript">
+        </script> 
+        
+        <style>
+        .search_box{
+     
+       position:absolute;
+        left: 18%;
+        backgound:#FFFFFF;
+        }
+        
+        td{
+        left: 18%;
+        }
+        .searchBoxWidth{
+        left: 18%;
+        }
+        table{
+        left: 18%;
+        width:100%
+        }
+         </style>
+        
+        
+    </head>
+    
+    <apex:form id="newCaseForm">
+      
+        <apex:pageMessages id="pagemsg"></apex:pageMessages>
+         <apex:pageBlock id="pgblockHeader" tabStyle="Account" >
+             <div id="header" style="font-size:large;" align="center" >
+                 {!header}
+             </div>
+             <div id="headersub" style="font-size:small;white-space:pre-line;" align="left">
+                 <text>{!subscript}</text>
+             </div>
+        </apex:pageBlock>
+        <table style="align:center; width:200px;" align="center">
+            <tr>
+                <td>
+                    <apex:outputPanel id="pgmsgs" rendered="{!caseCreated == True}">
+                        <span id="done">
+                            <button type="button" id="donebtn" onclick="goHome();">
+                                Done
+                            </button> 
+                        </span>
+                    </apex:outputPanel>
+                    </td>
+                    <td>
+                    <apex:outputPanel id="pgmsgs2" rendered="{!caseCreated == True}">
+                        <span id="newcase">
+                            <button type="button" id="newbtn" onClick="refreshPage();">
+                                New Case
+                            </button> 
+                        </span>
+                    </apex:outputPanel>
+                    </td>
+                </tr>
+        </table>
+        <br/>
+        <table styleClass="search_box">
+        <tr>
+        <td>
+       
+        </td>
+        </tr>
+        </table>
+        
+       
+        <apex:pageBlock tabStyle="Account" id="pgblockA" >
+            <apex:pageBlockSection id="blocksecA" columns="2" >
+                <apex:inputField id="logger" label="Logger Name" value="{!theCase.SuppliedName}" onchange="updateStyle(this);"/>
+                <apex:inputField id="sta" value="{!theCase.Status}" onchange="updatePageSection(this);"/>
+                <apex:inputField id="loggermail" label="Logger Email" value="{!theCase.SuppliedEmail}" />
+                <apex:inputField id="pri" value="{!theCase.Cost_Centre__c}" onchange="updateStyle(this);" required="true"/> 
+                   <apex:inputField id="brid" value="{!theCase.Business_Owner_Brid_No__c}" onchange="updateStyle(this);"/>
+                <!--<apex:outputText value="" /> -->
+                <apex:inputField id="loggerDepartment" value="{!theCase.Business_Cluster__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="owner" value="{!theCase.Business_Owner__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="cor" value="{!theCase.Sponsor__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="exc" value="{!theCase.Account_Executive__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="fin" value="{!theCase.Finance_BP__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="cont" value="{!theCase.Type_of_Request__c}" onchange="updateStyle(this);" />
+                <apex:outputText value="" />
+                <apex:inputField id="contemail" value="{!theCase.User_Country__c}" onchange="updateStyle(this);" />
+                <apex:outputText value="" />
+                <apex:inputField id="suack" value="{!theCase.Budget_approval__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+                <apex:inputField id="indate" value="{!theCase.Service_commencement_date__c}" onchange="updateStyle(this);" />
+                
+               <apex:outputText value="" />
+            </apex:pageBlockSection> 
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockC" >
+            <apex:pageBlockSection id="blocksecC" columns="1"> 
+                <apex:inputField id="sject" value="{!theCase.Business_case__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+                <apex:inputField id="desc" value="{!theCase.Description}" style="width: 450px; height: 150px" />
+                <apex:outputText value="" />
+            </apex:pageBlockSection>
+         </apex:pageBlock>
+        <!--<apex:pageBlock tabStyle="Account" id="pgblockD">
+             <apex:pageBlockSection id="blocksecD" columns="2"> 
+                <apex:inputField id="servcat" value="{!theCase.Queue__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingArea" value="{!theCase.Service_Type__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servtype" value="{!theCase.Service_Sub_Category__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingTeam" value="{!theCase.Service_Category__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servsub" value="{!theCase.Channel__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="cha" value="{!theCase.Complaint_Channel__c}"  onchange="updateStyle(this);"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>-->
+        <!--<apex:pageBlock tabStyle="Account" id="pgblockE">
+            <apex:pageBlockSection id="blocksecE" columns="2" > 
+                <apex:inputField id="desiredAction" value="{!theCase.Desired_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootcc" value="{!theCase.Root_Cause_Category__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="actionTaken" value="{!theCase.Action_Taken__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootc" value="{!theCase.Root_Cause__c}"/>
+                <apex:inputField id="businessOwnerAction" value="{!theCase.Business_Owner_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="resolutionDetail" value="{!theCase.Resolution_Detail__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="ResolvedInFavourOf" value="{!theCase.Resolved_In_Favour_Of__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+                </apex:pageBlockSection>
+        </apex:pageBlock>-->
+        <br/>
+        <table style="align:center; width:200px;" align="center">
+        <tr>
+        <td >
+        <span  id="creatcase">
+            <button  type="button" id="buttonNewCase" onclick="newCase();" >
+            Submit Case
+            </button>   
+            <apex:actionFunction name="insertCase" action="{!submitCase}" >
+                <apex:param name="myParam" value="" />
+            </apex:actionFunction>
+        </span>
+        </td>
+        <td> 
+         </td>
+         </tr>  
+         </table> 
+         <apex:pageBlock id="pgblockFooter" tabStyle="Account">
+             <div id="footer" style="font-size:medium" align="center">
+                {!footer}
+             </div>
+        </apex:pageBlock>
+       
+    </apex:form>
+    <script type="text/javascript">
+    
+    // Overwrite std SF styling
+    //---------------------------------------------------------------------------------
+    document.getElementById('buttonNewCase').style.background = '#0070d2';
+    document.getElementById('buttonNewCase').style.borderColor = '#0070d2';
+    document.getElementById('buttonNewCase').style.font = '13.3333px Arial';
+    document.getElementById('buttonNewCase').style.color = 'white';
+    document.getElementById('buttonNewCase').style.borderRadius = '4px';
+    document.getElementById('buttonNewCase').style.padding = '10px 10px 10px 10px';
+    document.getElementById('buttonNewCase').style.cursor = 'pointer';
+    
+    document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+    if(document.getElementById('buttonNewCase').disabled){
+        document.getElementById('buttonNewCase').disabled = false;
+    }
+        
+    document.getElementById('donebtn').style.background = '#0070d2';
+    document.getElementById('donebtn').style.borderColor = '#0070d2';
+    document.getElementById('donebtn').style.font = '13.3333px Arial';
+    document.getElementById('donebtn').style.color = 'white';
+    document.getElementById('donebtn').style.borderRadius = '4px';
+    document.getElementById('donebtn').style.padding = '10px 10px 10px 10px';
+    document.getElementById('donebtn').style.cursor = 'pointer';
+        
+    document.getElementById('newbtn').style.background = '#0070d2';
+    document.getElementById('newbtn').style.borderColor = '#0070d2';
+    document.getElementById('newbtn').style.font = '13.3333px Arial';
+    document.getElementById('newbtn').style.color = 'white';
+    document.getElementById('newbtn').style.borderRadius = '4px';
+    document.getElementById('newbtn').style.padding = '10px 10px 10px 10px';
+    document.getElementById('newbtn').style.cursor = 'pointer';
+    
+    //document.getElementById('refpage').style.background = '#0070d2';
+    //document.getElementById('refpage').style.borderColor = '#0070d2';
+    //document.getElementById('refpage').style.font = '13.3333px Arial';
+    //document.getElementById('refpage').style.color = 'white';
+    //document.getElementById('refpage').style.borderRadius = '4px';
+    //document.getElementById('refpage').style.padding = '10px 10px 10px 10px';
+    //document.getElementById('refpage').style.cursor = 'pointer';
+    
+    
+    document.getElementById('newcase').style.display = 'block';
+    
+    //document.getElementById('newcase').style.display = 'none';
+    
+    //greate a new AJAX Case object and assign the current std controller ID to this Case
+    //var theCase = new sforce.SObject("Case");
+    //theEmail.id = '{!Case.Id}';theCase
+    
+    var caseId;
+    var caseNumber;
+    var pId;
+    var isDataOk = false;
+   
+
+    function newCase() {
+        
+        sforce.connection.sessionId= '{!$Api.Session_ID}';
+        
+        document.getElementById('buttonNewCase').disabled = true;
+        document.getElementById('{!$Component.newCaseForm}').style.cursor = 'wait';
+        
+        //user input validation section 
+        //---------------------------------------------------------------------------------
+        var relID = '';
+        var stdRelID = document.getElementById('accountId');
+        var stdRelElement = document.getElementById('acctSearchBox');
+        //var stdRelName = document.getElementById('accountName');
+        
+        //alert(stdRelID.value);
+        //alert(stdRelName.value);
+        
+        //stdRelID = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}_lkid');   
+        //stdRelElement = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}');
+        
+        //Block A
+        var logger = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.logger}');
+        var loggermail = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.loggermail}');
+        var suack = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.suack}');
+        var pri = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.pri}');
+        var loggerDepartment = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.loggerDepartment}');
+        var owner = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.owner}');
+        var cont = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cont}');
+        var contemail = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.contemail}');
+        var cor = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cor}');
+        var indate = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.indate}');
+        var fin = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.fin}');
+        var exc = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.exc}');
+        var sta = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.sta}');
+        var brid = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.brid}');
+        
+        
+        
+        
+        //Block C
+        var sject = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.sject}');
+        var desc = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.desc}');           
+        
+        //Block D
+        //var resolvingArea = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingArea}');
+        //var resolvingTeam = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingTeam}');
+        //var srvtype = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servtype}');
+        //var cha = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.cha}');
+        //var subCat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servsub}');
+        //var cat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servcat}');
+        
+        //Block E
+        //var desiredAction,rootcc,actionTaken,businessOwnerAction,rootc,resolutionDetail,resolvedInFavourOf;
+        
+        //var stdRelationshipId  =stdRelID.value;
+        
+        insertCase();
+    };
+    //RN - CloudSmiths
+    function validateEmail(email){      
+        var emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return emailReg.test(email); 
+    }; 
+    function updatePageSection(status)
+    {        
+        if(status.value.includes('Closed'))
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='block';
+        }
+        else
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+        }
+    }
+    function goHome(){
+       window.location.href='https://now.barclays.com';
+    };
+    function refreshPage(){
+        window.location.href='http://complaints';
+    };
+    function updateStyle(veld){
+        veld.style.borderColor = '#e6e6e6';
+        veld.style.backgroundColor = '#ffffff';
+        veld.placeholder = '';
+    };
+    </script>
+</apex:page>
