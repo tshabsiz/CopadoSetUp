@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Relationship__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Meeting_Date__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Subject__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Meeting_Reason__c</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Description__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Attendee__c.Attendee_Name__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>Linda Lance,Thabo Silitshena,Eyanggae Kgafela,Solomon Kofigah,Lillian Maina,Lillian Odhiambo,Faith Kathambi,Vikram Ramdaursingh,Randhir Mungroo,Januario Valente,Sergio Marcel,Ilda Dimande Moniquela,Noelina Kivaria,Neema Mshiu,Cosette Moustache,Charlene Lewis,Vincent Otim,Martin Roy Lukwago,Mutale Nguluwe</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Attendee__c.Barclays_Attendee__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>FIG ARO Call Reports - Last 7 Days</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$Call_Report__c$Attendee__c@Attendee__c.Client_Attendee__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>Call_Report__c.Meeting_Date__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>Call_Report__c.Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_LAST7</interval>
+    </timeFrameFilter>
+</Report>

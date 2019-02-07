@@ -1,0 +1,117 @@
+<apex:page standardController="Case" extensions="CSC_Inbox_Email_View_Cont,CSC_Quick_Action_Link_Case_Cont" showHeader="false" sidebar="False" standardStylesheets="true">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <!--<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />-->
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+            <style type="text/css">
+                div#popup {
+                font-family:Verdana, 
+                Arial, Helvetica, 
+                sans-serif; 
+                font-size:11px;
+                z-index: 1000;
+                }
+                a:hover {
+                background:#ffffff; 
+                text-decoration:none;
+                }
+                a.tooltip div#popup {
+                display: none;
+                padding:2px 3px; 
+                margin-left: -120px;
+                margin-top: 0px;
+                width:250px;
+                }
+                a.tooltip:hover div#popup {
+                display: inline; 
+                position: fixed; 
+                border:1px solid #00ccff; 
+                background:#ffffff; 
+                color:#6c6c6c;
+                }
+            </style>
+            <apex:includeScript value="/support/console/35.0/integration.js"/>
+        </head>
+        <div class="slds">
+            <!-- DO NOT DELETE FOR NOW - TESTING FEEDITEMS
+            <table width="100%" class="slds-table slds-table--bordered" >
+                <apex:repeat var="a" value="{!att}">
+                    <tr class="slds-hint-parent slds-is-selected">
+                        <td class="slds-cell-shrink" >
+                            <apex:outputLink value="{!URLFOR($Action.Attachment.Download, a.Id)}" onclick="attSubTab('{!a.Id}','{!a.Name}');">{!a.Name}</apex:outputLink>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+            <br/>
+			-->
+            <table width="100%" id="rcases" class="slds-table slds-table--bordered" >
+                <tr class="slds-text-heading--label">
+                    <th class="slds-cell-shrink" style="background-color: #EEF1F6">Related Cases</th>
+                    <th class="slds-cell-shrink" style="background-color: #EEF1F6">&nbsp;</th>
+                    <th class="slds-cell-shrink" style="background-color: #EEF1F6">&nbsp;</th>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <th class="slds-cell-shrink">Cases Number</th>
+                    <th class="slds-cell-shrink">Status</th>
+                    <th class="slds-cell-shrink">Relationship</th>
+                </tr>
+                <apex:repeat value="{!relatedCases}" var="rc" >
+                    <tr class="slds-hint-parent slds-is-selected">
+                        <td class="slds-cell-shrink" >
+                            <a href="#" class="tooltip" onclick="caseSubTab('{!rc.Id}','{!rc.CaseNumber}');return false;">{!rc.CaseNumber}
+                                <div id="popup">
+                                    <table width="50%" id="popupTable">
+                                        <tr><td width="40%" align="left" style="font-size:8pt;font-weight:bold">Case Owner</td><td width="60%" style="font-size:8pt;" align="left">{!rc.Owner.Name}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Subject</td><td style="font-size:8pt;" align="left">{!rc.Subject}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Department</td><td style="font-size:8pt;" align="left">{!rc.Department__c}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Service Type</td><td style="font-size:8pt;" align="left">{!rc.Service_Type__c}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Service Category</td><td style="font-size:8pt;" align="left">{!rc.Service_Category__c}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Contact Name</td><td style="font-size:8pt;" align="left">{!rc.Contact.Name}</td></tr>
+                                        <tr><td align="left" style="font-size:8pt;font-weight:bold">Contact Email</td><td style="font-size:8pt;" align="left">{!rc.Contact.Email}</td></tr>
+                                    </table>
+                                </div>
+                            </a>
+                        </td>
+                        <td class="slds-cell-shrink"><apex:outputField value="{!rc.Status}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputField value="{!rc.Account.Name}" /></td>
+                    </tr>
+                    <tr>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        <script type="text/javascript">
+        
+        var attId;
+        var fileName;
+        //Set z-index for hover details
+        document.getElementById('popup').style.zIndex = '999998';
+        //document.getElementById('popupTable').style.zIndex = '999999';
+        //rightContent
+        //document.getElementsByClassName('div#rightContent').style.zIndex = '999';
+        //document.getElementsByClassName('mainSection').style.zIndex = '-1';
+        //document.getElementsByClassName('lowerMainSection').style.zIndex = '-1';
+        //lowerMainSection
+        function attSubTab(id, fname) {
+            attId = id;
+            fileName = fname;
+            sforce.console.getFocusedPrimaryTabId(primaryTabId);
+        }
+        var primaryTabId = function primaryTabId(result) {
+            sforce.console.openSubtab(result.id , '/servlet/servlet.FileDownload?file=' + attId, true, fileName, null);
+        };
+        
+        var cId;
+        var cnr;
+        function caseSubTab(id,nr) {
+            cId = id;
+            cnr = nr;
+            sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+        }
+        var primaryTabId2 = function primaryTabId2(result) {
+            sforce.console.openSubtab(result.id , '/' + cId, true, cnr, null);
+        };
+        </script>
+    </html>
+</apex:page>

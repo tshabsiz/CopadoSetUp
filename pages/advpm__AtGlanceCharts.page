@@ -1,0 +1,117 @@
+<apex:page controller="advpm.AtGlanceController" sidebar="false" showHeader="false">
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+<style type="text/css">
+    body { padding: 0px!important;min-height:250px }
+    .hasMotif { margin: 0 0px }
+    .componentTable {margin: 0 auto;}
+    .componentTable .cHeader { text-align: center;font-weight: bold;font-size: 1.1em;padding-top: 5px;padding-bottom: 5px;height:18px;visibility:hidden }
+    .componentTable .col2, .componentTable .col3, .componentTable .col4 { padding-left: 5px }
+    .auraErrorMessage {display:none!important;}
+</style>
+<apex:outputPanel layout="none" rendered="{!isSFMobile}">
+<style type="text/css">
+    .componentTable { width: {!(1 * 300)}px; }
+    .componentTable .cChart {float:left;margin-left:10px;}
+    .col1, .col2, .col3, .col4 { padding-right:10px; vertical-align:top }
+</style>
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!isLightningCmp}">
+<style type="text/css">
+    .componentTable { width: 100%; }
+    .componentTable .cChart {margin-bottom:10px;}
+    .analyticsEmbeddedReportChart.width_tiny {margin: 0 auto;}
+</style>
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!!isSFMobile && !isLightningCmp}">
+<style type="text/css">
+    .componentTable { width: {!(totalCharts * 300)}px; }
+    .componentTable .cChart {float:left;margin-left:10px;}
+    .col1, .col2, .col3, .col4 { padding-right:10px; vertical-align:top }
+</style>
+</apex:outputPanel>
+<apex:outputPanel layout="none" rendered="{!wrapCharts}">
+<style type="text/css">
+    .componentTable { width: 100%; }
+    .componentTable .cChart {margin-left:10px;margin-bottom:10px;}
+</style>
+</apex:outputPanel>
+
+<apex:outputPanel layout="none" rendered="{!!showChartsRealtime}">
+<style type="text/css">
+    .refreshButtonContainer { display:none!important; }
+    .analyticsEmbeddedReportChart .asOfDateContainer {font-family: Arial,Helvetica,sans-serif!important;font-size: 12px;text-align: center;}
+    .listViewport {margin-left:5px;}
+    .asOfDateContainer .asOfDate {line-height:22px;}
+</style>
+</apex:outputPanel>
+<script type="text/javascript">
+    $j = jQuery.noConflict();
+    var chartListen = null;
+    $j(document).ready(function(){
+        chartListen = setTimeout(checkForCharts, 100);
+    });
+    function checkForCharts() {
+        clearTimeout(chartListen);
+        var i = 0;
+        if({!showChartTitles}) {
+            $j('.analyticsEmbeddedReportChart').each(function(index){
+                var container = $j(this);
+                container.parent().parent().find('.cHeader').css('visibility','visible').css('display','block');
+            });
+        }
+        if({!!showChartsRealtime}) {
+            $j('.asOfDateContainer').each(function(index){
+                i++;
+                var container = $j(this);
+                var btns = container.find('span.listViewport');
+                if (btns.length == 0) {
+                    var divBtn = $j("<span>", { "class": "listViewport" });
+                    var inputBtn = $j("<input/>", { 
+                                        "type": "button",
+                                        "class": "btn refreshListButton", 
+                                        "title": "Refresh",
+                                        "src": "s.gif",
+                                        "click": function() { 
+                                            container.parent().find('.refreshButtonContainer button').click();
+                                        }
+                                    });
+                    divBtn.append(inputBtn);
+                    container.append(divBtn);
+                }
+            });
+        }
+        if ({!totalCharts} != i)
+            chartListen = setTimeout(checkForCharts, 100);
+    }
+</script>
+
+<apex:outputPanel layout="none" rendered="{!isLightning || $CurrentPage.parameters.ltng == '1'}">
+    <c:includeSLDS sldsV2="true" />
+    <style type="text/css">
+        .componentTable .cHeader { padding-bottom: 25px!important; }
+    </style>
+</apex:outputPanel>
+
+<apex:outputPanel layout="block" styleClass="{!IF(isLightning || $CurrentPage.parameters.ltng == '1','slds','')}">
+    <div class="componentTable">
+        <apex:pageMessages />
+        <apex:outputPanel layout="block" styleClass="cChart" rendered="{!chart1 != null}">
+            <apex:outputPanel layout="block" styleClass="cHeader" rendered="{!showChartTitles}" style="display:none;">{!chart1.reportTitle}</apex:outputPanel>
+            <analytics:reportChart reportId="{!chart1.reportId}" filter="{!chart1.reportFilter}" cacheResults="{!chart1.reportUseCache}" showRefreshButton="{!chart1.reportUseCache}" size="tiny" hideOnError="true"></analytics:reportChart>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" styleClass="cChart" rendered="{!chart2 != null}">
+            <apex:outputPanel layout="block" styleClass="cHeader" rendered="{!showChartTitles}" style="display:none;">{!chart2.reportTitle}</apex:outputPanel>
+            <analytics:reportChart reportId="{!chart2.reportId}" filter="{!chart2.reportFilter}" cacheResults="{!chart2.reportUseCache}" showRefreshButton="{!chart2.reportUseCache}" size="tiny" hideOnError="true"></analytics:reportChart>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" styleClass="cChart" rendered="{!chart3 != null}">
+            <apex:outputPanel layout="block" styleClass="cHeader" rendered="{!showChartTitles}" style="display:none;">{!chart3.reportTitle}</apex:outputPanel>
+            <analytics:reportChart reportId="{!chart3.reportId}" filter="{!chart3.reportFilter}" cacheResults="{!chart3.reportUseCache}" showRefreshButton="{!chart3.reportUseCache}" size="tiny" hideOnError="true"></analytics:reportChart>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" styleClass="cChart" rendered="{!chart4 != null}">
+            <apex:outputPanel layout="block" styleClass="cHeader" rendered="{!showChartTitles}" style="display:none;">{!chart4.reportTitle}</apex:outputPanel>
+            <analytics:reportChart reportId="{!chart4.reportId}" filter="{!chart4.reportFilter}" cacheResults="{!chart4.reportUseCache}" showRefreshButton="{!chart4.reportUseCache}" size="tiny" hideOnError="true"></analytics:reportChart>
+        </apex:outputPanel>
+    </div>    
+</apex:outputPanel>
+
+</apex:page>

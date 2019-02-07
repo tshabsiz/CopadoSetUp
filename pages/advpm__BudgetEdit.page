@@ -1,0 +1,212 @@
+<apex:page standardController="advpm__Budget__c" extensions="advpm.BudgetController,advpm.BudgetSummaryController,advpm.BudgetDetailController" action="{!IF(!hasEditAccess,URLFOR($Page.InsufficientPrivileges,null,[recid=Budget__c.Id]),'')}">
+<apex:outputPanel rendered="{!isLightning && isNew}">
+    <script type="text/javascript">
+        var ur = '{!URLFOR($Page.advpm__BudgetEditSLDS,null,[id=advpm__Budget__c.Id,additionalParams=JSINHTMLENCODE($CurrentPage.parameters.additionalParams),matid=advpm__Budget__c.advpm__Matter__c,RecordType=URLENCODE($CurrentPage.parameters.RecordType),retURL=URLENCODE($CurrentPage.parameters.retURL)])}';
+        if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToURL(ur, true);
+        }
+    </script>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLightning && !isNew}">
+    <script type="text/javascript">
+        var ur = '{!URLFOR($Page.advpm__BudgetEditSLDS,advpm__Budget__c.Id,[id=advpm__Budget__c.Id,retURL=URLENCODE($CurrentPage.parameters.retURL)])}';
+        if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToURL(ur, true);
+        }
+    </script>
+</apex:outputPanel>
+<apex:form rendered="{!!isLightning}">
+    <apex:sectionHeader title="{!$ObjectType.advpm__Budget__c.Label} Edit" subtitle="{!IF(advpm__Budget__c.Name==null,'New ' + $ObjectType.advpm__Budget__c.Label,advpm__Budget__c.Name)}" />
+    <apex:outputLink target="_top" value="/{!advpm__Budget__c.advpm__Matter__c}">&laquo;Back to {!LOWER($ObjectType.Matter__c.Label)}</apex:outputLink><br /><br />
+    <style type="text/css">
+        .col1, .col2, .btnW { width: 170px; }
+        .textboxW { width: 80px; }
+    </style>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.js')}" />
+    <script type="text/javascript">
+        function showDateChangeWarning()
+        {
+            if ({!isNew} == false && {!isCloneAction} == false && ({!SummaryBudgetItems.size} > 0 || {!DetailBudgetItems.size} > 0))
+            {
+                document.getElementById('{!$Component.msgWarn}').style.visibility = "visible";
+                document.getElementById('{!$Component.msgWarn}').style.display = "block";
+            }
+        }
+        
+        $j = jQuery.noConflict();
+        $j(document).ready(function () {
+            $j('.btnSaveDisabled').attr('disabled','disabled');
+        });
+    </script>
+    <apex:pageMessages id="msgs" />
+    <apex:pageMessage summary="Warning: {!$ObjectType.advpm__Budget__c.Label} can not be edited, {!$ObjectType.advpm__Budget__c.Label} Approval process has been initiated on it already." severity="warning" strength="3" rendered="{!advpm__Budget__c.advpm__Lock__c}" />
+    <apex:outputPanel layout="block" id="msgWarn" style="display: none;">
+        <apex:pageMessage summary="Warning: Change in date value detected. Saving the {!$ObjectType.advpm__Budget__c.Label} will regenerate Summary/Detail {!$ObjectType.advpm__Budget__c.LabelPlural}." severity="warning" strength="3" />
+    </apex:outputPanel>
+    <apex:actionFunction name="saveBudget" action="{!save}" />
+    <apex:actionFunction name="cancelBudget" action="{!cancel}" immediate="true" />
+    
+    <apex:pageBlock title="{!$ObjectType.advpm__Budget__c.Label} Edit" id="thePageBlock" mode="edit">
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Budget__c.Label} Information" rendered="{!!advpm__Budget__c.advpm__Lock__c && isNew}">
+            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Month__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField value="{!advpm__Budget__c.advpm__Matter__c}" label="{!$ObjectType.advpm__Matter__c.Label}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Year__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField id="fee" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="fee-fld textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:inputField id="actual_budget" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="actual_budget-fld textboxW" rendered="{!isHoursBudgetRT}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Month__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField id="expense" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="expense-fld textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:pageBlockSectionItem rendered="{!isHoursBudgetRT}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Year__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:pageBlockSectionItem >
+                <script type="text/javascript">
+                    if ({!isCloneAction} == false)
+                    {
+                        $j('.fee-fld').attr('disabled', {!DisableFee});
+                        $j('.expense-fld').attr('disabled', {!DisableExpense});
+                        $j('.actual_budget-fld').attr('disabled', {!OR(SummaryBudgetItems.size > 0,DetailBudgetItems.size > 0)});
+                    }
+                </script>
+            </apex:pageBlockSectionItem>
+            <apex:inputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+            <apex:pageBlockSectionItem />
+            <apex:inputField value="{!advpm__Budget__c['CurrencyIsoCode']}" rendered="{!isMultiCurrencyOrg}" />
+            
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Date__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Date__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Firm__c}" rendered="false" />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Budget__c.Label} Information" rendered="{!!advpm__Budget__c.advpm__Lock__c && !isNew}">
+            <apex:inputField value="{!advpm__Budget__c.Name}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Month__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Year__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField value="{!advpm__Budget__c.advpm__Matter__c}" label="{!$ObjectType.advpm__Matter__c.Label}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Month__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField id="fee" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="fee-fld textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:inputField id="actual_budget" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="actual_budget-fld textboxW" rendered="{!isHoursBudgetRT}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Year__c}" required="true" onchange="showDateChangeWarning();" />
+            
+            <apex:inputField id="expense" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="expense-fld textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:pageBlockSectionItem rendered="{!isHoursBudgetRT}" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+            <apex:pageBlockSectionItem />
+            <apex:inputField value="{!advpm__Budget__c['CurrencyIsoCode']}" rendered="{!isMultiCurrencyOrg}" />
+            
+            <apex:pageBlockSectionItem >
+                <script type="text/javascript">
+                    if ({!isCloneAction} == false)
+                    {
+                        $j('.fee-fld').attr('disabled', {!DisableFee});
+                        $j('.expense-fld').attr('disabled', {!DisableExpense});
+                        $j('.actual_budget-fld').attr('disabled', {!OR(SummaryBudgetItems.size > 0,DetailBudgetItems.size > 0)});
+                    }
+                </script>
+            </apex:pageBlockSectionItem>
+            <apex:inputField value="{!advpm__Budget__c.advpm__End_Date__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Budget__c.advpm__Start_Date__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Budget__c.Label} Information" rendered="{!advpm__Budget__c.advpm__Lock__c && isNew}">
+            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Month__c}" />
+            
+            <apex:outputField value="{!advpm__Budget__c.advpm__Matter__c}" label="{!$ObjectType.advpm__Matter__c.Label}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Year__c}" />
+            
+            <apex:outputField id="fee" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:outputField id="actual_budget" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="textboxW" rendered="{!isHoursBudgetRT}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Month__c}" />
+            
+            <apex:outputField id="expense" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:pageBlockSectionItem rendered="{!isHoursBudgetRT}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Year__c}" />
+            
+            <apex:pageBlockSectionItem />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+            
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Date__c}" rendered="false" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Date__c}" rendered="false" />
+            <apex:outputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Budget__c.Label} Information" rendered="{!advpm__Budget__c.advpm__Lock__c && !isNew}">
+            <apex:outputField value="{!advpm__Budget__c.Name}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Month__c}" />
+            
+            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Year__c}" />
+            
+            <apex:outputField value="{!advpm__Budget__c.advpm__Matter__c}" label="{!$ObjectType.advpm__Matter__c.Label}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Month__c}" />
+            
+            <apex:outputField id="fee" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:outputField id="actual_budget" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="textboxW" rendered="{!isHoursBudgetRT}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Year__c}" />
+            
+            <apex:outputField id="expense" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+            <apex:pageBlockSectionItem rendered="{!isHoursBudgetRT}" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+            
+            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Date__c}" rendered="false" />
+            <apex:outputField value="{!advpm__Budget__c.advpm__End_Date__c}" rendered="false" />
+            <apex:outputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Other Information" columns="1" rendered="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget.size > 0 && !isHoursBudgetRT}">
+            <apex:repeat value="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget}" var="f">
+                <apex:inputTextArea rows="4" cols="70" value="{!advpm__Budget__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'Long Text Area' && NOT(CONTAINS(f,'.'))}" />
+                <apex:inputField value="{!advpm__Budget__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'Long Text Area' && NOT(CONTAINS(f,'.'))}"
+                                 label="{!f.Label}" />
+            </apex:repeat>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Other Information" columns="1" rendered="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget_Hours.size > 0 && isHoursBudgetRT}">
+            <apex:repeat value="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget_Hours}" var="f">
+                <apex:inputTextArea rows="4" cols="70" value="{!advpm__Budget__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'Long Text Area' && NOT(CONTAINS(f,'.'))}" />
+                <apex:inputField value="{!advpm__Budget__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'Long Text Area' && NOT(CONTAINS(f,'.'))}"
+                                 label="{!f.Label}" />
+            </apex:repeat>
+        </apex:pageBlockSection>
+        <apex:pageBlockSection columns="1">
+            <apex:facet name="body">
+                <div style="text-align: center; width: 100%;margin-bottom: 5px;">
+                    <input type="button" value="  Save  " onclick="saveBudget();" class="btn {!IF(Budget__c.Lock__c,'btnDisabled btnSaveDisabled','')}" id="btnSaveBudget" />
+                    <input type="button" value="  Cancel  " onclick="cancelBudget();" class="btn" style="margin-left: 0.8em;" />
+                </div>
+            </apex:facet>
+        </apex:pageBlockSection>
+        
+        <!-- Summary Budget Section -->
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Summary_Budget__c.Label}" columns="1" rendered="{!isCloneAction == false}">
+            <apex:facet name="header">
+                <apex:panelGrid columns="2" cellspacing="0" cellpadding="0" columnClasses="col1,col2">
+                    <h3>{!$ObjectType.advpm__Summary_Budget__c.Label}</h3>
+                    <apex:commandButton value="  Edit {!$ObjectType.advpm__Summary_Budget__c.Label}  " action="{!saveSB}" styleClass="btnSharing btn btnW" disabled="{!advpm__Budget__c.advpm__Lock__c}" />
+                </apex:panelGrid>
+            </apex:facet>
+        </apex:pageBlockSection>
+        <c:BudgetSummary readOnly="true" detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false}" />
+        
+        <!-- Detail Budget Section -->
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Detail_Budget__c.Label}" columns="1" rendered="{!isCloneAction == false}">
+            <apex:facet name="header">
+                <apex:panelGrid columns="2" cellspacing="0" cellpadding="0" columnClasses="col1,col2">
+                    <h3>{!$ObjectType.advpm__Detail_Budget__c.Label}</h3>
+                    <apex:commandButton value="  Edit {!$ObjectType.advpm__Detail_Budget__c.Label}  " action="{!saveDB}" styleClass="btnSharing btn btnW" disabled="{!advpm__Budget__c.advpm__Lock__c}" />
+                </apex:panelGrid>
+            </apex:facet>
+        </apex:pageBlockSection>
+        <c:BudgetDetail readOnly="true" detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false}" />
+        
+        <!-- At A Glance Budget Section -->
+        <apex:pageBlockSection title="{!$ObjectType.advpm__Budget__c.Label} At A Glance" columns="1" rendered="{!isCloneAction == false && !isNew}" />
+        <c:BudgetCharts detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false && !isNew}" />
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

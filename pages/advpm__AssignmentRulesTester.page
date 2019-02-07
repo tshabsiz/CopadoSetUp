@@ -1,0 +1,197 @@
+<apex:page standardController="advpm__Assignment_Rule__c" extensions="advpm.AssignmentRulesTesterController">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.css')}" />
+    
+    <script type="text/javascript">
+        function redirect(tId){
+            goBack();
+            hideLoader(tId);
+        }
+        function goBack() {
+            if ({!$User.UITheme == 'Theme4d'}) {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToSObject('{!JSENCODE(advpm__Assignment_Rule__c.Id)}');
+                }
+            }
+            else {
+                location.href = '{!$Site.prefix}/{!JSENCODE(advpm__Assignment_Rule__c.Id)}';
+            }
+        }
+        function showLoader(ob) {
+            $('.loader_'+ob).css('display','inline');
+        }
+        function hideLoader(ob) {
+            $('.loader_'+ob).css('display','none');
+        }
+        
+        $(document).ready(function(){
+            initSelect2();
+        });
+        
+        function initSelect2() {
+            $('.select-record').select2({
+                placeholder: 'Select ...',
+                minimumInputLength: 0,
+                allowClear: true,
+                ajax: {
+                    url: "{!$Page.advpm__JSONData}",
+                    quietMillis: 100,
+                    data: function (term, page) {
+                        return {
+                            q: term,
+                            obj: '{!JSINHTMLENCODE(sObjName)}',
+                            page_limit: 10,
+                            page: page
+                        };
+                    },
+                    results: function (data, page) { return {results: data.results, more: (page * 10) < data.total}; }
+                },
+                initSelection: function(element, callback) {
+                    var id=$(element).val();
+                    if (id != '') { $.ajax("{!$Page.advpm__JSONData}", { data: { objid: id, obj: '{!JSINHTMLENCODE(sObjName)}' } }).done(function(data) {var d = JSON.parse(data); callback( d.results[0] ); }); }
+                }
+            }).on("change", function(e) {
+                $(this).siblings('input:hidden').val( $(this).val() );
+            }).on("select2-focus", function(e) {
+                
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+
+        function showSFDCSimpleDialog(srcElemId) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(690);
+                d.createDialog();
+            }
+            d.setTitle('Preview');
+
+            $(d.dialog).find('#myCustomSFDCDialogInner').html( $(srcElemId).html() );
+            
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+    </script>
+    
+    <style type="text/css">
+        .text-center {text-align:center!important;}
+        .preview-container {display:none;}
+        .data-record {margin-left:20px;}
+    </style>
+    
+    <style type="text/css">
+        ul li, ol li { margin-left: 0px !important; }
+        ul.select2-results > li > div.select2-result-label {/*font-weight: bold;*/}
+        .select2-container-multi .select2-choices .select2-search-field input {padding: 1px 4px;}
+        .select2-container .select2-choice abbr {top:7px;right:18px;}
+        .select2-container .select2-choice {background-image: none;}
+        .select2-container-active .select2-choice, .select2-container-active .select2-choices {border: 1px solid #aaa;outline: none;-webkit-box-shadow: none;box-shadow: none;}
+        .select2-drop-active {border: 1px solid #aaa;}
+        .select2-container .select2-choice .select2-arrow {border-left: 0px solid #aaa;background: none;background-image: none;}
+    </style>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            /*body {font-size: 100%;}*/
+            .list .iconColumn, .list .actionColumn {width:166px;white-space:nowrap!important;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <style type="text/css">
+            .main-container {margin-left:20px;margin-top:20px;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">    
+        <apex:sectionHeader title="{!$ObjectType.advpm__Assignment_Rule__c.label}" subtitle="{!JSINHTMLENCODE(advpm__Assignment_Rule__c.Name)}" />
+        <div style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!JSINHTMLENCODE(advpm__Assignment_Rule__c.Id)}">Back to {!LOWER($ObjectType.advpm__Assignment_Rule__c.label)}</apex:outputLink></div>
+        <br /><br />
+    </apex:outputPanel>
+    
+    <apex:form id="form" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="{!$ObjectType.advpm__Assignment_Rule__c.label} Tester" 
+                                headerDescription="Select a record type for testing the {!$ObjectType.advpm__Assignment_Rule__c.label}"
+                                parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Assignment_Rule__c.labelPlural)}" 
+                                parentEntityLink="{!$ObjectType.advpm__Assignment_Rule__c.keyPrefix}" 
+                                parentRecordName="{!JSINHTMLENCODE(advpm__Assignment_Rule__c.Name)}" 
+                                parentRecordID="{!advpm__Assignment_Rule__c.Id}">
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <style type="text/css">
+            .loader img {margin-left:4px;}
+            .no-records {margin-left: -5px;}
+        </style>
+        
+        <apex:actionFunction name="previewRule" action="{!previewRule}" rerender="form,msgs" oncomplete="if({!saveSuccess}){showSFDCSimpleDialog('.preview-container');}initSelect2()" />
+        
+        <apex:pageBlock mode="edit" rendered="{!!isLightning}">
+            <apex:pageMessages id="msgs" />
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="  Preview  " styleClass="slds-button slds-button--brand" onclick="previewRule();return false;" />
+                <apex:commandButton value="  Cancel  " action="{!cancel}" styleClass="slds-button slds-button--neutral" />
+            </apex:pageBlockButtons>
+            <div class="main-container">
+                <span class="label-text"><strong>Preview the rule set with following record:</strong></span>
+                <span class="data-record">
+                    <apex:inputHidden value="{!selectedRecordId}" />
+                    <input type="text" value="{!selectedRecordId}" class="select-record" style="width:250px;" />
+                </span>
+            </div>
+        </apex:pageBlock>
+        <apex:outputPanel layout="block" rendered="{!isLightning}">
+            <apex:pageMessages id="msgs" />
+            <div class="slds-grid slds-grid--align-center main-container slds-m-vertical--large">
+                <div class="label-text slds-text-title">Preview the rule set with following record:</div>
+                <div class="data-record">
+                    <apex:inputHidden value="{!selectedRecordId}" />
+                    <input type="text" value="{!selectedRecordId}" class="select-record" style="width:250px;" />
+                </div>
+            </div>
+            <div class="slds-grid slds-grid--align-center slds-m-vertical--large">
+                <div>
+                    <apex:commandButton value="  Preview  " styleClass="slds-button slds-button--brand" onclick="previewRule();return false;" />
+                </div>
+                <div>
+                    <apex:commandButton value="  Cancel  " action="{!cancel}" styleClass="slds-button slds-button--neutral" style="margin-left:1em;"/>
+                </div>
+            </div>
+        </apex:outputPanel>
+        
+        <apex:outputPanel styleClass="preview-container">
+            <c:AssignmentRulesPreview enableExecute="false"
+                                      isLightning="{!isLightning}"
+                                      sObjName="{!sObjName}"
+                                      ruleAssignedFields="{!ruleAssignedFields}"
+                                      originalRecordsList="{!originalRecordsList}"
+                                      previewRecordsList="{!previewRecordsList}" />
+        </apex:outputPanel>
+        
+        <!-- Hidden fields to maintain Visualforce standard library of salesforce on the page for useful utility functions -->
+        <span style="display:none">
+        <apex:inputField value="{!advpm__Assignment_Rule__c.Name}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Base_Object__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Assignment_Template__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Additional_Notification_Template__c}" rendered="false" />
+        </span>
+    </apex:form>
+</apex:page>

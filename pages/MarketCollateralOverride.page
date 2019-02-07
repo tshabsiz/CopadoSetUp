@@ -1,0 +1,275 @@
+<!--
+ - Created by KyleAlexander on 2018/03/14.
+ -->
+
+<apex:page id="MarketCollateralOverride" StandardController="Market_Collateral__c" extensions="MarketCollateralOverride_Cont" sidebar="true" doctype="html-5.0">
+    <body>
+        <apex:form >
+            <apex:outputPanel id="colPanel">
+                <apex:sectionHeader title="Market Collateral"/>
+                <apex:pageBlock title="Collateral">
+                    <apex:pageBlockButtons location="top">
+                        <apex:commandButton value="Save" action="{!SavePage}"/>
+                        <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                    </apex:pageBlockButtons>
+                    <apex:pageMessages ></apex:pageMessages>
+                </apex:pageBlock>
+            </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!collateralPanel}" id="collateralPanel">
+                <apex:pageBlock mode="edit" id="pageBlockCollateral" title="Collateral Information">
+                    <apex:pageBlockSection title="Acceptable Collateral" columns="1">
+                        <apex:pageBlockTable id="dataEntries" value="{!collateralItems}" var="colItems" columns="8">
+                            <apex:column headerValue="Collateral Type" id="CollateralType">
+                                <apex:inputfield value="{!colItems.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="Subtype">
+                                <apex:inputfield required="true" value="{!colItems.Sub_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Margin %" id="Margin">
+                                <apex:inputfield value="{!colItems.Margin__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:inputfield required="true" value="{!colItems.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:inputfield required="true" value="{!colItems.Country_of_Issue__c}" id="AcceptableCountryIssue"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:inputfield value="{!colItems.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:inputfield value="{!colItems.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="AddCollateral" style="text-align:center">
+                                <apex:commandButton value="Add Collateral" action="{!AddCollateral}" rerender="collateralPanel, colPanel"/>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!addedCollateral.size == 0}">
+                        <apex:outputLabel value="No Collateral has been added" ></apex:outputLabel>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!addedCollateral.size > 0}">
+                        <apex:pageBlockTable id="addedEntries" value="{!addedCollateral}" var="addedCol" columns="8">
+                            <apex:column headerValue="Collateral Type" id="CollateralType">
+                                <apex:outputField value="{!addedCol.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="Subtype" >
+                                <apex:outputField value="{!addedCol.Sub_Type__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Margin %" id="Margin" >
+                                <apex:outputField value="{!addedCol.Margin__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:outputField value="{!addedCol.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:outputField value="{!addedCol.Country_of_Issue__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:outputField value="{!addedCol.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:outputField value="{!addedCol.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="RemoveCollateral" style="text-align:center">
+                                <apex:commandButton value="Remove Collateral" action="{!RemoveCollateral}" rerender="collateralPanel">
+                                    <apex:param name="addedColId" value="{!addedCol.id}" assignTo="{!addedColId}"/>
+                                </apex:commandButton>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>
+
+            <!--Eligible Collateral-->
+            <apex:outputPanel rendered="{!isCSA}" id="EligibleCollateralPanel">
+                <apex:pageBlock mode="edit" id="pageBlockEligibleCollateral" title="Eligible Collateral Information">
+                    <apex:pageBlockSection title="Eligible Collateral" columns="1">
+                        <apex:pageBlockTable id="EligibleDataEntries" value="{!eligibleCollateralItems}" var="eligibleColItems" columns="8">
+                            <apex:column headerValue="Collateral Type" id="EligibleCollateralType">
+                                <apex:inputfield value="{!eligibleColItems.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="EligibleSubtype">
+                                <apex:inputfield required="true" value="{!eligibleColItems.Sub_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Value %" id="EligibleValue">
+                                <apex:inputfield value="{!eligibleColItems.Value__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:inputfield required="true" value="{!eligibleColItems.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:inputfield required="true" value="{!eligibleColItems.Country_of_Issue__c}" id="EligibleCountryIssue"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:inputfield value="{!eligibleColItems.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:inputfield value="{!eligibleColItems.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="AddEligibleColItemsCollateral" style="text-align:center">
+                                <apex:commandButton value="Add Collateral" action="{!AddEligibleCollateral}" rerender="EligibleCollateralPanel, colPanel"/>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!eligibleAddedCollateral.size == 0}">
+                        <apex:outputLabel value="No Collateral has been added" ></apex:outputLabel>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!eligibleAddedCollateral.size > 0}">
+                        <apex:pageBlockTable id="EligibleAddedEntries" value="{!eligibleAddedCollateral}" var="addedEligibleCol" columns="8">
+                            <apex:column headerValue="Collateral Type" id="CollateralType">
+                                <apex:outputField value="{!addedEligibleCol.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="EligibleSubtype">
+                                <apex:outputField value="{!addedEligibleCol.Sub_Type__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Value %" id="EligibleValue">
+                                <apex:outputField value="{!addedEligibleCol.Value__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:outputField value="{!addedEligibleCol.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:outputField value="{!addedEligibleCol.Country_of_Issue__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:outputField value="{!addedEligibleCol.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:outputField value="{!addedEligibleCol.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="EligibleRemoveCollateral" style="text-align:center">
+                                <apex:commandButton value="Remove Collateral" action="{!RemoveEligibleCollateral}" rerender="EligibleCollateralPanel">
+                                    <apex:param name="addEligibleColId" value="{!addedEligibleCol.id}" assignTo="{!eligibleAddedColId}"/>
+                                </apex:commandButton>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>
+
+            <!--Regulatory Collateral-->
+            <apex:outputPanel rendered="{!isCSA}" id="RegulatoryCollateralPanel">
+                <apex:pageBlock mode="edit" id="pageBlockRegulatoryCollateral" title="Regulatory Collateral Information">
+                    <apex:pageBlockSection title="Regulatory Collateral" columns="1">
+                        <apex:pageBlockTable id="RegulatoryDataEntries" value="{!RegulatoryCollateralItems}" var="regulatoryColItems" columns="8">
+                            <apex:column headerValue="Collateral Type" id="RegulatoryCollateralType">
+                                <apex:inputfield value="{!regulatoryColItems.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="RegulatorySubtype">
+                                <apex:inputfield required="true" value="{!regulatoryColItems.Sub_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Value %" id="RegulatoryValue">
+                                <apex:inputfield value="{!regulatoryColItems.Value__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:inputfield required="true" value="{!regulatoryColItems.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:inputfield required="true" value="{!regulatoryColItems.Country_of_Issue__c}" id="RegulatoryCountryIssue"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:inputfield value="{!regulatoryColItems.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:inputfield value="{!regulatoryColItems.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="RegulatoryAddCollateral" style="text-align:center">
+                                <apex:commandButton value="Add Collateral" action="{!AddRegulatoryCollateral}" rerender="RegulatoryCollateralPanel, colPanel"/>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!regulatoryAddedCollateral.size == 0}">
+                        <apex:outputLabel value="No Collateral has been added" ></apex:outputLabel>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection title="Added Collateral" columns="1" rendered="{!regulatoryAddedCollateral.size > 0}">
+                        <apex:pageBlockTable id="regulatoryAddedEntries" value="{!regulatoryAddedCollateral}" var="regulatoryAddedCol" columns="8">
+                            <apex:column headerValue="Collateral Type" id="RegulatoryCollateralType">
+                                <apex:outputField value="{!regulatoryAddedCol.Collateral_Type__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Subtype" id="RegulatorySubtype">
+                                <apex:outputField value="{!regulatoryAddedCol.Sub_Type__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Value %" id="RegulatoryValue">
+                                <apex:outputField value="{!regulatoryAddedCol.Value__c}">
+                                </apex:outputField>
+                            </apex:column>
+
+                            <apex:column headerValue="Currency">
+                                <apex:outputField value="{!regulatoryAddedCol.Currency__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Country of Issue">
+                                <apex:outputField value="{!regulatoryAddedCol.Country_of_Issue__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Applicable Party">
+                                <apex:outputField value="{!regulatoryAddedCol.Applicable_Party__c}"/>
+                            </apex:column>
+
+                            <apex:column headerValue="Collateral Comments">
+                                <apex:outputField value="{!regulatoryAddedCol.Collateral_Comments__c}"/>
+                            </apex:column>
+
+                            <apex:column id="RegulatoryRemoveCollateral" style="text-align:center">
+                                <apex:commandButton value="Remove Collateral" action="{!RemoveRegulatoryCollateral}" rerender="RegulatoryCollateralPanel">
+                                    <apex:param name="regulatoryAddedColId" value="{!regulatoryAddedCol.id}" assignTo="{!regulatoryAddedColId}"/>
+                                </apex:commandButton>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:outputPanel>
+
+        </apex:form>
+    </body>
+</apex:page>

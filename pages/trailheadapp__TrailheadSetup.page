@@ -1,0 +1,88 @@
+<apex:page controller="trailheadapp.TrailheadSetupController">
+
+    <style>
+        #col1,#col2{width:49%;display:inline-block;vertical-align:top;}
+    </style>
+
+    <apex:sectionHeader title="{!$Label.trailheadapp__trailhead_setup_title}" subtitle="{!$Label.trailheadapp__trailhead_setup_subtitle}" description="{!$Label.trailheadapp__trailhead_setup_description}"/>
+    <apex:pageMessages /><br/>
+    
+    <apex:form >
+        <apex:pageBlock title="{!$Label.trailheadapp__trailhead_setup_settings}">
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!saveConfigSettings}" value="{!$Label.trailheadapp__save_button}"/>
+            </apex:pageBlockButtons>            
+            
+            <apex:pageBlockSection title="{!$Label.trailheadapp__trailhead_setup_credentials_and_settings}" columns="1" id="creds">
+                <p>{!$Label.trailheadapp__trailhead_setup_credentials_and_setting_authentication_description}</p>
+                <p>{!$Label.trailheadapp__trailhead_setup_credentials_and_setting_custom_domain_description}</p>
+            </apex:pageBlockSection><br/>
+            
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{!config.trailheadapp__Username__c}"/>
+
+                <apex:inputField value="{!config.trailheadapp__Custom_Domain__c}"/>
+                
+                <apex:inputSecret value="{!config.trailheadapp__Password__c}"/>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.trailheadapp__trailhead_setup_license_types}" for="licenseTypes"/>
+                    <apex:selectCheckboxes value="{!licenses}" id="licenseTypes">
+                        <apex:selectOptions value="{!licenseTypes}"/>
+                    </apex:selectCheckboxes>
+                </apex:pageBlockSectionItem>
+
+                <apex:inputSecret value="{!config.trailheadapp__Security_Token__c}"/>
+                
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+
+    <div id="col1">
+        <apex:form >
+            <apex:pageblock title="{!$Label.trailheadapp__trailhead_setup_synchronization_settings}">
+                <apex:pageBlockSection columns="1">
+                    <p>{!$Label.trailheadapp__trailhead_setup_scheduled_task_description}</p>
+                </apex:pageBlockSection>
+
+                <apex:selectList value="{!scheduledHour}" size="1" style="margin-top:15px;margin-left:20px">
+                    <apex:selectOptions value="{!availableHours}"/>
+                </apex:selectList>
+                <apex:selectList value="{!scheduledMinute}" size="1" style="margin-top:15px;margin-left:20px">
+                    <apex:selectOptions value="{!availableMinutes}"/>
+                </apex:selectList>
+
+                <p>&nbsp;</p>
+
+                <apex:pageblockButtons location="top">
+                    <apex:commandButton action="{!saveSyncSettings}" value="{!$Label.trailheadapp__save_button}"/>
+                </apex:pageblockButtons>
+            </apex:pageblock>
+        </apex:form>
+    </div>
+    <div id="col2">
+        <apex:form >
+            <apex:pageblock title="{!$Label.trailheadapp__trailhead_setup_logging}">
+                <apex:pageBlockSection columns="1">
+                    <p>{!$Label.trailheadapp__trailhead_setup_credentials_and_setting_logging_description}</p>
+                </apex:pageBlockSection>
+                <apex:pageblockSection title="{!$Label.trailheadapp__trailhead_setup_debug_level}">
+
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$Label.trailheadapp__trailhead_setup_debug_level}" for="debugLevel"/>
+                        <apex:selectList value="{!debugLevel}" multiselect="false" size="1" id="debugLevel">
+                            <apex:selectOptions value="{!DebugLevels}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+
+                </apex:pageblockSection>
+                <apex:pageblockButtons location="top">
+                    <apex:commandButton action="{!saveLogSettings}" value="{!$Label.trailheadapp__save_button}"/>
+                </apex:pageblockButtons>
+            </apex:pageblock>
+        </apex:form>
+    </div>
+
+</apex:page>

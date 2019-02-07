@@ -1,0 +1,602 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" docType="html-5.0" 
+    applyBodyTag="false" applyHtmlTag="false" controller="KnowYourColleagueController">
+
+    <html>
+        <head>
+            <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+            
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'grid.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'version.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'detector.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'formatinf.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'errorlevel.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'bitmat.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'datablock.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'bmparser.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'datamask.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'rsdecoder.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'gf256poly.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'gf256.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'decoder.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'qrcode.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'findpat.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'alignpat.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.jsqrcode, 'databr.js')}"/>
+            
+            <apex:includeScript value="{!URLFOR($Resource.jquery_mobile_filterable, 'jquery.mobile-1.4.0.min.js')}"/>
+            <apex:stylesheet value="{!URLFOR($Resource.jquery_mobile_filterable, 'jquery.mobile-1.4.0.min.css')}"/>
+            
+            <script>
+            
+                var userId = '{!$User.Id}';
+                var closureDate = '23/8/2015';
+                var myQuestionId;
+                var answers;
+                var correctAnswerId;
+                
+                //var questionMarkUrl = '{!URLFOR($Resource.know_your_colleague_images, 'question_mark.jpg')}';
+                
+                var questionNotSelectedMessage = 'You have not selected your question yet.' +
+                    '<br/><br/>Instructions:<br/>1. Select your question<br/>2. Add correct answer';
+                var questionAlreadySelectedMessage = 'You have already selected your question.' +
+                    '<br/><br/>Instructions:<br/>1. Select your question<br/>2. Add correct answer';
+                var qrError = 'No data received from picture, try another one.';
+                var letters = {
+                    0: 'A.',
+                    1: 'B.',
+                    2: 'C.'
+                };
+                
+                
+                $(document).ready(function() {
+                    
+                    startLoading();
+                    loadChallengeQuestions();
+                    $('#info').click( function() {
+                        var isVisible = $('#pageDescription').is(':visible');
+                        if (isVisible) {
+                            $('#pageDescription').slideUp();
+                        } else {
+                            $('#pageDescription').slideDown();
+                        }
+                    });
+                    
+                    qrcode.callback = read;
+                    
+                });
+                
+                function read(a) {
+                    if (a.indexOf('error decoding') > -1) {
+                        alert(qrError);
+                        endLoading();
+                    } else {
+                        renderUserQuestion(a);
+                    }    
+                }
+                  
+                function previewFile() {
+                    startLoading();
+                    var preview = document.querySelector('#preview');
+                    var file    = document.querySelector('input[type=file]').files[0];
+                    var reader  = new FileReader();
+                    
+                    reader.onloadend = function () {
+                        preview.src = reader.result;
+                        decode();
+                    }
+                    
+                    if (file) {
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.src = "";
+                    }
+                }
+                    
+                function decode() {
+                    try {
+                        var preview = document.querySelector('#preview');
+                        qrcode.decode(preview.src);
+                    } catch (e) {
+                        alert('Error - ' + e);
+                    }
+                }
+                
+                function loadChallengeQuestions() {
+                    KnowYourColleagueController.getAllChallengeQuestions(userId, onChallengeQuestionsLoaded);
+                }
+                
+                function onChallengeQuestionsLoaded(result) {
+                    console.log(result);
+                    if (result.answers.length == 0 ) {
+                    //if (true) {
+                        if (result.questions.length > 0) {
+                            if (result.haveChosen == false) {
+                                $('#pageDescription').html(questionNotSelectedMessage);
+                                myQuestionId = '';
+                            } else {
+                                $('#pageDescription').html(questionAlreadySelectedMessage);
+                                myQuestionId = result.questions[0].id;
+                            }
+                            renderQuestions(result.questions);
+                            addQuestionOnClick();
+                            
+                            if (result.haveChosen == true) {
+                                renderAnswers(result.answers);
+                            }
+                        }
+                    } else {
+                        
+                        var ua = navigator.userAgent.toLowerCase();
+                        var isAndroid = ua.indexOf("android") > -1;
+                        if (isAndroid) {
+                            //alert('Using of QR codes is not recommended for Android users. Please search by name.');
+                            $('#qrPanel').hide();
+                        }
+                        
+                        $('#questionsList').slideUp();
+                        setQRPageInfo();
+                        $('#gamePanel').slideDown();
+                        prepareAutocomplete();
+                    }
+                    endLoading();
+                }
+                
+                function renderQuestions(questions) {
+                    var html = '';
+                    
+                    if (myQuestionId != '') {
+                        html += '<div id="' + questions[0].id + '" class="question"><div class="questionBody">' +
+                            questions[0].description + '</div></div>';
+                    } else {
+                        for (var i = 0; i < questions.length; i++) {
+                            html += '<div id="' + questions[i].id + '" class="question"><div class="questionBody">' +
+                                questions[i].description + '</div></div>';
+                        }
+                    }
+                    $('#questionsList').html(html);
+                    
+                    if (myQuestionId != '') {
+                        var content = '<div id="questionFooter"><div id="addAnswersButton">Add Correct Answer</div></div>';
+                        $('#questionsList .question:first').append(content);
+                        $('#addAnswersButton').click( function() {
+                            $('#addAnswersButton').slideUp();
+                            $('#answers').slideDown();
+                        });
+                    }
+                }
+                
+                function addQuestionOnClick() {
+                    $('.question').click( function() {
+                        var id = $(this).prop('id');
+                        var elem = $(this).find('.questionBody');
+                        var value = $(elem).html();
+                        
+                        if (id == myQuestionId) {
+                            return;
+                        } else {
+                            var commit = confirm('Select "' + value + '" as your question?');
+                            if (commit) {
+                                setQuestionAsMine(id);
+                            }
+                        }
+                    });
+                }
+                
+                function renderAnswers(answers) {
+                    var html = '<div id="answers">';
+                    if (answers.length == 0) {
+                        html += '<input id="addAnswerInput" type="text"/><div id="addWrapper"><span id="add">Add</span></div>';
+                    } else {
+                        html += '<ul><li><span class="answer">' + answers[0].Description__c + '</span></li></ul>';  
+                    }
+                    
+                    html += '</div>';
+                    $('#questionFooter').append(html);
+                    
+                    if (answers.length == 0) {
+                        $('#add').click( function() {
+                            var value = $('#addAnswerInput').val();
+                            if (value.length > 0) {
+                                var questionId = $('#addAnswerInput').closest('.question').prop('id');
+                                KnowYourColleagueController.addAnswer(value, questionId, userId, onChallengeQuestionsLoaded);
+                            } else {
+                                alert('Please fill in your answer first.');
+                            }
+                        });
+                    } else {
+                        $('#addAnswersButton').slideUp();
+                        $('#answers').slideDown();
+                    }
+                }
+                
+                function setQuestionAsMine(id) {
+                    startLoading();
+                    KnowYourColleagueController.setQuestionAsMine(id, userId, onChallengeQuestionsLoaded);
+                }
+                
+                function prepareAutocomplete() {
+                    $( "#optyOwnersAutocomplete" ).on( "filterablebeforefilter", function ( e, data ) {
+                        var $ul = $( this ),
+                            $input = $( data.input ),
+                            value = $input.val(),
+                            html = "";
+                        $ul.html( "" );
+                        if ( value && value.length > 2 ) {
+                            $ul.html( "<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>" );
+                            $ul.listview( "refresh" );
+                            
+                            KnowYourColleagueController.searchUser($input.val(), function(result) {
+                                console.log(result);
+                                $.each( result, function ( i, val ) {
+                                    html += "<li value=\"" + val.Id + "\">" + val.Name + "</li>";
+                                });
+                                $ul.html( html );
+                                $ul.listview( "refresh" );
+                                $ul.trigger( "updatelayout");
+                
+                                $('#optyOwnersAutocomplete li').click(function(event) {
+                                    startLoading();
+                                    var id = $(this).attr('value');
+                                    var name = $(this).html();
+                                    var content = "<li value=\"" + id + "\">" + name + "</li>";
+                                    $('#optyOwnersInput').val('');
+                                    $('#optyOwnersAutocomplete').html('');
+                                    renderUserQuestion(id);
+                                });
+                            });
+                        }
+                    });
+                }
+                
+                function renderUserQuestion(userToAnswerId) {
+                    var actualUserId;
+                    if (userToAnswerId.length != 15) {
+                        userToAnswerId = userToAnswerId.substring(0, 15);
+                    }
+                    
+                    if (userId.length != 15) {
+                        actualUserId = userId.substring(0, 15);
+                    } else {
+                        actualUserId = userId;
+                    }
+                    
+                    if (userToAnswerId == actualUserId) {
+                        endLoading();
+                        alert('You can not answer to your own question.');
+                    } else {
+                
+                        KnowYourColleagueController.getUserQuestion(userToAnswerId, function(result) {
+                            if (result.hasChosen == false) {
+                                endLoading();
+                                alert('User has not chosen a question yet.');
+                                
+                            } else if (result.alreadyAnswered != undefined && result.alreadyAnswered == true) {
+                                endLoading();
+                                alert('You have already answered question of this user!');
+                                
+                            } else {
+                                answers = result.answers;
+                                $('#gamePanel').slideUp();
+                                
+                                $('#pageDescription').html('Select correct answer by tapping on it.');
+                                var html = '<div id="userQuestion"><div id="questionToGuessLabel"><img id="questionMarkPicture" src="{!URLFOR($Resource.know_your_colleague_images, 'question_mark_dark.jpg')}" width="27" height="24"/>' + result.username + '\'s question:</div><br/>';
+                                html += '<div class="bold">' + result.question.description + '</div></div>';
+                                
+                                for (var i = 0; i < 3; i++) {
+                                    if (answers[i].isCorrect) {
+                                        html += '<div class="possibleAnswer correct" id="' + answers[i].id + '">' + letters[i] + ' ' + answers[i].description + '</div>';
+                                        correctAnswerId = answers[i].id;
+                                    } else {
+                                        html += '<div class="possibleAnswer" id="' + answers[i].id + '">' + letters[i] + ' ' + answers[i].description + '</div>';
+                                    }
+                                }
+                                
+                                $('#questionToGuess').html(html);
+                                $('#guessPanel').slideDown();
+                                
+                                $('.possibleAnswer').click( function() {
+                                    var isCorrect = $(this).hasClass('correct');
+                                    if (isCorrect) {
+                                        alert('Correct!');
+                                        setAnswerData(true);
+                                    } else {
+                                        var correctAnswer = $('#questionToGuess .correct').html();                                
+                                        alert('Not correct! Correct aswer was: ' + correctAnswer);
+                                        setAnswerData(false);
+                                    }
+                                });
+                                endLoading();
+                            }
+                        });
+                    }
+                }
+                
+                function setAnswerData(isCorrect) {
+                    startLoading();
+                    KnowYourColleagueController.setAnswerData(correctAnswerId, isCorrect, function(result) {
+                        
+                        var preview = document.querySelector('#preview');
+                        preview.src = "";
+                        $('#qrPic').val('');
+                        setQRPageInfo();
+                        
+                        $('#guessPanel').slideUp();
+                        $('#gamePanel').slideDown();
+                        endLoading();
+                        sforce.one.navigateToSObject(result, 'chatter');
+                    });
+                }
+                
+                function setQRPageInfo() {
+                    $('#pageDescription').html('You can look for user\'s question by scanning QR or by typing his/her name.');
+                }
+                
+                //progress bar start
+                function startLoading() {
+                    $('#load_scrl').css('top', $(document).scrollTop() + 200);
+                    $('.loadingBox').show();
+                }
+                
+                //progress bar end
+                function endLoading() {
+                    $('.loadingBox').hide();
+                }
+                
+                (function() {
+                    try {
+                        var a = navigator.userAgent; 
+                        if ((a.indexOf('Salesforce') != -1) && (a.indexOf('iPhone') != -1|| a.indexOf('iPad') != -1) && 
+                                (a.indexOf('OS/8') != -1 || a.indexOf('OS 8') != -1) && (a.indexOf('Safari') == -1)) { 
+                            var s = document.createElement('style'); 
+                            s.innerHTML = "html,html body {overflow: auto;-webkit-overflow-scrolling:touch;}" +
+                                "body{position:absolute;left:0;right:0;top:0;bottom:0;}"; 
+                            document.getElementsByTagName('head')[0].appendChild(s);
+                        }
+                    } catch(e) {
+                        console.log('An error occured during fixing iOS.');
+                    }
+                })(); 
+            
+            </script>
+        
+            <style>
+            
+                * {
+                    font-family: "ProximaNovaSoft-Regular", Calibri, "Gill Sans", "Gill Sans MT", Candara, Segoe, "Segoe UI", Arial, sans-serif;
+                }
+            
+                #findColleagueBtn {
+                    position: absolute;
+                    right: 0;
+                    margin-right: 10px;
+                }
+                
+                #questionsList .question,
+                #pageDescription,
+                .possibleAnswer,
+                #userQuestion,
+                #autocompletePanel,
+                #qrPanel {
+                    background-color: white;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    margin-top: 15px;
+                    margin-bottom: 15px;
+                }
+                
+                #pageDescription,
+                .possibleAnswer,
+                #userQuestion,
+                #autocompletePanel,
+                #qrPanel {
+                    border: 1px solid rgba(0, 0, 0, 0.19);
+                    padding: 14px;
+                }
+                
+                #userQuestion {
+                    background-color: #f5f5f5;
+                    border: 1px solid #e3e3e3;
+                }
+                
+                #questionFooter {
+                    padding: 10px;
+                    border-top: 1px solid rgba(0, 0, 0, 0.19);
+                    text-align: right;
+                    color: gray;
+                }
+                
+                .questionBody {
+                    padding: 14px;
+                    display: inline-block;
+                }
+                
+                .question {
+                    border: 1px solid rgba(0, 0, 0, 0.19);
+                }
+                
+                #addAnswerInput {
+                    width: 96%;
+                    margin-left: 1.5%;
+                    margin-right: 2.5%;
+                    margin-bottom: 10px;
+                    padding-left: 1em;
+                    border-radius: 11px;
+                    height: 24px;
+                    outline-color: transparent;
+                    outline-style: none;
+                }
+                
+                #answers,
+                #pageDescription {
+                    display: none;
+                }
+                
+                #answers ul {
+                    list-style-type: none;
+                    text-align: left;
+                    padding-left: 0px;
+                }
+                
+                #answers ul li {
+                    padding: 8px;
+                }
+                
+                #add {
+                    color: gray;
+                    padding: 8px;
+                    position: relative;
+                    top: 0.15em;
+                }
+                
+                #info {
+                    position: absolute;
+                    right: 13px;
+                    color: #2A94D6;
+                    padding: 8px;
+                }
+                
+                #title {
+                    position: relative;
+                    left: 11px;
+                    font-size: 18px;
+                }
+                
+                #gamePanel {
+                    display: none;
+                }
+                
+                #addWrapper {
+                    text-align: right;
+                }
+                
+                #gamePanel {
+                    padding-top: 15px;
+                    padding-bottom: 15px;
+                }
+                
+                .ui-content {
+                    padding: 0;
+                }
+                
+                #guessPanel {
+                    display: none;
+                }
+                
+                .ui-input-search {
+                    margin-top: -12px;
+                }
+                
+                .overlay {
+                    display:    none;
+                    position:   fixed;
+                    z-index:    1000;
+                    top:        0;
+                    left:       0;
+                    height:     100%;
+                    width:      100%;
+                    background: rgba( 255, 255, 255, .8 ) 
+                    url('{!$Resource.WorkingGif}') 
+                    50% 50% 
+                    no-repeat;
+                }
+                
+                .bold {
+                    font-weight: bold;
+                }
+                
+                #pageHeader {
+                    border-bottom: 1px solid rgba(133, 133, 133, 0.36);
+                    padding-bottom: 0.5em;
+                    padding-top: 0.5em;
+                }
+                
+                #cameraPicture,
+                #editPicture {
+                    position: absolute;
+                    right: 2.2em;
+                }
+                
+                #questionMarkPicture {
+                    position: relative;
+                    top: 0.3em;
+                    margin-right: 1em;
+                }
+                
+                #qrPic::-webkit-file-upload-button {
+                    visibility: hidden;
+                }
+                
+                #qrPic::before {
+                    content: 'Scan QR';
+                    display: inline-block;
+                    background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+                    border: 1px solid #999;
+                    border-radius: 3px;
+                    padding-top: 3px;
+                    padding-bottom: 1px;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    outline: none;
+                    white-space: nowrap;
+                    -webkit-user-select: none;
+                    cursor: pointer;
+                    text-shadow: 1px 1px #fff;
+                    font-weight: 700;
+                    font-size: 10pt;
+                }
+                
+                #qrPic:hover::before {
+                    border-color: black;
+                }
+                
+                #qrPic:active::before {
+                    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+                }
+            
+            </style>
+        
+        </head>
+    
+        <body>
+            <div>
+                <div id="pageHeader">
+                    <span id="title">Big Data Offsite Challenge</span>
+                    <span id="info">Info</span>
+                </div>
+                <div id="pageDescription"/>
+                <div id="questionsList"/>
+                <div id="gamePanel">
+                    <div id="qrPanel">
+                        <div class="subtitle">Use QR: <img id="cameraPicture" src="{!URLFOR($Resource.know_your_colleague_images, 'camera.jpg')}" width="25" height="25"/></div>
+                        <form>
+                            <input id="qrPic" type="file" accept="image/*;capture=camera" onchange="previewFile()"/>
+                            <br/>
+                            <div style="display: none;">
+                                <img src="" id="preview" height="200" alt="Image preview..." />
+                            </div>  
+                        </form>
+                    </div>
+                    
+                    <div id="autocompletePanel">
+                        <div class="subtitle">Or search by name: <img id="editPicture" src="{!URLFOR($Resource.know_your_colleague_images, 'edit.jpg')}" width="27" height="24"/></div>
+                        <div role="main" class="ui-content">
+                            <form class="ui-filterable">
+                                <input id="optyOwnersInput" data-type="search" placeholder="Start typing..."/>
+                            </form>
+                            <ul id="optyOwnersAutocomplete" data-role="listview" data-inset="true" data-filter="true" data-input="#optyOwnersInput"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="guessPanel">
+                    <div id="questionToGuess"/>
+                </div>
+            </div>
+        
+            <!-- progress bar -->
+            <div id="load_scrl" class="loadingBox" style="display:none"> </div>
+            <div class="loadingBox overlay"> </div>
+        
+        </body>
+    </html>
+
+</apex:page>

@@ -1,0 +1,137 @@
+<!--
+ - Created by KyleAlexander on 2018/03/19.
+ -->
+
+<apex:page standardController="Agreement__c" extensions="AgreementClauseList_Cont" doctype="html-5.0">
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <apex:includescript value="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" />
+    <apex:stylesheet value="//cdn.datatables.net/1.10.4/css/jquery.dataTables.css" />
+    
+    <script>
+        j$ = jQuery.noConflict();
+        j$(document).ready( function () {
+            var clauseTable = j$('[id$="clausesTable"]').DataTable({
+
+            });
+            var addedClauseTable = j$('[id$="addedClauseTable"]').DataTable({
+
+            });
+            
+            if(j$('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                j$('[id$=amendmentReason]').prop('disabled', true);
+                j$('[id$=regName]').prop('disabled', false);
+                j$('[id$=effDate]').prop('disabled', false);
+           }
+           else{
+                j$('[id$=regName]').prop('disabled', true);
+                j$('[id$=amendmentReason]').prop('disabled', false);
+                j$('[id$=effDate]').prop('disabled', true);
+           }
+        });
+    
+    	function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                j$('[id$=amendmentReason]').prop('disabled', true);
+                j$('[id$=regName]').prop('disabled', false);
+                j$('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                j$('[id$=regName]').prop('disabled', true);
+                j$('[id$=amendmentReason]').prop('disabled', false);
+                j$('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+
+    <apex:form id="theForm">
+        <apex:sectionHeader title="Agreement Clauses"/>
+       
+        <apex:outputPanel rendered="{!clausesPanel}" id="clausesPanel">
+            <apex:pageBlock title="Added Clauses">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Remove Clauses" action="{!RemoveClauses}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:outputLabel value="No clauses have been added to this agreement" rendered="{!addedClauses.size == 0}"></apex:outputLabel>
+                <apex:outputPanel rendered="{!addedClauses.size != 0}">
+                    <table id="addedClauseTable" class="display">
+                        <thead>
+                        <tr>
+                            <th style="width:20px"></th>
+                            <th>Clause Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <apex:repeat value="{!addedClauses}" var="ac">
+                            <tr>
+                                <td><apex:inputCheckbox value="{!ac.selected}"/></td>
+                                <td>{!ac.clause.Clause_Name__c}</td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+
+            <apex:pageBlock id="clauseBlock" title="All Clauses">
+                <apex:pageBlockButtons location="top">
+                    <apex:commandButton value="Add Clauses" action="{!AddClauses}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:outputLabel value="There are no relevant clauses that can be added to this agreement" rendered="{!notAddedClauses.size == 0}"></apex:outputLabel>
+                <apex:outputPanel rendered="{!notAddedClauses.size != 0}">
+                    <table id="clausesTable" class="display">
+                        <thead>
+                        <tr>
+                            <th style="width:20px"></th>
+                            <th>Clause Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <apex:repeat value="{!notAddedClauses}" var="rc">
+                            <tr>
+                                <td><apex:inputCheckbox value="{!rc.selected}"/></td>
+                                <td>{!rc.clause.Clause_Name__c}</td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,49 @@
+<messaging:emailTemplate subject="Collateral Monitoring {!relatedTo.Collateral_Monitoring__r.Name} is overdue for {!relatedTo.Collateral_Monitoring__r.Deal__r.Name} from {!relatedTo.Collateral_Monitoring__r.Due_Date__c}" recipientType="User" relatedToType="Watcher__c">
+    <messaging:htmlEmailBody >
+        <html>
+            <body>
+
+            <p>Good day  {!relatedTo.Collateral_Monitoring__r.Person_Responsible__r.Name},</p>
+            <p>Collateral Monitoring {!relatedTo.Collateral_Monitoring__r.Name} for {!relatedTo.Collateral_Monitoring__r.Deal__r.Name} was due on 
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Collateral_Monitoring__r.Due_Date__c}" />
+            </apex:OutputText>
+            :</p>
+            
+            <p>
+            Collateral Name: {!relatedTo.Collateral_Monitoring__r.Collateral__r.Name}<br/>
+            Collateral Group: {!relatedTo.Collateral_Monitoring__r.Collateral__r.Collateral_Group__r.Name}<br/>
+            Collateral Type: {!relatedTo.Collateral_Monitoring__r.Collateral__r.Collateral_Type1__r.Name}<br/>
+            </p>
+            
+            <p>
+            Deal Name : {!relatedTo.Collateral_Monitoring__r.Deal__r.Name}<br/>
+            Agreement Name : {!relatedTo.Collateral_Monitoring__r.Agreement__r.Name}<br/>
+            Collateral Monitoring Name: {!relatedTo.Collateral_Monitoring__r.Name} <br/>
+            Collateral Type : {!relatedTo.Collateral_Monitoring__r.Collateral_Type__c}<br/>
+            Item to Monitor: {!relatedTo.Collateral_Monitoring__r.Item_to_Monitor__c}<br/>
+            Collateral Monitoring Status: {!relatedTo.Watcher_Status__c}<br/>
+            Collateral Monitoring Due Date: 
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Collateral_Monitoring__r.Due_Date__c}" />
+            </apex:OutputText><br/>
+            </p>
+            
+            <p>
+            <apex:outputlink value="{!LEFT($Api.Partner_Server_URL_140,FIND('.com',$Api.Partner_Server_URL_140)+4)+relatedTo.Collateral_Monitoring__r.Id}" target="_blank">Click here to view in Salesforce</apex:outputlink>
+            </p>
+            
+            <p>
+            Kind regards,<br/>
+            Transaction Management Group
+            </p>
+            
+            <p>
+            <center><b><i> Auto generated email , please do not reply to this email. </i></b></center>
+            </p>
+            
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+
+</messaging:emailTemplate>

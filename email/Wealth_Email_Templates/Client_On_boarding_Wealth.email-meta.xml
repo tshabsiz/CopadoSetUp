@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email to opportunity owner to process on-boarding</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Client On-boarding - Wealth</name>
+    <style>freeForm</style>
+    <subject>{!Opportunity.Name} is ready to be onboarded</subject>
+    <textOnly>Hi {!Opportunity.OwnerFirstName},
+
+{!Opportunity.Name} is now ready to be on-boarded in PMP. Please click the link below to view the Opportunity.
+
+{!Opportunity.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

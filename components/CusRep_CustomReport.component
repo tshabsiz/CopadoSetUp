@@ -1,0 +1,827 @@
+<!-- 25/02/2016 Marta Malinowska US-0976 Changed slider scale to apply custom step values -->
+<apex:component controller="CusRep_CustomReportController" allowDML="true">
+
+    <apex:attribute name="settings" description="Name of custom settings record" type="string" required="true" assignTo="{!settingsName}"/>
+
+    <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.Select2, 'select2.full.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Select2, 'select2.min.css')}"/>
+
+    <apex:includeScript value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}"/>
+    
+    <script>
+    
+        var settingsLoaded = {!crs != null};
+        
+        var filtersData;
+
+        var previouslyChangedFilterId;
+        
+        var fireMap = {};
+        
+        var lastColOrder = -1;
+        
+        var isAsc = false;
+        
+        var recordsPerPage;
+        
+        var offset = 0;
+        
+        var recordsCount;
+        
+        //not universal
+        var allowAssigning = {!allowAssigning};
+        
+        (function($) {
+        
+            $.fn.outside = function(ename, cb) {
+            
+                return this.each( function() {
+                    var $this = $(this),
+                    self = this;
+                    
+                    $(document.body).bind(ename, function tempo(e) {
+                        if(e.target !== self && !$.contains(self, e.target)) {
+                            cb.apply(self, [e]);
+                        if(!self.parentNode) $(document.body).unbind(ename, tempo);
+                    }
+                 });
+                              
+              });
+           };
+        }(jQuery));
+    
+        $('document').ready(function() {
+            
+            if (settingsLoaded) {
+            
+                setMaxWidth();
+                processFilters();
+                applyFilters(false);
+                recordsPerPage = {!crs.Rows_In_Result__c}
+                
+            } else {
+                showAlert('{!$Label.errMsg_ErrorLoadingSettings}');
+            }
+            
+        });
+        
+        function setMaxWidth() {
+            var width = $('#resultTableWrapper').width();
+            $('#resultTableWrapper .slds-scrollable--x').width(width);
+        }
+        
+        function processFilters() {
+            startLoading('{!$Label.lbl_PreparingFilters}');
+        
+            var filtersDataJson = $('.filtersDataJson').text();
+            filtersData = JSON.parse(filtersDataJson);
+            
+            var filtersCount = filtersData.picklists.length + filtersData.numbers.length + filtersData.ranges.length + filtersData.texts.length;
+            
+            for (var i = 1; i <= filtersCount; i++) {
+                findFilterWithOrder(i, filtersData);
+            }
+            
+            addMoreLessButtonsOnClicks();
+        }
+
+        function updateFilters() {
+            startLoading('{!$Label.lbl_PreparingFilters}');
+        
+            var filtersDataJson = $('.filtersDataJson').text();
+            filtersData = JSON.parse(filtersDataJson);
+            
+            var filtersCount = filtersData.picklists.length + filtersData.numbers.length + filtersData.ranges.length + filtersData.texts.length;
+            
+            for (var i = 1; i <= filtersCount; i++) {
+                findFilterWithOrderForUpdate(i, filtersData);
+            }
+            
+            addMoreLessButtonsOnClicks();
+        }
+
+        function findFilterWithOrderForUpdate(order, filtersData) {
+            for (var i = 0; i < filtersData.picklists.length; i++) {
+
+                if ((filtersData.picklists[i].order == order) && (filtersData.picklists[i].isDependent) && 
+                        filtersData.picklists[i].controllingFilter != null && 
+                        filtersData.picklists[i].controllingFilter == previouslyChangedFilterId) {
+
+                    updateDependentPicklistFilter(filtersData.picklists[i]);
+                }
+            }
+        }
+
+        function updateDependentPicklistFilter(filter) {
+
+            console.log('updating dependent picklist');
+            console.log(filter.values);
+
+            var html = '';
+            for (var i = 0; i < filter.values.length; i++) {
+                html += '<option value="' + filter.values[i] + '">' + filter.values[i] + '</option>';
+            }
+
+            $('#' + filter.id).html(html).change();
+        }
+        
+        function findFilterWithOrder(order, filtersData) {
+            for (var i = 0; i < filtersData.picklists.length; i++) {
+                if (filtersData.picklists[i].order == order) {
+                    createPicklistFilter(filtersData.picklists[i]);
+                }
+            }
+            
+            for (var i = 0; i < filtersData.numbers.length; i++) {
+                if (filtersData.numbers[i].order == order) {
+                    createNumberFilter(filtersData.numbers[i]);
+                }
+            }
+
+            for (var i = 0; i < filtersData.ranges.length; i++) {
+                if (filtersData.ranges[i].order == order) {
+                    createRangeFilter(filtersData.ranges[i]);
+                }
+            }
+            
+            for (var i = 0; i < filtersData.texts.length; i++) {
+                if (filtersData.texts[i].order == order) {
+                    createTextFilter(filtersData.texts[i]);
+                }
+            }
+        }
+        
+        function createPicklistFilter(filter) {
+            console.log(filter);
+            var selectHtml = '<div id="' + filter.id + 'wrapper" class="filter">' +
+                '<div><h2>' + filter.label + '</h2></div>' +
+                '<select style="min-width: 170px;" id="' + filter.id + '" data-placeholder="' + filter.placeholder + '" multiple="multiple">';
+            for (var i = 0; i < filter.values.length; i++) {
+                selectHtml += '<option value="' + filter.values[i] + '">' + filter.values[i] + '</option>';
+            }
+            selectHtml += '</select></div>';
+
+            $('#filters').append(selectHtml);
+            
+            fireMap[filter.id] = false;
+            
+            $('#' + filter.id).select2({dropdownAutoWidth : true, width: 'resolve'});
+            $('#' + filter.id).val(filter.defaultValues).trigger('change');
+
+            $('#' + filter.id).on('change', function(evt, params) {
+                var selectId = $(this).prop('id');
+                previouslyChangedFilterId = selectId;
+
+                var wrapperId = selectId + 'wrapper';
+                    
+                if (!fireMap[selectId]) {
+                    $('#tableOverlay').show();
+                    $('#' + wrapperId).css('z-index', '1150');
+                    $('#' + wrapperId).css('position', 'relative');
+                }
+                fireMap[selectId] = true;
+            });
+            
+            $('#' + filter.id + 'wrapper').outside('click', function(e) {
+                var selectId = $(this).find('select').prop('id');
+
+                if (fireMap[selectId]) {
+                    $('#tableOverlay').hide();
+                    $('#' + filter.id + 'wrapper').css('z-index', '1010');
+                    $('#' + filter.id + 'wrapper').css('position', '');
+                    fireMap[selectId] = false;
+                    
+                    applyFilters(true);
+                }
+            });
+        }
+        
+        function createTextFilter(filter) {
+            
+            var html = '<div id="' + filter.id + 'wrapper" class="filter textFilter">' +
+                '<div><h2>' + filter.label + '</h2></div>' +
+                '<input type="text" id="' + filter.id + '" class="slds-input"/></div>';
+                
+            $('#filters').append(html);
+            
+            $('#' + filter.id).on('change', function(evt, params) {
+                applyFilters(true);
+            });
+        }
+        
+        function createNumberFilter(filter) {
+            
+            var html = 
+            '<div id="' + filter.id + 'wrapper" class="filter numberFilter">' +
+                '<div><h2>' + filter.label + '</h2></div>' +
+                '<div class="slds-button-group" role="group">' +
+                    '<button class="slds-button slds-button--icon-border slds-is-selected">' +
+                        '<svg aria-hidden="true" class="slds-button__icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'+
+                            '<use xlink:href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#chevronleft')}"></use>' +
+                        '</svg>' +
+                    '</button>' +
+                    '<button class="slds-button slds-button--icon-border slds-not-selected">' +
+                        '<svg aria-hidden="true" class="slds-button__icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+                            '<use xlink:href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#chevronright')}"></use>' +
+                        '</svg>' +
+                    '</button>' +
+                '</div>' +
+                '<input id="' + filter.id + '" type="number" class="slds-input numberInput"/>' +
+            '</div>';
+            
+            $('#filters').append(html);
+            
+            $('#' + filter.id).on('change', function(evt, params) {
+                var filterId = $(this).prop('id');
+                var wrapperId = filterId + 'wrapper';
+                
+                if (!fireMap[filterId]) {
+                    $('#tableOverlay').show();
+                    $('#' + wrapperId).css('z-index', '1150');
+                    $('#' + wrapperId).css('position', 'relative');
+                }
+                fireMap[filterId] = true;
+            });
+            
+            $('#' + filter.id + 'wrapper').outside('click', function(e) {
+                var filterId = $(this).find('input').prop('id');
+            
+                if (fireMap[filterId]) {
+                    $('#tableOverlay').hide();
+                    $('#' + filterId + 'wrapper').css('z-index', '1010');
+                    $('#' + filterId + 'wrapper').css('position', '');
+                    fireMap[filterId] = false;
+                    
+                    applyFilters(true);
+                }
+            });
+        }
+
+        function createRangeFilter(filter) {
+            var min = addThousandsSeparator(filter.min);
+            var max = addThousandsSeparator(filter.max);
+            var html = 
+            '<div id="' + filter.id + 'wrapper" class="filter numberFilter">' +
+                '<div><h2>' + filter.label + '</h2></div>' +
+                '<input id="' + filter.id + '-min" type="text" class="slds-input numberInput" disabled="true" value="' + min + '"/>' +
+                '<span class="slds-text-heading--medium"> - </span>' + 
+                '<input id="' + filter.id + '-max" type="text" class="slds-input numberInput" disabled="true" value="' + max + '"/>' +
+                '<div class="slds-m-around--x-small slds-m-top--medium" id="' + filter.id + '-slider"></div>' +
+            '</div>';
+            
+            $('#filters').append(html);
+
+            var scale = [];
+            var num = filter.min;
+            do {
+              scale.push(num);
+              var len = Math.ceil(Math.log(num + 1) / Math.LN10);
+              var step = Math.pow(10, len-1);
+              if(step < filter.step){
+                step = filter.step;
+              } 
+              num = Math.floor(num/step)*step + step;
+            } while(num < filter.max);
+            scale.push(filter.max);
+
+            $(function() {
+              $('#' + filter.id + '-slider').slider({
+                range: true,
+                min: 0,
+                max: scale.length - 1,
+                step: 1,
+                values: [ 0, scale.length - 1 ],
+                slide: function(event, ui) {
+                  $('#' + filter.id + '-min').val(addThousandsSeparator(scale[ui.values[0]]));
+                  $('#' + filter.id + '-max').val(addThousandsSeparator(scale[ui.values[1]]));
+                  fireMap[filter.id] = true;
+                },
+                stop: function(event, ui) {
+                  if(fireMap[filter.id]) {
+                    $('#tableOverlay').hide();
+                    $('#' + filter.id + 'wrapper').css('z-index', '1010');
+                    $('#' + filter.id + 'wrapper').css('position', '');
+                    fireMap[filter.id] = false;
+                    
+                    applyFilters(true);
+                  }
+                }
+              });
+            });
+        }
+        
+        function addMoreLessButtonsOnClicks() {
+        
+            $('.numberFilter button').click( function() {
+                var isSelected = $(this).hasClass('slds-is-selected');
+                var sibling = $(this).siblings('button');
+                
+                if (isSelected) {
+                    $(this).removeClass('slds-is-selected');
+                    $(this).addClass('slds-not-selected');
+                    
+                    $(sibling).removeClass('slds-not-selected');
+                    $(sibling).addClass('slds-is-selected');
+                } else {
+                    $(this).removeClass('slds-not-selected');
+                    $(this).addClass('slds-is-selected');
+                    
+                    $(sibling).removeClass('slds-is-selected');
+                    $(sibling).addClass('slds-not-selected');
+                }
+                applyFilters();
+            });
+        }
+        
+        function applyFilters(resetOffset) {
+            closeToast();
+            
+            if (resetOffset) {
+                offset = 0;
+            }
+            
+            startLoading('Loading data');
+            
+            var data = prepareFiltersData();
+            
+            if (data != null) {
+                applyFiltersInCtrl(data);
+            }
+        }
+        
+        function prepareFiltersData() {
+            
+            //processing picklist filters
+            var picklists = [];
+            for (var i = 0; i < filtersData.picklists.length; i++) {
+                var picklist = {};
+                picklist.id = filtersData.picklists[i].id;
+                
+                picklist.values = [];
+                var select2Data = $('#' + picklist.id).select2('data');
+                
+                if (select2Data.length == 0) {
+                    continue;
+                }
+                
+                for (var x = 0; x < select2Data.length; x++) {
+                    picklist.values.push(select2Data[x].text);
+                }
+                
+                picklists.push(picklist);
+            }
+            
+            //processing number filters
+            var numbers = [];
+            for (var i = 0; i < filtersData.numbers.length; i++) {
+                var number = {};
+                
+                number.id = filtersData.numbers[i].id;
+                number.isLess = $('#' + number.id + 'wrapper button:first-child').hasClass('slds-is-selected');
+                
+                var valueString = $('#' + number.id).val().trim();
+                if (valueString == "") {
+                    continue;
+                }
+                
+                var value = parseInt(valueString);
+                
+                if (isNaN(value)) {
+                    showToast('{!$Label.errMsg_OnlyNumericInFilter} ' + filtersData.numbers[i].label + '.');
+                    return null;
+                }
+                number.value = parseInt(value).toFixed(1);
+                numbers.push(number);
+            }
+
+            //processing range filters
+            var ranges = [];
+            for (var i = 0; i < filtersData.ranges.length; i++) {
+                var range = {};
+                
+                range.id = filtersData.ranges[i].id;
+
+                var minValueString = $('#' + range.id + '-min').val().replace(/,/g, '').trim();
+                var maxValueString = $('#' + range.id + '-max').val().replace(/,/g, '').trim();
+
+                if (minValueString == "" || maxValueString == "") {
+                    continue;
+                }
+                
+                var minValue = parseInt(minValueString);
+                var maxValue = parseInt(maxValueString);
+                
+                if (isNaN(minValue) || isNaN(maxValue)) {
+                    showToast('{!$Label.errMsg_OnlyNumericInFilter} ' + filtersData.ranges[i].label + '.');
+                    return null;
+                }
+                range.min = parseInt(minValue).toFixed(1);
+                range.max = parseInt(maxValue).toFixed(1);
+                ranges.push(range);
+            }
+            
+            //processing text filters
+            var texts = [];
+            for (var i = 0; i < filtersData.texts.length; i++) {
+                var text = {};
+                text.id = filtersData.texts[i].id;
+                text.value = $('#' + text.id).val().trim();
+                
+                if (text.value == "") {
+                    continue;
+                }
+                
+                texts.push(text);
+            }
+            
+            var result = {};
+            result.picklists = picklists;
+            result.numbers = numbers;
+            result.ranges = ranges;
+            result.texts = texts;
+            
+            //ordering
+            result.colOrder = lastColOrder;
+            result.isAsc = isAsc;
+            
+            //pagination
+            result.offset = offset;
+            return JSON.stringify(result);
+        }
+        
+        function renderResultsTable() {
+            
+            var resultJson = $('.resultDataJson').text();
+            var result = JSON.parse(resultJson);
+            
+            if (result.errorMessage != null) {
+                hideResultTable();
+                showToast(result.errorMessage);
+            } else if (result.data.length == 0) {
+                hideResultTable();
+                showToast('{!$Label.errMsg_NoDataToShow}');
+            } else {
+                showResultTable();
+                fillTableHeader(result.columnsUIData);
+                fillTableBody(result);
+                formatNumbersInTable();
+                
+                recordsCount = result.recordsCount;
+                updateRecordsCount();
+            }
+            
+            endLoading();
+        }
+        
+        function fillTableHeader(columnsUIData) {
+            var html = '';
+            
+            //not universal
+            if (allowAssigning) {
+                html += '<th/>';
+            }
+            //end of not universal
+            
+            for (var i = 0; i < columnsUIData.length; i++) {
+                html += 
+                    '<th scope="col" class="slds-is-sortable" onclick="sortColumn(' + i + ');return false;">' +
+                        '<span class="slds-truncate">' + columnsUIData[i].label + '</span>' +
+                        '<button class="slds-button slds-button--icon-bare">' +
+                            '<svg aria-hidden="true" class="slds-button__icon slds-button__icon--small">';
+                            
+                if (i == lastColOrder && isAsc) {
+                    html += '<use xlink:href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#arrowup')}"></use>';
+                } else {
+                    html += '<use xlink:href="{!URLFOR($Resource.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#arrowdown')}"></use>';
+                }
+                
+                html += '</svg></button></th>';
+            }
+            $('#resultTableWrapper .slds-text-heading--label').html(html);
+        }
+        
+        function fillTableBody(result) {
+            var data = result.data;
+            var columnsUIData = result.columnsUIData;
+        
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+            
+                html += '<tr class="slds-hint-parent">';
+                
+                //not universal
+                if (allowAssigning) {
+                    html += 
+                        '<td class="slds-row-select">' +
+                            '<label class="slds-checkbox">' +
+                                '<input type="checkbox" class="assignCheckbox"/>' +
+                                '<span class="slds-checkbox--faux"></span>' +
+                            '</label>' +
+                        '</td>';
+                }
+                //end of not universal
+                
+                for (var x = 0; x < data[i].length; x++) {
+                
+                    var tdClass = columnsUIData[x].alignment;
+                    
+                    if (data[i][x].id == undefined) {
+                        html += '<td class="align' + tdClass + '"><span class="slds-truncate">' + data[i][x] + '</span></td>';
+                    } else {
+                        html += '<td class="align' + tdClass + '"><a href="/' + data[i][x].id +'"><span class="slds-truncate">' + data[i][x].value + '</span></a></td>';
+                    }    
+                }
+                html += '</tr>';
+            }
+            $('#resultTableWrapper tbody').html(html);
+        }
+        
+        function hideResultTable() {
+            $('#resultTableWrapper').hide();
+        }
+        
+        function showResultTable() {
+            $('#resultTableWrapper').show();
+        }
+        
+        function sortColumn(colOrder) {
+            
+            if (lastColOrder == colOrder) {
+                if (isAsc) {
+                    isAsc = false;
+                } else {
+                    isAsc = true;
+                }
+            } else {
+                lastColOrder = colOrder;
+            }
+            
+            applyFilters(true);
+        }
+        
+        function formatNumbersInTable() {
+        
+            $('#resultTableWrapper .alignRight .slds-truncate').each( function() {
+                var value = $(this).text();
+                var formattedValue = numberWithCommas(value);
+                $(this).text(formattedValue);
+            });
+        }
+        
+        function numberWithCommas(x) {
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+        
+        function updateRecordsCount() {
+            var end = offset + recordsPerPage;
+            var text = offset + ' - ' + end + ' (of ' + recordsCount + ')';
+            $('#recordsCountWrapper').text(text);
+        }
+        
+        function goToNext() {
+            //2000 is salesforce governor limit for soql offset
+            if ((offset + recordsPerPage) > 2000) {
+                showToast('{!$Label.errMsg_OffsetLimitReached}');
+            } else if ((offset + recordsPerPage) >= recordsCount) {
+                return;
+            } else {
+                offset += recordsPerPage;
+                applyFilters(false);
+            }
+        }
+        
+        function goToPrevious() {
+            if ((offset - recordsPerPage) < 0) {
+                offset = 0;
+            } else {
+                offset -= recordsPerPage;
+            }
+            applyFilters(false);
+        }
+        
+        function goToFirst() {
+            offset = 0;
+            applyFilters(false);
+        }
+
+        function addThousandsSeparator(num) {
+          return num.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+        }
+        
+        //not universal
+        function onBeforeRequestForAssignment() {
+            var ids = [];
+            $('.assignCheckbox:checked').each( function() {
+                var href = $(this).parents('.slds-hint-parent').find('td:nth-child(2) a').prop('href');
+                var split = href.split('/');
+                var id = split[split.length - 1];
+                ids.push(id);
+            });
+            
+            if (ids.length != 0) {
+                var result = JSON.stringify(ids);
+                startLoading('{!$Label.lbl_Requesting}');
+                requestForAssignmentInCtrl(result);
+            }
+        }
+        
+        function onAssignmentRequested() {
+            var result = $('.resultDataJson').html();
+            
+            if (result != '') {
+                showToast(result);
+                endLoading();
+            } else {
+                applyFilters();
+            }
+        }
+        //end of not universal
+    
+    </script>
+    
+    <style>
+    
+        #filters {
+            margin-top: 2em;
+        }
+        
+        .filter {
+            display: inline-block;
+            margin-right: 4em;
+        }
+        
+        .textFilter input {
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            height: 31px;
+            padding-left: 4px;
+        }
+        
+        .numberInput {
+            border-bottom-left-radius: 0px !important;
+            border-top-left-radius: 0px !important;
+            position: relative;
+            top: 1px;
+        }
+        
+        .numberFilter .slds-button-group {
+            display: inline-block;
+        }
+        
+        .numberFilter .slds-input {
+            width: inherit !important;
+        }
+        
+        .numberFilter button:last-child {
+            border-radius: 0px !important;
+        }
+        
+        #resultTableWrapper {
+            margin-top: 2em;
+        }
+        
+        .alignLeft {
+            text-align: left !important;
+        }
+        
+        .alignRight {
+            text-align: right !important;
+        }
+        
+        .alignCenter {
+            text-align: center !important;
+        }
+        
+        #previousBtn {
+            margin-right: 1em;
+        }
+        
+        #firstBtn {
+            margin-right: 2em;
+        }
+        
+        .select2-container {
+            z-index: 1150 !important;
+        }
+
+        .select2-dropdown {
+            margin-left: 10px;
+        }
+        
+        .select2-container li {
+            margin-left: inherit !important;
+        }
+        
+        .select2 .select2-selection {
+            border: 1px solid #d8dde6 !important;
+        }
+        
+        .height34 {
+            height: 34px;
+        }
+
+        .ui-slider-range {
+          background: #0070d2;
+        }
+
+        .ui-state-hover {
+          border: 1px solid #015ba7 !important;
+          background: #38c;
+        }
+    
+    </style>
+    
+    <div class="slds">
+    
+        <c:ProgressBarLightning />
+    
+        <c:LightningAlert />
+        
+        <c:LightningToast />
+        
+        <div class="slds-page-header" role="banner" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <div class="slds-grid">
+            <div class="slds-col slds-has-flexi-truncate">
+              <div class="slds-media">
+                <div class="slds-media__figure">
+                  <svg aria-hidden="true" class="slds-icon slds-icon--large slds-icon-standard-note">
+                    <use xlink:href="{!URLFOR($Resource.SLDS, '/assets/icons/action-sprite/svg/symbols.svg#new_note')}"></use>
+                  </svg>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-heading--label">{!$Label.lbl_Report}</p>
+                  <div class="slds-grid">
+                    <h1 class="slds-text-heading--medium slds-m-right--small slds-truncate slds-align-middle">{!crs.Page_Label__c}</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- filters at the top of the page -->
+        <div id="tableOverlay" style="display: none;position: absolute;top:0;left:0;width: 100%;height:100%;z-index:1100;opacity:0.4;filter: alpha(opacity = 50)"></div>
+        
+        <div id="filters" />
+        
+        <div id="resultTableWrapper" class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h2 id="recordsCountWrapper" class="slds-text-heading--small slds-truncate"></h2>
+                    </div>
+                </div>
+                <div class="slds-no-flex">
+                    <!-- not universal -->
+                    <apex:outputPanel layout="none" rendered="{!allowAssigning}">
+                        <button class="slds-button slds-button--neutral slds-button--small" onclick="onBeforeRequestForAssignment();return false;">
+                            {!$Label.lbl_RequestForAssignment}
+                        </button>
+                    </apex:outputPanel>
+                    <!-- end of not universal -->
+                </div>
+            </div>
+            <div class="slds-card__body slds-scrollable--x">
+                <table class="slds-table slds-table--bordered">
+                    <thead>
+                        <tr class="slds-text-heading--label" />
+                    </thead>
+                    <tbody />
+                </table>
+            </div>
+            <div class="slds-card__footer">
+                <div class="height34">
+                    <div class="slds-float--right">
+                        <button id="firstBtn" class="slds-button" onclick="goToFirst();return false;">{!$Label.lbl_First}</button>
+                        <button id="previousBtn" class="slds-button" onclick="goToPrevious();return false;">{!$Label.lbl_Previous}</button>
+                        <button class="slds-button" onclick="goToNext();return false;">{!$Label.lbl_Next}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <apex:form >
+            <apex:actionFunction action="{!applyFilters}" name="applyFiltersInCtrl" onComplete="updateFilters();renderResultsTable();" reRender="filtersDataJson,resultDataJson">
+                <apex:param name="filtersUIDataToApplyJson" assignTo="{!filtersUIDataToApplyJson}" value=""/>
+            </apex:actionFunction>
+            
+            <!-- not universal -->
+            <apex:actionFunction action="{!requestForAssignment}" name="requestForAssignmentInCtrl" onComplete="onAssignmentRequested();" reRender="resultDataJson,filtersDataJson">
+                <apex:param name="idsToAssignJson" assignTo="{!idsToAssignJson}" value=""/>
+            </apex:actionFunction>
+            <!-- end of not universal -->
+        </apex:form>  
+        
+        <apex:outputPanel id="filtersDataJson" styleClass="filtersDataJson hidden">{!filtersUIDataJson}</apex:outputPanel>
+        
+        <apex:outputPanel id="resultDataJson" styleClass="resultDataJson hidden">{!resultJson}</apex:outputPanel>
+        
+    </div>
+
+</apex:component>

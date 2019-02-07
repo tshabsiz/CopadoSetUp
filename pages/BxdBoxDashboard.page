@@ -1,0 +1,16 @@
+<apex:page showHeader="true" sidebar="true" controller="BxdBoxDashboardController">    
+    <apex:pageBlock title="Box Integration Dashboard">
+       <!--<apex:image alt="Box Dashboard logo" />-->
+        <apex:pageBlockSection title="Environment Reset"> 
+            <apex:pageBlock title="Clear Data">
+                <apex:pageMessages id="allMessages" escape="true" showDetail="false" />
+        		<apex:form >        
+               		<apex:outputText >This button is intended to delete data in these objects Box Folder Details, Box Frup and Custom Frup.</apex:outputText>
+                    <br />
+                    <br />
+            		<apex:commandButton style="width: 250px; height: 30px;"  action="{! clearData}" onclick="if(!confirm('Are you sure you want to delete?')){return false;}" reRender="allMessages" value="Delete all Box related data in this sandbox" title="This button deletes all records in Box FRUP object, Box Folder Details object and Custom FRUP object" />        
+        		</apex:form>
+            </apex:pageBlock>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

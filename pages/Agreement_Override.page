@@ -1,0 +1,103 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 21/08/2017 - PG    - Created VF page.
+ 12/12/2017 - PG 	- Added dynamic label for Product__c output label.
+ 05/02/2018 - TdB   - Change Product functionality to use 3 the 3 new TMG Product Objects
+ 12/03/2018 - TdB   - Agreement Limit optional (prevent Users from creating Drawdown and Agency with no Agreement Limit) 
+                                                           
+-->  
+<apex:page standardController="Agreement__c" extensions="Agreement_Override" tabStyle="Agreement__c" action="{!actionHandleEntry}">
+
+	<!-- SECTION HEADER -->
+    <apex:sectionHeader title="{!$ObjectType.Agreement__c.Label} Edit" subtitle="New {!$ObjectType.Agreement__c.Label}" />
+
+    <!-- FORM -->
+    <apex:form >
+
+    	<!-- PAGE MESSAGES -->
+    	<apex:pageMessages />
+
+	    <!-- PAGE BLOCK -->
+	    <apex:pageBlock title="{!$ObjectType.Agreement__c.Label} Edit" mode="edit">
+
+	    	<!-- BUTTONS -->
+	    	<apex:pageBlockButtons >
+	    		<apex:commandButton value="Save" action="{!actionSave}" />
+	    		<apex:commandButton value="Cancel" action="{!cancel}" />
+	    	</apex:pageBlockButtons>
+
+		    <!-- PAGE BLOCK SECTION -->
+		    <apex:pageBlockSection title="Client Profile">
+		    	<apex:inputField value="{!objectRecord.Matter_Deal__c}" required="true" />
+		    	<apex:inputField value="{!objectRecord.Client_Name__c}" />
+		    	<apex:pageBlockSectionItem />
+		    	<apex:inputField value="{!objectRecord.Jurisdiction__c}" />
+		    	<apex:pageBlockSectionItem />
+		    	<apex:inputField value="{!objectRecord.Agreement_Status__c}" />
+		    </apex:pageBlockSection>
+		    <!-- / PAGE BLOCK SECTION -->
+
+		    <!-- PAGE BLOCK SECTION -->
+		    <apex:pageBlockSection title="Agreement Profile">
+		    	<apex:inputField value="{!objectRecord.Name}" required="true" />
+		    	<apex:inputField value="{!objectRecord.Limit__c}"/>
+
+		    	<!-- PRODUCT -->
+		    	<apex:pageBlockSectionItem id="section1"> 
+		    		<apex:outputLabel value="{!$ObjectType.Agreement__c.fields.TMG_Product_Level_3__c.Label}" for="productField" /> 
+			    	<apex:actionRegion >			    		
+				    	<apex:inputField value="{!objectRecord.TMG_Product_Level_3__c}" required="true">
+				    		<apex:actionSupport event="onchange" action="{!updateSelectedProduct}" reRender="agreementTypes" id="as123" />
+				    	</apex:inputField>
+			    	</apex:actionRegion>
+		    	</apex:pageBlockSectionItem>
+		    	<!-- / PRODUCT -->
+
+		    	<apex:pageBlockSectionItem />
+
+		    	<!-- SELECT LIST -->
+		    	<apex:pageBlockSectionItem >
+			    	<apex:outputLabel value="Agreement Type" />
+			    	<apex:outputPanel styleClass="requiredInput" layout="block" >
+				    	<apex:outputPanel styleClass="requiredBlock" layout="block"/>
+				    	<apex:selectList value="{!objectRecord.Agreement_Type__c}" required="true" size="1" id="agreementTypes">
+				    		<apex:selectOptions value="{!AgreementTypesList}" />
+				    	</apex:selectList>
+				    </apex:outputPanel>		    	
+		    	</apex:pageBlockSectionItem>
+		    	<!-- / SELECT LIST -->
+		    	
+		    	<apex:pageBlockSectionItem />
+		    	<apex:inputTextArea value="{!objectRecord.Agreement_Description__c}" cols="40" rows="5" />
+		    </apex:pageBlockSection>
+		    <!-- / PAGE BLOCK SECTION -->
+
+		    <!-- PAGE BLOCK SECTION -->
+		    <apex:pageBlockSection title="Dates">
+		    	<apex:inputField value="{!objectRecord.Effective_Date__c}" />
+		    	<apex:inputField value="{!objectRecord.Termination_Date__c}" />
+		    	<apex:inputField value="{!objectRecord.Signature_Date__c}" />
+		    </apex:pageBlockSection>
+		    <!-- / PAGE BLOCK SECTION -->
+
+		    <!-- PAGE BLOCK SECTION -->
+		    <apex:pageBlockSection title="System Information">
+		    	<apex:outputField value="{!objectRecord.RecordTypeId}" />
+		    </apex:pageBlockSection>
+		    <!-- / PAGE BLOCK SECTION --> 
+
+	    </apex:pageBlock>
+	    <!-- / PAGE BLOCK -->
+    
+    </apex:form>
+    <!-- / FORM -->
+	
+</apex:page>

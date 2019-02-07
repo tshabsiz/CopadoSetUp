@@ -1,0 +1,556 @@
+<apex:page StandardController="advpm__Time__c" tabStyle="advpm__Time__c" extensions="TimeSheetEntries_Cont" sidebar="true" doctype="html-5.0">
+    <head>
+<apex:pageMessages id="msgs" />
+        <!-- JS LIBS -->
+        
+           
+    
+        <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" /> 
+        
+        <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-ui-1.11.4.min.js')}" />
+      
+     
+        
+        <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/select2/select2.full.min.js')}" />
+        
+     
+
+       
+        
+        <!-- CSS 
+        <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" rel="stylesheet" id="jquery-ui.css"/>
+
+         -->
+        <apex:stylesheet value="{!URLFOR($Resource.CloudSmiths_Resources,'css/jquery-ui-1.11.4.css')}" />
+        
+        <apex:stylesheet value="{!URLFOR($Resource.CloudSmiths_Resources,'js/select2/select2.min.css')}" />   
+
+        <script>
+   
+            function disableFields(shouldDisable)
+            {
+                if (shouldDisable == true) {
+                    $('[id$="CategoryList"]').attr('disabled','disabled');  
+                    $('[id$="MatterList"]').attr('disabled','disabled');  
+                    $('[id$="ClusterField"]').attr('disabled','disabled');
+                    $('[id$="SegmentField"]').attr('disabled','disabled');  
+                    $('[id$="BusinessUnitField"]').attr('disabled','disabled');  
+                    $('[id$="DescriptionField"]').attr('disabled','disabled');  
+                    $('[id$="MonField"]').attr('disabled','disabled');  
+                    $('[id$="TueField"]').attr('disabled','disabled');  
+                    $('[id$="WedField"]').attr('disabled','disabled');  
+                    $('[id$="ThuField"]').attr('disabled','disabled');  
+                    $('[id$="FriField"]').attr('disabled','disabled');  
+                    $('[id$="SatField"]').attr('disabled','disabled');  
+                    $('[id$="SunField"]').attr('disabled','disabled');  
+                    $('[id$="AddRow"]').attr('hidden','hidden');
+                    $('[id$="removeRow"]').attr('hidden','hidden'); 
+                    $('[id$="saveButton"]').toggleClass('btnDisabled', true).attr('disabled', 'disabled');  
+                }
+            }
+            
+            $(document).ready(function(){
+                
+                startAjax();
+                /**setFocusOnLoad();**/
+            });
+
+            function showCategoryLegend()
+            {
+                $("#categoryLegend" ).dialog({
+                    title: "Work Categories Legend",
+                    modal: true,
+                    minWidth: 900,
+                    maxWidth: 900,
+                    minHeight: 700,
+                    maxHeight: 700
+                }); 
+            }
+            
+            function startAjax(){
+                $('.searchSelectTest').select2({ 
+                    maximumResultsForSearch: 2
+                });
+                
+                checkAllRowsOnLeave();
+            } 
+            
+            function calculateTotal(monId, tueId, wedId, thuId, friId, satId, sunId, totalId) {
+                var mon = document.getElementById(monId).value; 
+                var tue = document.getElementById(tueId).value;   
+                var wed = document.getElementById(wedId).value; 
+                var thu = document.getElementById(thuId).value; 
+                var fri = document.getElementById(friId).value;
+                var sat = document.getElementById(satId).value;
+                var sun = document.getElementById(sunId).value;
+                var t = parseFloat(mon) + parseFloat(tue) + parseFloat(wed) + parseFloat(thu) + parseFloat(fri) + parseFloat(sat) + parseFloat(sun);
+                document.getElementById(totalId).innerHTML = t.toFixed(2);
+            }            
+        
+        </script>
+    </head>
+    
+    <style>
+    .a:link {
+        color: blue;
+    }
+    a:visited {
+        color: green;
+    }
+    a:hover {
+        color: hotpink;
+    }
+    a:active {
+        color: blue;
+    }
+    </style>
+    
+    <style>
+    .myTable {
+        counter-reset: rowCounter;
+    }
+    .myTable .row {
+        counter-increment: rowCounter;
+    }
+    .myTable .row .counter::before {
+        content: counter(rowCounter);
+    }
+    </style>
+ <script type="text/javascript">
+        $(function() {
+            $('[id$=datepickerS]').datepicker({dateFormat: 'yy-mm-dd'});    
+        });
+    </script> 
+
+<script>
+    var j$ = jQuery.noConflict();
+
+    j$(document).ready(function() {
+
+        //Autocomplete
+        j$(document.body).on('focus', 'input.searchAutocomplete' ,function(){
+
+            var map = new Map();
+
+            j$(this).autocomplete({
+                source: function (request, response)
+                {
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.TimeSheetEntries_Cont.searchMatters}',
+                        request.term, 
+                        function(result, event)
+                        {
+                            var object = [];
+
+                            j$.each(result, function(key, value){
+                                object.push(value);
+                                map.set(value.buValue, value.buLabel);
+                            });
+
+                            response(object);
+                        }, 
+                        {
+                            escape: false
+                        }
+                    );                    
+                },
+                minLength: 3,
+                delay: 200,
+                select: function(event, ui) 
+                {
+                    event.preventDefault();
+                    j$(this).val(ui.item.label);
+                    j$(this).closest('tr').find("input[id$='thisRowsMatterId']:hidden:first").val(ui.item.value);
+
+  
+                    console.log(map);
+                }
+            });
+        });
+    });
+    </script>
+    
+      <script>
+
+        /**
+          
+          function UpdateBusinessUnit(Bus){
+             // alert(Bus);
+              BusinessUnit(Bus);
+          
+          }
+
+          **/
+          
+          
+      </script>
+    <script>
+    var j$ = jQuery.noConflict();
+    function ValidateDate() {
+        DateChange();
+    }
+
+</script>
+    
+    <script>
+        function checkOnLeave(elem) {
+            var categoryName = document.getElementById(elem.name);
+            var selectedValue = categoryName.options[categoryName.selectedIndex].text;
+            if (selectedValue == "Out of Office")
+            {
+                //Find the closest column next to category and disable it if 'out of office' is selected
+                var matName = document.getElementById(j$(elem).closest('tr').find("input[id$='matterName']").attr('id'));
+                matName.disabled = true;
+                                
+                //Find the closest column next to matter name and disable it if 'out of office' is selected
+                var busUnit = document.getElementById(j$(matName).closest('tr').find("input[id$='BusinessUnitInput']").attr('id'));
+                busUnit.disabled = true;
+                
+                //Find the closest column next to business unit and disable it if 'out of office' is selected
+                var descField = document.getElementById(j$(busUnit).closest('tr').find("textarea[id$='DescriptionField']").attr('id'));
+                descField.disabled = true;
+                
+                //disable icons
+                document.getElementById(j$(elem).closest('tr').find("a[id$='matterName_lkwgt']").attr('id')).style.visibility = 'hidden';
+				document.getElementById(j$(matName).closest('tr').find("a[id$='BusinessUnitInput_lkwgt']").attr('id')).style.visibility = 'hidden';
+            }
+            else{
+                resetOutOfOfficeFunction(elem);
+            }
+        }
+    
+    	//after refresh happens previuous 'out of office' matter name and description fields are no longer greyed out
+    	//this function checks this and greys them out
+   		function checkAllRowsOnLeave() {
+            $("tr.dataRow").each(function() {
+                $this = $(this);
+                var test = document.getElementById(j$(this).closest('tr').find("select[id$='CategoryList']").attr('id')).id;
+                var categoryName = document.getElementById(test);
+                var selectedValue = categoryName.options[categoryName.selectedIndex].text;
+                if (selectedValue == "Out of Office")
+                {
+                    //Find the closest column next to category and disable it if 'out of office' is selected
+                    var matName = document.getElementById(j$(this).closest('tr').find("input[id$='matterName']").attr('id'));
+                    matName.disabled = true;
+                    //Find the closest column next to matter name and disable it if 'out of office' is selected
+                    var busUnit = document.getElementById(j$(this).closest('tr').find("input[id$='BusinessUnitInput']").attr('id'));
+                    busUnit.disabled = true;
+                    
+                    //Find the closest column next to business unit and disable it if 'out of office' is selected
+                    var descField = document.getElementById(j$(this).closest('tr').find("textarea[id$='DescriptionField']").attr('id'));
+                    descField.disabled = true;
+                    
+                    //disable icons
+                	document.getElementById(j$(this).closest('tr').find("a[id$='matterName_lkwgt']").attr('id')).style.visibility = 'hidden';
+					document.getElementById(j$(this).closest('tr').find("a[id$='BusinessUnitInput_lkwgt']").attr('id')).style.visibility = 'hidden';
+                }
+            });
+        }
+
+        function resetOutOfOfficeFunction(elem) {
+            var categoryName = document.getElementById(elem.name);
+            var selectedValue = categoryName.options[categoryName.selectedIndex].text;
+
+            //Find the closest column next to category and disable it if 'out of office' is selected
+            var matName = document.getElementById(j$(elem).closest('tr').find("input[id$='matterName']").attr('id'));
+            matName.disabled = false;
+
+            //Find the closest column next to matter name and disable it if 'out of office' is selected
+            var busUnit = document.getElementById(j$(matName).closest('tr').find("input[id$='BusinessUnitInput']").attr('id'));
+            busUnit.disabled = false;
+
+            //Find the closest column next to business unit and disable it if 'out of office' is selected
+            var descField = document.getElementById(j$(busUnit).closest('tr').find("textarea[id$='DescriptionField']").attr('id'));
+            descField.disabled = false;
+
+            //disable icons
+            document.getElementById(j$(elem).closest('tr').find("a[id$='matterName_lkwgt']").attr('id')).style.visibility = 'visible';
+            document.getElementById(j$(matName).closest('tr').find("a[id$='BusinessUnitInput_lkwgt']").attr('id')).style.visibility = 'visible';
+
+        }
+    </script>
+    
+    <script>
+        function hoursValidator(hours) {
+            //check if time entered is greater than 24 hours
+            var enteredValue = hours.value;
+            if(enteredValue > 24)
+            {
+                //Give alert that invalid time
+                alert("Invalid time entered! Value must be less than 24 hours!");
+                alterHours(hours);
+            }
+
+            //Convert string to float  for calculation
+            enteredValue = parseFloat(enteredValue);
+
+            //Check if total time for day is greater than 24 hours
+            if(hours.id.includes("MonField")){
+                if(({!totalMonday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("TueField")){
+                if(({!totalTuesday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("WedField")){
+                if(({!totalWednesday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("ThuField")){
+                if(({!totalThursday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("FriField")){
+                if(({!totalFriday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("SatField")){
+                if(({!totalSaturday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+            if(hours.id.includes("SunField")){
+                if(({!totalSunday} + enteredValue) > 24){
+                    alert("Total time entered for day exceeds 24 hours!");
+                    alterHours(hours);
+                }
+            }
+        }
+
+        function alterHours(hours){
+            //get current input field reference's id
+            var hoursId = document.getElementById(hours.getAttribute('id')).id;
+            //set input back to '0.00'
+            var resetTime = document.getElementById(hoursId);
+            resetTime.value = "0.00";
+
+            //reset total
+            //get current total value
+            var totTime = document.getElementById(j$(hours).closest('tr').find("span[id$='t']").attr('id')).id;
+            var timeValue = document.getElementById(totTime).innerText;
+            //subtract total value from invalid entered value
+            var resetTotal = (timeValue - (enteredValue));
+            //set total back to valid total
+            document.getElementById(totTime).innerText = resetTotal;
+        }
+    </script>
+    
+    <body>
+       <apex:form id="timesheetForm">
+
+       <!--
+        <apex:actionFunction immediate="true" name="BusinessUnit" action="{!BusinessUnits}" rerender="thePageBlock">
+           <apex:param name="Unit" value=""  />                                                                            
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="MatterSearch" action="{!MatterUpdate}" rerender="Matter,BusinessUnitInput2" >
+           <apex:param name="BatchId" value="" />                                                                      
+        </apex:actionFunction>
+         -->
+                      
+            <apex:sectionHeader title="Timesheet"/>
+           
+            <apex:pageBlock mode="edit" id="thePageBlock" title="" rendered="{!NOT(hasError)}">
+            
+                <apex:pagemessages />
+                <apex:pageBlockSection columns="3">
+                    <apex:pageBlockSection columns="3">
+                        <apex:inputField label="Timekeeper" value="{!UserLoggedIn.Name}" id="timesheetKeeper"/>
+                        <!--
+                        <apex:inputField label="Week" value="{!evt.advpm__Entry_Date__c}" id="WeekEnding">
+                           
+                            <apex:actionSupport event="onchange" reRender="thePageBlock" oncomplete="startAjax();disableFields({!lockDateIndicator});" action="{!changeDate}" status="addCart"/>
+                        
+                        
+                        </apex:inputField>
+                        -->
+                        
+                        <!--
+                        <apex:actionSupport event="onchange" reRender="thePageBlock" oncomplete="startAjax();disableFields({!lockDateIndicator});" action="{!changeDate}" status="addCart"/>
+                        -->
+                       <apex:outputText >Enter Week:</apex:outputText>     
+                       <apex:inputtext id="datepickerS"  value="{!WeekSelect}" title="Username" styleClass="form-control"  html-placeholder="Week Select" onchange="ValidateDate();">
+                       </apex:inputtext>                  
+                        
+                        <apex:actionStatus id="addCart" startText="Loading..." stopText=" " startStyleClass="statusStyle"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+                
+                <apex:actionFunction name="DateChange" action="{!changeDate}" oncomplete="startAjax();disableFields({!lockDateIndicator});" reRender="dataPageBlock"/>
+                
+                <apex:pageBlockSection id="dataPageBlock">
+                    <!-- PAGE BLOCK TABLE -->
+                    <apex:pageBlockTable id="dataEntries" value="{!timesheetDataTable}" var="timeEntry" columns="14" styleClass="myTable" rowClasses="row">
+
+                        <apex:column >
+                            <span class="counter"></span>
+                        </apex:column>
+
+                      <apex:column id="Category">
+                            <apex:facet name="header">
+                                Category <a href="#" onclick="showCategoryLegend();">(View Legend)</a>
+                            </apex:facet>
+                            <apex:selectList onchange="checkOnLeave(this)" title="{!timeEntry.timeEntryItem.Category__r.Description__c}" style="width: 200px; overflow-x: auto;" value="{!timeEntry.timeEntryItem.Category__c}" multiselect="False" id="CategoryList" styleClass="searchSelectTest" required="true" size="1">
+                                <apex:selectOptions value="{!CategoryList}" id="catList" />
+                            </apex:selectList>
+                        </apex:column>
+                       
+                       <!--
+                        <apex:column headerValue="Matter Name" id="Matter" >       
+                            <apex:selectList onchange="MatterSearch('{!timeEntry.timeEntryItem.id}');" style="width: 200px; overflow-x: auto;" value="{!timeEntry.timeEntryItem.advpm__Matter__c}" multiselect="False" id="MatterList" styleClass="searchSelectTest" size="1">
+                                <apex:selectOptions value="{!MatterList }"  />                                                               
+                            </apex:selectList>                            
+                        </apex:column>
+                        -->
+                        
+                        <!--
+                         <apex:actionsupport  immediate="true" event="onchange" action="{!BusinessUnits}" rerender="Matter,BusinessUnitInput2">
+                                   <apex:param name="Unit" value="{!timeEntry.timeEntryItem.advpm__Matter__c}" assignTo="{!MatterIDSelct}" />                                                                            
+                        </apex:actionsupport>
+                         -->       
+                         
+                        
+                        <apex:column headerValue="Matter Name" id="Matter" >       
+                        <apex:inputfield value="{!timeEntry.timeEntryItem.advpm__Matter__c}" id="matterName" > <!-- '{!timeEntry.timeEntryItem.advpm__Matter__c}' onchange ="BusinessUnit({!timeEntry.timeEntryItem.advpm__Matter__r.id});"  -->
+                        </apex:inputfield>
+                        </apex:column>
+                        
+                        <!-- 
+                         <apex:column headerValue="Matter Search" >
+                            <apex:inputText value="{!timeEntry.matterName}" styleClass="searchAutocomplete" />
+                            <apex:inputHidden id="thisRowsMatterId" value="{!timeEntry.matterId}" /> 
+                          </apex:column> 
+                       -->
+                      <!--  
+                         <apex:column headerValue="Get Business Unit" >                            
+                               <apex:commandButton value="Get Businness Unit" onclick="BusinessUnit({!timeEntry.timeEntryItem.advpm__Matter__r.id});"/>                    
+                        </apex:column>  
+                   -->
+                           
+                            
+                        <apex:column headerValue="Business Unit" id="BusinessUnitInput2" >                            
+                                <apex:inputField style="width: 200px;" value="{!timeEntry.timeEntryItem.Business_Unit_Cluster_Segment__c}" id="BusinessUnitInput"> 
+                                </apex:inputField>                            
+                        </apex:column>
+                    <!--     -->
+                        
+                        <apex:column headerValue="Description" id="Description" >
+                            <apex:inputField style="width: 200px; height: 20px;" value="{!timeEntry.timeEntryItem.advpm__Description__c}" id="DescriptionField" />
+                            <apex:facet name="footer" >  
+                                <b>Total Hours </b> 
+                            </apex:facet>
+                        </apex:column>
+
+                        <apex:column headerValue="Mon" id="Monday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.mondayHours.advpm__Time_In_Hours__c}" id="MonField" onchange="hoursValidator(this)"      
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalMon" style="width:40px;" value="{!totalMonday}"/>
+                            </apex:facet>
+                        </apex:column>
+
+                        <apex:column headerValue="Tue" id="Tuesday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.tuesdayHours.advpm__Time_In_Hours__c}" id="TueField" onchange="hoursValidator(this)"         
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalTue" style="width:40px;" value="{!totalTuesday}"/>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerValue="Wed" id="Wednesday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.wednesdayHours.advpm__Time_In_Hours__c}" id="WedField" onchange="hoursValidator(this)"   
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalWed" style="width:40px;" value="{!totalWednesday}"/>
+                            </apex:facet> 
+                        </apex:column>
+                        <apex:column headerValue="Thu" id="Thursday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.thursdayHours.advpm__Time_In_Hours__c}" id="ThuField" onchange="hoursValidator(this)"        
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalThu" style="width:40px;" value="{!totalThursday}"/>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerValue="Fri" id="Friday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.fridayHours.advpm__Time_In_Hours__c}" id="FriField" onchange="hoursValidator(this)"      
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalFri" style="width:40px;" value="{!totalFriday}"/>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerValue="Sat" id="Saturday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.saturdayHours.advpm__Time_In_Hours__c}" id="SatField" onchange="hoursValidator(this)"       
+                                        onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalSat" style="width:40px;" value="{!totalSaturday}"/>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerValue="Sun" id="Sunday" >
+                            <apex:inputField style="width: 40px; height: 20px;" value="{!timeEntry.sundayHours.advpm__Time_In_Hours__c}" id="SunField" onchange="hoursValidator(this)"      
+                                             onkeyup="calculateTotal('{!$Component.MonField}', '{!$Component.TueField}', '{!$Component.WedField}', '{!$Component.ThuField}', '{!$Component.SunField}','{!$Component.FriField}','{!$Component.SatField}','{!$Component.t}')"/>   
+                            <apex:facet name="footer">
+                                <apex:outputText id="totalSun" style="width:40px;" value="{!totalSunday}"/>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerValue="Total" id="WeekEntryTotal" style="background-color:#f2f3f3">
+                            <apex:outputtext id="t" style="width:40px;"  value="{!timeEntry.totalForWeek}"/>
+                            <apex:facet name="footer">
+                                <apex:outputText id="grandTotal" style="width:40px;" value="{!grandTotal}"/>
+                            </apex:facet>                           
+                        </apex:column>
+                        <apex:column headerValue="">
+                            <!--<apex:commandLink id="removeRow" action="{!RemoveTimeEntry}" immediate="true" reRender="dataPageBlock">-->
+                            <apex:commandLink id="removeRow" action="{!RemoveTimeEntry}">
+                                <apex:param name="index" value="{!timeEntry.counterWrap}"/>  
+                                <apex:image height="16" width="16" url="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility/close_60.png')}" title="Remove Time Record Entry" />
+                            </apex:commandLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <!-- / PAGE BLOCK TABLE -->
+                    
+                    
+                </apex:pageBlockSection>
+                <apex:commandLink Id="AddRow" value="Add Time Entry" action="{!AddTimeEntry}" reRender="dataPageBlock" oncomplete="startAjax();">
+                </apex:commandLink>
+                <apex:pageBlockButtons id="pageButtons">    
+                    <apex:commandButton id="saveButton" value="Save" action="{!SaveTimeEntry}"  />
+                    <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+            </apex:pageBlock>        
+        </apex:form> 
+        <apex:outputPanel id="Dummy">
+        </apex:outputPanel>
+        
+        <!-- MODAL CONTENTS -->
+        <div id="categoryLegend" style="display:none">
+            <apex:dataTable value="{!workCategories}" var="categoryItem" rules="all" rowClasses="odd,even" styleClass="tableClass">
+                
+                <apex:column value="{!categoryItem.Name}" headerValue="Category Name" styleClass="inBorder" width="350" headerClass="headerRow" />
+                <apex:column value="{!categoryItem.Description__c}" headerValue="Category Description" styleClass="inBorder" headerClass="headerRow" width="350" />
+                
+            </apex:dataTable>
+        </div>
+        <!-- / MODAL CONTENTS -->     
+        
+        
+    
+        <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />      
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" />
+    <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+        
+        
+    </body>
+   
+    
+</apex:page>

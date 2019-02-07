@@ -1,0 +1,166 @@
+<apex:page controller="advpm.BillingPreviewChatterController" showheader="false" sidebar="false">
+    <apex:includescript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includescript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/js/bootstrap.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/css/bootstrap.min.css')}" />
+
+    <style type="text/css">
+        .hideCol {
+            display: none;
+        }
+
+        .dataLabel {
+            font-weight: bold !important;
+            margin-bottom: 0px !important;
+            font-size: 12px !important;
+            line-height: 14px !important;
+        }
+
+        .advwrap input, .advwrap textarea, .advwrap .uneditable-input {
+            width: 160px;
+        }
+		
+		.advwrap textarea {
+            width: 178px;
+        }
+		
+        .advwrap select {
+            width: 150px;
+        }
+		
+        .advwrap select, .advwrap input[type="text"], .advwrap input[type="password"], .advwrap input[type="datetime"], .advwrap input[type="datetime-local"], .advwrap input[type="date"], .advwrap input[type="month"], .advwrap input[type="time"], .advwrap input[type="week"], .advwrap input[type="number"], .advwrap input[type="email"], .advwrap input[type="url"], .advwrap input[type="search"], .advwrap input[type="tel"], .advwrap input[type="color"], .advwrap .uneditable-input {
+            height: 18px;
+            padding: 3px 4px;
+            margin-bottom: 0px;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        
+		.advwrap textarea {
+			padding: 3px 4px;
+            margin-bottom: 0px;
+            font-size: 12px;
+            line-height: 18px;
+		} 
+		
+        .lookupIcon, .lookupIconOn {
+            display: inline-block !important;
+            width: 14px !important;
+            height: 14px !important;
+            line-height: 14px !important;
+            vertical-align: top !important;
+            background-image: url("{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/img/glyphicons-halflings.png')}") !important;
+            background-repeat: no-repeat !important;
+            margin-top: 6px !important;
+            background-position: -48px 0 !important;
+            margin-left: -20px !important;
+        }
+
+        .lookupInput input {
+            padding-right: 22px !important;
+        }
+
+        .advwrap a:hover, .advwrap a:visited, .advwrap a:active {
+            text-decoration: none;
+        }
+
+        .advwrap a {
+            text-decoration: none !important;
+        }
+
+        .textRight {
+            text-align: right !important;
+        }
+
+        .advwrap .table-condensed th, .advwrap .table-condensed td {
+            padding: 3px 5px;
+        }
+
+        .advwrap .table {
+            margin-bottom: 0px;
+        }
+
+        table.chatter-options {
+            margin-top: 20px !important;
+            margin-bottom: 10px !important;
+        }
+
+        table.chatter-options td {
+            border-top: 0px solid #ddd !important;
+        }
+
+        table.chatter-options td:first-child {
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        .advwrap .alert {
+            padding: 6px 10px 6px 10px;
+            margin-bottom: 5px;
+        }
+
+        .btn-options {
+            width: 62px;
+        }
+
+        .advwrap .table th, .advwrap .table td {
+            vertical-align: middle;
+        }
+
+        td.add-line-border {
+            border-top: 2px solid #72abcb !important; /*padding-top:5px!important;*/
+        }
+
+        .message .messageText {
+            color: #cc0000;
+            margin-top: -10px;
+            height: 20px;
+        }
+
+        .message .messageTable ul li {
+            color: #cc0000;
+        }
+
+        .chatter-user select {
+            display:none;
+        }
+
+        .advwrap * {
+            -webkit-border-radius: 0 !important;
+            -moz-border-radius: 0 !important;
+            border-radius: 0 !important;
+        }
+    </style>
+
+    <apex:form id="theForm" styleclass="advwrap">
+    	<apex:pagemessages id="msgs" />
+        <table border="0" class="chatter-options table table-condensed" cellspacing="0" cellpadding="0" align="center">
+            <tr>
+                <td width="90px" align="right" class="textRight"><apex:outputlabel styleclass="dataLabel" for="f_chatteruser" value="Select a User" /></td>
+                <td><apex:inputfield value="{!frmDt.advpm__Exported_By__c}" id="f_chatteruser" styleclass="chatter-user" /></td>
+            </tr>
+            <tr>
+                <td align="right" class="textRight"><apex:outputlabel styleclass="dataLabel" for="f_chatteruserdesc" value="Comments" /></td>
+                <td><apex:inputTextArea value="{!descr}" id="f_chatteruserdesc" rows="3" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td align="left" style="text-align:left">
+                    <apex:actionstatus id="loadingReport" onstop="if({!success}) parent.d.hide()">
+                        <apex:facet name="start">
+                            <apex:outputpanel layout="none">
+                                <apex:commandbutton value=" Processing... " styleclass="btn btn-small" disabled="true" />
+                            </apex:outputpanel>
+                        </apex:facet>
+                        <apex:facet name="stop">
+                            <apex:outputpanel layout="none">
+                                <apex:commandbutton action="{!chatterPostReportData}" value=" Post to Chatter " styleclass="btn-small" rerender="theForm" status="loadingReport" style="width:114px" />
+                                <apex:commandbutton value=" Cancel " onclick="parent.d.hide(); return false;" styleclass="btn-small" style="margin-left:4px;margin-right:-4px;width:70px" />
+                            </apex:outputpanel>
+                        </apex:facet>
+                    </apex:actionstatus>
+                </td>
+            </tr>
+        </table>
+    </apex:form>
+
+</apex:page>

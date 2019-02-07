@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Accounts_shared_with_WIMI_users</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Read</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>Wimi users should see   EDC Client record type but only the segment Multi-Manager</description>
+        <label>Accounts shared with WIMI users</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Institutional_Clients</roleAndSubordinatesInternal>
+        </sharedTo>
+        <booleanFilter>(1 AND 2) OR 3</booleanFilter>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>EDC Client</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Multi-manager,Asset Consultants</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Client,Relationship Group,Prospect</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Africa_RD_Holder_shared_to_Markets_Team</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Read</caseAccessLevel>
+            <contactAccessLevel>Edit</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>Africa RD Holder shared to Markets Team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Markets</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>OwnerId</field>
+            <operation>equals</operation>
+            <value>00524000000pjgx</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Barclays_CSC</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>Barclays CSC</label>
+        <sharedTo>
+            <roleAndSubordinates>Client_Service_Centre</roleAndSubordinates>
+        </sharedTo>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value>&quot; &quot;</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Barclays_Payments_Team</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>To share the clients with Payments team in order to load cases on them</description>
+        <label>Barclays Payments Team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>CSC_Payments_Operations</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value>&quot; &quot;</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Cash_Operations_Sharing_Rule</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>Cash Operations Sharing Rule</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>CSC_Cash_Operations</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value>&quot; &quot;</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>EDC_Multi_managers_shared_with_WIMI_institutional</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>None</caseAccessLevel>
+            <contactAccessLevel>None</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>EDC Multi-managers shared with WIMI institutional</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Institutional_Clients</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>EDC Client</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Multi-manager</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Legal_On_Off_Panel_Law_Firm</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Read</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <label>Legal - On/Off Panel Law Firm</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Barclays_COO_Legal</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>On/Off Panel Law Firm</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_NBC_BBT_With_BAGL</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Read</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>Read</opportunityAccessLevel>
+        </accountSettings>
+        <label>Share NBC/BBT With BAGL</label>
+        <sharedTo>
+            <role>BAGL_Management</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>Client_Country__c</field>
+            <operation>equals</operation>
+            <value>Tanzania NBC,Tanzania BBT</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>TBS</fullName>
+        <accessLevel>Read</accessLevel>
+        <accountSettings>
+            <caseAccessLevel>Edit</caseAccessLevel>
+            <contactAccessLevel>Read</contactAccessLevel>
+            <opportunityAccessLevel>None</opportunityAccessLevel>
+        </accountSettings>
+        <description>To share the clients with TBS team in order to load cases on them</description>
+        <label>Barclays TBS</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Cash_Management_Transactional_Banking</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Name</field>
+            <operation>notEqual</operation>
+            <value>&quot; &quot;</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+</SharingRules>

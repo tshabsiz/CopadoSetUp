@@ -1,0 +1,97 @@
+<apex:page standardController="Legal_Quote_Request__c" extensions="Legal_Quote_Request_RelatedList" tabStyle="Legal_Quote_Request__c" action="{!actionLoadApprovalRecords}"> 
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <!-- / JS LIB -->
+    
+    <!-- JAVASCRIPT -->
+    <script>
+    function validateForm()
+    {
+        //Form error flag.
+        var hasError = false;
+            
+        //Prevent library conflict.
+        $j = jQuery.noConflict();
+        
+        //Loop through each textarea i.e. Comment fields.
+        $j('textarea').each(
+            function()
+            {
+                //If the text area is empty.
+                if($j(this).val() == '')
+                {
+                    //Set flag.
+                    hasError = true;
+                    
+                    //Add error class.
+                    $j(this).addClass('error');
+                }
+                else
+                {
+                    //Add error class.
+                    $j(this).removeClass("error");
+                }
+            }
+        );
+
+        //If there are no errors:
+        if(hasError)
+        {
+            return false;
+        }
+        else
+        {
+            //Execute page function.
+            submitApprovalForm();
+        }
+    }
+    </script>
+    <!-- / JAVASCRIPT -->
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Approval Submit" subtitle="Submit Quotes for Approval" />
+    
+    <!-- FORM -->
+    <apex:form >
+        
+        <!-- ACTION FUNCTION -->
+        <apex:actionFunction name="submitApprovalForm" action="{!actionSubmitForApproval}" />
+        
+        <!-- PAGE BLOCK -->
+        <apex:pageBlock title="Approval Details">
+            
+            <apex:pageBlockButtons location="both">
+                <apex:commandButton value="Submit for Approval" onclick="validateForm(); return false;" rendered="{!NOT(pageHasError)}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            
+            <!-- PAGE ERRORS -->
+            <apex:pageMessages />
+            
+            <!-- PAGE TABLE -->
+            <apex:pageBlockTable value="{!legalQuotesSubmitted}" var="quote" rendered="{!NOT(pageHasError)}">
+                
+                <apex:column value="{!quote.Legal_Quote_Request__c}" /> 
+                <apex:column value="{!quote.name}" /> 
+                <apex:column value="{!quote.Law_Firm__c}" /> 
+                <apex:column value="{!quote.Contact__c}" />
+                <apex:column value="{!quote.External_Counsel_Name__c}" />
+                <apex:column >
+                    <apex:facet name="header">Motivation / Comments </apex:facet>
+                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                        <apex:outputPanel layout="block" styleClass="requiredBlock"/>
+                        <apex:inputTextarea value="{!quote.Motivation_Comments__c}" required="true" cols="100" rows="5" />
+                    </apex:outputPanel>
+                </apex:column>
+                
+            </apex:pageBlockTable>
+            <!-- / PAGE TABLE -->
+            
+        </apex:pageBlock>
+         <!-- / PAGE BLOCK -->
+     
+    </apex:form>
+    <!-- / FORM -->
+
+</apex:page>

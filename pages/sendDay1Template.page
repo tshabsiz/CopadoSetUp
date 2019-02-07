@@ -1,0 +1,11 @@
+<apex:page standardController="Day_1_Template__c" extensions="SendDay1TemplateEmail" action="{!sendDay1TemplateAsEmail}">
+    <script>
+        if((typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToSObject('{!dayObj.Id}');
+        }
+        else {
+            // Set the window's URL using a Visualforce expression
+            window.location.href = '{!URLFOR($Action.Day_1_Template__c.View, dayObj.Id)}';
+        }
+    </script>
+</apex:page>

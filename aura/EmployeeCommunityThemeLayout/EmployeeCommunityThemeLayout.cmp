@@ -1,0 +1,44 @@
+<aura:component implements="forceCommunity:themeLayout" access="global">
+    <aura:attribute name="languagePicker" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="search" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="profileMenu" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="navBar" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="footer" type="Aura.Component[]" required="false" />
+    
+    <!--
+<aura:handler name="init" value="{! this }" action="{! c.onInit }"/>
+    <aura:handler event="forceCommunity:routeChange" action="{! c.onRouteChange }"/>
+-->
+    
+    <div aura:id="main" class="Chrome-Masthead-XL-L">
+        <div class="header-container">
+            <div class="header">
+                <div class="Rectangle-3">
+                    <div class="logo Rectangle-13">
+                        <img src="{! $Resource.EmployeeCommunityAssets + '/logos/absa-white.svg' }" class="Absa_white"/>
+                    </div>
+                    <div class="header-search">{! v.search }</div>
+                    <div class="Bounds header-box notifications"><forceCommunity:notifications /></div>
+                    <div class="Bounds header-box profile">{! v.profileMenu }</div>
+                </div>
+            </div>
+            
+            <div class="Divider"></div>
+            
+            <c:EmployeeCommunityMenu />
+        </div>
+        
+        <div id="body" class="">
+            {! v.body }
+        </div>
+        
+        <div id="footer" class="Footer-text">
+            {! v.footer }
+        </div>
+    </div>
+
+    <div class="burger">
+        <a href="javascript:void(0);" onclick="{! c.toggleMenu }"><i class="fa fa-bars" aria-hidden="true"></i></a>
+    </div>
+
+</aura:component>

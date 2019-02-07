@@ -1,0 +1,359 @@
+<apex:page standardController="Supporting_Agreement__c" extensions="supportingAgreementExtension" doctype="html-5.0" >
+     
+    <style>
+        .table-header {
+            font-weight: bold;
+        }
+    </style>
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+    <apex:sectionHeader title="{!$ObjectType.Supporting_Agreement__c.Label} Edit" subtitle="New {!$ObjectType.Supporting_Agreement__c.Label}" />
+
+    <script>
+        $('document').ready(function() {
+            $('[id$=active]').prop('selected', true);
+            $('[id$=masterAgreementType]').prop('disabled', true);
+
+            if($('[id$=SecurityObligationAbsa]').val() != 'Own Amount'){
+               $('[id$=SOAbsaOwnAmount]').prop('disabled', true);
+            }
+
+            if($('[id$=SecurityObligationCounterparty]').val() != 'Own Amount'){
+               $('[id$=SOCounterpartyOwnAmount]').prop('disabled', true);
+            }
+
+            if($('[id$=valAgent]').val() != 'Other'){
+               $('[id$=otherValuation]').prop('disabled', true);
+            }
+
+            if($('[id$=supportingAgreementType]').val() != 'Other'){
+               $('[id$=otherAgreement]').prop('disabled', true);
+            }
+
+            if('{!Supporting_Agreement__c.Master_Agreement_Type__c}' == 'GMRA Agreement') {
+                $('[id$=otherAgreement]').prop('disabled', false);
+            }
+
+            checkBankMinTransferAmount($('[id$=BankMinTransferFixedType]').get(0));
+            checkCounterpartyMinTransferAmount($('[id$=CounterpartyMinTransferFixedType]').get(0));
+            checkBankColThresholdAmount($('[id$=BankColThresholdType]').get(0));
+            checkCounterpartyColThresholdAmount($('[id$=CounterpartyColThresholdType]').get(0));
+            checkBankIndependentAmount($('[id$=BankIndependentType]').get(0));
+            checkCounterpartyIndependentAmount($('[id$=CounterpartyIndependentType]').get(0));
+        });
+
+        function checkAmountAbsa(element){
+            if(element.value == 'Own Amount'){
+                $('[id$=SOAbsaOwnAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=SOAbsaOwnAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkAmountCounterparty(element){
+            if(element.value == 'Own Amount'){
+                $('[id$=SOCounterpartyOwnAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=SOCounterpartyOwnAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkValuationAgent(element){
+            if(element.value == 'Other'){
+                $('[id$=otherValuation]').prop('disabled', false);
+            }
+            else{
+                $('[id$=otherValuation]').prop('disabled', true);
+            }
+        }
+
+        function checkSupAgreementType(element) {
+            if(element.value == 'Other'){
+                $('[id$=otherAgreement]').prop('disabled', false);
+            }
+            else{
+                $('[id$=otherAgreement]').prop('disabled', true);
+            }
+        }
+
+        function checkBankMinTransferAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=BankMinTransferFixedAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=BankMinTransferFixedAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkCounterpartyMinTransferAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=CounterpartyMinTransferFixedAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=CounterpartyMinTransferFixedAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkBankColThresholdAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=BankColThresholdAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=BankColThresholdAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkCounterpartyColThresholdAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=CounterpartyColThresholdAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=CounterpartyColThresholdAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkBankIndependentAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=BankIndependentAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=BankIndependentAmount]').prop('disabled', true);
+            }
+        }
+
+        function checkCounterpartyIndependentAmount(element) {
+            if(element.value == 'Specified Amount'){
+                $('[id$=CounterpartyIndependentAmount]').prop('disabled', false);
+            }
+            else{
+                $('[id$=CounterpartyIndependentAmount]').prop('disabled', true);
+            }
+        }
+
+        function changeAllCurrencyFields(element){
+            $('[id$=Dist_Int_Amount_Eligible_Currency__c]').val(element.value);
+            $('[id$=Bank_Collateral_Threshold_Amount_Eligibl__c]').val(element.value);
+            $('[id$=Counterparty_Collateral_Threshold_Fixed__c]').val(element.value);
+            $('[id$=Counterparty_Ind_Curr_Initial_Mg_Curr__c]').val(element.value);
+            $('[id$=Bank_Ind_Currency_Initial_Mg_Currency__c]').val(element.value);
+        }
+    </script>
+    
+    <apex:form id="pageContent" html-novalidate="true">
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!suppAgreementPanel}" id="cc">
+            <apex:pageBlock id="suppAgreementPgBlock" title="{!$ObjectType.Supporting_Agreement__c.Label} Edit" mode="edit">
+
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Next" action="{!next}" rendered="{!(isNext == false)}"/>
+                    <apex:commandButton value="Save" action="{!save}" rendered="{!isNext}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockSection id="suppAgreementPgInfo" rendered="{!(isNext == false)}" columns="1">
+                    <apex:inputField required="true" value="{!Supporting_Agreement__c.Master_Agreement_Type__c}" id="masterAgreementType" style="disabled:true"/>
+                    <apex:inputField required="true" value="{!Supporting_Agreement__c.Supporting_Agreement_Type__c}" onChange="checkSupAgreementType(this);" id="supportingAgreementType" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Other_Agreement__c}" id="otherAgreement"/>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection id="suppAgreementSavedInfo" rendered="{!isNext}" columns="1">
+                    <apex:outputField value="{!Supporting_Agreement__c.Master_Agreement_Type__c}"/>
+                    <apex:outputField value="{!Supporting_Agreement__c.Supporting_Agreement_Type__c}"/>
+                </apex:pageBlockSection>
+
+                <apex:outputPanel id="otherSections">
+                    
+                <apex:pageBlockSection rendered="{!(isCSA == false && isCSD == false && isNext)}" title="Additional Information" columns="1">
+                	<apex:inputField value="{!Supporting_Agreement__c.Date__c}" />
+                	<apex:inputField id="active" value="{!Supporting_Agreement__c.Active__c}" />
+                </apex:pageBlockSection>
+                    
+                <apex:pageBlockSection rendered="{!(isCSA || isCSD)}" title="Collateral Information" columns="1">
+                    <apex:pageBlockSection columns="2">
+                        <apex:inputField value="{!Supporting_Agreement__c.Collateral_type__c}" />
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.CSA_Type__c}" />
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Bank_Minimum_Transfer_Amount_Type__c}" onChange="checkBankMinTransferAmount(this)" id="BankMinTransferFixedType"/>
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Counterparty_Min_Transfer_Amount_Type__c}" onChange="checkCounterpartyMinTransferAmount(this)" id="CounterpartyMinTransferFixedType"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Bank_Min_Transfer_Fixed_Amount__c}" id="BankMinTransferFixedAmount"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Counterparty_Min_Transfer_Fixed_Amount__c}" id="CounterpartyMinTransferFixedAmount"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Triparty_Agent__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.Uncleared_Swaps_Margin_Indicator_UCSM__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.Base_Currency__c}" onChange="changeAllCurrencyFields(this);"/>
+                    </apex:pageBlockSection>
+                    <br/>
+                    <apex:inputField value="{!Supporting_Agreement__c.Eligible_Currency__c}"/>
+
+                </apex:pageBlockSection>
+                    
+                <apex:pageBlockSection rendered="{!(isCSA || isCSD)}" title="Valuation Information" columns="2">
+                    <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Valuation_Agent__c}" onChange="checkValuationAgent(this);" id="valAgent"/>
+                    <apex:inputField value="{!Supporting_Agreement__c.Valuation_Date__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Other_Valuation_Agent__c}" id="otherValuation"/>
+                    <apex:inputField value="{!Supporting_Agreement__c.Weekday_that_Constitutes_Valuation_Date__c}" />
+                    <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Call_Frequency__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Valuation_Time__c}" />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection rendered="{!isCSA}" title="Credit Support Parties" columns="2">
+                    <apex:inputField value="{!Supporting_Agreement__c.Security_Chargor__c}" id="SecurityChargor"/>
+                    <apex:inputField value="{!Supporting_Agreement__c.Security_Provider__c}" id="SecurityProvider" />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection rendered="{!isCSD}" title="Security Obligation" columns="2">
+                    <apex:inputField required="true" value="{!Supporting_Agreement__c.Security_Obligation_to_Absa__c}" id="SecurityObligationAbsa" onChange="checkAmountAbsa(this);"/>
+                    <apex:inputField required="true" value="{!Supporting_Agreement__c.Security_Obligation_to_Counterparty__c}" id="SecurityObligationCounterparty" onChange="checkAmountCounterparty(this);"/>
+                    <apex:inputField value="{!Supporting_Agreement__c.SO_Absa_Own_Amount__c}" id="SOAbsaOwnAmount"/>
+                    <apex:inputField value="{!Supporting_Agreement__c.SO_Counterparty_Own_Amount__c}" id="SOCounterpartyOwnAmount" />
+                </apex:pageBlockSection>
+                    
+                <apex:pageBlockSection rendered="{!(isCSA || isCSD)}" title="Distribution and Interest Information" columns="2">
+                    <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Dist_Int_Amount_Int_Ref_Rate__c}"/>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection rendered="{!(isCSA || isCSD)}" title="Threshold Information" columns="1" >
+                    <apex:pageBlockSection columns="2" >
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" label="Bank Collateral Threshold Amount Type" value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Amount_Type__c}" onChange="checkBankColThresholdAmount(this)" id="BankColThresholdType"/>
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" label="Counterparty Collateral Threshold Amount Type" value="{!Supporting_Agreement__c.Counterparty_Collateral_T_Amount_Type__c}" onChange="checkCounterpartyColThresholdAmount(this)" id="CounterpartyColThresholdType"/>
+                        <apex:inputField required="false" label="Bank Collateral Threshold Fixed Amount" value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Fixed_Amount__c}" id="BankColThresholdAmount"/>
+                        <apex:inputField required="false" label="Counterparty Collateral Threshold Fixed Amount" value="{!Supporting_Agreement__c.Counterparty_Collateral_Threshold_Amount__c}" id="CounterpartyColThresholdAmount"/>
+                    </apex:pageBlockSection>
+                    <br/>
+
+                    <apex:panelGrid styleClass="list" columns="5" headerClass="table-header" rowClasses="dataRow">
+
+                        <apex:facet name="header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Fitch11" styleClass="table-header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Moody's" styleClass="table-header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Standard & Poor's" styleClass="table-header" />
+                        <apex:outputText value="Bank Collateral Threshold Ratings Based" styleClass="table-header" />
+                        <apex:outputText value="Counterparty Collateral Threshold Ratings Based" styleClass="table-header" />
+
+                        <apex:outputText value="AAA" />
+                        <apex:outputText value="Aaa" />
+                        <apex:outputText value="AAA" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AAA_M_Aaa_S_P_AAA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AAA_M_Aaa_S_P_AAA__c}" />
+
+                        <apex:outputText value="AA+" />
+                        <apex:outputText value="Aa1" />
+                        <apex:outputText value="AA+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa1_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa1_S_P_AA__c}" />
+
+                        <apex:outputText value="AA" />
+                        <apex:outputText value="Aa2" />
+                        <apex:outputText value="AA" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa2_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa2_S_P_AA__c}" />
+
+                        <apex:outputText value="AA-" />
+                        <apex:outputText value="Aa3" />
+                        <apex:outputText value="AA-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa3_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa3_S_P_AA__c}" />
+
+                        <apex:outputText value="A+" />
+                        <apex:outputText value="A1" />
+                        <apex:outputText value="A+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A1_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A1_S_P_A__c}" />
+
+                        <apex:outputText value="A" />
+                        <apex:outputText value="A2" />
+                        <apex:outputText value="A" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A2_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A2_S_P_A__c}" />
+
+                        <apex:outputText value="A-" />
+                        <apex:outputText value="A3" />
+                        <apex:outputText value="A-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A3_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A3_S_P_A__c}" />
+
+                        <apex:outputText value="BBB+" />
+                        <apex:outputText value="Baa1" />
+                        <apex:outputText value="BBB+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa1_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa1_S_P_BBB__c}" />
+
+                        <apex:outputText value="BBB" />
+                        <apex:outputText value="Baa2" />
+                        <apex:outputText value="BBB" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa2_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa2_S_P_BBB__c}" />
+
+                        <apex:outputText value="BBB-" />
+                        <apex:outputText value="Baa3" />
+                        <apex:outputText value="BBB-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa3_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa3_S_P_BBB__c}" />
+
+                        <apex:outputText value="Below BB" />
+                        <apex:outputText value="Below Ba1" />
+                        <apex:outputText value="Below BB" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_Below_B_M_Below_Ba1_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BelowB_M_BelowBa1_S_P_BelowB__c}" />
+
+                    </apex:panelGrid>
+
+                    <br/><br/>
+
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection rendered="{!(isCSA || isCSD)}" title="Independent Amount / Initial Margin Information" columns="2">
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Initial_Margin_Calculation_Method__c}" />
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Counterparty_Independent_Amount_Type__c}" onChange="checkCounterpartyIndependentAmount(this)" id="CounterpartyIndependentType"/>
+                        <apex:inputField required="{!IF(isOtherCSA == true, false, IF(isNotRequired == true, false, true))}" value="{!Supporting_Agreement__c.Bank_Independent_Amount_Type__c}" onChange="checkBankIndependentAmount(this)" id="BankIndependentType"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Counterparty_Ind_Amount_Initial_Margin__c}" id="CounterpartyIndependentAmount"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Bank_Independent_Amount_Initial_Margin__c}" id="BankIndependentAmount"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Counterparty_Ind_Curr_Initial_Mg_Curr__c}" id="Counterparty_Ind_Curr_Initial_Mg_Curr__c"/>
+                        <apex:inputField value="{!Supporting_Agreement__c.Bank_Ind_Currency_Initial_Mg_Currency__c}" id="Bank_Ind_Currency_Initial_Mg_Currency__c"/>
+                    </apex:pageBlockSection>
+                </apex:outputPanel> 
+                
+            </apex:pageBlock>
+                
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                    <apex:commandButton value="Cancel" action="{!CancelAmendment}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" >
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+    </apex:form>
+</apex:page>

@@ -1,0 +1,217 @@
+<apex:page standardController="advpm__AdvoDoc_Template__c" extensions="advpm.TemplateDesignerPreviewController" showHeader="{!!previewFromDesigner}" sidebar="{!!previewFromDesigner}">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.css')}" />
+    
+    <script type="text/javascript">
+        function goBack() {
+            if ({!$User.UITheme == 'Theme4d'}) {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToSObject('{!JSENCODE(advpm__AdvoDoc_Template__c.Id)}');
+                }
+            }
+            else {
+                location.href = '{!$Site.prefix}/{!JSENCODE(advpm__AdvoDoc_Template__c.Id)}';
+            }
+        }
+        
+        $(document).ready(function(){
+            initSelect2();
+        });
+        
+        function initSelect2() {
+            var pSize = {!IF(previewFromDesigner,'3','10')};
+            $('.select-record').select2({
+                placeholder: 'Select ...',
+                minimumInputLength: 0,
+                allowClear: true,
+                ajax: {
+                    url: "{!$Page.advpm__JSONData}",
+                    quietMillis: 100,
+                    data: function (term, page) {
+                        return {
+                            q: term,
+                            obj: '{!JSINHTMLENCODE(sObjName)}',
+                            page_limit: pSize,
+                            page: page
+                        };
+                    },
+                    results: function (data, page) { return {results: data.results, more: (page * pSize) < data.total}; }
+                }
+            }).on("change", function(e) {
+                $(this).siblings('input:hidden').val( $(this).val() );
+            }).on("select2-focus", function(e) {
+                
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+        function showSFDCSimpleDialog(titleText, iframeSrc) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(1000);
+                d.createDialog();
+            }
+            d.setTitle(titleText);
+            
+            $(d.dialog).find('#myCustomSFDCDialogInner').html('<iframe src="'+iframeSrc+'" height="550" width="965" border="0" style="border: 0;" />');
+            $(d.dialog).find('#myCustomSFDCDialogInner iframe').on('load', function() {
+                $(this).contents().find('input[type="submit"]').on('click', function() {
+                    if ($(this).val() == 'Cancel') d.hide();
+                    return false;
+                });
+            });
+
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+        function previewAdvoDoc() {
+            var recId = '';
+            if ({!isLightning})
+                recId = document.getElementById('{!$Component.form.hd_selectedRecord_le}').value;
+            else
+                recId = document.getElementById('{!$Component.form.thePage.hd_selectedRecord}').value;
+            if (recId == '' || recId == null) {
+                $('#empty_record').css('display','block');
+                return;
+            }
+            $('#empty_record').css('display','none');
+            if ({!previewFromDesigner}) {
+                parent.openPreviewAdvoDoc(recId);
+            }
+            else {
+                var ur = '{!$Site.prefix}/apex/advpm__generatepdf?Id='+recId+'&TempId={!advpm__AdvoDoc_Template__c.Id}&type=PDF';
+                showSFDCSimpleDialog('AdvoDoc Preview',ur);
+            }
+        }
+        
+    </script>
+    
+    <style type="text/css">
+        .text-center {text-align:center!important;}
+        .preview-container {display:none;}
+        .data-record {margin-left:20px;}
+    </style>
+    
+    <style type="text/css">
+        ul li, ol li { margin-left: 0px !important; }
+        ul.select2-results > li > div.select2-result-label {/*font-weight: bold;*/}
+        .select2-container-multi .select2-choices .select2-search-field input {padding: 1px 4px;}
+        .select2-container .select2-choice abbr {top:7px;right:18px;}
+        .select2-container .select2-choice {background-image: none;}
+        .select2-container-active .select2-choice, .select2-container-active .select2-choices {border: 1px solid #aaa;outline: none;-webkit-box-shadow: none;box-shadow: none;}
+        .select2-drop-active {border: 1px solid #aaa;}
+        .select2-container .select2-choice .select2-arrow {border-left: 0px solid #aaa;background: none;background-image: none;}
+    </style>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            /*body {font-size: 100%;}*/
+            .list .iconColumn, .list .actionColumn {width:166px;white-space:nowrap!important;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <style type="text/css">
+            .main-container {margin-left:20px;margin-top:20px;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!previewFromDesigner}">
+        <style type="text/css">
+            body .bPageBlock, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {
+                background-color: transparent!important;
+                border-bottom: 0px solid #eaeaea!important;
+                border-left: 0px solid #eaeaea!important;
+                border-right: 0px solid #eaeaea!important;
+            }
+            body .bEditBlock .pbBottomButtons>table {border-top: 0px solid #fff!important;}
+            body .bEditBlock .pbBottomButtons {border-top: 0px solid #dbdbdb!important;}
+            .editPage .bPageBlock {border-top-width: 0px!important;}
+            .data-record {margin-left: 0px!important;}
+            .main-container {margin-left: 30px!important;margin-top: 0px!important;}
+            .select2-results {max-height: 60px!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning && !previewFromDesigner}">    
+        <apex:sectionHeader title="{!$ObjectType.advpm__AdvoDoc_Template__c.label}" subtitle="{!JSINHTMLENCODE(advpm__AdvoDoc_Template__c.Name)}" />
+        <div style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!JSINHTMLENCODE(advpm__AdvoDoc_Template__c.Id)}">Back to {!LOWER($ObjectType.advpm__AdvoDoc_Template__c.label)}</apex:outputLink></div>
+        <br /><br />
+    </apex:outputPanel>
+    
+    <apex:form id="form" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:outputPanel layout="block" rendered="{!isLightning && !previewFromDesigner}" styleClass="slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="{!$ObjectType.advpm__AdvoDoc_Template__c.label} Tester" 
+                                headerDescription="Select a record type for testing the {!$ObjectType.advpm__AdvoDoc_Template__c.label}"
+                                parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__AdvoDoc_Template__c.labelPlural)}" 
+                                parentEntityLink="{!$ObjectType.advpm__AdvoDoc_Template__c.keyPrefix}" 
+                                parentRecordName="{!JSINHTMLENCODE(advpm__AdvoDoc_Template__c.Name)}" 
+                                parentRecordID="{!advpm__AdvoDoc_Template__c.Id}">
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <style type="text/css">
+            .loader img {margin-left:4px;}
+            .no-records {margin-left: -5px;}
+        </style>
+        
+        <apex:pageBlock mode="edit" rendered="{!!isLightning}" id="thePage">
+            <apex:pageMessages id="msgs" />
+            <div id="empty_record" style="display:none">
+                <apex:pageMessage summary="A record must be selected for preview." severity="error" strength="1" />
+            </div>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="  Preview  " styleClass="slds-button slds-button--brand" onclick="previewAdvoDoc();return false;" />
+                <apex:commandButton value="  Cancel  " action="{!cancel}" styleClass="slds-button slds-button--neutral" rendered="{!!previewFromDesigner}" />
+          
+            </apex:pageBlockButtons>
+            <div class="main-container">
+                <span class="label-text"><strong>Preview the AdvoDoc with following record:</strong></span>
+                <span class="data-record">
+                    <apex:inputHidden value="{!selectedRecordId}" id="hd_selectedRecord" />
+                    <input type="text" value="{!selectedRecordId}" class="select-record" style="width:250px;" />
+                </span>
+            </div>
+        </apex:pageBlock>
+        <apex:outputPanel layout="block" rendered="{!isLightning}" id="thePanel">
+            <apex:pageMessages id="msgs" />
+            <div class="slds-grid slds-grid--align-center main-container slds-m-vertical--large {!IF(previewFromDesigner,'slds-wrap','')}">
+                <div class="label-text slds-text-title {!IF(previewFromDesigner,'slds-col slds-size--1-of-1','')}">Preview the AdvoDoc with following record:</div>
+                <div class="data-record {!IF(previewFromDesigner,'slds-col slds-size--1-of-1','')}">
+                    <apex:inputHidden value="{!selectedRecordId}" id="hd_selectedRecord_le" />
+                    <input type="text" value="{!selectedRecordId}" class="select-record" style="width:250px;" />
+                </div>
+            </div>
+            <div class="slds-grid slds-grid--align-center slds-m-vertical--large">
+                <div>
+                    <apex:commandButton value="  Preview  " styleClass="slds-button slds-button--brand" onclick="previewAdvoDoc();return false;" />
+                </div>
+                <div>
+                    <apex:commandButton value="  Cancel  " action="{!cancel}" styleClass="slds-button slds-button--neutral" style="margin-left:1em;" rendered="{!!previewFromDesigner}" />
+                </div>
+            </div>
+        </apex:outputPanel>
+        
+       
+        
+        <!-- Hidden fields to maintain Visualforce standard library of salesforce on the page for useful utility functions -->
+        <apex:inputField value="{!advpm__AdvoDoc_Template__c.advpm__Base_Object__c}" rendered="false" />
+     </apex:form>
+    
+</apex:page>

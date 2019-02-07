@@ -1,0 +1,154 @@
+<apex:page tabStyle="Legal_Quote_Request__c" standardController="Legal_Quote_Request__c" extensions="LegalQuoteRequest_handler"  >
+  
+  <script>
+  function HideFirms()
+    {      
+        HideFirms(); 
+    }
+    </script>
+  
+  <apex:pageMessages />
+  
+  <apex:form >
+ 
+  
+  <!--
+  <apex:actionFunction name="boxrequest" action="{!createBoxFolder}" />
+  -->
+  
+  <apex:sectionHeader title="Legal Quote Request Edit" subtitle="New Legal Quote Request"/>
+  <apex:pageBlock tabStyle="Legal_Quote_Request__c"  title="Legal Quote Request Edit" >
+  <apex:pageBlockButtons >
+  <!-- oncomplete="boxrequest();" -->
+  <apex:commandButton value="Save" action="{!Save}" /> <apex:commandButton value="Cancel" action="{!Cancel}" />
+  </apex:pageBlockButtons>
+  <apex:pageBlockSection showHeader="True" title="Information" columns="2"  >
+  <apex:pageBlockSectionItem >
+  <apex:outputLabel >Matter</apex:outputLabel>
+  <apex:actionRegion >  
+          <apex:inputfield required="True" value="{!LegalQuoteRequest.Matter__c}" >
+              <apex:actionSupport event="onchange" rerender="lqr" action="{!ChangeCostInformation}"  /> 
+          </apex:inputfield>          
+  </apex:actionRegion>
+    </apex:pageBlockSectionItem>
+  <apex:outputfield value="{!LegalQuoteRequest.Status__c}"   />
+  <!--   onchange="ChangeCostInfo()" -->
+  
+  
+   <apex:inputfield value="{!LegalQuoteRequest.Cost_Centre__c}" id="lqr" required="True" />
+  
+  <apex:outputText label="Owner" value="{!UserName.Name}"   />
+
+    
+
+  
+  </apex:pageBlockSection>
+  <apex:pageBlockSection rendered="{!LitigationRequest}" columns="2" >
+      <apex:inputfield required="True"  value="{!LegalQuoteRequest.Matter_Difficulty__c}"  />
+      <apex:outputfield value="{!LegalQuoteRequest.Litigation_Risk_Score__c}"   />
+  </apex:pageBlockSection>
+  
+  <apex:pageBlockSection showHeader="True" title="Request Details" columns="1" >
+  <apex:inputfield required="True"  value="{!LegalQuoteRequest.Quote_Title__c}"   />
+  <apex:inputfield required="True" value="{!LegalQuoteRequest.Quote_Description__c}"   />  
+  
+  
+  <apex:pageBlockSectionItem >
+  <apex:outputLabel >Request Off Panel</apex:outputLabel>
+      <apex:actionRegion > 
+          <apex:inputfield value="{!LegalQuoteRequest.Request_Off_Panel__c}" onchange="HideFirms()">
+          
+           <apex:actionFunction name="HideFirms" action="{!HideFirmsLegalOffPanel}" reRender="firms">
+           </apex:actionFunction>
+          </apex:inputfield>
+      </apex:actionRegion>  
+  </apex:pageBlockSectionItem>
+  
+  
+  <apex:outputText >Please add motivation when selecting less than 3 law firms OR include name of firm for Off Panel Approval </apex:outputText>
+  <apex:outputPanel rendered="{!MotivationError}">
+  <div class="errorMsg"><strong>Error:</strong>&nbsp; Please give complete motivation as per error message above</div>
+  </apex:outputPanel>
+  
+  
+  <apex:inputField value="{!LegalQuoteRequest.Request_Motivation__c}" style="width:500px; height:100px" />
+       
+  
+  </apex:pageBlockSection>
+  
+    
+  <!--
+  <apex:pageBlockSection showHeader="True" title="Quote Approver" columns="1" >
+  <apex:inputfield required="True"  value="{!LegalQuoteRequest.Quote_Approver__c}"   />
+  
+  </apex:pageBlockSection>
+  -->
+ 
+  <apex:outputPanel id="firms" >
+  <apex:pageBlockSection showHeader="True" title="Select Law Firms" columns="1" rendered="{!LegalfirmOffPanelShow}" >
+     
+         
+      <apex:pageblockTable value="{!LstLawFirm}" var="firm">
+             
+         
+         <apex:column headerValue="Select"  >
+           <apex:inputCheckbox value="{!firm.SelectFirm}"/>
+         </apex:column>
+         
+         <apex:column headerValue="Law Firm Name"  >
+           <apex:outputtext value="{!firm.AccountName}"/>
+         </apex:column>
+       
+         
+         <apex:column headerValue="Contact"  >
+           <apex:selectList value="{!firm.Contact}" multiselect="false" size="1">
+             <apex:selectOptions value="{!firm.Contacts}"/>
+           </apex:selectList>
+         </apex:column>
+         
+         <apex:column headerValue="BEE Status"  >
+           <apex:outputtext value="{!firm.BEEStatus}"/>
+         </apex:column>
+         <apex:column headerValue="BWO %"  >
+           <apex:outputtext value="{!firm.BWO}"/>
+         </apex:column>
+         <apex:column headerValue="BO %"  >
+           <apex:outputtext value="{!firm.BO}"/>
+         </apex:column>
+         
+         <apex:column headerValue="Preferred External Counsel"  >
+           <apex:inputtext value="{!firm.PreferredExternalCounsel}"/>
+         </apex:column>
+         
+         
+                   
+      </apex:pageblockTable> 
+       
+    
+  </apex:pageBlockSection>
+  </apex:outputPanel>
+
+  
+  
+  <apex:outputPanel id="Services">
+  <apex:pageBlockSection showHeader="True" title="Select Services Required" columns="1" rendered="{!LitigationRequest}">
+      <apex:pageblockTable value="{!lstFixedServiceActivity}" var="act">
+             
+         
+         <apex:column headerValue="Select"  >
+           <apex:inputCheckbox value="{!act.SelectService}"/>
+         </apex:column>
+         
+         <apex:column headerValue="Fixed Service Activity"  >
+           <apex:outputtext value="{!act.ServiceActivity.Name}"/>
+         </apex:column>
+       
+         
+                   
+      </apex:pageblockTable> 
+  </apex:pageBlockSection>
+  </apex:outputPanel>
+  
+  </apex:pageBlock>
+  </apex:form>
+</apex:page>

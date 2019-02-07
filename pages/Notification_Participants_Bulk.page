@@ -1,0 +1,28 @@
+<!--
+ *** CHANGE LOG ***
+ 
+ 16/11/2017 - TdB    - Create VF page.  
+                                                           
+-->
+
+<apex:page Controller="Notification_Participants_Bulk">
+    <apex:sectionHeader title="Notification Participant Edit" subtitle="New Notification Participants"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+                <!--<apex:commandButton value="Cancel" action="{!cancel}" />-->
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!participantWrapper.participant.Name}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

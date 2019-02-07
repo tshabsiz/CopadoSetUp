@@ -1,0 +1,119 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="LscCaseQaFormController">
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <!--<aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> -->
+    <aura:attribute name="caseQalist" type="Object[]"/>
+    <aura:attribute name="templateId" type="String"/> 
+    <aura:attribute name="caseId" type="String"/> 
+    <aura:attribute name="agentName" type="String"/>
+    <aura:attribute name="agentScore" type="Integer" default="100"/> 
+    <aura:attribute name="currentScore" type="Integer"/> 
+    <aura:attribute name="naCount" type="Integer"/> 
+    <aura:attribute name="selectedLookUpRecord" type="sObject"/>
+    <aura:attribute name="wtotal" type="Integer"/> 
+    
+    
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInIt}" />
+    
+    <center style="z-index:99">
+        <lightning:spinner aura:id="TheSpinner" class="slds-hide" variant="brand" size="large"/>
+    </center>
+    
+    <div class="slds-panel">
+        <div class="slds-panel__section">
+            <div class="slds-grid flexContent resflexContent">
+                <div class="slds-size_2-of-8 slds-col--padded slds-form-element respCnt">
+                    <c:LookupParentComponent objectAPIName="account" IconName="standard:account" label="Agent Name" selectedRecord="{!v.selectedLookUpRecord}"/>
+                </div>
+                <div class="slds-size_2-of-8 slds-col--padded slds-form-element respCnt">
+                </div> 
+                <div class="slds-size_2-of-8 slds-col--padded slds-form-element respCnt">
+                    <div class="uiInput uiInputTextuiInput--default uiInput--input">
+                        <label class="uiLabel-left form-element__label uiLabel" style="display:block;">
+                            <span>Current Agent</span>
+                        </label>
+                        <div class="agentNm">{!v.agentName}</div>
+                    </div>
+                </div> 
+                <div class="slds-size_2-of-8 slds-col--padded slds-form-element widthSmall">
+                    <div class="uiInput uiInputTextuiInput--default uiInput--input flexDv">
+                        <label class="uiLabel-left form-element__label uiLabel">
+                            <span>Agent Score</span>
+                        </label>
+                        <input class="input" type="text" value="{!v.agentScore + '%'}" readOnly="true"/>
+                    </div>
+                </div> 
+            </div>
+            <aura:iteration items="{!v.caseQalist}" var="qaList" indexVar="headingIndex">
+                <div class="slds-grid flexContent resflexContent">
+                    <div class="slds-size_2-of-8 slds-col--padded slds-form-element slds-p-vertical_medium">				
+                        <h3 class="heading">{!qaList.heading}</h3>
+                    </div>
+                    <div class="slds-size_2-of-8 slds-col--padded slds-form-element">
+                        <h3 class=""></h3>
+                    </div> 
+                    <div class="slds-size_2-of-8 slds-col--padded slds-form-element">	
+                        <h3 class=""></h3>
+                    </div> 
+                    <div class="slds-size_2-of-8 slds-col--padded slds-form-element textAlign" >				
+                        <h3 class="marginTop">Weighting</h3>
+                    </div> 
+                </div>
+                <aura:iteration items="{!qaList.questions}" var="val" indexVar="questionIndex">
+                    <div class="slds-grid flexContent responsiveView">
+                        <div class="slds-size_2-of-8 slds-col--padded slds-form-element respFullWidth">
+                            <div  title="question">{!val.question.QAQuestion__c}</div>
+                        </div>
+                        <div class="slds-size_2-of-8 slds-col--padded slds-form-element highlightDv">
+                            <aura:if isTrue="{!val.isAuditQuestion}">
+                                <div class="highlightTxt">
+                                    <ui:outputText value="Audit" />
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div class="slds-size_2-of-8 slds-col--padded slds-form-element formElement">	
+                            <fieldset class="slds-form-element" id="{!val.question}">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-radio_button-group">
+                                        <span class="slds-button slds-radio_button">
+                                            <input type="radio" name="{!val.question.QAQuestion__c}" id="{!val.questionId + '_yes'}" data-qid="{!headingIndex + '-' + questionIndex}" data-choice = "Yes" checked="{!equals(val.selectedChoice,'Yes')}" 
+                                                   value="Yes" title="{!equals(val.selectedChoice,'Yes')}" placeholder="{!val.question.Weighting__c}" onclick="{!c.onRadioButtonClick}"/>
+                                            
+                                            <label class="slds-radio_button__label" for="{!val.questionId + '_yes'}">
+                                                <span class="slds-radio_faux">Yes</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input type="radio" name="{!val.question.QAQuestion__c}" id="{!val.questionId + '_no_' + val.question.IsAuditRequirement__c}" data-qid="{!headingIndex + '-' + questionIndex}" data-choice = "No" checked="{!equals(val.selectedChoice,'No')}" 
+                                                   value="No" title="{!equals(val.selectedChoice,'No')}" placeholder="{!val.question.Weighting__c}" onclick="{!c.onRadioButtonClick}"/>
+                                            <label class="slds-radio_button__label" for="{!val.questionId + '_no_' + val.question.IsAuditRequirement__c}">
+                                                <span class="slds-radio_faux">No</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input type="radio" name="{!val.question.QAQuestion__c}" id="{!val.questionId + '_na'}" data-qId="{!headingIndex + '-' + questionIndex}"  data-choice = "NA" checked="{!equals(val.selectedChoice,'NA')}" 
+                                                   value="NA" title="{!equals(val.selectedChoice,'NA')}" placeholder="{!val.question.Weighting__c}" onclick="{!c.onRadioButtonClick}"/>
+                                            <label class="slds-radio_button__label" for="{!val.questionId + '_na'}">
+                                                <span class="slds-radio_faux">N/A</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="slds-size_2-of-12 slds-col--padded slds-form-element widthSmall">
+                            <ui:inputText class="slds-input" value="{!val.question.Weighting__c}"  disabled="true"/> 
+                        </div>
+                    </div>
+                </aura:iteration>
+                
+            </aura:iteration>
+            
+            <div class="slds-align_absolute-center slds-m-top_large">
+                <lightning:button variant="brand"  label="Save" onclick="{!c.save}" disabled="{caseQalist.length  == 0}"/>
+                <lightning:button variant="brand"  label="Reset All" onclick="{!c.resetScore}" disabled="{caseQalist.length  == 0}"/>
+            </div>
+        </div>
+    </div>
+</aura:component>

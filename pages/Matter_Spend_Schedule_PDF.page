@@ -1,0 +1,109 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+                                                           
+ 
+*** CHANGE LOG ***
+ 
+ 01/08/2017 - PG    - Created VF Page.
+ 02/08/2017 - PG 	- Added PDF CSS Styling etc.
+ 10/08/2017 - PG    - Added logic to only show signature area on the locked PDF version.
+ 28/08/2017 - PG 	- Added Box Link
+
+--> 
+<apex:page standardController="Matter_Spend_Schedule__c" extensions="Matter_Spend_Schedule_Override_View" showHeader="false" sidebar="false" standardStylesheets="false" renderAs="PDF" applyBodyTag="false" action="{!initialiseDocuments}">
+	
+	<head>  
+		<style>
+			body {
+				font-family: Arial Unicode MS;
+				font-size: 8pt;  
+			}
+			.mainHeaders {
+				color: green;
+				font-weight: bold;
+				font-size: 9pt;  
+			}
+			table {
+			    border-collapse: collapse;
+			}
+			table, th, td {
+			   border: 1px solid #666666;
+			}
+			th, td {
+				padding-left: 2px;
+			}
+			.mainTable {
+				width: 100%;
+				padding: 3px;
+			}
+			@page {
+		  		size: A4 landscape;
+		  		@top-center {
+                        content: "Page " counter(page) " of " counter(pages);
+                        font-family: Arial Unicode MS;
+                        font-size: 6pt;  
+                }
+                @bottom-center {
+                        content: "Page " counter(page) " of " counter(pages);
+                        font-family: Arial Unicode MS;
+                        font-size: 6pt;  
+                }
+			}
+			.sign {
+				margin-top: 50px;
+				font-weight:bold;
+			}
+			.sign span {
+				width:6cm;
+				border-bottom:0.1em solid #000;
+				display:inline-block;
+				margin-right: 20px;
+			}
+		</style>
+	</head>
+	<body>
+
+	<h1>Matter Spend Schedule (# {!objectRecord.Name})</h1>
+	
+	<!-- TABLE -->
+	<apex:dataTable value="{!scheduleDocuments}" var="spendDocument" id="theTable" styleClass="mainTable" headerClass="mainHeaders">
+
+		<apex:column value="{!spendDocument.Name}" headerValue="Document #" />
+		<apex:column value="{!spendDocument.Matter__c}" headerValue="Matter" />
+		<apex:column value="{!spendDocument.Type__c}" headerValue="Vender No." />  
+		<apex:column value="{!spendDocument.Law_Firm__c}" headerValue="Law Firm" />  
+		<apex:column value="{!spendDocument.Type__c}" headerValue="Type"/>
+		<apex:column headerValue="Documents">
+			<apex:outputLink target="_blank" value="{!spendDocument.Box_Folder_Link__c}">View File(s)</apex:outputLink>
+		</apex:column>
+		<apex:column value="{!spendDocument.Total_Amount_Excl_VAT__c}" headerValue="Total Amount (Excl. VAT)" />
+		<apex:column value="{!spendDocument.Total_Amount_Non_VATable__c}" headerValue="Total Amount (Non VATable)" />
+		<apex:column value="{!spendDocument.Total_VAT__c}" headerValue="Total (VAT)"  />
+		<apex:column value="{!spendDocument.Grand_Total__c}" headerValue="Grand Total"  />
+		<apex:column value="{!spendDocument.GL_Account__c}" headerValue="GL Account"  /> 
+		<apex:column value="{!spendDocument.BU_Corporate_Code__c}" headerValue="Corp. Code"  />
+		<apex:column value="{!spendDocument.Cost_Centre2__c}" headerValue="Cost Centre"  />
+
+	</apex:dataTable>
+	<!-- / TABLE -->
+
+	<!-- LAST PAGE FOOTER -->
+	<div class="sign" style="{!IF(showExportPaid,'display:none','')}">
+    <p>Prepared By:&nbsp;{!$User.FirstName}&nbsp;{!$User.LastName}</p>
+    Prepared Date:&nbsp;<apex:outputText value="{0,date,dd/MM/yyyy}">
+    			<apex:param value="{!TODAY()}" />
+			</apex:outputText>
+	</div>
+	<div class="sign" style="{!IF(showExportPaid,'display:none','')}">
+    Signature:<span></span>     Date Approved:<span></span>
+	</div>
+	<!-- / LAST PAGE FOOTER -->
+
+	</body>
+	
+</apex:page>

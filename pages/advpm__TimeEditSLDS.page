@@ -1,0 +1,214 @@
+<apex:page standardController="advpm__Time__c" tabStyle="advpm__Time__c" extensions="advpm.TimeController" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStyleSheets="true" action="{!IF(!hasEditAccess,URLFOR($Page.InsufficientPrivileges,null,[recid=Time__c.Id]),'')}">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+	<title>
+		<apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Time__c.Id) || isClone}">Create {!$ObjectType.advpm__Time__c.label}</apex:outputPanel>
+		<apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Time__c.Id)) && NOT(isClone)}">Edit {!advpm__Time__c.Name}</apex:outputPanel>
+	</title>
+	<meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+	<c:includeSLDS sldsV2="true" /><!-- value="{!URLFOR($Resource.SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" -->
+	<style type="text/css">
+		.slds .slds-modal--large .slds-modal__container{width:90%;max-width:960px;min-width:640px;}
+		.slds #editModal .slds-pill{display:block;}
+		.slds #editModal .slds-pill:hover{background-color:#fff;}
+		.slds #editModal .slds-pill__label{max-width:15.5rem;}
+		.slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+		.slds .slds-form-element__static {line-height: 1.75;}
+		.slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+		.slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+		.modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+		.slds-modal__close {right: -.8rem;}
+		.frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+		.lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+		.date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+		.datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+		input[type=checkbox]{clear: both;display: block;}
+		.uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+		.uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+		.uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+	</style>
+	<script type="text/javascript">
+		$j = jQuery.noConflict();
+		$j(document).ready(function(){
+		    fixLookups();
+		});
+		function fixLookups() {
+			$j('.slds-form-element .lookupInput a').removeClass('slds-input');
+		}
+		function doCancel() {
+			if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+				$j('#editModal form')[0].reset();
+				$j('#editModal .slds-modal').removeClass('slds-fade-in-open');
+				$j('#editModal .slds-modal-backdrop').removeClass('slds-modal-backdrop--open');
+				sforce.one.back();
+			}
+		}
+	</script>
+</head>
+<body class="slds">
+<div id="editModal">
+<apex:form id="theForm">
+	<apex:actionFunction name="doSaveTime" action="{!saveTime}" />
+	
+	<div aria-hidden="false" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open">
+		<div class="slds-modal__container">
+			<div class="slds-modal__header">
+			    <h2 class="slds-text-heading--medium">
+					<apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Time__c.Id) || isClone}">Create {!$ObjectType.advpm__Time__c.label}</apex:outputPanel>
+					<apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Time__c.Id)) && NOT(isClone)}">Edit {!advpm__Time__c.Name}</apex:outputPanel>
+			    </h2>
+			    <span class="slds-hint-parent">
+					<button class="slds-button slds-modal__close form-close-action" onClick="doCancel();return false">
+						<svg aria-hidden="true" class="slds-button__icon slds-button__icon--inverse slds-button__icon--hint modal-icon-close">
+							<use xlink:href="{!URLFOR($Resource.SLDS0112, 'assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+						</svg>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+				</span>
+			</div>
+			<div class="slds-modal__content">
+				<div class="pg-msgs">
+					<apex:messages styleClass="slds-notify slds-notify--alert slds-theme--error" />
+    			</div>
+    			<div class="slds-modal__content slds-p-around--medium">
+					<fieldset class="slds-form--compound">
+  						<h2 class="slds-form-element__label frm-sec-header">Information</h2>
+				  		<div class="form-element__group">
+							<div class="slds-form-element__row">
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_mat">{!$ObjectType.advpm__Time__c.fields.advpm__Matter__c.label}</apex:outputLabel>
+							    	<apex:inputField id="fld_mat" value="{!advpm__Time__c.advpm__Matter__c}" styleClass="slds-input">
+			                            <apex:actionSupport event="onchange" action="{!SetDefaultRate}" reRender="opRatesContainer" status="loadingStatus" />
+			                        </apex:inputField>
+							  	</div>
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<label class="slds-form-element__label" for="fld_own">Owner</label>
+							    	<div class="slds-form-element__control">
+			                            <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+			                            	<apex:outputField id="fld_own" value="{!advpm__Time__c.OwnerId}" />
+			                            </apex:outputPanel>
+		                            </div>
+							  	</div>
+							</div>
+						</div>
+					</fieldset>
+					<fieldset class="slds-form--compound">
+  						<h2 class="slds-form-element__label frm-sec-header">Time Details</h2>
+				  		<div class="form-element__group">
+							<div class="slds-form-element__row">
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_entrydt"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Time__c.fields.advpm__Entry_Date__c.label}</apex:outputLabel>
+							    	<apex:inputField id="fld_entrydt" value="{!advpm__Time__c.advpm__Entry_Date__c}" styleClass="slds-input" required="true" />
+							    	<a class="date-picker-icon" aria-haspopup="true" href="javascript:DatePicker.pickDate(true, '{!$Component.theForm.fld_entrydt}', false);"><span class="assistiveText">Date Picker</span></a>
+							  	</div>
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_tk">{!$ObjectType.advpm__Time__c.fields.advpm__Timekeeper__c.label}</apex:outputLabel>
+							    	<apex:inputField id="fld_tk" value="{!advpm__Time__c.advpm__Timekeeper__c}" styleClass="slds-input">
+			                        	<apex:actionSupport event="onchange" action="{!SetDefaultRate}" reRender="opRatesContainer" status="loadingStatus" />
+			                        </apex:inputField>
+							  	</div>
+							</div>
+							<div class="slds-form-element__row">
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_timeInHours">{!$ObjectType.advpm__Time__c.fields.advpm__Time_In_Hours__c.label}</apex:outputLabel>
+							    	<apex:inputField value="{!advpm__Time__c.advpm__Time_In_Hours__c}" styleClass="slds-input" id="fld_timeInHours">
+					                	<apex:actionSupport event="onchange" action="{!processTimeRounding}" reRender="fld_timeInHours" status="loadingStatus" rendered="{!(advpm__Time__c.Id == null || isClone) && GlobalOptions.advpm__Enable_Time_Rounding__c==true && GlobalOptions.advpm__Incremental_Rounding_Value__c > 0}" />
+					                </apex:inputField>
+							  	</div>
+							  	<div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_disp"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Time__c.fields.advpm__Billing_Disposition__c.label}</apex:outputLabel>
+							    	<apex:inputField id="fld_disp" value="{!advpm__Time__c.advpm__Billing_Disposition__c}" styleClass="slds-input" required="true" />
+							  	</div>
+							</div>
+							<apex:outputPanel layout="inline" id="opRatesContainer">
+					            <apex:outputPanel layout="none" id="rateSectionBlock" rendered="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate.size > 0}">
+						            <apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate}" var="f">
+					                    <div class="slds-form-element__row">
+										  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}">
+									    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_rt1"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+										    	<apex:inputField id="fld_rt1" value="{!advpm__Time__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" style="height:60px;" />
+										  	</apex:outputPanel>
+										  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && f != 'advpm__Rate__c' && f != 'advpm__Total_Amount__c' && NOT(CONTAINS(f,'.'))}">
+									    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_rt2"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+										    	<apex:inputField id="fld_rt2" value="{!advpm__Time__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" />
+										  	</apex:outputPanel>
+										  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && f == 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}">
+									    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_rt3"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+										    	<apex:inputField id="fld_rt3" value="{!advpm__Time__c[f]}" required="false" styleClass="{!IF(f.type=='boolean','','slds-input')}">
+							                        <apex:actionSupport event="onchange" action="{!ChangeRate}" reRender="opRatesContainer" status="loadingStatus" />
+							                    </apex:inputField>
+										  	</apex:outputPanel>
+										  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded" rendered="{!f == 'advpm__Total_Amount__c' && advpm__Time__c.Id != null && !isClone}">
+									    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_rt4"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+										    	<apex:outputPanel layout="block" styleClass="slds-form-element__control">
+										    		<div class="slds-form-element__static">
+					                            		<apex:outputField id="fld_rt4" value="{!advpm__Time__c[f]}" />
+					                            	</div>
+					                            </apex:outputPanel>
+										  	</apex:outputPanel>
+										</div>
+								    </apex:repeat>
+								    <apex:outputPanel layout="block" styleClass="slds-form-element__row" rendered="{!isMultiCurrencyOrg}">
+									  	<div class="slds-form-element slds-size--1-of-1 slds-col--padded">
+									    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_curr">Currency</apex:outputLabel>
+									    	<apex:inputField id="fld_curr" value="{!advpm__Time__c['CurrencyIsoCode']}" styleClass="slds-input" rendered="{!isMultiCurrencyOrg}">
+							                	<apex:actionSupport event="onchange" action="{!ChangeCurrency}" reRender="opRatesContainer" status="loadingStatus" />
+							                </apex:inputField>
+									  	</div>
+									</apex:outputPanel>
+				                </apex:outputPanel>
+				            </apex:outputPanel>
+						</div>
+					</fieldset>
+					<fieldset class="slds-form--compound">
+  						<h2 class="slds-form-element__label frm-sec-header">Description</h2>
+				  		<div class="form-element__group">
+							<div class="slds-form-element__row">
+							  	<div class="slds-form-element slds-size--1-of-1 slds-col--padded">
+							    	<apex:outputLabel styleClass="slds-form-element__label" for="fld_desc">{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}</apex:outputLabel>
+							    	<apex:inputField id="fld_desc" value="{!advpm__Time__c[TimeDescriptionField]}" styleClass="slds-input" style="height:60px;" />
+							  	</div>
+							</div>
+						</div>
+					</fieldset>
+					<apex:outputPanel layout="none" id="additionalSectionBlock" rendered="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time.size > 0}">
+						<fieldset class="slds-form--compound">
+	  						<h2 class="slds-form-element__label frm-sec-header">Additional Information</h2>
+					  		<div class="form-element__group">
+					  			<apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time}" var="f">
+					  				<div class="slds-form-element__row">
+									  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}">
+								    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_addt1"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+									    	<apex:inputField id="fld_addt1" value="{!advpm__Time__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" style="height:60px;" />
+									  	</apex:outputPanel>
+									  	<apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}">
+								    		<apex:outputLabel styleClass="slds-form-element__label" for="fld_addt2"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+									    	<apex:inputField id="fld_addt2" value="{!advpm__Time__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" />
+									  	</apex:outputPanel>
+									</div>
+				                </apex:repeat>
+							</div>
+						</fieldset>
+					</apex:outputPanel>
+    			</div>
+			</div>
+			<div class="slds-modal__footer">
+			  	<apex:actionStatus id="loadingStatus" onstop="fixLookups()">
+                	<apex:facet name="start"><img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." width="32px" height="32px" /></apex:facet>
+                </apex:actionStatus>
+                <input type="button" class="slds-button slds-button--neutral" value="  Cancel  " onClick="doCancel();return false;" />
+               	<input type="button" class="slds-button slds-button--neutral slds-button--brand" value="  Save  " onClick="doSaveTime();return false;" />
+			</div>
+		</div>
+	</div>
+	<div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

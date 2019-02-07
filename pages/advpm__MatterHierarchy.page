@@ -1,0 +1,1939 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.MatterHierarchyController" tabStyle="advpm__Matter__c" readOnly="true"
+    title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.inline)=='1','','Matter Hierarchy: '+advpm__Matter__c.Name)}"
+    showHeader="{!!isInlineLayout}" 
+    sidebar="{!!chartMode}">
+    
+    <div id="fullscreen-container">
+    
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jQueryZip, 'js/jquery-1.8.3.min.js')}" /> -->
+    <apex:outputPanel layout="none" rendered="{!chartScatterView}">
+        <apex:includeScript value="{!URLFOR($Resource.advpm__d3, 'd3.v4.4100.js')}" />
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!!chartScatterView}">
+        <apex:includeScript value="{!URLFOR($Resource.advpm__d3, 'd3.v3517.js')}" />
+    </apex:outputPanel>
+    <!-- http://stackoverflow.com/questions/34684608/tree-with-children-towards-multiple-side-in-d3-js-similar-to-family-tree -->
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__d3_contextMenu, 'css/d3-context-menu.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__d3_contextMenu, 'js/d3-context-menu.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-2.2.4.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/js/bootstrap.min.js')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/css/bootstrap.min.css')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__jQuery_Tooltipster, 'v4.1.5/dist/css/tooltipster.bundle.min.css')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__jQuery_Tooltipster, 'v4.1.5/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-borderless.min.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__svg4everybody, 'v2.1.9/dist/svg4everybody.min.js')}" />
+    <!-- <apex:includeScript value="{!URLFOR($Resource.svg4everybody, 'v2.1.9/dist/svg4everybody.legacy.min.js')}" /> -->
+    
+    <style type="text/css">
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody {margin: 0px;}
+        body .apexp .pbBody table.list {border: 0px solid #e0e3e5;}
+        body .apexp .pbBody table.table-1, body .apexp .pbBody table.table-2 {border-bottom: 1px solid #e0e3e5;}
+        .currentMat {font-weight:bold;}
+        .row {height:20px;}
+        .advwrap .btn-mini {padding: 0 3px;margin-top: 3px;}
+        .hide {display:none;}
+        body .bPageTitle {padding: 5px 0 0;}
+        .advwrap .btn-group * {
+            -webkit-border-radius: 0 !important;
+               -moz-border-radius: 0 !important;
+                    border-radius: 0 !important;
+        }
+    </style>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <style type="text/css">
+            .apexp .bPageBlock.apexDefaultPageBlock .pbBody {padding-bottom: 30px;}
+        </style>
+        <apex:outputPanel layout="none" rendered="{!chartMode}">
+            <style type="text/css">
+                .body .bPageBlock, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom: 1px solid #eaeaea!important;}
+            </style>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <style type="text/css">
+            .bottom div {padding: 0px 4px 0px 8px;}
+            .bPageBlock {border-top: 0px!important;}
+            html body.sfdcBody {padding: 0px!important;}
+            body .pbBody table.table-1 {border-top: 0px solid #e0e3e5; margin-bottom:30px }
+            body .apexp .pbBody table.table-1 tr:last-child td {border-bottom: 1px solid #e0e3e5;}
+            body .apexp .pbBody table.table-2 {border: 1px solid #e0e3e5;}
+            .slds .slds-table th:first-child {padding-left:24px!important;}
+            .slds .slds-text-heading--label {font-weight:normal!important;font-size: 12px!important;line-height: 1.25!important;letter-spacing:.0625em!important;color:#54698d!important;}
+            body .pbBody table.list tr.headerRow th {background: #ffffff;border-width: 0 0 1px 1px;padding: 8px;}
+            .slds tr.headerRow th, .slds tr.headerRow th.headerRow {font-weight: normal!important;}
+            th.slds-text-heading--label:hover {background-color: rgb(244, 246, 249)!important;}
+        </style>
+    </apex:outputPanel>
+    <style type="text/css">
+        body.sfdcBody {min-height: 700px;}
+        .slds-hide{display:none;}
+        .slds .slds-icon__container--circle {pointer-events: all;padding: 3px;}
+        .crossrefmat .slds-icon-custom-{!matIconNo} {pointer-events: all;background-color:#54698d;}
+        .icon-first-node .slds-icon-custom-{!matIconNo} {pointer-events: all;padding:3px;background-color: #000;}/*904d4c*/
+        .slds-icon-custom-{!matIconNo} svg {pointer-events: all;width:28px!important;height:28px!important;}
+        .icon-first-node .slds-icon-custom-{!matIconNo} svg {pointer-events: all;width:32px!important;height:32px!important;}
+        
+        .node-collapsed-moon {position: relative;/*top: -40px;right: -30px;*/top: 0;margin-bottom: 12px; border: 0px solid!important;padding: 4px!important;}
+        .node-collapsed-moon-tree {display:none!important;/*top: -40px;right: -30px;*/top: 0;margin-bottom: 12px;/*margin-left: 32px; margin-top: -36px;*/border: 0px solid!important;padding: 4px!important;}
+        .icon-first-node .node-collapsed-moon-tree {display:none!important;/*top: -40px;right: -30px;*/top: 0;margin-bottom: 12px;/*margin-left: 36px; margin-top: -42px;*/border: 0px solid!important;padding: 4px!important;}
+        .node-collapsed .node-collapsed-moon-tree {display:inline-block!important;}
+        .icon-first-node .node-collapsed-moon {/*top: -42px;right: -32px;*/}
+        .icon-node .slds-icon__container {pointer-events: all;cursor: pointer;}
+        
+        .svg-container {pointer-events: all;display: inline-block;position: relative;width: 100%;/*padding-bottom: 100%;*/ /* aspect ratio */vertical-align: top!important;overflow: hidden;}
+        .svg-content-responsive {display: inline-block;/*position: absolute;*/top: 10px;left: 0;}
+        .slds .slds-picklist .slds-dropdown {max-height: 500px;}
+        .slds-list--vertical {margin-top: 5px!important;margin-bottom: 20px!important;}
+        .slds .slds-dropdown[class*="slds-nubbin--top"] {margin-top: 2px;}
+        .slds .slds-is-selected .slds-icon--selected {fill: #0070d2;opacity: 1;}
+        .slds .slds-is-not-selected .slds-icon--selected {fill: #bbb;opacity: 1;}
+        .slds .slds-dropdown__item.highlighted a {outline:0; text-decoration:none; background-color:rgb(244, 246, 249)}
+        .slds .slds-dropdown-trigger button {outline:0; text-decoration:none;}
+        
+        .node image.icon-node-no-moon {display: block;}
+        .node image.icon-node-moon {display: none;}
+        .node.node-collapsed image.icon-node-no-moon {display: none;}
+        .node.node-collapsed image.icon-node-moon {display: block;}
+        
+        .btn-viewmode {margin-right:10px;}
+        .btn-viewmode button {height:32px;}
+        .slds-page-header .slds-col.slds-no-flex.slds-align-bottom > .slds-grid {top:-10px;}
+        .links line, .links path {stroke: #aaa;}
+        .nodes circle {pointer-events: all;stroke: none;stroke-width: 40px;}
+        .label-first-node {pointer-events: all;font-weight:bold;/*text-decoration:underline;*/}
+        /*text.shadow {stroke: white;stroke-width: 2.5px;opacity: 0.9;}*/
+        svg g image {pointer-events: all;cursor: pointer;}
+        .menu-icon, .menu-icon:hover {fill:#ffffff!important;}
+        .loading-spin {position: fixed;z-index: 999;overflow: show;margin: auto;top: 0;left: 0;bottom: 0;right: 0;}
+        .loading-spin:before {content: '';display: block;position: fixed;top: 0;left: 0;width: 100%;height: 100%;}
+        .slds .slds-button--small {line-height: 20px;min-height: 22px;font-size: 12px;padding-left: 6px;padding-right: 6px;}
+        .labels-type.hide-labels svg, .labels-role.hide-labels svg {fill: #aaa!important}
+        .labels-type.show-labels svg, .labels-role.show-labels svg {fill: #0070d2!important}
+        .labels-type, .labels-role {color: #54698d!important}
+        .nav-menu-heading {padding:3px;}
+        .nodetext {text-transform: none!important;}
+        .linetext {fill:#7B7D7D;font-size:13px;}
+        #chart-container{pointer-events: all;margin-bottom:20px;}
+        .advwrap .dropdown-menu {padding: 1px 0!important;}
+        .advwrap .dropdown-menu>li>a:hover, .advwrap .dropdown-menu>li>a:focus, .advwrap .dropdown-submenu:hover>a, .advwrap .dropdown-submenu:focus>a {
+            text-decoration: none;color: #000;background-color: transparent!important;background-image: none!important;
+        }
+        path.link {fill: none;stroke: #aaa;stroke-width: 1px;}
+        .linetext {fill:#7B7D7D;font-size:11px;}
+        ul li, ol li {margin-left: 0px;padding-left: 0px;}
+        /*div.d3-tooltip {position: absolute;text-align: center;padding: 8px;font: 12px sans-serif;background: lightsteelblue;border: 0px;border-radius: 8px;}*/
+        div.d3-tooltip {position: absolute;}
+        .last-group-button {border-radius: 0 4px 4px 0!important;}
+        .btn-fullscreen {margin-right:12px;}
+        #fullscreen-container:-webkit-full-screen,
+        #fullscreen-container:-moz-full-screen,
+        #fullscreen-container:-ms-fullscreen,
+        #fullscreen-container:fullscreen {width: 100vw;height: 100vh;}
+        .fullscreen {width:100%;height:100%;}
+        .fullscreen .bPageTitle, .fullscreen .bBackLink {margin-left: 10px;margin-top: 5px;}
+    </style>
+    <style type="text/css">
+        .treeChevronIcon {-webkit-transition: -webkit-transform .4s ease-in-out;transition: transform .4s ease-in-out;padding: 0;display: inline-block;}
+        .treeChevronIcon.spin {-webkit-transform: rotate(-90deg);-ms-transform: rotate(-90deg);transform: rotate(-90deg);-webkit-transform-origin: 50% 50%;-ms-transform-origin: 50% 50%;transform-origin: 50% 50%}
+        .currentBadge {color: rgb(255, 255, 255)!important;background-color: rgb(84, 105, 141)!important;margin-right: .25rem;}
+        .adv-slds .slds-tree__item {padding-left:.25rem;}
+        .adv-slds .slds-tree__item:hover, .adv-slds .slds-tree__item:focus {cursor:default;}
+        .parts-list td {color: rgb(22, 50, 92)!important;}
+        .parts-list th, .parts-list td {padding-left: 8px;}
+        .parts-list thead th:first-child {padding-left: 1.5rem!important;}
+    </style>
+    <apex:outputPanel layout="none" rendered="{!!chartScatterView}">
+        <style type="text/css">
+            /*.slds .slds-icon__container--circle {padding: 1px;}
+            .icon-first-node .slds-icon-custom-{!matIconNo} {padding:1px;}*/
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <style type="text/css">
+            .slds {font-family: Arial,Helvetica,sans-serif!important;}
+            .btn-viewmode button {height:22px;}
+            .currentBadge {font-size: 0.565rem!Important;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!!isLightning && !isInlineLayout && NOT(ISBLANK(advpm__Matter__c.Id))}">
+        <div class="bPageTitle">
+            <div class="ptBody secondaryPalette brandSecondaryBrd">
+                <div class="content">
+                    <img src="{!matIconUrlCust}" height="32" width="32" class="pageTitleIcon userDefinedImage" title="Matter" alt="Matter" />
+                    <h1 class="pageType">Matter Hierarchy</h1>
+                    <span class="titleSeparatingColon">:</span>
+                    <h2 class="pageDescription">{!advpm__Matter__c.Name}</h2>
+                    <div class="blank"></div>
+                </div>
+            </div>
+            <apex:outputPanel layout="block" styleClass="slds" style="position:absolute;top:10px;right:10px;" rendered="{!!isLightning && !isSF1Mobile}">
+                <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="width:36px;">
+                    <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                        <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-scrollable--y">
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-types" role="menu">
+                            
+                        </ul>
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Relationships</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-roles" role="menu">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="slds-button-group btn-viewmode slds-float--right" data-toggle="buttons-radio">
+                    <button class="slds-button slds-button--icon-border btn-viewmode-list {!IF(chartMode,'slds-not-selected','slds-is-selected')}">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#table')}" />
+                        <span class="slds-assistive-text">List</span>
+                    </button>
+                    <button class="slds-button slds-button--icon-border btn-viewmode-chart {!IF(chartMode,'slds-is-selected','slds-not-selected')}">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#checkin')}" />
+                        <span class="slds-assistive-text">Map</span>
+                    </button>
+                    <div class="slds-dropdown-trigger slds-dropdown-trigger--click">
+                        <button class="slds-button slds-button--icon-border" aria-haspopup="true" style="border-radius:0 4px 4px 0;margin-left:-1px;width:18px;">
+                            <c:svg styleClass="slds-button__icon slds-button__icon--small" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#down')}" />
+                            <span class="slds-assistive-text">Show More</span>
+                        </button>
+                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                            <ul class="slds-dropdown__list" role="menu">
+                                <li class="slds-dropdown__item {!IF(!chartScatterView,'highlighted','')}">
+                                    <a href="javascript:void(0)" role="menuitemradio" class="opt-treeview">
+                                        <p class="slds-truncate">
+                                            <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#socialshare')}" />
+                                            <span class="opt-text">Tree View</span>
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="slds-dropdown__item {!IF(chartScatterView,'highlighted','')}">
+                                    <a href="javascript:void(0)" role="menuitemradio" class="opt-scatterview">
+                                        <p class="slds-truncate">
+                                            <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#frozen')}" />
+                                            <span class="opt-text">Scatter View</span>
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-button-group btn-fullscreen slds-float--right" data-toggle="buttons-radio">
+                    <button id="buttonFullscreen" class="slds-button slds-button--icon-border">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#expand')}" />
+                        <span class="slds-assistive-text">Full Screen</span>
+                    </button>
+                </div>
+            </apex:outputPanel>
+        </div>
+        <div class="bBackLink" style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!advpm__Matter__c.id}">Back to matter</apex:outputLink></div>
+        <br /><br />
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning && !isInlineLayout}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="Matter Hierarchy" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Matter__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Matter__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Matter__c.Name}" 
+                            parentRecordID="{!advpm__Matter__c.ID}">
+            <div class="slds-button-group btn-fullscreen" data-toggle="buttons-radio" style="margin-top:-15px;">
+                <button id="buttonFullscreen" class="slds-button slds-button--icon-border">
+                    <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#expand')}" />
+                    <span class="slds-assistive-text">Full Screen</span>
+                </button>
+            </div>
+            
+            <apex:outputPanel layout="block" styleClass="slds-button-group btn-viewmode" style="margin-top:-15px;" rendered="{!!isSF1Mobile}">
+                <button class="slds-button slds-button--icon-border btn-viewmode-list {!IF(chartMode,'slds-not-selected','slds-is-selected')}">
+                    <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#table')}" />
+                    <span class="slds-assistive-text">List</span>
+                </button>
+                <button class="slds-button slds-button--icon-border btn-viewmode-chart {!IF(chartMode,'slds-is-selected','slds-not-selected')}">
+                    <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#checkin')}" />
+                    <span class="slds-assistive-text">Map</span>
+                </button>
+                <div class="slds-dropdown-trigger slds-dropdown-trigger--click">
+                    <button class="slds-button slds-button--icon-border" aria-haspopup="true" style="border-radius:0 4px 4px 0;margin-left:-1px;width:18px;">
+                        <c:svg styleClass="slds-button__icon slds-button__icon--small" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#down')}" />
+                        <span class="slds-assistive-text">Show More</span>
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                        <ul class="slds-dropdown__list" role="menu">
+                            <li class="slds-dropdown__item {!IF(!chartScatterView,'highlighted','')}">
+                                <a href="javascript:void(0)" role="menuitemradio" class="opt-treeview">
+                                    <p class="slds-truncate">
+                                        <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#socialshare')}" />
+                                        <span class="opt-text">Tree View</span>
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="slds-dropdown__item {!IF(chartScatterView,'highlighted','')}">
+                                <a href="javascript:void(0)" role="menuitemradio" class="opt-scatterview">
+                                    <p class="slds-truncate">
+                                        <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#frozen')}" />
+                                        <span class="opt-text">Scatter View</span>
+                                    </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" style="margin-top:-15px;margin-left:10px;" styleClass="" rendered="{!isLightning && !isSF1Mobile}">
+                <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="width:36px;">
+                    <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                        <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-scrollable--y">
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-types" role="menu">
+                            
+                        </ul>
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Relationships</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-roles" role="menu">
+                            
+                        </ul>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    <!-- <div class="slds message infoM3">
+        <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+            <tbody>
+            <tr>
+                <td></td>
+                <td><ul><apex:outputText escape="false" value="{!msg}" /></ul></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div> -->
+    <div class="{!IF(isLightning || chartMode,'slds','')}" id="main-container">
+        <div class="slds">
+            <div class="slds-spinner--large loading-spin">
+                <img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." />
+            </div>
+            <div class="slds-grid">
+                <div id="err-msgs" class="slds-col message errorM4 slds-hide slds-float--left" style="margin-left:0px;margin-right:0px;"></div>
+            </div>
+        </div>
+        
+        <apex:pageMessages />
+        <apex:pageBlock mode="detail">
+            <div id="list-container" class="{!IF(chartMode,'hide','')}">
+                <!-- <apex:pageBlockTable value="{!mattersList}" var="w" styleClass="dataTable slds-table table-1">
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" headerValue="Matter Name">
+                        <apex:outputPanel style="margin-left:{!(w.currentDepth * 20)}px"><apex:outputLink styleClass="{!IF(w.mat.Id == Matter__c.Id,'currentMat','')}" value="/{!w.mat.Id}">{!w.mat.Name}</apex:outputLink></apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!w.mat.Matter_Number__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!w.mat.Status__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!w.mat.Type__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!w.mat.RecordTypeId}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!w.mat.OwnerId}" />
+                </apex:pageBlockTable>
+    
+                <apex:pageBlockTable value="{!cMats}" var="c" rendered="{!cMats.size > 0}" styleClass="dataTable slds-table table-2">
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" value="{!c.Matter2__c}" headerValue="Matter Name" />
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" value="{!c.Relationship__c}" />
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!c.Matter2__r.Matter_Number__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!c.Matter2__r.Status__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!c.Matter2__r.Type__c}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!c.Matter2__r.RecordTypeId}" />
+                    <apex:column rendered="{!!isSF1Mobile}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" width="15%" value="{!c.Matter2__r.OwnerId}" />
+                </apex:pageBlockTable> -->
+            </div>
+            <div id="chart-container" class="{!IF(chartMode,'','hide')}"></div>
+            
+            <!-- <apex:outputPanel styleClass="advwrap {!IF(isLightning,'slds','')}" rendered="{!!isLightning && !isSF1Mobile}">
+                <div class="btn-group btn-mini pull-right btn-viewmode" data-toggle="buttons-radio">
+                    <button type="button" class="slds-button slds-button--neutral btn btn-viewmode-list {!IF(chartMode,'','active')}"><i class="icon-list"></i></button>
+                    <button type="button" class="slds-button slds-button--neutral btn btn-viewmode-chart {!IF(chartMode,'active','')}"><i class="icon-map-marker"></i></button>
+                    <a class="slds slds-button slds-button--neutral btn-adv btn-viewmode-chart-type dropdown-toggle {!IF(chartMode,'active','slds-hide')}" data-toggle="dropdown" href="#" style="height:22px;margin-left:-4px;padding-right:5px">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu btn-d-opt-dropdown" style="z-index:2000;">
+                        <li class="slds-dropdown__item {!IF(!chartScatterView,'highlighted','')}">
+                            <a href="javascript:void(0)" role="menuitemradio" class="opt-treeview">
+                                <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#socialshare')}" />
+                                <span class="opt-text">Tree View</span>
+                            </a>
+                        </li>
+                        <li class="slds-dropdown__item {!IF(chartScatterView,'highlighted','')}">
+                            <a href="javascript:void(0)" role="menuitemradio" class="opt-scatterview">
+                                <c:svg styleClass="slds-icon slds-icon--x-small slds-icon-text-default slds-m-right--x-small" path="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#frozen')}" />
+                                <span class="opt-text">Scatter View</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </apex:outputPanel> -->
+        </apex:pageBlock>
+    </div>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        var isLtng = {!isLightning};
+        var isIE = (window.ActiveXObject || "ActiveXObject" in window);
+        var url_aloha = '{!JSENCODE(matIconUrl)}'; 
+        var url_ltng = "{!URLFOR($Resource.SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#'+matIconName)}";
+        var maturl_ltng = "{!URLFOR($Resource.SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#'+matIconName)}";
+        var png_img_mat             = '{!URLFOR($Resource.images, 'img/d3_matter_(base)_round.png')}';
+        var png_img_mat_root        = '{!URLFOR($Resource.images, 'img/d3_matter_(root)_round.png')}';
+        var png_img_mat_cross       = '{!URLFOR($Resource.images, 'img/d3_matter_(cross)_round.png')}';
+        var png_img_mat_moon        = '{!URLFOR($Resource.images, 'img/d3_matter_(base-moon)_round.png')}';
+        var png_img_mat_root_moon   = '{!URLFOR($Resource.images, 'img/d3_matter_(root-moon)_round.png')}';
+        var png_img_mat_cross_moon  = '{!URLFOR($Resource.images, 'img/d3_matter_(cross-moon)_round.png')}';
+        var selectedRoles = [];
+        var selectedTypes = [];
+        var currMatId = '{!advpm__Matter__c.Id}';
+        var hasdragged = -1;
+        var edges, g_nodes, nodes, node, nodeEnter, tip, nodeUpdate, nodeExit, nodes_text, link, links, links_text,
+            nodes_text_enabled, links_text_enabled, x, y, k, margin, width, height, img_w, img_h, maxW,
+            duration, root, tree, graph, oldrx, oldry, diagonal, svg, cmenu, text_dx, text_dy, img_mat, simulation;
+    </script>
+    <script type="text/javascript">
+        function fillOptions() {
+            selectedRoles = [];
+            selectedTypes = [];
+            $j('ul.item-roles li.slds-dropdown__item').each(function(i){
+                if ($j(this).hasClass('slds-is-selected'))
+                    selectedRoles.push($j(this).find('a').data('key'));
+            });
+            $j('ul.item-types li.slds-dropdown__item').each(function(i){
+                if ($j(this).hasClass('slds-is-selected'))
+                    selectedTypes.push($j(this).find('a').data('key'));
+            });
+        }
+        function showDropMenu(ele){
+            var opened = false;
+            if($j(ele).hasClass('slds-is-open')){
+                $j(ele).removeClass('slds-is-open');
+                opened = true;
+            }
+            $j('.slds-dropdown-trigger--click').each(function(){
+                if($j(this).hasClass('slds-is-open')){
+                    $j(this).removeClass('slds-is-open');
+                }
+            });
+            if(!opened){
+                $j(ele).addClass('slds-is-open');
+            }
+        }
+        
+        $j(document).ready(function(){
+            $j(".btn-viewmode button.btn-viewmode-list").click(function (e) {
+                e.preventDefault();
+                saveViewModeOptionsToDB(false);
+            });
+            $j(".btn-viewmode button.btn-viewmode-chart").click(function (e) {
+                e.preventDefault();
+                saveViewModeOptionsToDB(true);
+            });
+            $j('.slds-dropdown-trigger--click').on('click', function(){
+                showDropMenu($j(this));
+            });
+            $j('.slds-dropdown').on('click', function(e){
+                e.stopPropagation();
+            });
+            $j(document).on('click', function(e) {
+                if($j(e.target).closest('.slds-is-open').length != 0) return false;
+                $j('.slds-is-open').removeClass('slds-is-open');
+                if($j(e.target).closest('.d3-context-menu').length != 0) return false;
+                $j('.d3-context-menu').css('display','none');
+            });
+            $j('.labels-type').on('click', function(e){
+                e.stopPropagation();
+                
+                $j(this).toggleClass('show-labels').toggleClass('hide-labels');
+                
+                saveLabelOptionsToDB();
+                
+                $j('.loading-spin').removeClass('slds-hide');
+                
+                fillOptions();
+                
+                //reloadGraph();
+                refreshOnlyGraph();
+            });
+            $j('.labels-role').on('click', function(e){
+                e.stopPropagation();
+                
+                $j(this).toggleClass('show-labels').toggleClass('hide-labels');
+                
+                saveLabelOptionsToDB();
+                
+                $j('.loading-spin').removeClass('slds-hide');
+                
+                fillOptions();
+                
+                //reloadGraph();
+                refreshOnlyGraph();
+            });
+            $j('.opt-treeview').on('click', function(e){
+                e.stopPropagation();
+                
+                $j(this).parent().toggleClass('highlighted');
+                if (isLtng == true) {
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                        var ur = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}";
+                        sforce.one.navigateToURL(ur, true);
+                    }
+                }
+                else {
+                    location.href = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}";
+                }
+            });
+            $j('.opt-scatterview').on('click', function(e){
+                e.stopPropagation();
+                
+                $j(this).parent().toggleClass('highlighted');
+                var sctv = '';
+                if ($j(this).parent().hasClass('highlighted'))
+                    sctv = '&sctv=1';
+                
+                if (isLtng == true) {
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                        var ur = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}"+sctv;
+                        sforce.one.navigateToURL(ur, true);
+                    }
+                }
+                else {
+                    location.href = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}"+sctv;
+                }
+            });
+            $j('#list-container').on("click", ".slds-tree__item .button-toggle", function(e) {
+                e.stopPropagation();
+                var $this = $j(this);
+                var collapsed = $j(this).find('.treeChevronIcon').hasClass('spin');
+                var level = $this.parent().parent().attr('aria-level');
+                var n = $this.attr('data-node');
+                if (collapsed) {
+                    $this.find('.treeChevronIcon').removeClass('spin');
+                    var keepCollapsed = [];
+                    $j('.'+n).each(function(i,el){
+                        $j(el).removeClass('slds-hide');
+                        if ($j(el).find('.treeChevronIcon').hasClass('spin')) {
+                            keepCollapsed.push('.'+$j(el).find('.slds-tree__item .button-toggle').attr('data-node'));
+                        }
+                    });
+                    $j.each(keepCollapsed, function(i,el) {
+                        $j(el).addClass('slds-hide');
+                    });
+                }
+                else {
+                    $this.find('.treeChevronIcon').addClass('spin');
+                    $j('.'+n).each(function(i,el){
+                        $j(el).addClass('slds-hide');
+                    });
+                }
+            });
+            $j("#buttonFullscreen").on("click", function() {
+                var elem = document.getElementById('fullscreen-container');
+                //var elem = document.documentElement;
+                //var elem = document.body;
+                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+                    requestFullscreen(elem);
+                    reloadGraph();
+                } else {
+                    exitFullscreen();
+                    reloadGraph();
+                }
+            });
+            if ({!chartMode}) {
+                if ({!!chartScatterView}) {
+                    loadData2();
+                }
+                else {
+                    loadData();
+                }
+            }
+            else {
+                $j('.btn-viewmode div.slds-dropdown-trigger').addClass('slds-hide');
+                $j('.btn-viewmode .btn-viewmode-chart').addClass('last-group-button');
+                loadData2();
+            }
+            
+            // IE fix for SVG Icons
+            svg4everybody();
+            
+            $j('.loading-spin').addClass('slds-hide');
+        });
+    </script>
+    <script type="text/javascript">
+        $j(document).on('fullscreenchange mozfullscreenchange webkitfullscreenchange MSFullscreenChange', function() {
+            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+                $j('#fullscreen-container').removeClass('fullscreen');
+                //$j('#buttonFullscreen').removeClass('slds-is-selected');
+            } else {
+                $j('#fullscreen-container').addClass('fullscreen');
+                //$j('#buttonFullscreen').addClass('slds-is-selected');
+            }
+        });
+        function requestFullscreen(elem) {
+            $j('#buttonFullscreen').addClass('slds-is-selected');
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        }
+        function exitFullscreen() {
+            $j('#buttonFullscreen').removeClass('slds-is-selected');
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function saveViewModeOptionsToDB(showChartMode){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__MatterHierarchy_Show_In_Chart_View__c    = showChartMode;
+            setting.advpm__MatterHierarchy_Hide_Type_Labels__c      = $j('.labels-type').hasClass('hide-labels');
+            setting.advpm__MatterHierarchy_Hide_Role_Labels__c      = $j('.labels-role').hasClass('hide-labels');
+            
+            advpm.MatterHierarchyController.saveMatterHierarchyViewModeInPlanner(setting, function(result, event){
+                if (event.status){
+                    if (showChartMode == false) {
+                        if ($j('.btn-viewmode-list').hasClass('active') == false) {
+                            $j('.btn-viewmode-list').addClass('active');
+                            $j('.btn-viewmode-chart').removeClass('active');
+                            $j('.btn-viewmode-list').removeClass('slds-not-selected').addClass('slds-is-selected');
+                            $j('.btn-viewmode-chart').removeClass('slds-is-selected').addClass('slds-not-selected');
+                            $j('.btn-viewmode-chart-type').addClass('slds-hide');
+                        }
+                    }
+                    else {
+                        if ($j('.btn-viewmode-chart').hasClass('active') == false) {
+                            $j('.btn-viewmode-list').removeClass('active');
+                            $j('.btn-viewmode-chart').addClass('active');
+                            $j('.btn-viewmode-list').addClass('slds-not-selected').removeClass('slds-is-selected');
+                            $j('.btn-viewmode-chart').addClass('slds-is-selected').removeClass('slds-not-selected');
+                            $j('.btn-viewmode-chart-type').removeClass('slds-hide');
+                        }
+                    }
+                    if (isLtng == true) {
+                        if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                            var ur = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}";
+                            sforce.one.navigateToURL(ur, true);
+                        }
+                    }
+                    else {
+                        location.href = "{!URLFOR($Site.prefix+'/apex/advpm__MatterHierarchy',Matter__c.Id,[id=Matter__c.Id,fw=URLENCODE('1'),retURL=Matter__c.Id])}";
+                    }
+                }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function saveLabelOptionsToDB(){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__MatterHierarchy_Show_In_Chart_View__c    = {!chartMode};
+            setting.advpm__MatterHierarchy_Hide_Type_Labels__c      = $j('.labels-type').hasClass('hide-labels');
+            setting.advpm__MatterHierarchy_Hide_Role_Labels__c      = $j('.labels-role').hasClass('hide-labels');
+            
+            advpm.MatterHierarchyController.saveMatterHierarchyViewModeInPlanner(setting, function(result, event){
+                if (event.status){ }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function advpm__Advologix_Planner_Options__c() {
+            this.advpm__MatterHierarchy_Show_In_Chart_View__c       = null;
+            this.advpm__MatterHierarchy_Hide_Type_Labels__c         = null;
+            this.advpm__MatterHierarchy_Hide_Role_Labels__c         = null;
+        }
+    </script>
+    <script type="text/javascript">
+        function loadData() {
+            var img         = '{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}';
+            advpm.MatterHierarchyController.loadMatterForceGraphData('{!advpm__Matter__c.Id}', '{!JSENCODE(advpm__Matter__c.Name)}', false, function(result, event){
+                //console.log(result);
+                if (event.status && result){
+                    var ul_type = $j('.item-types');
+                    var ul_role = $j('.item-roles');
+                    
+                    $j.each(result.types, function(){
+                        var item = this.split('#advseperator#');
+                        var itemLabel = item[0];
+                        var itemState = item[1] === 'TRUE';
+                        var li = '<li class="slds-dropdown__item '+(itemState ? 'slds-is-selected' : 'slds-is-not-selected')+'"><a href="javascript:void(0)" role="menuitemradio" data-key="'+itemLabel+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+itemLabel+'</span></p></a></li>';
+                        
+                        ul_type.append(li);
+                    });
+                    $j.each(result.roles, function(){
+                        var item = this.split('#advseperator#');
+                        var itemLabel = item[0];
+                        var itemState = item[1] === 'TRUE';
+                        var li = '<li class="slds-dropdown__item '+(itemState ? 'slds-is-selected' : 'slds-is-not-selected')+'"><a href="javascript:void(0)" role="menuitemradio" data-key="'+itemLabel+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+itemLabel+'</span></p></a></li>';
+                        
+                        ul_role.append(li);
+                    });
+                    
+                    $j('.item-types a').on('click', function(e){
+                        e.stopPropagation();
+                        $j(this).parent().toggleClass('slds-is-selected').toggleClass('slds-is-not-selected');
+                        
+                        var itemLabel = $j(this).data('key');
+                        var itemState = $j(this).parent().hasClass('slds-is-selected');
+                        
+                        advpm.MatterHierarchyController.saveLabelInPlanner('HIERARCHY_TYPE', itemLabel, itemState, function(result, event){
+                            if (event.status){
+                                $j('.loading-spin').removeClass('slds-hide');
+                                fillOptions();
+                                reloadGraph();
+                            }
+                            else {
+                                alert('Setting could not be saved.&nbsp;'+event.message);
+                            }
+                        }, {escape:true});
+                    });
+                    $j('.item-roles a').on('click', function(e){
+                        e.stopPropagation();
+                        $j(this).parent().toggleClass('slds-is-selected').toggleClass('slds-is-not-selected');
+                        
+                        var itemLabel = $j(this).data('key');
+                        var itemState = $j(this).parent().hasClass('slds-is-selected');
+                        
+                        advpm.MatterHierarchyController.saveLabelInPlanner('HIERARCHY_ROLE', itemLabel, itemState, function(result, event){
+                            if (event.status){
+                                $j('.loading-spin').removeClass('slds-hide');
+                                fillOptions();
+                                reloadGraph();
+                            }
+                            else {
+                                alert('Setting could not be saved.&nbsp;'+event.message);
+                            }
+                        }, {escape:true});
+                    });
+                    
+                    fillOptions();
+                    //createGraph(result);
+                    reloadGraph();
+                } else {
+                    $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                }
+            }, {escape:false,buffer:false,timeout:120000});
+        }
+        function loadData2() {
+            //return;
+            var img         = '{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}';
+            advpm.MatterHierarchyController.loadHierarchyFlatView('{!parentMatterNode.Id}', '{!JSENCODE(parentMatterNode.Name)}', false, function(result, event){
+                //console.log(result);
+                if (event.status && result){
+                    var ul_type = $j('.item-types');
+                    var ul_role = $j('.item-roles');
+                    
+                    $j.each(result.types, function(){
+                        var item = this.split('#advseperator#');
+                        var itemLabel = item[0];
+                        var itemState = item[1] === 'TRUE';
+                        var li = '<li class="slds-dropdown__item '+(itemState ? 'slds-is-selected' : 'slds-is-not-selected')+'"><a href="javascript:void(0)" role="menuitemradio" data-key="'+itemLabel+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+itemLabel+'</span></p></a></li>';
+                        
+                        ul_type.append(li);
+                    });
+                    $j.each(result.roles, function(){
+                        var item = this.split('#advseperator#');
+                        var itemLabel = item[0];
+                        var itemState = item[1] === 'TRUE';
+                        var li = '<li class="slds-dropdown__item '+(itemState ? 'slds-is-selected' : 'slds-is-not-selected')+'"><a href="javascript:void(0)" role="menuitemradio" data-key="'+itemLabel+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+itemLabel+'</span></p></a></li>';
+                        
+                        ul_role.append(li);
+                    });
+                    
+                    $j('.item-types a').on('click', function(e){
+                        e.stopPropagation();
+                        $j(this).parent().toggleClass('slds-is-selected').toggleClass('slds-is-not-selected');
+                        
+                        var itemLabel = $j(this).data('key');
+                        var itemState = $j(this).parent().hasClass('slds-is-selected');
+                        
+                        advpm.MatterHierarchyController.saveLabelInPlanner('HIERARCHY_TYPE', itemLabel, itemState, function(result, event){
+                            if (event.status){
+                                $j('.loading-spin').removeClass('slds-hide');
+                                fillOptions();
+                                reloadGraph();
+                            }
+                            else {
+                                alert('Setting could not be saved.&nbsp;'+event.message);
+                            }
+                        }, {escape:true});
+                    });
+                    $j('.item-roles a').on('click', function(e){
+                        e.stopPropagation();
+                        $j(this).parent().toggleClass('slds-is-selected').toggleClass('slds-is-not-selected');
+                        
+                        var itemLabel = $j(this).data('key');
+                        var itemState = $j(this).parent().hasClass('slds-is-selected');
+                        
+                        advpm.MatterHierarchyController.saveLabelInPlanner('HIERARCHY_ROLE', itemLabel, itemState, function(result, event){
+                            if (event.status){
+                                $j('.loading-spin').removeClass('slds-hide');
+                                fillOptions();
+                                reloadGraph();
+                            }
+                            else {
+                                alert('Setting could not be saved.&nbsp;'+event.message);
+                            }
+                        }, {escape:true});
+                    });
+                    
+                    fillOptions();
+                    //createGraph2(result.tree);
+                    reloadGraph();
+                } else {
+                    $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                }
+            }, {escape:false,buffer:false,timeout:120000});
+        }
+        function reloadGraph() {
+            if ({!chartMode && !chartScatterView}) {
+                advpm.MatterHierarchyController.reloadHierarchyFlatView('{!parentMatterNode.Id}', '{!JSENCODE(parentMatterNode.Name)}', true, selectedTypes, selectedRoles, function(result, event){
+                    if (event.status && result){
+                        
+                        createGraph2(result.tree, false);
+                    } else {
+                        $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                    }
+                }, {escape:false,buffer:false,timeout:120000});
+            }
+            else if ({!chartMode && chartScatterView}) {
+                advpm.MatterHierarchyController.reloadMatterForceGraphData('{!advpm__Matter__c.Id}', '{!JSENCODE(advpm__Matter__c.Name)}', true, selectedTypes, selectedRoles, function(result, event){
+                    if (event.status && result){
+                        
+                        createGraph(result);
+                    } else {
+                        $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                    }
+                }, {escape:false,buffer:false,timeout:120000});
+            } 
+            else if ({!!chartMode}) {
+                advpm.MatterHierarchyController.reloadHierarchyFlatView('{!parentMatterNode.Id}', '{!JSENCODE(parentMatterNode.Name)}', true, selectedTypes, selectedRoles, function(result, event){
+                    if (event.status && result){
+                        
+                        createGraph2(result.tree, true);
+                    } else {
+                        $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Matter Hierarchy could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                    }
+                }, {escape:false,buffer:false,timeout:120000});
+            }
+        }
+        function refreshOnlyGraph() {
+            if ({!!chartScatterView}) {
+                updateTreeGraph(root, false);
+            }
+            else {
+                updateScatterGraph();
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        function createGraph(data) {
+            //var graph = JSON.parse( data );
+            graph = data;
+            //console.log(graph);
+            
+            edges = [];
+            var linkIndex = 0;
+            graph.links.forEach(function(e) {
+                var sourceNode = graph.nodes.filter(function(n) {
+                    return n.id === e.source;
+                })[0],
+                targetNode = graph.nodes.filter(function(n) {
+                    return n.id === e.target;
+                })[0];
+                
+                edges.push({
+                    source: sourceNode,
+                    target: targetNode,
+                    relation: e.relation,
+                    id: linkIndex++,
+                    collapsing: 0,
+                    collapsed: false,
+                    hidden: false
+                });
+            });
+            
+            graph.nodes.forEach(function(node) {
+                var childNodes = 0;
+                readChilds(node);
+                
+                function readChilds(sourceNode){
+                    edges.forEach(function(l) {
+                        if (l.source.id === sourceNode.id){
+                            childNodes += 1;
+                            readChilds(l.target);
+                        }
+                    });
+                }
+                
+                node.childs = childNodes;
+                node.hidden = false;
+            });
+            /*graph.nodes.forEach(function(node) {
+                var directChildNodes = 0;
+                readDirectChilds(node);
+                
+                function readDirectChilds(sourceNode){
+                    edges.forEach(function(l) {
+                        if (l.source.id === sourceNode.id){
+                            directChildNodes += 1;
+                        }
+                    });
+                }
+                node.directChilds = directChildNodes;
+            });*/
+            
+            g_nodes = graph.nodes;
+            
+            x = $j(window).width(),//$j("div#chart-container").width(),
+            y = $j(window).height() > 630 ? $j(window).height() : 630;
+            
+            maxW        = {!isLightning} ? 850 : 1000;
+            width       = x < maxW ? maxW : x;
+            height      = y < 550 ? 550 : (y - 100);
+            img_w       = 32;
+            img_h       = 32;
+            k           = Math.sqrt(g_nodes.length / (width * height));
+            text_dx     = -20;
+            text_dy     = 20;
+            img_mat     = '{!JSENCODE(matIconUrl)}';
+            
+            svg = d3.select("div#chart-container")
+                    .html('')
+                    .append("svg")
+                    .classed("svg-container", true) //container class to make it responsive
+                    .attr("width", width)
+                    .attr("height", height)
+                    .classed("svg-content-responsive", true); 
+            
+            simulation  = d3.forceSimulation()
+                                .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(150))
+                                .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16))
+                                .force("charge", d3.forceManyBody().strength(-2 / k))
+                                //.force("center", d3.forceCenter(width / 2, height / 3));
+                                .force("center", d3.forceCenter(width / 2, height / 2));
+            
+            cmenu = [
+                {
+                    title: 'Open',
+                    action: function(elm, d, i) {
+                        if (isLtng == true) {
+                            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                sforce.one.navigateToSObject(d.recordid);
+                            }
+                        }
+                        else {
+                            var win = window.open('/'+encodeURIComponent(d.recordid), '_blank');
+                            win.focus();
+                        }
+                    }
+                },
+                {
+                    title: 'Set Focus',
+                    action: function(elm, d, i) {
+                        var ur = '';
+                        if ('{!$CurrentPage.parameters.sctv}'=='1')
+                            ur = "{!$Site.prefix}/apex/advpm__MatterHierarchy?id="+encodeURIComponent(d.recordid)+"&sctv=1&retUrl="+encodeURIComponent(d.recordid)+"{!IF(JSENCODE($CurrentPage.parameters.fw)!='','&fw='+JSENCODE($CurrentPage.parameters.fw),'')}";
+                        else
+                            ur = "{!$Site.prefix}/apex/advpm__MatterHierarchy?id="+encodeURIComponent(d.recordid)+"&retUrl="+encodeURIComponent(d.recordid)+"{!IF(JSENCODE($CurrentPage.parameters.fw)!='','&fw='+JSENCODE($CurrentPage.parameters.fw),'')}";
+                        if (ur != '') {
+                            if (isLtng == true) {
+                                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                    sforce.one.navigateToURL(ur, true);
+                                }
+                            }
+                            else {
+                                //location.href = ur;
+                                window.open(ur, '_blank');
+                            }
+                        }
+                    }
+                },
+                {
+                    divider: true
+                },
+                {
+                    title: function(d) {
+                        return (d.collapsed ? 'Expand' : 'Collapse');
+                    },
+                    action: function(elm, d, i) {
+                        toggleScatterNode(d);
+                    }
+                }
+            ];
+            
+            /*graph.nodes.forEach(function(node) {
+                //console.log('('+node.childs+') ('+node.directChilds+') '+node.name);
+                if (node.directChilds > 10) {
+                    var isCollapsed = false;
+                    toggleScatterNode2(d, isCollapsed);
+                    
+                    if (isLeafNode(d)) {
+                        d.collapsed = !isCollapsed;
+                        //updateScatterGraph();
+                    }
+                }
+            });*/
+            
+            updateScatterGraph();
+        }
+        function updateScatterGraph() {
+            $j('.loading-spin').addClass('slds-hide');
+            nodes_text_enabled = $j('.labels-type').hasClass('show-labels');
+            links_text_enabled = $j('.labels-role').hasClass('show-labels');
+            
+            nodes = g_nodes.filter(function(d) {
+                return !d.hidden;
+                //return d.collapsing == 0;
+                //return d.collapsing < 1000;
+            });
+            
+            links = edges.filter(function(l) {
+                return !l.hidden;
+                //return l.source.collapsing == 0 && l.target.collapsing == 0;
+                //return l.source.collapsing < 1000;
+            });
+            
+            svg.selectAll("defs").remove();
+            svg.selectAll("rect").remove();
+            svg.selectAll("text").remove();
+            svg.selectAll("line").remove();
+            svg.selectAll("path").remove();
+            svg.selectAll("foreignObject").remove();
+            svg.selectAll("image").remove();
+            svg.selectAll("g").remove();
+            d3.selectAll(".d3-tooltip").remove();
+            
+            // create the div element that will hold the context menu
+            tip     = d3.select("div#chart-container")
+                        .append("div")
+                        .attr("class", "d3-tooltip")
+                        .style("opacity", 0);
+            /*
+            //console.log(links);
+            svg.append("defs").selectAll("marker")
+                .data(["suit", "licensing", "resolved"])
+              .enter().append("marker")
+                .attr("id", function(d) { return d; })
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 19)
+                .attr("refY", 0)
+                .attr("markerWidth", 9)
+                .attr("markerHeight", 9)
+                .attr("orient", "auto")
+              .append("path")
+                .attr("d", "M0,-5L10,0L0,5 L10,0 L0, -5")
+                .style("stroke", "#aaa")
+                .style("opacity", "1");
+            */
+            link   = svg.append("g")
+                        .attr("class", "links")
+                        .selectAll("path")
+                        .data(links)
+                        .enter().append("path");
+                        //.style('marker-end','url(#suit)');
+            
+            if (isIE) {
+                node   = svg.append("g")
+                            .attr("class", "nodes")
+                            .selectAll("image")
+                            .data(nodes)
+                            .enter().append("svg:image")
+                                    .attr("xlink:href",  function(d) {
+                                        if (d.collapsed)
+                                            return (d.id==0? png_img_mat_root_moon : (d.image==='IMG_CR'? png_img_mat_cross_moon : png_img_mat_moon)); 
+                                        else
+                                            return (d.id==0? png_img_mat_root : (d.image==='IMG_CR'? png_img_mat_cross : png_img_mat));
+                                    })
+                                    .attr("width",function(d){
+                                        return (d.id==0?img_w+6:img_w+2)+(d.collapsed?8:0);
+                                    })
+                                    .attr("height",function(d){
+                                        return (d.id==0?img_h+6:img_h+2);
+                                    })
+                                    .attr("class",function(d){
+                                        return (d.id==0?'icon-first-node':'')+' icon-node '+(d.image==='IMG_CR'?' crossrefmat ':'')+(d.collapsed?' node-collapsed ':'');
+                                    })
+                                    //.on("click", toggleScatterNode)
+                                    .on("dblclick", toggleScatterNode)
+                                    .on("contextmenu", d3.contextMenu(cmenu, {
+                                        onOpen: function(d) {
+                                            if (d.id == 0)
+                                                $j('.d3-context-menu ul li:eq(1)').addClass('is-disabled');
+                                            if (d.childs == 0)
+                                                $j('.d3-context-menu ul li:eq(3)').addClass('is-disabled');
+                                        }
+                                    }))
+                                    .on("mouseover", function(d) {
+                                        if (nodes_text_enabled==false && d.id>0) {
+                                            tip.transition()
+                                               .duration(900)
+                                               .style("opacity", 1);
+                                            var ht = '<div class="tooltipster-base tooltipster-sidetip tooltipster-borderless tooltipster-right" style="z-index: 9999999;width:200px"><div class="tooltipster-box"><div class="tooltipster-content">'+d.name+'</div></div><div class="tooltipster-arrow" style="top: 50%;"><div class="tooltipster-arrow-uncropped"><div class="tooltipster-arrow-border"></div><div class="tooltipster-arrow-background"></div></div></div></div>';
+                                            tip.html( ht )
+                                               .style("left", (d3.event.pageX) + (isLtng?20:10) + "px")             
+                                               .style("top", (d3.event.pageY - (isLtng?20:128)) + "px");
+                                        }
+                                    })
+                                    .on("mouseout", function(d) {
+                                        tip.transition()
+                                           .duration(200)
+                                           .style("opacity", 0);
+                                    })
+                                    .call(d3.drag()
+                                            .on("start", dragstarted)
+                                            .on("drag", dragged)
+                                            .on("end", dragended));
+                
+            }
+            else {
+                node   = svg.append("g")
+                            .attr("class", "nodes")
+                            .selectAll("foreignObject")
+                            .data(nodes)
+                            .enter().append("svg:foreignObject")
+                                    .attr("width",function(d){
+                                        return (d.id==0?img_w+6:img_w+2)+(d.collapsed?8:0);
+                                    })
+                                    .attr("height",function(d){
+                                        return (d.id==0?img_h+6:img_h+2);
+                                    })
+                                    .attr("class",function(d){
+                                        return (d.id==0?'icon-first-node':'')+' icon-node '+(d.image==='IMG_CR'?' crossrefmat ':'')+(d.collapsed?' node-collapsed ':'');
+                                    })
+                                    //.on("click", toggleScatterNode)
+                                    .on("dblclick", toggleScatterNode)
+                                    .on("contextmenu", d3.contextMenu(cmenu, {
+                                        onOpen: function(d) {
+                                            if (d.id == 0)
+                                                $j('.d3-context-menu ul li:eq(1)').addClass('is-disabled');
+                                            if (d.childs == 0)
+                                                $j('.d3-context-menu ul li:eq(3)').addClass('is-disabled');
+                                        }
+                                    }))
+                                    .on("mouseover", function(d) {
+                                        if (nodes_text_enabled==false && d.id>0) {
+                                            tip.transition()
+                                               .duration(900)
+                                               .style("opacity", 1);
+                                            var ht = '<div class="tooltipster-base tooltipster-sidetip tooltipster-borderless tooltipster-right" style="z-index: 9999999;width:200px"><div class="tooltipster-box"><div class="tooltipster-content">'+d.name+'</div></div><div class="tooltipster-arrow" style="top: 50%;"><div class="tooltipster-arrow-uncropped"><div class="tooltipster-arrow-border"></div><div class="tooltipster-arrow-background"></div></div></div></div>';
+                                            tip.html( ht )
+                                               .style("left", (d3.event.pageX) + (isLtng?20:10) + "px")             
+                                               .style("top", (d3.event.pageY - (isLtng?20:128)) + "px");
+                                        }
+                                    })
+                                    .on("mouseout", function(d) {
+                                        tip.transition()
+                                           .duration(200)
+                                           .style("opacity", 0);
+                                    })
+                                    .call(d3.drag()
+                                            .on("start", dragstarted)
+                                            .on("drag", dragged)
+                                            .on("end", dragended));
+                
+                node.append("xhtml:body")
+                    .html(function(d){
+                        var collapsedMoon = '';
+                        if (d.collapsed)
+                            collapsedMoon = '<span class="slds-icon__container slds-icon__container--circle slds-icon-custom-{!matIconNo} node-collapsed-moon"></span>'; 
+                        return '<span class="slds-icon__container slds-icon__container--circle slds-icon-custom-{!matIconNo}"><svg aria-hidden="true" class="slds-icon slds-icon--small"><use xlink:href="'+maturl_ltng+'"></use></svg><span class="slds-assistive-text">Matter</span></span>'+collapsedMoon;
+                    });
+                
+            }
+            
+            if (links_text_enabled) {
+                links_text     = svg.selectAll(".linetext")
+                                    .data(links)
+                                    .enter()
+                                    .append("text")
+                                    .attr("class","linetext ")
+                                    .attr("text-anchor", "middle")
+                                    .text(function(d){
+                                        return d.relation!=''?d.relation.toLowerCase():'';
+                                    });
+            }
+            
+            nodes_text     = svg.selectAll(".nodetext")
+                                .data(nodes)
+                                .enter()
+                                .append("text")
+                                .attr("class",function(d){
+                                    return (d.id==0?"nodetext slds-text-heading--label label-first-node":"nodetext slds-text-heading--label")+(nodes_text_enabled==false && d.id>0?' slds-hide':'');
+                                })
+                                .attr("fill",function(d){
+                                    return (d.id==0?"#000":"");
+                                })
+                                .attr("text-anchor", "middle")
+                                .attr("dx",text_dx)
+                                .attr("dy",text_dy)
+                                .text(function(d){
+                                    return d.name;
+                                });
+            
+            simulation
+                    .nodes(nodes)
+                    .on("tick", ticked)
+                    .on("end", graphended);
+            
+            simulation
+                    .force("link")
+                    .links(links);
+                    
+            simulation.restart();
+            
+            // IE fix for SVG Icons
+            svg4everybody();
+        }
+        
+        function graphended() {
+            
+            svg.selectAll("rect").remove();
+            if (links_text_enabled) {
+                links_text.each(function(d) {
+                                    var bbox = this.getBBox();
+                                    svg.insert("rect", "text")
+                                        .attr("fill", "#f8f8f8")
+                                        .attr("x", bbox.x)
+                                        .attr("y", bbox.y)
+                                        .attr("width", bbox.width)
+                                        .attr("height", bbox.height);
+                                });
+            }
+            nodes_text.each(function(d) {
+                                var bbox = this.getBBox();
+                                var cl = (nodes_text_enabled==false && d.id>0?' slds-hide':'');
+                                svg.insert("rect", "text")
+                                    .attr("class", function(d2){
+                                        return cl;
+                                    })
+                                    .attr("fill", "#f8f8f8")
+                                    .attr("x", bbox.x)
+                                    .attr("y", bbox.y)
+                                    .attr("width", bbox.width)
+                                    .attr("height", bbox.height);
+                            });
+        }
+        
+        function ticked() {
+            
+            node
+                .attr("x", function(d) {
+                    var xPos = findPosX(d.x, img_w);
+                    return xPos-img_w/2;
+                })
+                .attr("y", function(d) {
+                    var yPos = findPosY(d.y, img_h);
+                    return yPos-img_h/2;
+                });
+            
+            nodes_text
+                .attr("x",function(d){ return findPosX(d.x, img_w) + 20; })
+                .attr("y",function(d){ return findPosY(d.y, img_h) + 10 + (d.id==0?8:3); });
+            
+            link.attr("d", function(d) {
+                // Total difference in x and y from source to target
+                var diffX = findPosX(d.target.x, img_w) - findPosX(d.source.x, img_w);
+                var diffY = findPosY(d.target.y, img_h) - findPosY(d.source.y, img_h);
+                //var diffX = d.target.x - d.source.x;
+                //var diffY = d.target.y - d.source.y;
+                
+                // Length of path from center of source node to center of target node
+                var pathLength = Math.sqrt((diffX * diffX) + (diffY * diffY));
+                
+                // x and y distances from center to outside edge of target node
+                var offsetX = ((diffX * img_w/2) / pathLength) / 2;
+                var offsetY = ((diffY * img_h/2) / pathLength) / 2;
+            
+                return "M" + findPosX(d.source.x, img_w) + "," + findPosY(d.source.y, img_h) + "L" + (findPosX(d.target.x, img_w) - offsetX) + "," + (findPosY(d.target.y, img_h) - offsetY);
+                //return "M" + d.source.x + "," + d.source.y + "L" + (d.target.x - offsetX) + "," + (d.target.y - offsetY);
+            });
+            
+            if (links_text_enabled) {
+                links_text
+                    .attr("x",function(d){ return (findPosX(d.source.x, img_w) + findPosX(d.target.x, img_h)) / 2; })
+                    .attr("y",function(d){ return (findPosY(d.source.y, img_h) + findPosY(d.target.y, img_h)) / 2; });
+            }
+            
+        }
+        function findPosX(initPos, img_w) {
+            var pos = initPos;
+            pos = pos - img_w/2 < 0     ? img_w/2 : pos ;
+            pos = pos + img_w/2 > width ? width - img_w/2 : pos ;
+            return pos;
+        }
+        function findPosY(initPos, img_h) {
+            var pos = initPos;
+            pos = pos - img_h/2 < 0     ? img_h/2 : pos ;
+            pos = pos + img_h/2 + text_dy > height ? height - img_h/2 - text_dy : pos ;
+            return pos;
+        }
+        function dragstarted(d) {
+            svg.selectAll("rect").remove();
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+            hasdragged = -1;
+            //console.log('dragstarted: '+hasdragged);
+        }
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+            hasdragged += 1;
+            //console.log('dragged: '+hasdragged);
+        }
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+            //console.log('dragended ('+d3.event.active+'): '+hasdragged);
+            if (hasdragged <= 1)
+                toggleScatterNode(d);
+            hasdragged = -1;
+        }
+        function toggleScatterNode(d) {
+            if (!d3.event.defaultPrevented) {
+                var isCollapsed = d.collapsed;
+                toggleScatterNode2(d, isCollapsed);
+                
+                if (isLeafNode(d)) {
+                    d.collapsed = !isCollapsed;
+                    updateScatterGraph();
+                }
+            }
+        }
+        function hasActiveOtherSources(clickednode, d){
+            var count = 0;
+            //console.log('\n... '+d.name);
+            edges.forEach(function(l){
+                if (!l.hidden && l.target.id === d.id && l.source.id !== clickednode.id){
+                    ++count;
+                    //console.log('... ['+(count)+'] '+l.source.name);
+                }
+            });
+            return count;
+        }
+        function isLeafNode(d){
+            var count = 0;
+            edges.forEach(function(l){
+                if (l.source.id === d.id){
+                    ++count;
+                }
+            });
+            return count > 0;
+        }
+        function toggleScatterNode2(d, isCollapsed) {
+            var inc = isCollapsed ? -1 : 1;
+            var nodeList = [];
+            //console.log('\n====== S ======\n');
+            //console.log(d);
+            edges.forEach(function(l){
+                if (l.source.id === d.id){
+                    var c = hasActiveOtherSources(d, l.target);
+                    //console.log('... otherSources : '+c);
+                    if (c == 0) {
+                        l.hidden = !isCollapsed;
+                        l.target.hidden = !isCollapsed;
+                        l.source.collapsing += inc;
+                        //console.log('... ... '+l.id+' : '+l.collapsed);
+                    }
+                    else if (c > 0) {
+                        l.hidden = !isCollapsed;
+                        //console.log('... ... '+l.id+' : '+l.collapsed);
+                    }
+                    if (l.target.hidden || (isCollapsed && !l.target.collapsed)) {
+                        nodeList.push(l.target);
+                    }
+                }
+            });
+            nodeList.forEach(function(n){
+                toggleScatterNode2(n, isCollapsed);
+            });
+            
+            return nodeList.length;
+            //console.log('\n\n====== E ======\n\n');
+        }
+    </script>
+    <script type="text/javascript">
+        function createGraph2(chartJson, displayAsList) {
+            
+            //console.log(chartJson);
+            //console.log(JSON.stringify(chartJson));
+            
+            // *********** Convert flat data into a nice tree ***************
+            // create a name: node map
+            var dataMap = chartJson.reduce(function(map, node) {
+                map[node.name] = node;
+                return map;
+            }, {});
+            
+            // create the tree array
+            var treeData = [];
+            chartJson.forEach(function(node) {
+                // add to parent
+                var parent = dataMap[node.parent];
+                if (parent) {
+                    // create child array if it doesn't exist
+                    (parent.children || (parent.children = []))
+                        // add node to child array
+                        .push(node);
+                } else {
+                    // parent is null or missing
+                    treeData.push(node);
+                }
+            });
+            
+            //console.log(chartJson);
+            //console.log(JSON.stringify(chartJson));
+            try {
+                var circularTest = JSON.stringify(chartJson);
+            }
+            catch (err){
+                $j('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;Circular dependency detected! Please make sure your Parent/Child relationship between matters is not cyclic.</div></span>').toggleClass('slds-hide', false);
+                return;
+            }
+            
+            x = $j(window).width()-50,//$j("div#chart-container").parent().width()-50,
+            y = $j(window).height()-50;
+            
+            margin = {
+                        top: 10,
+                        right: 120,
+                        bottom: 30,
+                        left: 120
+                      };
+            
+            width = x - margin.right - margin.left,
+            height = y - margin.top - margin.bottom,
+            img_w = 32,
+            img_h = 32;
+            
+            duration = 750, 
+            root = chartJson[0];
+            
+            oldrx = root.x0 = height / 2;
+            oldry = root.y0 = margin.left;
+            
+            tree = d3.layout.tree()
+                            .size([height, width]);
+            
+            diagonal = d3.svg.diagonal()
+                             .projection(function(d) {
+                                  return [d.y, d.x];
+                             });
+            
+            svg = d3.select("div#chart-container")
+                    .html('')
+                    .append("svg")
+                    .attr("xmlns", "http://www.w3.org/2000/svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    /*.attr("width", width)
+                    .attr("height", height)*/
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
+            cmenu = [
+                    {
+                        title: 'Open',
+                        action: function(elm, d, i) {
+                            if (isLtng == true) {
+                                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                    sforce.one.navigateToSObject(d.rid);
+                                }
+                            }
+                            else {
+                                var win = window.open('/'+encodeURIComponent(d.rid), '_blank');
+                                win.focus();
+                            }
+                        }
+                    },
+                    {
+                        title: 'Set Focus',
+                        action: function(elm, d, i) {
+                            var ur = '';
+                            if ('{!$CurrentPage.parameters.sctv}'=='1')
+                                ur = "{!$Site.prefix}/apex/advpm__MatterHierarchy?id="+encodeURIComponent(d.rid)+"&sctv=1&retUrl="+encodeURIComponent(d.rid)+"{!IF(JSENCODE($CurrentPage.parameters.fw)!='','&fw='+JSENCODE($CurrentPage.parameters.fw),'')}";
+                            else
+                                ur = "{!$Site.prefix}/apex/advpm__MatterHierarchy?id="+encodeURIComponent(d.rid)+"&retUrl="+encodeURIComponent(d.rid)+"{!IF(JSENCODE($CurrentPage.parameters.fw)!='','&fw='+JSENCODE($CurrentPage.parameters.fw),'')}";
+                            if (ur != '') {
+                                if (isLtng == true) {
+                                    if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                        sforce.one.navigateToURL(ur, true);
+                                    }
+                                }
+                                else {
+                                    //location.href = ur;
+                                    window.open(ur, '_blank');
+                                }
+                            }
+                        }
+                    },
+                    {
+                        divider: true
+                    },
+                    {
+                        title: function(d) {
+                            return (d._children ? 'Expand' : 'Collapse');
+                        },
+                        action: function(elm, d, i) {
+                            toggleTreeNode(d);
+                        }
+                    }
+                ];
+            
+            updateTreeGraph(root, false);
+            if (displayAsList) {
+                createTableTree(root);
+            }
+        }
+        function updateTreeGraph(source, toggleUpdate) {
+            
+            $j('.loading-spin').addClass('slds-hide');
+            nodes_text_enabled = $j('.labels-type').hasClass('show-labels');
+            links_text_enabled = $j('.labels-role').hasClass('show-labels');
+            
+            var i=0;
+            
+            if (!toggleUpdate) {
+                svg.selectAll(".node").remove();
+                svg.selectAll(".link").remove();
+            }
+            svg.selectAll(".linktext").remove();
+            svg.selectAll("rect").remove();
+            d3.selectAll(".d3-tooltip").remove();
+            
+            // Compute the new tree layout.
+            nodes = tree.nodes(source).reverse(),
+            links = tree.links(nodes);
+            
+            // create the div element that will hold the context menu
+            tip = d3.select("div#chart-container")
+                        .append("div")
+                        .attr("class", "d3-tooltip")
+                        .style("opacity", 0);
+            
+            // Update the nodes…
+            node = svg.selectAll("g.node")
+                      .data(nodes, function(d){
+                            return d.id || (d.id = ++i);
+                      });
+            
+            // Enter any new nodes at the parent's previous position.
+            nodeEnter = node.enter()
+                            .append("g")
+                            .attr("id", function(d){ return 'treenode' + d.id; })
+                            .attr("class", function(d){
+                                return 'node '+(d._children?' node-collapsed ':'');
+                            })
+                            .attr("transform", function(d) {
+                                return "translate(" + source.y0 + "," + source.x0 + ")";
+                            })
+                            .on("click", toggleTreeNode)
+                            .on("contextmenu", d3.contextMenu(cmenu, {
+                                onOpen: function(d) {
+                                    if (d.rid==currMatId)
+                                        $j('.d3-context-menu ul li:eq(1)').addClass('is-disabled');
+                                    if (!d.children && !d._children)
+                                        $j('.d3-context-menu ul li:eq(3)').addClass('is-disabled');
+                                }
+                            }))
+                            .on("mouseover", function(d) {
+                                if (nodes_text_enabled==false && d.rid!=currMatId) {
+                                    tip.transition()
+                                       .duration(900)
+                                       .style("opacity", 1);
+                                    var ht = '<div class="tooltipster-base tooltipster-sidetip tooltipster-borderless tooltipster-right" style="z-index: 9999999;width:200px"><div class="tooltipster-box"><div class="tooltipster-content">'+d.name+'</div></div><div class="tooltipster-arrow" style="top: 50%;"><div class="tooltipster-arrow-uncropped"><div class="tooltipster-arrow-border"></div><div class="tooltipster-arrow-background"></div></div></div></div>';
+                                    tip.html( ht )
+                                       .style("left", (d3.event.pageX) + (isLtng?20:10) + "px")             
+                                       .style("top", (d3.event.pageY - (isLtng?20:128)) + "px");
+                                }
+                            })
+                            .on("mouseout", function(d) {
+                                tip.transition()
+                                   .duration(200)
+                                   .style("opacity", 0);
+                            });
+        
+            if (isIE) {
+                nodeEnter
+                         .append("svg:image")
+                         .attr("xlink:href",  function(d) { 
+                            return (d.rid==currMatId? png_img_mat_root : (d.image==='IMG_CR'? png_img_mat_cross : png_img_mat));
+                         })
+                         .attr("width",function(d){
+                            return img_w + (d.rid==currMatId?8:4);
+                         })
+                         .attr("height",function(d){
+                            return img_h + (d.rid==currMatId?8:4);
+                         })
+                         .attr("x", "-"+img_w/2)
+                         .attr("y", "-"+img_h/2)
+                         .attr("class",function(d){
+                            return 'icon-node-no-moon ' + (d.rid==currMatId?' icon-first-node ':'')+' icon-node '+(d.image==='IMG_CR'?' crossrefmat ':'');
+                         })
+                         .select(function() { return this.parentNode; })
+                         .append("svg:image")
+                         .attr("xlink:href",  function(d) { 
+                            return (d.rid==currMatId? png_img_mat_root_moon : (d.image==='IMG_CR'? png_img_mat_cross_moon : png_img_mat_moon));
+                         })
+                         .attr("width",function(d){
+                            return img_w + (d.rid==currMatId?8:4);
+                         })
+                         .attr("height",function(d){
+                            return img_h + (d.rid==currMatId?8:4);
+                         })
+                         .attr("x", "-"+img_w/2)
+                         .attr("y", "-"+img_h/2)
+                         .attr("class",function(d){
+                            return 'icon-node-moon ' + (d.rid==currMatId?' icon-first-node ':'')+' icon-node '+(d.image==='IMG_CR'?' crossrefmat ':'');
+                         });
+            }
+            else {
+                nodeEnter
+                         .append("svg:foreignObject")
+                         .attr("requiredFeatures","http://www.w3.org/TR/SVG11/feature#Extensibility")
+                         .attr("width",function(d){
+                            return img_w + (d.rid==currMatId?8:4);
+                         })
+                         .attr("height",function(d){
+                            return img_h + (d.rid==currMatId?8:4);
+                         })
+                         .attr("x", "-"+img_w/2)
+                         .attr("y", "-"+img_h/2)
+                         .attr("class",function(d){
+                            return (d.rid==currMatId?' icon-first-node ':'')+' icon-node '+(d.image==='IMG_CR'?' crossrefmat ':'');
+                         })
+                         .append("xhtml:body")
+                         .attr("xmlns", "http://www.w3.org/1999/xhtml")
+                         .html(function(d){
+                            var collapsedMoon = '<span class="slds-icon__container slds-icon__container--circle slds-icon-custom-{!matIconNo} node-collapsed-moon-tree"></span>';
+                            return '<span class="slds-icon__container slds-icon__container--circle slds-icon-custom-{!matIconNo}"><svg aria-hidden="true" class="slds-icon slds-icon--small"><use xlink:href="'+url_ltng+'"></use></svg><span class="slds-assistive-text">Matter</span></span>'+collapsedMoon;
+                         });
+            }
+            
+            nodeEnter.append("text")
+                     .attr("dy",function(d){
+                        return (d.rid==currMatId?40:35);
+                     })
+                     .attr("x", function(d) { return d.children || d._children ? "0" : "5"; })
+                     .attr("text-anchor", "middle")
+                     .text(function(d) {
+                        return d.name;
+                     })
+                     .attr("class",function(d){
+                        return "nodetext slds-text-heading--label "+(d.rid==currMatId?"label-first-node":"")+(nodes_text_enabled==false && d.rid!=currMatId?' slds-hide':'');
+                     })
+                     .attr("fill",function(d){
+                        return (d.rid==currMatId?"#000":"");
+                     })
+                     .style("fill-opacity", 1);
+            
+            // Transition nodes to their new position.
+            nodeUpdate = node.transition()
+                             .duration(duration)
+                             .attr("transform", function(d) {
+                                /*if (d.parent=="null"){
+                                    d.y = oldry;
+                                    d.x = oldrx;
+                                }*/
+                                return "translate(" + d.y + "," + d.x + ")";
+                             });
+            
+            // Transition exiting nodes to the parent's new position.
+            nodeExit = node.exit()
+                           .transition()
+                           .duration(duration)
+                           .attr("transform", function(d) {
+                                return "translate(" + source.y + "," + source.x + ")";
+                           })
+                           .remove();
+            
+            // Update the links…
+            link = svg.selectAll("path.link")
+                      .data(links, function(d) {
+                            return d.target.id;
+                      });
+            
+            // Enter any new links at the parent's previous position.
+            link.enter().insert("path", "g")
+                        .attr("class", "link")
+                        .attr("d", function(d) {
+                            var o = {
+                                        x: source.x0,
+                                        y: source.y0
+                                    };
+                            return diagonal({
+                                            source: o,
+                                            target: o
+                                          });
+                        });
+            
+            // Transition links to their new position.
+            link.transition()
+                .duration(duration)
+                .attr("d", diagonal);
+            
+            // Transition exiting nodes to the parent's new position.
+            link.exit().transition()
+                       .duration(duration)
+                       .attr("d", function(d) {
+                            var o = {
+                                        x: source.x,
+                                        y: source.y
+                                    };
+                            return diagonal({
+                                          source: o,
+                                          target: o
+                                        });
+                       })
+                       .remove();
+            
+            // Update the links…
+            links_text = svg.selectAll("text.linktext")
+                            .data(links, function (d) {
+                                return d.target.id;
+                            });
+            
+            links_text.enter().insert("text", "g")
+                                .attr("class", "linktext")
+                                .attr("transform", function(d) {
+                                    return "translate(" + ((d.source.y + d.target.y)/2) + "," + ((d.source.x + d.target.x)/2) + ")";
+                                })
+                                .attr("dy", ".35em")
+                                .attr("text-anchor", "middle")
+                                .text(function(d) {
+                                    return links_text_enabled && d.target.relation!=null?d.target.relation.toLowerCase():'';
+                                });
+            
+            // Transition links to their new position.
+            links_text.transition()
+                      .duration(duration)
+                      .attr("d", diagonal);
+            
+            // Transition exiting nodes to the parent's new position.
+            links_text.exit()
+                       .transition()
+                       .duration(duration)
+                       .attr("d", function(d) {
+                            var o = {
+                                        x: source.x,
+                                        y: source.y
+                                    };
+                            return diagonal({
+                                          source: o,
+                                          target: o
+                                        });
+                       }).remove();
+            
+            links_text.each(function(d) {
+                                try {
+                                    var bbox = this.getBBox();
+                                    svg.insert("rect", "text")
+                                        .attr("fill", "#fff")
+                                        .attr("x", (d.source.y + d.target.y)/2 + bbox.x)
+                                        .attr("y", (d.source.x + d.target.x)/2 + bbox.y)
+                                        .attr("width", bbox.width)
+                                        .attr("height", bbox.height);
+                                } catch(err) {}
+                             });
+            
+            /* fix nodes width for Moon position - cross-browser support */
+            svg.selectAll("foreignObject")
+                     .attr("width",function(d){
+                        return img_w + (d.rid==currMatId?8:4)+(d._children?8:0);
+                     });
+            
+            // Stash the old positions for transition.
+            nodes.forEach(function(d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+            
+            // IE fix for SVG Icons
+            svg4everybody();
+        }
+        // Toggle children on click.
+        function toggleTreeNode(d) {
+            //console.log(d);
+            if (d.children || d._children) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                d3.select("[id='treenode" + d.id + "']").classed(" node-collapsed ", d._children);
+            }
+            else {
+                //d3.select( this ).attr("class", "leaf-node");
+            }
+            updateTreeGraph(root, true);
+        }
+    </script>
+    <script type="text/javascript">
+        function createTableTree(data) {
+            
+            var h = '';
+            /*if ({!!isLightning}) {
+                h += '<div class="apexp">';
+                h += '<div class="individualPalette">';
+                h += '<div class="bPageBlock brandSecondaryBrd apexDefaultPageBlock secondaryPalette">';
+                h += '<div class="pbBody">';
+            }*/
+            //if ({!isLightning}) {
+                h += '<div class="adv-slds">';
+            //}
+            h += '<table class="{!IF(isLightning,'slds-table slds-table--bordered','list')} parts-list slds-tree slds-table--tree" border="0" cellpadding="0" cellspacing="0">';
+            h += '  <thead>';
+            h += '      <tr class="{!IF(isLightning,'slds-text-title--caps','headerRow')}">';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Name">Name</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Relationship">Relationship</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Matter Number">Matter Number</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Status">Status</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Type">Type</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Record Type">Record Type</div></th>';
+            h += '          <th class="{!IF(isLightning,'','headerRow')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate" title="Owner">Owner</div></th>';
+            h += '      </tr>';
+            h += '  </thead>';
+            h += '  <tbody>';
+            
+            
+            function findPath(node) {
+                var arr = [];
+                if (node.parent && node.parent.id) {
+                    arr.push( 'node'+node.parent.id );
+                    var t_arr = findPath(node.parent);
+                    for (i = 0; i < t_arr.length; i++) { 
+                        arr.push( t_arr[i] );
+                    }
+                }
+                return arr;
+            }
+            function addChildren(node) {
+                $j(node.children).each(function(i,p){
+                    addRow(p);
+                });
+            }
+            function addRow(p) {
+                var path = findPath(p).join(' ');
+                var ar = '<button data-node="node'+p.id+'" class="button-toggle slds-button slds-button--icon slds-m-right--x-small '+(p.children ? '' : ' slds-is-disabled')+'" '+(p.children ? '' : 'disabled=""')+' title="Toggle">'+
+                         '  <svg class="slds-button__icon slds-button__icon--small treeChevronIcon" aria-hidden="true">'+
+                         '      <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility-sprite/svg/symbols.svg#chevrondown')}"></use>'+
+                         '  </svg>'+
+                         '  <span class="slds-assistive-text">Toggle</span>'+
+                         '</button>';
+                var currId = ('{!Matter__c.Id}').substring(0,15);
+                var rid = p.rid.substring(0,15);
+                var badge = currId == rid ? '<span class="slds-badge currentBadge">current</span>' : '';
+                
+                h += '  <tr aria-level="'+(p.depth+1)+'" class="{!IF(isLightning,'','dataRow')} '+path+'" onmouseover="if (window.hiOn){hiOn(this);} " onmouseout="if (window.hiOff){hiOff(this);} " onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}">';
+                h += '      <td class="{!IF(isLightning,'','dataCell')} slds-tree__item">'+ar+'<div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+badge+'<a href="{!$Site.Prefix}/'+p.rid+'" target="{!IF(isLightning,'','_top')}">'+p.name+'</a></div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+(p.image == 'IMG_CR' ? checkNull(p.relation) : '')+'</a></div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+checkNull(p.sobj.advpm__Matter_Number__c)+'</div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+checkNull(p.sobj.advpm__Status__c)+'</div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+checkNull(p.sobj.advpm__Type__c)+'</div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate">'+checkNullVal(p.sobj.RecordType)+'</div></td>';
+                h += '      <td class="{!IF(isLightning,'','dataCell')}"><div style="{!IF(isLightning,'','font-family: Arial,Helvetica,sans-serif!important')}" class="slds-truncate"><a href="{!$Site.Prefix}/'+checkNullID(p.sobj.Owner)+'" target="{!IF(isLightning,'','_top')}">'+checkNullVal(p.sobj.Owner)+'</a></div></td>';
+                h += '  </tr>';
+                
+                if (p.children) {
+                    addChildren(p);
+                }
+            }
+            addRow(data);
+            
+            h += '  </tbody>';
+            h += '</table>';
+            //if ({!isLightning}) {
+                h += '</div>';
+            //}
+            /*if ({!!isLightning}) {
+                h += '</div>';
+                h += '</div>';
+                h += '</div>';
+                h += '</div>';
+            }*/
+            
+            $j("div#list-container").html(h);
+        }
+        function checkNull(v) {
+            if (v != null && v != undefined && v != 'undefined') {
+                return v;
+            }
+            return '';
+        }
+        function checkNullVal(v) {
+            if (v != null && v != undefined && v != 'undefined') {
+                return v.Name;
+            }
+            return '';
+        }
+        function checkNullID(v) {
+            if (v != null && v != undefined && v != 'undefined') {
+                return v.Id;
+            }
+            return '';
+        }
+    </script>
+    <apex:outputField rendered="false" value="{!advpm__Matter__c.Name}" />
+    
+    </div>
+    
+</apex:page>

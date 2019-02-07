@@ -1,0 +1,32 @@
+<apex:page standardController="Day_1_Template__c" tabStyle="Day_1_Template__c" extensions="Day1TemplateGSAttController">
+ 
+ <apex:sectionHeader title="{!Day_1_Template__c.Name}" subtitle="Attach File"/>
+ 
+ <apex:form id="form_Upload">
+ <apex:pageBlock >
+ 
+ <apex:pageBlockButtons >
+<apex:commandButton action="{!back}" value="Cancel"/>
+ </apex:pageBlockButtons>
+ <apex:pageMessages />
+ 
+  <apex:pageBlockSection columns="1">
+  
+    <apex:pageBlockSectionItem >
+      <apex:outputLabel value="File" for="file_File"/>
+      <apex:inputFile id="file_File" value="{!fileBody}" filename="{!fileName}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+      <apex:outputLabel value="" for="uploadBtn"/> 
+      <apex:commandButton id="uploadBtn" value="Attach File" action="{!processUpload}" />
+    </apex:pageBlockSectionItem>    
+    
+  </apex:pageBlockSection>
+ 
+ </apex:pageBlock>
+ 
+ 
+ </apex:form>
+ 
+</apex:page>

@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>advpm__HelpActionPlan</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Action Plan instance.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>advpm__Account__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Account</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Action Plans</relationshipLabel>
+        <relationshipName>Action_Plans</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Action_Plan_Template__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Action Plan Template</label>
+        <referenceTo>advpm__ActionPlanTemplate__c</referenceTo>
+        <relationshipName>R00NR0000000VbUtMAK</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Action_Plan__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Action Plan</label>
+        <referenceTo>advpm__ActionPlan__c</referenceTo>
+        <relationshipName>Action_Plans</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Completed__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The number of completed tasks of the Action Plan.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The number of completed tasks of the Action Plan.</inlineHelpText>
+        <label>Completed</label>
+        <summaryFilterItems>
+            <field>advpm__APTaskTemplate__c.advpm__Status__c</field>
+            <operation>equals</operation>
+            <value>Completed</value>
+        </summaryFilterItems>
+        <summaryForeignKey>advpm__APTaskTemplate__c.advpm__Action_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Contact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipName>R00NR0000000VZZ8MAO</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Description__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The description of the Action Plan.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The description of the Action Plan.</inlineHelpText>
+        <label>Description</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter_Legal_Hold__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( advpm__Matter__r.advpm__Legal_Hold__c , &quot;Yes&quot;, &quot;No&quot; )</formula>
+        <label>Matter Legal Hold</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Action Plans</relationshipLabel>
+        <relationshipName>Action_Plans</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__SkipDay__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Skip Day</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Friday</fullName>
+                    <default>false</default>
+                    <label>Friday</label>
+                </value>
+                <value>
+                    <fullName>Monday</fullName>
+                    <default>false</default>
+                    <label>Monday</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__SkipWeekends__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Skip weekends when calculation activity start dates.</description>
+        <externalId>false</externalId>
+        <label>Skip Weekends</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>advpm__StartDate__c</fullName>
+        <defaultValue>Today()</defaultValue>
+        <deprecated>false</deprecated>
+        <description>The Start Date of the Action Plan</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The Start Date of the Action Plan</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>advpm__TaskRecordTypeID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>TaskRecordTypeID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Task_Status_Formula__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>TEXT(advpm__Completed__c ) &amp; &quot; of &quot; &amp;  text(advpm__Total__c) &amp; &quot; Completed&quot;</formula>
+        <label>Overall Task Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Total__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The total number of tasks on the Action Plan.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The total number of tasks on the Action Plan.</inlineHelpText>
+        <label>Step Total</label>
+        <summaryForeignKey>advpm__APTaskTemplate__c.advpm__Action_Plan__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>advpm__WhatId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Id of the Lookup Relationship.</description>
+        <externalId>false</externalId>
+        <label>WhatId</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Action Plan</label>
+    <listViews>
+        <fullName>advpm__All_Action_Plans</fullName>
+        <columns>NAME</columns>
+        <columns>advpm__Action_Plan_Template__c</columns>
+        <columns>advpm__StartDate__c</columns>
+        <columns>advpm__Account__c</columns>
+        <columns>advpm__Contact__c</columns>
+        <columns>advpm__Matter__c</columns>
+        <columns>advpm__Action_Plan__c</columns>
+        <columns>advpm__Completed__c</columns>
+        <columns>advpm__Description__c</columns>
+        <columns>advpm__Task_Status_Formula__c</columns>
+        <columns>advpm__Total__c</columns>
+        <columns>advpm__TaskRecordTypeID__c</columns>
+        <columns>advpm__WhatId__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Action Plans</label>
+    </listViews>
+    <nameField>
+        <label>Action Plan Name</label>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Action Plans</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>advpm__Action_Plan_Template__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__StartDate__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Account__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Contact__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Matter__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>advpm__Completed__c</customTabListAdditionalFields>
+        <listViewButtons>advpm__Delete_Action_Plans</listViewButtons>
+        <lookupDialogsAdditionalFields>advpm__Action_Plan_Template__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__StartDate__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Account__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Contact__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Matter__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>advpm__Completed__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Action_Plan_Template__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__StartDate__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Account__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Contact__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Matter__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>advpm__Completed__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>advpm__Action_Plan_Template__c</searchFilterFields>
+        <searchFilterFields>advpm__StartDate__c</searchFilterFields>
+        <searchFilterFields>advpm__Account__c</searchFilterFields>
+        <searchFilterFields>advpm__Contact__c</searchFilterFields>
+        <searchFilterFields>advpm__Matter__c</searchFilterFields>
+        <searchFilterFields>advpm__Completed__c</searchFilterFields>
+        <searchResultsAdditionalFields>advpm__Action_Plan_Template__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__StartDate__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Account__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Contact__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Matter__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>advpm__Completed__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>advpm__Reference_Object_Can_not_be_null</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(  
+OR( advpm__Account__c == null,  advpm__Account__c == &apos;&apos; ),
+OR( advpm__Contact__c == null,  advpm__Contact__c == &apos;&apos; ),
+OR( advpm__Matter__c == null,  advpm__Matter__c == &apos;&apos; )
+)</errorConditionFormula>
+        <errorMessage>You must relate the Action Plan to an object (Account/Contact or Matter).  Select the type and the object, then save again.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>advpm__Create_Account_Action_Plan</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Create Account Action Plan</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>{!$Site.Prefix}/apex/advpm__ActionPlanSelect?refType=Account&amp;refId={!Account.Id}&amp;retURL={!Account.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Create_Campaign_Contact_Action_Plan</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Create Contact Action Plan</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>{!$Site.Prefix}/apex/advpm__ActionPlanSelect?refType=Contact&amp;refId={!Contact.Id}&amp;retURL={!Contact.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Create_Matter_Action_Plan</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Create Matter Action Plan</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>{!$Site.Prefix}/apex/advpm__ActionPlanSelect?refType=advpm__Matter__c&amp;refId={!advpm__Matter__c.Id}&amp;retURL={!advpm__Matter__c.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Delete_Action_Plans</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Delete Action Plans</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__ActionPlanDeleteList</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+</CustomObject>

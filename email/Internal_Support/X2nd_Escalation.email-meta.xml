@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>2nd Escalation</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Subject}: {!Case.Thread_Id}</subject>
+    <textOnly>Kindly note that the following Case #{!Case.CaseNumber} has not been attended to over the last 2 hours as per the response time service level agreement to the case submitter.
+
+Case detail:
+
+Case number: Case #{!Case.CaseNumber}
+Case subject: {!Case.Subject}
+
+Regards, Salesforce Support</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

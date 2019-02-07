@@ -1,0 +1,28 @@
+<apex:page standardController="OpportunityLineItem" extensions="EditOpportunityLineItemController" showHeader="false" standardStylesheets="false" sidebar="false">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+
+function gup( name ) {
+  var url = location.href
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( url );
+  return results == null ? null : results[1];
+}
+
+
+$(document).ready(function() {
+    if (typeof(sforce) != 'undefined' && (sforce.one != null)) {
+        location.href='/apex/AddProductToOpportunityMobile?id={!oppId}&lineId={!lineId}';
+    }
+    else {
+        location.href='/apex/AddProductToOpportunity?Id={!lineId}';
+    }
+});
+</script>
+  
+</apex:page>

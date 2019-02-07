@@ -1,0 +1,419 @@
+<apex:page standardController="advpm__Participant__c" tabStyle="advpm__Participant__c" cache="true" showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false" extensions="advpm.ParticipantMobileController" docType="html-5.0">
+<html>
+<head>
+	<title>Participant</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'js/bootstrap.2.3.2.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_NiceScroll, 'jquery.nicescroll.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap.2.3.2.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__Cal_Shared, 'CalFormsCSS.css')}" />
+    
+    <style type="text/css">
+    	/*body {overflow-x:hidden!important;}*/
+        html {overflow:auto!important;}
+    	.labelCol{width:14%!important;}
+    	.dataCol{width:36%!important;}
+    	.multiSelectPicklistRow select {width:120px!important;}
+    </style>
+</head>
+<body>
+	<div id="loading_cal_status" class="{!IF(JSINHTMLENCODE($currentPage.parameters.isdtp) == 'p1','','hide')}" style="text-align:center;"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Loading...</span></div>
+    <apex:form id="theForm">
+        <script type="text/javascript">
+	        var $j = jQuery.noConflict();
+	        $j(document).ready(function(){
+            	if ( (typeof sforce != 'undefined') && (sforce != null) ) {$j('#loading_cal_status').toggleClass('hide', true);}
+               	else if('{!Participant__c.Id}'!='') {$j('.opentime').css('display', 'block');}
+                $j('#save-button').click(function(e){
+                    e.preventDefault();
+                    saveParticipantAction();
+                });
+                $j('#close-button').click(function(e){
+                    e.preventDefault();
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) 
+                	{
+                		if ('{!JSINHTMLENCODE($currentPage.parameters.src)}'=='ParticipantEdit') {
+                			if ('{!JSINHTMLENCODE($currentPage.parameters.matid)}'=='' && '{!Participant__c.Id}'=='') {
+                				sforce.one.navigateToURL('#/sObject/advpm__Participant__c/home', true);
+                			}
+                			else {
+	                			/*parent.goBackS1();*/
+	                			sforce.one.back();
+                			}
+                		}
+                		else
+                			sforce.one.navigateToURL("{!JSINHTMLENCODE($currentPage.parameters.gotoURL)}");
+			        }
+                });
+                $j('#delete-button').click(function(e){
+                    e.preventDefault();
+                    var cf = confirm('Are you sure you want to delete?');
+                    if (cf)
+                    {
+	                    deleteParticipantAction();
+                    }
+                });
+                if ({!errMsgs.size} > 0)
+                {
+                	if ( (typeof sforce != 'undefined') && (sforce != null) && {!isSFMobile} == true ) { }
+                	else {
+                		$j('#modal-error-list').removeClass('hide').addClass('in');
+                		//$j('#modal-error-list').modal('show');
+					}
+                }
+                initScroll();
+            });
+            function initScroll() {
+            	$j("html").niceScroll({
+                    bouncescroll: true,
+                    horizrailenabled: false
+                });
+            }
+	    </script>
+	    <apex:outputPanel id="saveParticipant">
+        	<script type="text/javascript">
+        		if( '{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess)}' == '1' )
+                {
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) 
+                	{
+                		//sforce.one.back(true);
+                		if ('{!JSINHTMLENCODE($currentPage.parameters.src)}'=='ParticipantEdit' && '{!Participant__c.Id}'!='') {
+                			//sforce.one.navigateToSObject('{!Participant__c.Id}');
+                			sforce.one.navigateToURL('#/sObject/{!Participant__c.Id}/view', true);
+                		}
+                		else
+                			sforce.one.navigateToURL("{!JSINHTMLENCODE($currentPage.parameters.gotoURL)}");
+			        }
+                }
+        	</script>
+        </apex:outputPanel>
+        <apex:actionFunction name="saveParticipantAction" action="{!saveParticipant}" rerender="theForm,otherContent" status="loadingStatus" rendered="{!!isSFMobile}" />
+        <apex:actionFunction name="saveParticipantAction" action="{!saveParticipant}" rerender="theForm,otherContent" status="loadingStatus_m" rendered="{!isSFMobile}" />
+        <apex:actionFunction name="deleteParticipantAction" action="{!deleteParticipant}" rerender="theForm,otherContent" status="loadingStatus" rendered="{!!isSFMobile}" />
+        <apex:actionFunction name="deleteParticipantAction" action="{!deleteParticipant}" rerender="theForm,otherContent" status="loadingStatus_m" rendered="{!isSFMobile}" />
+        
+        <apex:pageMessages id="msgs1" />
+        <apex:outputPanel style="margin:10px;" styleClass="bPageBlock brandSecondaryBrd bDetailBlock secondaryPalette" layout="block" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && !isSFMobile}">
+        	<apex:outputPanel layout="block" styleClass="message errorM3" rendered="{!HasPageMessages}"><apex:messages /></apex:outputPanel>
+        	<div class="pbHeader">
+        		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+        			<tbody>
+        				<tr>
+        					<td class="pbTitle"><h5 class="mainTitle">Participant Detail</h5></td>
+        					<td class="pbButton">
+        						<a id="save-button" class="edit-button font-fix btn-adv btn-adv-info btn-adv-small"> <span class="edit-button-text">Save</span></a>
+			                    <a id="close-button" class="edit-button font-fix btn-adv btn-adv-small"><span class="edit-button-text">Close</span></a>
+			                    <a id="delete-button" class="edit-button font-fix btn-adv btn-adv-small {!IF(Participant__c.Id==null,'hide','')}" style="margin-left:3px;"><span class="edit-button-text">Delete</span></a>
+			                    <apex:actionStatus id="loadingStatus"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+                    		</td>
+                    	</tr>
+                    </tbody>
+				</table>
+            </div>
+			<div class="pbBody">
+            	<div class="pbSubsection">
+            		<table class="detailList" border="0" cellpadding="0" cellspacing="0" width="100%">
+	            		<tbody>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Matter</label></th>
+	            			<td class="dataCol">
+	            				<apex:inputField value="{!advpm__Participant__c.advpm__Matter__c}" required="false" />
+	            			</td>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Name</label></th>
+	            			<td class="dataCol">
+	            				<apex:outputPanel layout="none" id="fName">
+	            					<apex:inputField value="{!advpm__Participant__c.Name}" required="false" />
+	            				</apex:outputPanel>
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap">
+	            				<apex:outputLabel value="Account" rendered="{!RecordTypeName == 'Account'}" />
+	            				<apex:outputLabel value="Contact" rendered="{!RecordTypeName == 'Contact'}" />
+	            				<apex:outputLabel value="User" rendered="{!RecordTypeName == 'User'}" />
+	            			</th>
+	            			<td class="dataCol">
+	            				<apex:outputPanel layout="none" rendered="{!RecordTypeName == 'Account'}">
+		            				<apex:inputField value="{!advpm__Participant__c.advpm__Account__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!AccountChange}" reRender="fName" status="loadingStatus" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Account__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+				                </apex:outputPanel>
+				                <apex:outputPanel layout="none" rendered="{!RecordTypeName == 'Contact'}">
+					                <apex:inputField value="{!advpm__Participant__c.advpm__Contact__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!ContactChange}" reRender="fName" status="loadingStatus" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Contact__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+				                </apex:outputPanel>
+				                <apex:outputPanel layout="none" rendered="{!RecordTypeName == 'User'}">
+					                <apex:inputField value="{!advpm__Participant__c.advpm__Staff__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!StaffChange}" reRender="fName" status="loadingStatus" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Staff__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+				                </apex:outputPanel>
+	            			</td>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Record Type</label></th>
+	            			<td class="dataCol">
+	            				<span style="font-weight:normal!important;font-size:12px!important;"><apex:outputField value="{!advpm__Participant__c.RecordTypeId}" /></span>
+	            			</td>
+	            		</tr>
+	            		<apex:repeat value="{!1}" var="pa" rendered="{!RecordTypeName == 'Account'}">
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Responsible Percentage</label></th>
+	            			<td class="dataCol" colspan="3">
+	            				<apex:inputField value="{!advpm__Participant__c.advpm__Responsible_Percentage__c}" required="false" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Billable Account</label></th>
+	            			<td class="dataCol" colspan="3">
+	            				<apex:inputField value="{!advpm__Participant__c.advpm__Billable_Account__c}" required="false" />
+	            			</td>
+	            		</tr>
+	            		</apex:repeat>
+	            		<!-- <apex:repeat value="{!1}" var="pa" rendered="{!RecordTypeName == 'Account' || RecordTypeName == 'Contact'}">
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap"><label>Primary Client</label></th>
+                            <td class="dataCol" colspan="3">
+                                <apex:inputField value="{!Participant__c.Primary_Client__c}" required="false" />
+                            </td>
+                        </tr>
+                        </apex:repeat> -->
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Role</label></th>
+	            			<td class="dataCol" colspan="3">
+	            				<apex:inputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}" />
+                                <apex:outputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>Comment</label></th>
+	            			<td class="dataCol" colspan="3">
+	            				<apex:inputfield value="{!advpm__Participant__c.advpm__Comment__c}" style="width:70%;" />
+	            			</td>
+	            		</tr>
+	            		<apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Account}" var="f" rendered="{!RecordTypeName == 'Account'}">
+	                        <tr>
+                                <th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label></th>
+                                <td class="dataCol" colspan="3">
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Contact}" var="f" rendered="{!RecordTypeName == 'Contact'}">
+	                        <tr>
+                                <th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label></th>
+                                <td class="dataCol" colspan="3">
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_User}" var="f" rendered="{!RecordTypeName == 'User'}">
+	                        <tr>
+                                <th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label></th>
+                                <td class="dataCol" colspan="3">
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant}" var="f" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant.size > 0 && RecordTypeName != 'Account' && RecordTypeName != 'Contact' && RecordTypeName != 'User'}">
+	                        <tr>
+                                <th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label></th>
+                                <td class="dataCol" colspan="3">
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+        				</tbody>
+        			</table>
+        		</div>
+        	</div>
+        </apex:outputPanel>
+        <apex:outputPanel style="margin:10px;" styleClass="bPageBlock brandSecondaryBrd bDetailBlock secondaryPalette mobile" layout="block" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && isSFMobile}">
+        	<apex:outputPanel layout="block" styleClass="message errorM3" rendered="{!HasPageMessages || errMsgs.size > 0}"><apex:messages />
+        		<apex:dataList value="{!errMsgs}" var="er" type="circle" styleClass="text-error">
+					<apex:outputPanel layout="inline"><strong>{!er.errHeading}</strong>&nbsp;{!er.errMessage}</apex:outputPanel>
+				</apex:dataList>
+        	</apex:outputPanel>
+        	<div class="pbHeader">
+        		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+        			<tbody>
+        				<tr>
+        					<td class="pbTitle" nowrap="nowrap"><h5 class="mainTitle">Participant Detail</h5></td>
+        					<td class="pbButton">
+        						<a id="save-button" class="edit-button font-fix btn-adv btn-adv-info btn-adv-small"> <span class="edit-button-text">Save</span></a>
+			                    <a id="close-button" class="edit-button font-fix btn-adv btn-adv-small"><span class="edit-button-text">Close</span></a>
+			                    <a id="delete-button" class="edit-button font-fix btn-adv btn-adv-small {!IF(Participant__c.Id==null,'hide','')}" style="margin-left:3px;"><span class="edit-button-text">Delete</span></a>
+			                    <apex:actionStatus id="loadingStatus_m"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+                    		</td>
+                    	</tr>
+                    </tbody>
+				</table>
+            </div>
+			<div class="pbBody">
+            	<div class="pbSubsection">
+            		<table class="detailList" border="0" cellpadding="0" cellspacing="0" width="100%">
+	            		<tbody>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Matter</label>
+	            			<apex:inputField value="{!advpm__Participant__c.advpm__Matter__c}" required="false" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Name</label>
+	            			<apex:outputPanel layout="none" id="fName_m">
+	            				<apex:inputField value="{!advpm__Participant__c.Name}" required="false" />
+	            			</apex:outputPanel>
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap">
+	            				<apex:outputLabel value="Account" rendered="{!RecordTypeName == 'Account'}" />
+	            				<apex:outputLabel value="Contact" rendered="{!RecordTypeName == 'Contact'}" />
+	            				<apex:outputLabel value="User" rendered="{!RecordTypeName == 'User'}" />
+	            				<apex:outputPanel layout="none" rendered="{!RecordTypeName == 'Account'}">
+		            				<apex:inputField value="{!advpm__Participant__c.advpm__Account__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!AccountChange}" reRender="fName_m" status="loadingStatus_m" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Account__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+				                </apex:outputPanel>
+								<apex:outputPanel layout="none" rendered="{!RecordTypeName == 'Contact'}">
+					                <apex:inputField value="{!advpm__Participant__c.advpm__Contact__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!ContactChange}" reRender="fName_m" status="loadingStatus_m" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Contact__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+					            </apex:outputPanel>
+					            <apex:outputPanel layout="none" rendered="{!RecordTypeName == 'User'}">
+					                <apex:inputField value="{!advpm__Participant__c.advpm__Staff__c}" required="false" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}">
+					                    <apex:actionSupport event="onchange" action="{!StaffChange}" reRender="fName_m" status="loadingStatus_m" />
+					                </apex:inputField>
+                                    <apex:outputField value="{!advpm__Participant__c.advpm__Staff__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+				                </apex:outputPanel>
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Record Type</label>
+	            			<span style="font-weight:normal!important;font-size:12px!important;"><apex:outputField value="{!advpm__Participant__c.RecordTypeId}" /></span>
+	            			</td>
+	            		</tr>
+	            		<apex:repeat value="{!1}" var="pa" rendered="{!RecordTypeName == 'Account'}">
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Responsible Percentage</label>
+	            			<apex:inputField value="{!advpm__Participant__c.advpm__Responsible_Percentage__c}" required="false" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Billable Account</label>
+	            			<apex:inputField value="{!advpm__Participant__c.advpm__Billable_Account__c}" required="false" />
+	            			</td>
+	            		</tr>
+	            		</apex:repeat>
+	            		<!-- <apex:repeat value="{!1}" var="pa" rendered="{!RecordTypeName == 'Account' || RecordTypeName == 'Contact'}">
+                        <tr>
+                            <td class="labelCol vfLabelColTextWrap"><label>Primary Client</label>
+                            <apex:inputField value="{!Participant__c.Primary_Client__c}" required="false" />
+                            </td>
+                        </tr>
+                        </apex:repeat> -->
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Role</label>
+	            			    <apex:inputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!!advpm__Participant__c.advpm__App_Managed__c}" />
+                                <apex:outputfield value="{!advpm__Participant__c.advpm__Role__c}" rendered="{!advpm__Participant__c.advpm__App_Managed__c}" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>Comment</label>
+	            			<apex:inputfield value="{!advpm__Participant__c.advpm__Comment__c}" style="width:70%;" />
+	            			</td>
+	            		</tr>
+	            		<apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Account}" var="f" rendered="{!RecordTypeName == 'Account'}">
+	                        <tr>
+                                <td class="labelCol vfLabelColTextWrap">
+                                    <label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label>
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_Contact}" var="f" rendered="{!RecordTypeName == 'Contact'}">
+	                        <tr>
+                                <td class="labelCol vfLabelColTextWrap">
+                                    <label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label>
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant_User}" var="f" rendered="{!RecordTypeName == 'User'}">
+	                        <tr>
+                                <td class="labelCol vfLabelColTextWrap">
+                                    <label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label>
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    <apex:repeat value="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant}" var="f" rendered="{!$ObjectType.advpm__Participant__c.FieldSets.advpm__fieldSet_Participant.size > 0 && RecordTypeName != 'Account' && RecordTypeName != 'Contact' && RecordTypeName != 'User'}">
+	                        <tr>
+                                <td class="labelCol vfLabelColTextWrap">
+                                    <label>{!$ObjectType.advpm__Participant__c.fields[f].label}</label>
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:360px;height:60px;" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f.Type != 'reference' && NOT(CONTAINS(f,'.'))}" />
+                                    <apex:outputField value="{!advpm__Participant__c[f]}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Account' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'Contact' || $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] == 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && advpm__Participant__c.advpm__App_Managed__c && ($ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Account' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'Contact' && $ObjectType['advpm__Participant__c'].fields[f].referenceTo[0] != 'User')}" />
+                                    <apex:inputField value="{!advpm__Participant__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'reference' && NOT(CONTAINS(f,'.')) && !advpm__Participant__c.advpm__App_Managed__c}" />
+                                </td>
+                            </tr>
+	                    </apex:repeat>
+	                    </tbody>
+	               </table>
+	           </div>
+	       </div>
+	    </apex:outputPanel>
+        <!-- Hidden fields for Visualforce recognition -->
+        <apex:inputField value="{!advpm__Participant__c.advpm__App_Managed__c}" rendered="false" />
+    </apex:form>
+	<apex:outputPanel id="otherContent">
+	    <div class="modal hide fade" id="modal-error-list" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header text-error">
+	    		<h3 id="myModalLabel">Error</h3>
+	  		</div>
+	  		<div class="modal-body">
+	  			<apex:dataList value="{!errMsgs}" var="er" type="circle" styleClass="text-error">
+					<apex:outputPanel layout="inline"><strong>{!er.errHeading}</strong>&nbsp;{!er.errMessage}</apex:outputPanel>
+				</apex:dataList>
+	  		</div>
+	  		<div class="modal-footer">
+	    		<a href="#" onclick="$j('#modal-error-list').addClass('hide').removeClass('in');return false;" data-dismiss="modal" aria-hidden="true" class="btn-adv btn-adv-danger">Ok</a>
+	  		</div>
+		</div>
+	</apex:outputPanel>
+</body>
+</html>
+</apex:page>

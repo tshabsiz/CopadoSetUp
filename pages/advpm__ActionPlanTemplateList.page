@@ -1,0 +1,24 @@
+<apex:page id="actionPlansTemplateList" standardController="advpm__ActionPlanTemplate__c" tabStyle="advpm__ActionPlanTemplate__c" recordSetVar="templates" language="{!$CurrentPage.parameters.lang}">
+
+	<!-- <apex:sectionHeader title="{!$Label.ap_Action_Plan_Template}" subtitle="{!$Label.ap_Home}" help=""/> -->
+    
+    <div id="rptminitabsall">
+        <div id="rptminitabstabs">
+            <div class="miniTab secondaryPalette">
+                <ul class="miniTabList">
+                    <li class="secondaryPalette">
+                    	<apex:outputLink id="minitab_0" value="{!$Site.Prefix}/apex/advpm__ActionPlanList">{!$ObjectType.advpm__ActionPlan__c.LabelPlural}</apex:outputLink>
+                   	</li>
+                    <li class="currentTab">
+                    	<apex:outputLink id="minitab_1" value="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateList">{!$ObjectType.advpm__ActionPlanTemplate__c.LabelPlural}</apex:outputLink>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <br/>
+    
+    <apex:enhancedList type="ActionPlanTemplate__c" height="500" />
+    
+</apex:page>

@@ -1,0 +1,94 @@
+<apex:page standardController="Call_Report__c" extensions="CallReport_Send" showHeader="false" sidebar="false">
+	<apex:outputPanel id="emailPopup">
+		<apex:pageMessages />
+
+        <apex:form id="theForm">
+        	<apex:actionFunction action="{!addUser}" name="addUserJS" rerender="availableUsersBlock,selectedUsersBlock" />
+			<apex:actionFunction action="{!removeUser}" name="removeUserJS" rerender="availableUsersBlock,selectedUsersBlock" />
+			<apex:actionFunction action="{!filterAvailableOptions}" name="filterAvailableOptionsJS" rerender="availableUsersBlock" />
+
+            <apex:pageBlock title="Send Call Report for {!callReport.Name}">
+                	
+                <apex:actionRegion id="userRegion">
+	                <apex:outputPanel layout="block">
+						<apex:outPutLabel value="Search for internal Users: "/>
+						<apex:inputText value="{!whereClause}" style=" margin: 10px;"/>
+						<input type="button" onClick="filterAvailableOptionsJS();return false" value="Find" />
+					</apex:outputPanel>
+
+					<apex:outputPanel id="multiselectPanel" layout="block" styleClass="duelingListBox">
+						<table class="layout">
+							<tbody>
+								<tr>
+									<td class="selectCell">
+										<apex:outputPanel layout="block" styleClass="selectTitle">
+											<apex:outputLabel value="Available Users" for="multiselectPanel:availableUsersBlock" />
+										</apex:outputPanel>
+										<apex:selectList id="availableUsersBlock" value="{!selectedUserIds}" multiselect="true" size="10" style="width: 200px;">
+											<apex:selectOptions value="{!availableUsers}"/>
+										</apex:selectList>
+									</td>
+									<td class="buttonCell">
+										<apex:outputPanel layout="block" styleClass="text">
+											<apex:image value="/s.gif" alt="Add" styleClass="rightArrowIcon" title="Add" onClick="addUserJS();return false"/>
+										</apex:outputPanel>
+										<apex:outputPanel layout="block" styleClass="text">
+											<apex:image value="/s.gif" alt="Remove" styleClass="leftArrowIcon" title="Remove" onClick="removeUserJS();return false"/>
+										</apex:outputPanel>
+									</td>
+									<td class="selectCell">
+										<apex:outputPanel layout="block" styleClass="selectTitle">
+											<apex:outputLabel value="Selected Users" for="multiselectPanel:selectedUsersBlock" />
+										</apex:outputPanel>
+										<apex:selectList id="selectedUsersBlock" value="{!removedUserIds}" multiselect="true" size="10" style="width: 200px;">
+											<apex:selectOptions value="{!selectedUsers}"/>
+										</apex:selectList>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</apex:outputPanel>
+
+				</apex:actionRegion>
+
+				<apex:actionRegion >	
+	                <apex:pageBlockSection >
+	                    <apex:pageBlockSectionItem >
+	                        <apex:outputLabel styleClass="label" style="display:block; width: 115px;" for="toAddresses">Manual input - TO (separated by ,): </apex:outputLabel>
+	                        <apex:inputTextarea cols="55" rows="2" value="{!toAddresses}" label="toAddresses" id="toAddresses" />
+	                    </apex:pageBlockSectionItem>
+	                </apex:pageBlockSection>
+
+	                <apex:pageBlockSection >
+	                    <apex:pageBlockSectionItem >
+	                        <apex:outputLabel styleClass="label" style="display:block; width: 115px;" for="ccAddresses">Manual input - CC (separated by ,): </apex:outputLabel>
+	                        <apex:inputTextarea cols="55" rows="2" value="{!ccAddresses}" label="ccAddresses" id="ccAddresses" />
+	                    </apex:pageBlockSectionItem>
+	                </apex:pageBlockSection>
+
+	                <apex:pageBlockSection >
+	                    <apex:pageBlockSectionItem >
+	                        <apex:outputPanel >
+	                            <apex:commandButton action="{!sendTemplatedEmail}" value="Send" onComplete="closeAndRefresh({!emailResult})" status="actionStatus" reRender="emailPopup"/>
+	                            <apex:commandButton value="Cancel" onclick="closeAndRefresh(true);" immediate="true" status="actionStatus" reRender="emailPopup"/>
+	                            <apex:actionStatus id="actionStatus">
+	                                <apex:facet name="start"> 
+	                                    <img src="/img/loading.gif"/>
+	                                </apex:facet>
+	                            </apex:actionStatus>
+	                        </apex:outputPanel>
+	                    </apex:pageBlockSectionItem>                    
+	                </apex:pageBlockSection>
+	            </apex:actionRegion>
+            </apex:pageBlock>
+        </apex:form>       
+    </apex:outputPanel>
+
+    <script>
+        function closeAndRefresh(closeDialog){
+            if(closeDialog) {
+            	window.top.location = '{!returnURL}';
+            }    
+        }
+    </script>
+</apex:page>

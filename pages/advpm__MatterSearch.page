@@ -1,0 +1,89 @@
+<apex:page standardController="advpm__Matter__c" showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false" cache="true" title="Matter Search"><html>
+<head>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/31.0/chatterCore.css')}" />
+    <style type="text/css">
+        .searchContainer {display:block}
+        form {margin:0px}
+        body {background-color:transparent}
+        .feedsupermenu .feedSearchClearIcon {top: 1px !important}
+        .zen .zen-searchBox input {padding:4px 35px 3px 25px;}
+        .feedSearchClosedButton {padding: 6px 35px 3px 0px;}
+        .zen .zen-searchBox input {padding: 4px 35px 4px 25px;height: 10px;box-shadow: 0 0px 0px #e7e7e8 inset !important;margin-top: 0px !important;line-height:12px}
+        .feedsupermenu .feedSearchClearIcon {margin-top: 1px;}
+        .feedSearch.feedSearchOpen {box-shadow: 0 0px 0px #eee inset !important}
+    </style>
+</head>
+<body>
+    <apex:outputPanel style="display:none;"><apex:outputField value="{!advpm__Matter__c.Name}" /></apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!NOT(ISBLANK(advpm__Matter__c.Id))}" styleClass="feedpage zen searchContainer">
+        <div class="feedmainandrightbar">
+            <div class="feedmain">
+                <div class="cxfeedinnerwrapper" id="feedwrapper">
+                    <div class="feedcontainer cxfeedcontainer zen actionsOnHoverEnabled">
+                        <span class="feedDropDown">
+                            <div class="comboMenu zen-line feedsupermenu">
+                                <div class="zen-searchBox comboSearchMax feedSearch">
+                                    <form class="feedSearchForm" onsubmit="runSearch(event);">          
+                                        <label for="searchInput" class="zen-assistiveText">Search this matter</label>
+                                        <input type="text" class="feedSearchTerm" id="searchInput" maxlength="100" placeholder="Search this matter..." aria-expanded="false" aria-haspopup="true" title="Search this matter..." alt="Search this matter" />
+                                        <a class="zen-clearInput" href="#" onclick="closeSearchBox()" title="Clear search"></a>
+                                        <a href="javascript:void(0);" onclick="closeSearchBox()" title="Clear search" class="feedSearchClear">
+                                           <img src="/s.gif" class="feedSearchClearIcon" alt="Clear search" />
+                                        </a>
+                                    </form>
+                                    <div class="feedSearchClosedButton">
+                                        <a href="javascript:void(0);" onclick="expandSearch()" title="Search this matter">
+                                            <img src="/s.gif" class="feedSearchIcon" alt="Search this matter" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </apex:outputPanel>
+    <script type="text/javascript">
+        function expandSearch() {
+            var b = $(".feedSearch"),
+                c = $(".feedSearchTerm");
+            b && c && (b.addClass("feedSearchOpen") ? ($(".feedSearchForm") && c.val(""), b.addClass("feedSearchActive")) : (c.val(""), b.removeClass("feedSearchActive")), c.focus())
+        }
+        function closeSearchBox() {
+            var b = $(".feedSearch"),
+                a = $(".feedSearchTerm");
+            b && a && (a.val(""), b.removeClass("feedSearchOpen"), b.removeClass("menuhidden"), b.removeClass("shift"))
+            //$('.feedSearchClosedButton').css('padding','6px 35px 3px 0px');
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                //$('.zen .zen-searchBox input').css('padding','8px 35px 7px 25px');
+                //expandSearch();
+            }
+            else {
+                $('.searchContainer').css('margin-left','37%');
+            }
+        });
+        function runSearch(e) {
+            e.preventDefault();
+            var s = $("#searchInput").val();
+            if (s != null && s != '') {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToURL('{!$Site.Prefix}/apex/advpm__SearchResults?id={!JSINHTMLENCODE(advpm__Matter__c.Id)}&nm={!JSINHTMLENCODE(advpm__Matter__c.Name)}&stsr=' + encodeURIComponent(s)+'&stob=advpm__Matter__c&srch_only={!JSINHTMLENCODE($CurrentPage.parameters.srch_only)}');
+                }
+                else {
+                    window.top.location = '{!$Page.advpm__SearchResults}?id={!JSINHTMLENCODE(advpm__Matter__c.Id)}&nm={!JSINHTMLENCODE(advpm__Matter__c.Name)}&stsr=' + encodeURIComponent(s)+'&stob=advpm__Matter__c&srch_only={!JSINHTMLENCODE($CurrentPage.parameters.srch_only)}';
+                }
+            }
+            else {
+                alert('Please enter at least 1 letter to search Matter.');
+            }
+        }
+    </script>
+</body>
+</html>
+</apex:page>

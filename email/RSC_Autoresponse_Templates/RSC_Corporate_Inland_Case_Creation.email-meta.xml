@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Diversified 1, Diversified 2, Diversified 3, Diversified 4, Diversified 5, FI 1, FI 2, FI 3, Global 1, Global 2, Global 3, Mining/Natural R, NBFI 1, NBFI 2, NBFI 3, PS 1, PS 2, PS 3, PS 4, Retail 1, Retail 2, Retail 3, Telecoms 1, Telecoms 2, RSC Corporate PTA, RSCS Corp PTA Chq Ver, RSCS Corp PTA Liquidators, RSCS Corp PTA Liquidators RSCS Corp PTA TPFM RSCS Corp PTA Transfers RSCS Corp PTA RSCS Corp PTA Sig Amd</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>RSC - Corporate Inland - Case Creation</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Subject}: {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Thank you for your request.
+
+Your request has been received and we will attend
+to your request within: {!Case.SLA_Units__c} Business {!Case.SLA_Time_Measure__c}.
+
+Important: Please respond to this e-mail for any future correspondence regarding the below case number.
+
+Your case number: #{!Case.CaseNumber}
+
+{!User.Name} {!User.Surname}
+Regional Service Centre - Corporate Inland
+
+Telephone: {!User.CSC_Phone__c}
+Email:  {!User.CSC_email__c}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

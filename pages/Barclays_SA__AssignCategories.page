@@ -1,0 +1,120 @@
+<!--/**
+* @author       ModelMetrics        
+* @date         11/13/2013
+* @description  Allows users to Associate / dissociate more then one category to a Content.
+                Displays lists of currently assigned Categories as well as unassigned Categories in the user interface.
+                
+*    -----------------------------------------------------------------------------
+*    Developer                  Date                Description
+*    -----------------------------------------------------------------------------
+*
+*    Raj Avirneni               01/03/2013          modifed to Add Few more Comments. 
+*    
+*/ -->
+<apex:page controller="Barclays_SA.AssignCategoriesController">
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:pageBlock rendered="{!isContentAvailable}" >
+        <apex:pageBlockSection title="Content Details" columns="2">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel >Owner</apex:outputLabel>
+                    <apex:outputField value="{!con.Owner.Name}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Version</apex:outputLabel>
+                    <apex:outputField value="{!con.VersionNumber}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Title</apex:outputLabel>
+                    <apex:outputField value="{!con.Title}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Description</apex:outputLabel>
+                    <apex:outputField value="{!con.Description}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Size</apex:outputLabel>
+                    <apex:outputField value="{!con.ContentSize}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Featured</apex:outputLabel>
+                    <apex:outputField value="{!con.FeaturedContentBoost}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >File Type</apex:outputLabel>
+                    <apex:outputField value="{!con.FileType}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Document Type</apex:outputLabel>
+                    <apex:outputField value="{!con.Barclays_SA__Document_Type__c}"/>  
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLink value="/sfc/#version?selectedDocumentId={!con.ContentDocumentId}" target="_blank">View</apex:outputLink>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                      <apex:outputLabel >Internal Document</apex:outputLabel>
+                      <apex:outputField value="{!con.Barclays_SA__Internal_Document__c}"/>
+                </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <!-- 
+        </td>
+        <td>
+              <div style="width: auto;" class=" x-tab-panel" id="docContentTabs">
+                <div style="-moz-user-select: none;" id="ext-gen30" class="x-tab-panel-header x-unselectable x-tab-panel-header-plain">
+                    <div id="div_rendition_small" style="height: 100%; width: 100%"><embed src="/_swf/121310/sfc/flex/DocViewer.swf" flashvars="shepherd_prefix=/sfc/servlet.shepherd&amp;v={!con.id}&amp;mode=details" id="renditionSmall" quality="high" bgcolor="#ffffff" name="renditionSmall" allowscriptaccess="sameDomain" allowfullscreen="true" pluginspage="http://www.adobe.com/go/getflashplayer" wmode="opaque" type="application/x-shockwave-flash" align="middle" height="100%" width="100%" /><noembed>&lt;p&gt;Flash file preview&lt;/p&gt;</noembed></div>
+                </div>
+            </div>
+        </td>
+        </tr>
+    </table>
+     -->
+    </apex:pageBlock> 
+    <apex:form >
+    
+    <apex:pageBlock title="Categories" rendered="{!isContentAvailable}">   
+        <apex:panelGrid columns="3" id="abcd">
+            <apex:outputPanel >Available</apex:outputPanel>
+            <apex:outputPanel ></apex:outputPanel>
+            <apex:outputPanel >Selected</apex:outputPanel>
+         
+            <apex:selectList id="sel1" value="{!leftselected}" multiselect="true" style="width:200px;height:100px" size="5">
+                <apex:selectOptions value="{!unselectedvalues}" />
+                <apex:actionSupport event="onclick" action="{!showDetail}" reRender="category-breadcrumb">
+                    <apex:param value="left" assignTo="{!catMultiPick}"/>
+                </apex:actionSupport>
+                <apex:actionSupport event="onchange" action="{!showDetail}" reRender="category-breadcrumb">
+                    <apex:param value="left" assignTo="{!catMultiPick}"/>
+                </apex:actionSupport>
+            </apex:selectList>
+            <apex:panelGroup >
+                <br/>
+                <apex:image value="/img/func_icons/cal/rightArrow.gif">
+                    <apex:actionSupport event="onclick" action="{!selectclick}" reRender="abcd"/>
+                </apex:image>
+                <br/><br/>
+                <apex:image value="/img/func_icons/cal/leftArrow.gif">
+                    <apex:actionSupport event="onclick" action="{!unselectclick}" reRender="abcd"/>
+                </apex:image>
+            </apex:panelGroup>
+            <apex:selectList id="sel2" value="{!rightselected}" multiselect="true" style="width:200px;height:100px" size="5">
+                <apex:selectOptions value="{!SelectedValues}" />
+                <apex:actionSupport event="onclick" action="{!showDetail}" reRender="category-breadcrumb">
+                    <apex:param value="right" assignTo="{!catMultiPick}"/>
+                </apex:actionSupport>
+                <apex:actionSupport event="onchange" action="{!showDetail}" reRender="category-breadcrumb">
+                    <apex:param value="right" assignTo="{!catMultiPick}"/>
+                </apex:actionSupport>
+            </apex:selectList>
+        </apex:panelGrid>
+          
+        <apex:outputPanel id="category-breadcrumb" >
+            <BR/><apex:outputLabel value="Category Parent Path(s):" rendered="{!hasDetail}"/><BR/>
+            <apex:messages />
+            <apex:outputText value="{!breadcrumbDetail}" escape="false"/>
+        </apex:outputPanel>
+          
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Assign" action="{!assignValues}"/>
+        </apex:pageBlockButtons>
+    </apex:pageBlock> 
+   </apex:form>
+</apex:page>

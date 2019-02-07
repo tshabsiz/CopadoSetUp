@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>RN - CloudSmiths - QA record saved by an agent against a specific case. VF page renders QA questions dynamically from the case QA template record for a specific business area. Updates are saved as metadata to this record and rendered by a VF page</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>AgentName__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Agent Name</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Case_QA_s1</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>AgentScorePer__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( FailedAuditRequirement__c , 0 , ( AgentScore__c / WeightingTotal__c ))</formula>
+        <label>Agent Score %</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>AgentScore__c</fullName>
+        <externalId>false</externalId>
+        <label>Agent Score</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>DateSubmitted__c</fullName>
+        <externalId>false</externalId>
+        <label>Date Submitted</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>DateValidated__c</fullName>
+        <externalId>false</externalId>
+        <label>Date Validated</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>FailedAuditRequirement__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths 
+If checked, the score should be 0%</description>
+        <externalId>false</externalId>
+        <label>Failed Audit Requirement</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>PeerScorePer__c</fullName>
+        <externalId>false</externalId>
+        <formula>( PeerScore__c / WeightingTotal__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Peer Score %</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>PeerScore__c</fullName>
+        <externalId>false</externalId>
+        <label>Peer Score</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>QAFromName__c</fullName>
+        <externalId>false</externalId>
+        <formula>QATemplate__r.QAName__c</formula>
+        <label>QA From Name</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>QATemplate__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>QA Template</label>
+        <referenceTo>Case_QA_Template__c</referenceTo>
+        <relationshipLabel>Case QA&apos;s</relationshipLabel>
+        <relationshipName>QAs</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>RelatedCase__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Related Case</label>
+        <referenceTo>Case</referenceTo>
+        <relationshipLabel>Case QA&apos;s</relationshipLabel>
+        <relationshipName>QAs</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SavedResults__c</fullName>
+        <description>RN - CloudSmiths - Saved results as metadata to be rendered by VF</description>
+        <externalId>false</externalId>
+        <label>Saved Results</label>
+        <length>131000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>SubmittedBy__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Submitted By</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Case_QA_s</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Validate__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Validate</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>WeightingTotal__c</fullName>
+        <externalId>false</externalId>
+        <label>Weighting Total</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Case QA</label>
+    <nameField>
+        <displayFormat>QA-{000000000}</displayFormat>
+        <label>Case QA Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Case QA&apos;s</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>View_Form</fullName>
+        <availability>online</availability>
+        <description>RN - CloudSmits</description>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>View Form</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/support/console/39.0/integration.js&quot;)}
+
+if(sforce.console.isInConsole()){
+sforce.console.openPrimaryTab(null, &apos;/apex/Case_QA_Form?id={!Case_QA__c.RelatedCaseId__c}&amp;templateId={!Case_QA__c.QATemplateId__c}&amp;readOnly=1&amp;qaMode=1&apos;, true,&apos;{!Case_QA__c.OwnerFullName}&apos;, null);  
+}else {
+window.parent.location.href=(&apos;/apex/Case_QA_Form?id={!Case_QA__c.RelatedCaseId__c}&amp;templateId={!Case_QA__c.QATemplateId__c}&amp;readOnly=1&amp;qaMode=1&apos;);
+}</url>
+    </webLinks>
+</CustomObject>

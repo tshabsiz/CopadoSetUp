@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>LEAP - Legal Quote Amount Lock</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Legal Quotes</value>
+    </caseValues>
+    <fields>
+        <label><!-- Box Document Link --></label>
+        <name>Box_Document_Link__c</name>
+    </fields>
+    <fields>
+        <label><!-- Box Webhook --></label>
+        <name>Box_Webhook__c</name>
+    </fields>
+    <fields>
+        <label><!-- Contact --></label>
+        <name>Contact__c</name>
+        <relationshipLabel><!-- Legal Quotes --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- External Counsel (Name) --></label>
+        <name>External_Counsel_Name__c</name>
+    </fields>
+    <fields>
+        <label><!-- Invoice Received --></label>
+        <name>InvoiceReceived__c</name>
+    </fields>
+    <fields>
+        <label><!-- Invoice Received Box Link --></label>
+        <name>Invoice_Received_Box_Link__c</name>
+    </fields>
+    <fields>
+        <label><!-- Invoice Received WebhookId --></label>
+        <name>Invoice_Received_WebhookId__c</name>
+    </fields>
+    <fields>
+        <help><!-- Law Firm, External Legal Counsel --></help>
+        <label><!-- Law Firm --></label>
+        <name>Law_Firm__c</name>
+        <relationshipLabel><!-- Legal Quotes --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Legal Quote Request --></label>
+        <name>Legal_Quote_Request__c</name>
+        <relationshipLabel><!-- Legal Quotes --></relationshipLabel>
+    </fields>
+    <fields>
+        <help><!-- Provide any comments or motivation regarding this Legal Quote submission. --></help>
+        <label><!-- Motivation / Comments --></label>
+        <name>Motivation_Comments__c</name>
+    </fields>
+    <fields>
+        <label><!-- Panel Type --></label>
+        <name>Panel_Type__c</name>
+        <picklistValues>
+            <masterLabel>Off Panel</masterLabel>
+            <translation><!-- Off Panel --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>On Panel</masterLabel>
+            <translation><!-- On Panel --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Quote Amount --></label>
+        <name>Quote_Amount_Rollup__c</name>
+    </fields>
+    <fields>
+        <label><!-- Quote Amount --></label>
+        <name>Quote_Amount__c</name>
+    </fields>
+    <fields>
+        <help><!-- The individual that legal quotes approvals will be routed to. --></help>
+        <label><!-- Quote Approver --></label>
+        <name>Quote_Approver__c</name>
+        <relationshipLabel><!-- Legal Quotes --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Quote Received --></label>
+        <name>Quote_Recieved__c</name>
+    </fields>
+    <fields>
+        <label><!-- Request for Service --></label>
+        <name>Request_for_Service__c</name>
+    </fields>
+    <fields>
+        <label><!-- Status --></label>
+        <name>Status__c</name>
+        <picklistValues>
+            <masterLabel>Approved</masterLabel>
+            <translation><!-- Approved --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Pending Approval</masterLabel>
+            <translation><!-- Pending Approval --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Rejected</masterLabel>
+            <translation><!-- Rejected --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Requested</masterLabel>
+            <translation><!-- Requested --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Supplier_Box_Webhook --></label>
+        <name>Supplier_Box_Webhook__c</name>
+    </fields>
+    <recordTypes>
+        <label><!-- Legal Quote --></label>
+        <name>Legal_Quote</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Legal Quote (Locked) --></label>
+        <name>Legal_Quote_Locked</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Litigation Quote --></label>
+        <name>Litigation_Quote</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Litigation Quote (Locked) --></label>
+        <name>Litigation_Quote_Locked</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Off Panel Quote --></label>
+        <name>Off_Panel_Quote</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Off Panel Quote (Locked) --></label>
+        <name>Off_Panel_Quote_Locked</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Ensure that the Law Firm is an Off Panel Law Firm --></errorMessage>
+        <name>Ensure_Law_Firm_on_Legal_Quote_is_valid</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Quote amount not editable for an approved legal quote. --></errorMessage>
+        <name>Lock_Quote_Amount_Once_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only one requested service allowed - There is already another Legal Quote that has been requested. --></errorMessage>
+        <name>Only_one_requested_service_allowed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A quote has to have an Approved status in order to select Request for Service --></errorMessage>
+        <name>RFS_must_remain_blank_unless_Approved</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Add_Law_Firm --></label>
+        <name>Add_Law_Firm</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Submit_Selected_For_Approval --></label>
+        <name>Submit_Selected_For_Approval</name>
+    </webLinks>
+</CustomObjectTranslation>

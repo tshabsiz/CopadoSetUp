@@ -1,0 +1,17 @@
+<messaging:emailTemplate subject="{!RelatedTo.Name} requires updates" recipientType="User" relatedToType="Opportunity">
+<messaging:htmlEmailBody >
+ <body style="font-family:Arial;">
+<apex:image url="https://barclaysafrica--c.eu5.content.force.com/servlet/servlet.ImageServer?id=01524000001uPz6&oid=00D1j0000008apt"/>
+<p  >Dear {!RelatedTo.Owner.Name},
+<br/>
+Your private  opportunity  <b>{!RelatedTo.Name}</b> related to <b>{!RelatedTo.Account.Name}</b>, is {!ROUND(RelatedTo.Days_since_expected_Close_date__c, 0)} day/s past the Expected Close Date and the Stage remains:  <b>{!RelatedTo.StageName}.</b>
+</p>
+<p >
+Kindly update the Opportunity here:
+<br/>  
+https://absa1.my.salesforce.com/{!RelatedTo.ID}
+</p>
+
+</body>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

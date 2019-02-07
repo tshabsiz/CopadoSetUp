@@ -1,0 +1,326 @@
+<apex:page controller="advpm.BatchTimeEntries" tabStyle="advpm__Time__c" title="Time: Batch Time Entry">
+
+    <style type="text/css">
+        .dateFormat { display:none; }
+        .FormDataABiggerA {width:95%;overflow:hidden;height:16px;}
+        .FormDataAMed {width:80px;}
+        .col-descr {min-width:400px;}
+        .colClass { vertical-align: top; }
+        .loadingText { color: #666666;font-size: 95%;padding: 4px; }
+        .loadingText {/*font-size: 1.2em;*/font-weight: bold;}
+        ul li, ol li { margin-left: 0px !important; }
+        ul.select2-results > li > div.select2-result-label {/*font-weight: bold;*/}
+        .select2-container-multi .select2-choices .select2-search-field input {padding: 1px 4px;}
+        .select2-container .select2-choice abbr {top:7px;right:18px;}
+        .select2-container .select2-choice {background-image: none;}
+        .select2-container-active .select2-choice, .select2-container-active .select2-choices {border: 1px solid #aaa;outline: none;-webkit-box-shadow: none;box-shadow: none;}
+        .select2-drop-active {border: 1px solid #aaa;}
+        .select2-container .select2-choice .select2-arrow {border-left: 0px solid #aaa;background: none;background-image: none;}
+        .slds table.slds-table tr.headerRow th {border-top-width: 1px!important;}
+        .slds table.messageTable td:first-child {width:30px!important;}
+    </style>
+
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            .slds .slds-page-header {border-bottom: 0px solid #d8dde6;}
+            .FormDataABiggerA {height: 26px!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:form id="theForm" styleClass="{!IF(isLightning,'slds','')}">
+        
+        <apex:sectionHeader title="Time Batch Entry" rendered="{!!isLightning}" />
+        <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="Time Batch Entry" 
+                                parentEntity="Home" 
+                                parentEntityLink="#/home">
+                <apex:outputPanel layout="block" styleclass="loadingMessage" style="margin-right:10px;margin-top:-40px;">
+                    <apex:outputPanel id="total_timeLE">
+                        <apex:actionstatus id="loadingTotalLE">
+                            <apex:facet name="start">
+                                <apex:outputPanel ><h2 style="float:right;color:#000;font-size:14px;margin-top:3px;font-style:italic;" class="mainTitle">Processing...</h2></apex:outputPanel>
+                            </apex:facet>
+                            <apex:facet name="stop">
+                                <apex:outputPanel ><h2 style="float:right;color:#000;font-size:14px;margin-top:3px;" class="mainTitle">Total Time:&nbsp;<apex:outputField value="{!proxyTime.advpm__Time_In_Hours__c}" />&nbsp;hrs</h2></apex:outputPanel>
+                            </apex:facet>
+                        </apex:actionstatus>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <div class="slds-button-group" role="group" style="margin-top:-45px;">
+                    <input type="button" value="  Save " onclick="doSave();return false;" class="slds-button slds-button--brand" />
+                    <input type="button" value="  Cancel " onclick="GoBack();return false;" class="slds-button slds-button--neutral" />
+                </div>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.min.js')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.css')}" />
+        <script type="text/javascript">
+            var defTk = '{!defTk}';
+            $j = jQuery.noConflict();
+            function jq(myid) { 
+                return '#' + myid.replace(/(:|\\.)/g,'\\\\$1');
+            }
+            function GoBack() {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToURL('#/home');
+                }
+            }
+            function focusRead( className ) {
+                
+                var check = "row_";
+                var cls = $j.map(className.split(' '), function (val, i) 
+                {
+                    if (val.indexOf(check) > -1 && val.slice(check.length, val.length) > 0) 
+                    {
+                        var prevRow = 'row_' + parseInt(val.slice(check.length, val.length)-1);
+                        var currRow = val.slice(val.indexOf(check), val.length);
+                        var arr = [ "input.input-tk", "input.input-mat", "input.input-dt", "input.input-qty", ".fs_col" ];
+                        $j.each( arr, function( intIndex, objValue ) {
+                        	if (objValue === '.fs_col') {
+                        		var fsElements = $j( "input." + currRow + ".fs_col" );
+                        	
+                        		for (var fs=0; fs < fsElements.length; fs++) {
+                        			var prevVal = $j( "input." + prevRow + ".fs_col" + ".fs_col_" + fs ).val();
+	                            	var currVal = $j( "input." + currRow + ".fs_col" + ".fs_col_" + fs ).val();
+	                            	if ((currVal == null || currVal == '') && prevVal != null && prevVal != '') {
+		                                $j( objValue + "." + currRow + ".fs_col" + ".fs_col_" + fs ).val( prevVal );
+		                                $j( objValue + "." + currRow + ".fs_col" + ".fs_col_" + fs ).trigger("change");
+		                            }
+                        		}
+                        	}
+                        	else {
+	                            var prevVal = $j( objValue + "." + prevRow ).val();
+	                            var currVal = $j( objValue + "." + currRow ).val();
+	                            if ((currVal == null || currVal == '') && prevVal != null && prevVal != '') {
+	                                if (intIndex == 0 && defTk != '')
+	                                    $j( objValue + "." + currRow ).val( defTk );
+	                                else if (intIndex == 3) {
+	                                    //$j( objValue + "." + currRow ).val( parseFloat( prevVal ).toFixed(2) );
+                                        $j( objValue + "." + currRow ).val( prevVal );
+                                        $j( objValue + "." + currRow ).trigger("change");
+                                    }
+	                                else
+	                                    $j( objValue + "." + currRow ).val( prevVal );
+	                            }
+	                            if (intIndex >= 0 && intIndex <= 1)
+	                                $j( objValue + "." + currRow ).trigger("change");
+	                        }
+	                    });
+                    }
+                });
+            }
+            function loadSelectControls()
+            {
+            	initLookup( $j(".input-tk"), 'advpm__Timekeeper__c', 'timekeeper' );
+                initLookup( $j(".input-mat"), 'advpm__Matter__c', 'matter' );
+                $j(".input-lookup").each(function(i, el) {
+                    initLookup( el, $j(el).attr('data-obj'), $j(el).attr('data-label') );
+                });
+                $j(".input-dt, .input-qty, .input-desc , .fs_col").on("focus", function(e) {
+                    focusRead( $j(this).attr('class') );
+                })
+            }
+            function initLookup(objEl, objName, objText)
+            { 
+                $j(objEl).select2({
+                    placeholder: 'Select '+objText+'...',
+                    minimumInputLength: 0,
+                    allowClear: true,
+                    ajax: {
+                        url: "{!$Page.JSONData}",
+                        quietMillis: 100,
+                        data: function (term, page) {
+                            return {
+                                q: term,
+                                obj: objName,
+                                page_limit: 10,
+                                page: page
+                            };
+                        },
+                        results: function (data, page) { return {results: data.results, more: (page * 10) < data.total}; }
+                    },
+                    initSelection: function(element, callback) {
+                        var id=$j(element).val();
+                        if (id != '') { $j.ajax("{!$Page.JSONData}", { data: { objid: id, obj: objName } }).done(function(data) {var d = JSON.parse(data); callback( d.results[0] ); }); }
+                    }
+                }).on("change", function(e) {
+                    $j(this).siblings('input:hidden').val( $j(this).val() );
+                }).on("select2-focus", function(e) {
+                    focusRead( $j(this).attr('class') );
+                });
+            }
+            $j(function(){
+                loadSelectControls();
+                //timeCal_jsremoting()  
+            });
+            
+            function advpm__Time__c() {
+                this.advpm__Time_In_Hours__c = null;
+            }
+            
+            function timeCal_jsremoting()
+            { 
+           		var SumArr = new Array();
+            	$j(".input-qty").each(function () {
+                    if (this.value != null && this.value != '') {
+                        var w = new advpm__Time__c();
+                        w.advpm__Time_In_Hours__c = this.value;
+                        SumArr.push(w);
+                    }
+		        });
+		        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BatchTimeEntries.getTimeSum}', SumArr, function(result, event) {
+			        if (event.status) {
+			        	console.log('--'+result);
+			        	$j("#lbltotalTimejs").empty();
+     					$j("#lbltotalTimejs").text(result);
+			    	} 
+			    });
+		    }
+            
+            function timeCal(){
+            	var sum = 0;
+            	var newVal;
+                    //iterate through each textboxes and add the values
+		            $j(".input-qty").each(function () {
+		                    newVal =this.value.replace(/,/g, '.')
+		                if (!isNaN(newVal) && newVal.length != 0) {
+		                    sum += parseFloat(newVal);
+		                }
+		            });
+		            $j("#lbltotalTime").empty();
+					$j("#lbltotalTime").append(sum.toFixed(2));
+         	}
+        </script>
+        <!-- Code To Toggle Submit State Buttons -->
+        <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+        <script type="text/javascript">
+            toggleButtons('{!$Component.theForm}', false);
+        </script>
+        <apex:actionFunction name="doSave" action="{!save}" />
+        
+        <apex:pageBlock mode="edit" id="thePageBlock" title="{!IF(isLightning,'','Enter Time Entries')}">
+            <apex:pageMessages />
+            <apex:facet name="header">
+                <apex:panelGrid columns="3" columnClasses="pbTitle,pbButton" rendered="{!!isLightning}">
+                    <h2 class="mainTitle">Enter Time Entries</h2>
+                    <apex:actionstatus id="loadingItems" onstop="loadSelectControls();">
+                        <apex:facet name="start">
+                            <apex:outputPanel layout="block" styleclass="loadingMessage">
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" />
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" />
+                                <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" />
+                                <apex:outputPanel styleclass="loadingText">Loading...</apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:facet>
+                        <apex:facet name="stop">
+                            <apex:outputPanel layout="block" styleclass="loadingMessage">
+                                <apex:commandButton value="  Save  " action="{!save}" styleClass="showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                                <apex:commandButton value="  Cancel " action="{!cancel}" styleClass="showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                                
+                                <apex:outputPanel id="total_time">
+                                    <apex:actionstatus id="loadingTotal">
+                                        <apex:facet name="start">
+                                            <apex:outputPanel ><h2 style="float:right;color:#000;font-size:14px;margin-top:3px;font-style:italic;" class="mainTitle">Processing...</h2></apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:facet name="stop">
+                                            <apex:outputPanel ><h2 style="float:right;color:#000;font-size:14px;margin-top:3px;" class="mainTitle">Total Time:&nbsp;<apex:outputField value="{!proxyTime.advpm__Time_In_Hours__c}" />&nbsp;hrs</h2></apex:outputPanel>
+                                        </apex:facet>
+                                    </apex:actionstatus>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:actionstatus>
+                </apex:panelGrid>
+            </apex:facet>
+            <apex:facet name="footer">
+                <apex:panelGrid columns="2" columnClasses="pbTitle,pbButton" rendered="{!!isLightning}">
+                    <h2 class="mainTitle">&nbsp;</h2>
+                    <apex:actionstatus id="loadingItems2" onstop="loadSelectControls();">
+                        <apex:facet name="start">
+                            <apex:outputPanel layout="block" styleclass="loadingMessage">
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="slds-button slds-button--neutral" />
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="slds-button slds-button--neutral" />
+                                <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" />
+                                <apex:outputPanel styleclass="loadingText">Loading...</apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:facet>
+                        <apex:facet name="stop">
+                            <apex:outputPanel layout="block" styleclass="loadingMessage">
+                                <apex:commandButton value="  Save  " action="{!save}" styleClass="slds-button slds-button--neutral showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                                <apex:commandButton value="  Cancel " action="{!cancel}" styleClass="slds-button slds-button--neutral showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:actionstatus>
+                </apex:panelGrid>
+            </apex:facet>
+            <apex:pageBlockSection id="pbSection" showHeader="false" columns="1" />
+            <apex:variable var="rowIndex" value="{!-1}" />
+            <apex:variable var="fsIndex" value="{!0}" />
+            <apex:pageblockTable id="pbTable" value="{!timerecords}" var="t" columnClasses="colClass" styleClass="slds-table" style="{!IF(isLightning,'margin-top:-8px;','')}">
+                <apex:column width="95px" headerValue="{!$ObjectType.advpm__Time__c.fields.advpm__Entry_Date__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:variable var="rowIndex" value="{!(CEILING(rowIndex)+1)}" />
+                    <apex:variable var="fsIndex" value="{!0}" />
+                    <apex:inputField value="{!t.ti.advpm__Entry_Date__c}" required="false" id="time_date" styleClass="input-fld input-dt row_{!CEILING(rowIndex)}" />
+                </apex:column>
+                <apex:column width="215px" headerValue="{!$ObjectType.advpm__Time__c.fields.advpm__Timekeeper__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:inputHidden value="{!t.ti.advpm__Timekeeper__c}" />
+                    <input type="text" data-row="row_{!CEILING(rowIndex)}" class="input-fld input-tk row_{!CEILING(rowIndex)}" value="{!t.ti.advpm__Timekeeper__c}" style="width:100%;" />
+                </apex:column>
+                <apex:column width="230px" headerValue="{!$ObjectType.advpm__Time__c.fields.advpm__Matter__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:inputHidden value="{!t.ti.advpm__Matter__c}" />
+                    <input type="text" data-row="row_{!CEILING(rowIndex)}" class="input-fld input-mat row_{!CEILING(rowIndex)}" value="{!t.ti.advpm__Matter__c}" style="width:100%;" />
+                </apex:column>
+                <apex:column width="95px" headerValue="{!$ObjectType.advpm__Time__c.fields.advpm__Time_In_Hours__c.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:inputField value="{!t.ti.advpm__Time_In_Hours__c}" required="false" styleClass="FormDataAMed input-fld input-qty row_{!CEILING(rowIndex)} time_in_Hrs" id="time_time">
+                        <apex:actionSupport event="onchange" action="{!doTotalTimeSum}" rerender="{!IF(isLightning,'total_timeLE','total_time')}" status="{!IF(isLightning,'loadingTotalLE','loadingTotal')}" />
+                    </apex:inputField>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="col-descr">
+                    <apex:inputField value="{!t.ti[TimeDescriptionField]}" styleClass="FormDataABiggerA input-fld input-desc row_{!CEILING(rowIndex)}"  id="time_desc" />
+                </apex:column>
+                <apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_BatchEntry}" var="f">
+                    <apex:column headerValue="{!f.label}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                        <apex:outputPanel layout="none" rendered="{!LOWER(f.type) != 'reference' && NOT(CONTAINS(f,'.'))}">
+                            <apex:inputField value="{!t.ti[f]}" styleClass="{!IF(LOWER(f.type) == 'textarea','FormDataABiggerA','')} input-fld row_{!CEILING(rowIndex)} fs_col fs_col_{!CEILING(fsIndex)}" />
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!LOWER(f.type) == 'reference' && NOT(CONTAINS(f,'.'))}">
+                            <apex:inputHidden value="{!t.ti[f]}" />
+                            <input type="text" data-obj="{!map_field[f]}" data-label="{!f.label}" data-row="row_{!CEILING(rowIndex)}" class="input-lookup row_{!CEILING(rowIndex)} fs_col fs_col_{!CEILING(fsIndex)}" value="{!t.ti[f]}" style="width: 150px;" />
+                        </apex:outputPanel>
+                        <apex:variable var="fsIndex" value="{!(CEILING(fsIndex)+1)}" />
+                    </apex:column>
+                </apex:repeat>
+                <apex:column width="30px" style="text-align:center;" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                    <apex:commandLink action="{!removeTrec}" status="loadingItems" rerender="thePageBlock" >
+                        <apex:param name="ind" value="{!t.index}" />
+                       
+                        <apex:image style="max-width: 16px;" height="16" width="16" url="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/icons/utility/close_60.png')}" title="Remove Time Record Entry" />
+                    </apex:commandLink>
+                </apex:column>
+            </apex:pageblockTable>
+            <script type="text/javascript">
+                function setFocusOnLoad() {}
+                function focusOnTimeLoad() {
+                    
+                }
+                if (window.addEventListener) {
+                    window.addEventListener('load', focusOnTimeLoad, true)
+                } else if (window.attachEvent) {
+                    window.attachEvent('onload', focusOnTimeLoad)
+                }
+                 else {
+                    window.onload = focusOnTimeLoad
+                }
+            </script>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

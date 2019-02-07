@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>System Limits Workaround Notification - Notification sent to SF internal Support</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>System Limits Workaround Notification</name>
+    <style>freeForm</style>
+    <subject>System Limits Workaround for {!System_Limits_Tracker__c.Name} Now Enforced</subject>
+    <textOnly>Good day Salesforce team
+
+This is a notification that the limits for {!System_Limits_Tracker__c.Name} reached a threshold percentage of:
+
+{!System_Limits_Tracker__c.Enforce_Workaround_Percentage__c}%
+
+An alternative workaround process was now enforced
+
+Please activate the below workflow rules in production as soon as possible.
+
+- CSC Case Closure
+- CSC Case Creation
+- CSC Email Receipt
+
+
+Regards,
+System Generated.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

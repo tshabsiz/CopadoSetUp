@@ -1,0 +1,277 @@
+<apex:page controller="advpm.ContentDrop_PublishMulti" tabStyle="advpm__Matter__c" sidebar="false" showheader="false">
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/common.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/dCustom0.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/dStandard.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/elements.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/extended.css')}" />
+	<style>
+		body {
+			overflow: hidden !important;
+		}
+		.message {
+		    background-color: transparent;
+		    border-style: none;
+		    border-width: 0px;
+		    color: #000000;
+		    margin: 0px;
+		    padding: 0px;
+		}
+		.publish-dialog-titlebar {
+            padding: 0.5em 1em 0.5em;
+            position: relative;
+            background-color: #cccccc;
+            font-weight: bold;
+            color: black;
+            font-size: 12px;
+            -moz-border-radius:4px 4px 4px 4px;
+        }
+        .publish-dialog-titlebar {
+		    -moz-border-bottom-colors: none;
+		    -moz-border-image: none;
+		    -moz-border-left-colors: none;
+		    -moz-border-right-colors: none;
+		    -moz-border-top-colors: none;
+		    background: url("/img/alohaSkin/metaBar_sprite.png") repeat-x scroll left -104px transparent;
+		    border-color: #D1D1D1 #E1E0E0 #E1E0E0;
+		    border-radius: 5px 5px 5px 5px;
+		    border-right: 1px solid #E1E0E0;
+		    border-style: solid;
+		    border-width: 1px;
+		    line-height: 26px;
+		    margin: 5px;
+		    width: auto;
+		    font-size: 1.25em;
+		    padding:10px;
+		}
+		.publish-dialog-titlebar {
+		    background-color: #D6D6D6;
+		    border-bottom: 1px solid #C1C1C1;
+		    line-height: 22px;
+		    white-space: nowrap;
+		    width: 99%;
+		}
+		#publishWindow h5 {
+		    background-image: url("/sfc/images/white-top-bottom.gif");
+		    border-bottom: 1px solid #D0D0D0;
+		    color: #333333;
+		    display: block;
+		    font-family: tahoma,arial,verdana,sans-serif;
+		    font-size: 11px;
+		    font-weight: bold;
+		    margin-bottom: 5px;
+		    padding: 5px;
+		}
+		
+		.categorizeContentType {
+			width: auto;
+			margin: 3px;
+		}
+		.formSection {
+		    -moz-border-bottom-colors: none;
+		    -moz-border-image: none;
+		    -moz-border-left-colors: none;
+		    -moz-border-right-colors: none;
+		    -moz-border-top-colors: none;
+		    border-color: -moz-use-text-color #D0D0D0 #D0D0D0;
+		    border-right: 1px solid #D0D0D0;
+		    border-style: none solid solid;
+		    border-width: 0 1px 1px;
+		    display: block;
+		    margin-bottom: 0px;
+		    width: 100%;
+		}
+		.detailList th, .detailList td {
+		    vertical-align: top;
+		}
+		.dataCol {
+		    padding: 2px 2px 2px 10px;
+		    text-align: left;
+		}
+		.labelCol {
+		    color: #333333;
+		    font-size: 91%;
+		    font-weight: bold;
+		    padding: 2px 10px 2px 2px;
+		    text-align: right;
+		}
+		.requiredInput {
+		    height: 100%;
+		    position: relative;
+		}
+		.requiredInput .requiredBlock {
+		    background-color: #CC0000;
+		    bottom: 1px;
+		    left: -4px;
+		    position: absolute;
+		    top: 1px;
+		    width: 3px;
+		}
+		.container {
+			padding: 2px;
+		}
+		
+		.labelCol2 {
+			color: #333 !important;
+		    font-size: 91%;
+		    font-weight: bold;
+		    text-align: right;
+		    width: 80px;
+		    border-bottom: 0px none !important;
+		    vertical-align: top !important;
+		}
+		.labelCol22 {
+		    border-bottom: 0px none !important;
+		    vertical-align: top !important;
+		}
+		.dataCell {
+			vertical-align: top !important;
+		}
+		.formDataSmall {
+			width: 50px !important;
+		}
+		.dataControl { width: 150px; }
+		.noBorder {
+		    border-bottom: 0px none !important;
+		    vertical-align: top !important;
+		}
+		.list td, .list th, body.oldForecast .list .last td, body.oldForecast .list .last th {
+		    border-bottom: 0px none !important;
+		    vertical-align: top !important;
+		}
+		body .bPageBlock {
+			padding: 0;
+			margin-bottom: 0px;
+			border-top-width: 0px;
+			padding: 5px;
+		}
+		.apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+			margin: 0px;
+		}
+		#mainContainer {
+			/*padding:5px;*/
+		}
+		body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {
+		    background: none repeat scroll 0 0 #F2F3F3 !important;
+		    border-color: #E0E3E5;
+		    font-weight: bold;
+		    padding: 5px 2px 4px 5px;
+		}
+		body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {
+			border: 1px solid #D4DADC;
+		}
+		.dataRow {
+			border-bottom: 1px solid #D4DADC !important;
+		}
+		.pbBody, .pbBody a, .pbBody td, .lbBody a, .lbBodyDescription, .list .headerRow .noRowsHeader {
+			color: black;
+		}
+		.list .dataRow td {
+			border-bottom: 2px solid #CCC;;
+		}
+		body .pbBody table.list tr.dataRow td.dataCell {
+		    border-bottom: 1px solid #D4DADC !important;
+		}
+	</style>
+	
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_TableScroll, 'jquery.tableScroll/jquery.tablescroll.js')}" />
+	
+	<script type="text/javascript">
+		$j = jQuery.noConflict();
+        var contentHeight = ('{!JSINHTMLENCODE($currentpage.parameters.p)}' == '1') ? 350 : 170;
+        $j(document).ready(function(){
+            $j('.tableScrollEnabled').tableScroll( { height:contentHeight } );
+        });
+	</script>
+<apex:form >
+	<div style="padding:3px 10px 3px 5px;" id="publishWindow">
+		<div>
+			<div style="padding:0px 21px 0px 0px;">
+				<div class="publish-dialog-titlebar">
+		            <span>Publish Content</span>
+		        </div>
+			</div>
+			<apex:pageMessages />
+			<div id="mainContainer">
+				<apex:pageblock id="thePageBlock" mode="maindetail">
+					<apex:pageBlockButtons location="bottom">
+						<apex:commandButton value="  Publish  " action="{!publishMultiContent}" styleClass="btnPrimary publishersharebutton btn" />
+		                <apex:commandButton value="   Delete   " action="{!deleteMultiContent}" onclick="return confirm('Are You Sure?');" />
+					</apex:pageBlockButtons>
+					<apex:variable var="rowIndex" value="{!1}" />
+					<apex:pageBlockTable value="{!content_List}" var="c" id="thePageBlockTable" styleClass="tableScrollEnabled">
+						<apex:column width="10px" style="padding-top: 10px;">
+							{!rowIndex}.
+							<apex:variable var="rowIndex" value="{!(rowIndex + 1)}" />
+						</apex:column>
+						<apex:column >
+			                <apex:facet name="header">
+			                	<div>
+			                		<div style="float: left;padding-bottom: 5px;">Edit your content by completing the fields below</div>
+			                		<div style="float: right;margin-right: 10px;">
+										<span class="requiredLegend">
+											<span class="requiredExampleOuter"><span class="requiredExample"></span></span>
+											<span class="requiredText"> = Required Information</span>
+										</span>
+									</div>
+								</div>
+							</apex:facet>
+							<table border="0" cellpadding="5">
+								<tr>
+									<td>
+										<apex:outputLabel styleClass="labelCol" value="Title" /><br />
+										<div class="requiredInput">
+											<div class="requiredBlock"></div>
+											<apex:inputText value="{!c.cv.Title}" styleClass="dataControl" />
+										</div>
+									</td>
+									<td>
+										<apex:outputLabel styleClass="labelCol" value="Library" /><br />
+										<div class="requiredInput">
+											<div class="requiredBlock"></div>
+											<apex:selectList value="{!c.wid}" size="1" styleClass="dataControl">
+												<apex:selectOptions value="{!WorkspacesList}" />
+											</apex:selectList>
+										</div>
+									</td>
+									<td rowspan="2">
+										<table border="0" cellpadding="5">
+						           			<apex:repeat value="{!$ObjectType.ContentVersion.FieldSets.advpm__fieldSet_Content}" var="f">
+							           			<tr>
+													<td><apex:outputLabel styleClass="labelCol" value="{!f.Label}" /></td>
+													<td><apex:inputField value="{!c.cv[f]}" styleClass="{!IF(f.type!='boolean','dataControl','')}" /></td>
+							           			</tr>
+							           		</apex:repeat>
+							           		<apex:repeat value="{!$ObjectType.ContentVersion.FieldSets.advpm__fieldSet_ContentTime}" var="f">
+							           			<tr>
+													<td><apex:outputLabel styleClass="labelCol" value="{!f.Label}" /></td>
+													<td><apex:inputField value="{!c.cv[f]}" styleClass="{!IF(f.type!='boolean','dataControl','')}" /></td>
+							           			</tr>
+							           		</apex:repeat>
+						           		</table>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<apex:outputLabel styleClass="labelCol" value="Description" /><br />
+										<apex:inputTextArea rows="2" cols="30" value="{!c.cv.Description}" styleClass="dataControl" />
+									</td>
+									<td>
+										<apex:outputLabel styleClass="labelCol" value="Tags" /><br />
+					           			<apex:inputTextArea rows="2" cols="30" value="{!c.cv.TagCsv}" styleClass="dataControl" />
+									</td>
+								</tr>
+							</table>
+						</apex:column>
+					</apex:pageBlockTable>
+				</apex:pageblock>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		if ({!SaveSuccess}) 
+			parent.RefreshDisplay('{!JSINHTMLENCODE($currentpage.parameters.workid)}','{!JSINHTMLENCODE($currentpage.parameters.cat)}','',false, 0);
+	</script>
+</apex:form>
+
+</apex:page>

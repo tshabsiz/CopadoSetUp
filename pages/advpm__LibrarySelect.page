@@ -1,0 +1,21 @@
+<apex:page controller="advpm.LibrarySelectController" tabStyle="Advologix_Setup__tab">
+<apex:form >
+	<apex:sectionHeader title="Advologix Setup" subTitle="Default Library" />
+	
+	<apex:pageblock mode="edit">
+		<apex:pageMessages />
+		<apex:pageblockButtons location="both">
+			<apex:commandButton value="  Save  " action="{!selectWorkspace}" />
+			<apex:commandButton value="  Cancel  " action="{!cancel}" />
+		</apex:pageblockButtons>
+		<apex:pageblockSection showHeader="false" columns="1">
+			<apex:pageblockSectionItem >
+				<apex:outputLabel value="Select a Library" />
+				<apex:selectList value="{!selectedWorkspace}" size="1">
+					<apex:selectOptions value="{!workspaces}" />
+				</apex:selectList>
+			</apex:pageblockSectionItem>
+		</apex:pageblockSection>
+	</apex:pageblock>
+</apex:form>
+</apex:page>

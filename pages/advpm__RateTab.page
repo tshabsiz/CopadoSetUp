@@ -1,0 +1,18 @@
+<apex:page id="pb" tabStyle="advpm__Rate__c" standardController="advpm__Rate__c" recordSetVar="allrecord">
+    <script type="text/javascript">
+        function reduceTo15Digits(val) {
+            return val.substring(0,15);
+        }
+        function OpenPrint() {
+            printWin('/{!$ObjectType.advpm__Rate__c}/x?fcf='+reduceTo15Digits(document.getElementById('pb:RatesList_listSelect').value)+'&rolodexIndex='+document.getElementById('pb:RatesList_rolodexState').value+'&page='+document.getElementById('pb:RatesList_pageState').value);
+        }
+    </script>
+    <apex:outputPanel layout="block" id="printPanel" style="width:100%; text-align: right;">
+        <a title="Printable View (New Window)" href="javascript:OpenPrint();">
+            <img title="Printable View (New Window)" onmouseover="this.className = 'printerIconOn';this.className = 'printerIconOn';" 
+                 onmouseout="this.className = 'printerIcon';this.className = 'printerIcon';" onfocus="this.className = 'printerIconOn';" 
+                 onblur="this.className = 'printerIcon';" class="printerIcon" alt="Printable View (New Window)" src="/s.gif" />
+        </a>
+    </apex:outputPanel>
+    <apex:enhancedList rerender="printPanel" type="advpm__Rate__c" height="750" id="RatesList" />
+</apex:page>

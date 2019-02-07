@@ -1,0 +1,107 @@
+<apex:page controller="advpm.SiteFileBrowser" showHeader="false" >
+    <head>
+        <script type="text/javascript">
+            function getSalesforceUrl() {
+                return '{!JSENCODE(salesforceUrl)}';
+            }
+            function getParameterByName(name) {
+                var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+                return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+            }
+            function hasClass(element, cls) {
+                return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+            }
+            
+            function SelectFile( fileUrl ) {
+                //console.log(' ======== fileUrl ========= '+fileUrl);
+                //window.opener.CKEDITOR.tools.callFunction(2, fileUrl);
+                var orgInstance = getSalesforceUrl();
+                var b=window.opener.getElementsByClassName("cke_dialog_ui_labeled_label cke_required");
+                var button1=[];
+                for(var i=0;i<b.length;i++){
+                   if(b[i].innerHTML=="URL"){button1.push(b[i].getAttribute("for"));}
+                }
+                var linktab=window.opener.document.getElementsByTagName("a");
+                var linktabELE;
+                var islinktabSelected=false;
+                for(var i=0;i<linktab.length;i++){
+                    if(linktab[i].innerHTML=="Link" &&  hasClass(linktab[i],"cke_dialog_tab_selected")){
+                        linktabELE=linktab[i];
+                        islinktabSelected=true;
+                    }
+                }
+                if(islinktabSelected){
+                        var b1=window.opener.document.getElementsByTagName("label");
+                        var lids=[];
+                        var inputELeID;
+                        for(var i=0;i<b1.length;i++){
+                           if(b1[i].innerHTML=="URL"){
+                              var elm = {};
+                              var elms = window.opener.document.getElementsByName("Link")[0].getElementsByTagName("*");
+                                    
+                                for (var i = 0; i < elms.length; i++) {
+                                    if (elms[i].id === b1[i].getAttribute("for")) {
+                                        window.opener.document.getElementById(b1[i].getAttribute("for")).value = orgInstance+''+fileUrl;
+                                        window.close() ;
+                                    }
+                                } 
+                           }
+                        }
+                }else{
+                    for(var c=0;c<button1.length;c++){
+                        window.opener.document.getElementById(button1[c]).value = orgInstance+''+fileUrl;
+                    }
+                }
+                window.close() ;
+            }
+        function selectFolder(id) {
+            document.location.search = '?folder=' + id;
+            
+        }
+        </script>
+        <style type="text/css">
+            .editPage .bPageBlock {border-top-width: 2px;}
+            .list th:first-child, .list td:first-child {padding-left:12px!important;}
+        </style>
+    </head>
+    <apex:form >
+        <apex:pageBlock mode="edit">
+            <apex:pageMessages />
+            <apex:facet name="header">
+                <apex:outputPanel layout="block" styleClass="pbHeader">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td class="pbTitle">
+                                    <h2 class="mainTitle">Select a document below</h2>
+                                </td>
+                                <td align="right" style="text-align: right;">
+                                    <apex:selectList styleClass="folderSelector" id="folderSelect" value="{!inFolderId}" size="1" onchange="selectFolder(this.value)"> 
+                                        <apex:selectOptions value="{!myItems}"/> 
+                                    </apex:selectList>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:facet>
+            <apex:pageBlockTable value="{!files}" var="image" rendered="{!files.size>0}">
+                <apex:column headerValue="Thumbnail" width="100">
+                    <a href="javascript:void(0);" onclick="SelectFile('{!JSENCODE(image.url)}');"><img src="{!image.url}" width="32"/></a>
+                </apex:column> 
+                <apex:column headerValue="File Name" width="350">
+                    <a href="javascript:void(0);" onclick="SelectFile('{!JSENCODE(image.url)}');">{!image.doc.Name}</a>
+                 </apex:column> 
+                 <apex:column headerValue="Size" width="100">
+                    {!ROUND((image.doc.BodyLength / 1000), 1)} kb
+                 </apex:column> 
+                 <apex:column headerValue="Content Type">
+                    {!image.doc.ContentType}
+                 </apex:column> 
+            </apex:pageBlockTable> 
+            <apex:pageBlockSection columns="1" rendered="{!NOT(files.size>0)}">
+               <apex:outputPanel styleClass="no-records">No documents found.</apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

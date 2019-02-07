@@ -1,0 +1,101 @@
+<!--
+*** CHANGE LOG ***
+
+01/02/2018 - TdB    - Create VF page.   
+
+-->
+<apex:page Controller="Participant_Mass_Email_Controller" tabStyle="advpm__Matter__c">
+    <apex:sectionHeader subtitle="Mass Email Participants" title="Mass Email"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages id="pageErrors"/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Next" action="{!NextPage}" rendered="{!noError}"/>
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" title="Step 1: Role(s) and Relationship(s) Filter" collapsible="false">
+                 <!--<apex:pageBlockSectionItem >
+                     <apex:inputField value="{!participantRecord_temp.Status__c}"/>
+                     </apex:pageBlockSectionItem> -->
+               <!-- <apex:pageBlockSectionItem >
+                    <apex:inputField value="{!participantRecord_temp.advpm__Role__c}">
+                       <!-- <apex:actionSupport event="onchange" action="{!updateParticipantList}" reRender="participantResults,pageErrors" /> -->
+                   <!-- </apex:inputField>
+                </apex:pageBlockSectionItem> -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputText escape="false" value="<b>Participant Roles:</b>" />
+                    <c:MultiselectPicklist leftLabel="Available "
+                                           leftOption="{!allRoles}"
+                                           rightLabel="Selected "
+                                           rightOption="{!selectedRoles}"
+                                           size="5"
+                                           width="250px">
+                    </c:MultiselectPicklist>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                   <!-- <apex:commandButton value="Search" action="{!UpdateSearchResults}" reRender="participantResults,pageErrors"/> -->
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputText escape="false" value="<b>Relationships(s):</b>" />
+                    <c:MultiselectPicklist leftLabel="Available "
+                                           leftOption="{!allRelationships}"
+                                           rightLabel="Selected "
+                                           rightOption="{!selectedRelationships}"
+                                           size="5"
+                                           width="250px"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                   <!-- <apex:commandButton value="Search" action="{!UpdateSearchResults}" reRender="participantResults,pageErrors"/> -->
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                   <!-- <apex:commandButton value="Search" action="{!UpdateSearchResults}" reRender="participantResults,pageErrors"/> -->
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:commandButton value="Search" action="{!UpdateSearchResults}" reRender="participantResults,pageErrors"/>
+                </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" title="Step 2: Please select Participants" collapsible="false" id="participantResults">
+               <!-- <apex:pageBlockTable value="{!participantWrapperList}" var="participantWrapper"> 
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                    </apex:column>
+                    <apex:column headerValue="Name" value="{!participantWrapper.participantRecord.Name}" />
+                    <apex:column headerValue="Email" value="{!participantWrapper.participantEmail}" />
+                    <apex:column headerValue="Role" value="{!participantWrapper.participantRecord.advpm__Role__c}" />
+                    <apex:column headerValue="Relationship" value="{!participantWrapper.participantRecord.advpm__Contact__r.Account.Name}" />  
+                </apex:pageBlockTable> -->
+                
+                
+               <!-- <apex:pageBlockTable value="{!participantRelationshipWrapperList}" var="relationship">
+                    <apex:column value="{!relationship.relationshipName}"/>
+                    <apex:pageBlock >
+                        <apex:pageBlockTable value="{!relationship.participantWrapperList}" var="participantWrapper"> 
+                            <apex:column headerValue="Select">
+                                <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                            </apex:column>
+                            <apex:column headerValue="Name" value="{!participantWrapper.participantRecord.Name}" />
+                            <apex:column headerValue="Email" value="{!participantWrapper.participantEmail}" />
+                            <apex:column headerValue="Role" value="{!participantWrapper.participantRecord.advpm__Role__c}" />
+                            <apex:column headerValue="Relationship" value="{!participantWrapper.participantRecord.advpm__Contact__r.Account.Name}" />  
+                        </apex:pageBlockTable> 
+                    </apex:pageBlock>
+                </apex:pageBlockTable> -->
+                
+            <!--   <apex:repeat value="{!participantRelationshipWrapperList}" var="relationship"> 
+                     <apex:outputLink value="/{!relationship.relationshipId}" > 
+                        <apex:outputText escape="false" value="<b>{!relationship.relationshipName}</b>" ></apex:outputText>
+                    </apex:outputLink> -->
+                    <apex:pageBlockTable value="{!participantWrapperList}" var="participantWrapper"> 
+                        <apex:column headerValue="Select"> 
+                            <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                       </apex:column> 
+                        <apex:column headerValue="Name" value="{!participantWrapper.participantRecord.Name}" />
+                        <apex:column headerValue="Email" value="{!participantWrapper.participantEmail}" />
+                        <apex:column headerValue="Role" value="{!participantWrapper.participantRecord.advpm__Role__c}" />
+                        <apex:column headerValue="Relationship Name" value="{!participantWrapper.participantRecord.advpm__Contact__r.Account.Name }" />
+                    </apex:pageBlockTable> 
+             <!--  </apex:repeat> -->
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

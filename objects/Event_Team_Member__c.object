@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Event Team Members</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>CreatedByEventTeamMemberTrigger__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Used by EventTeamMember_Trigger to prevent recursion.</inlineHelpText>
+        <label>CreatedByEventTeamMemberTrigger</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Event_Team_Member_Role__c</fullName>
+        <description>Event Team Member Roles</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Roles of Event Team Members Specific to the Event</inlineHelpText>
+        <label>Event Team Member Role</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Event_Team_Member_Role</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Event__c</fullName>
+        <description>Event Specific to Event Team Members</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Event Specific to Event Team Members</inlineHelpText>
+        <label>Event</label>
+        <referenceTo>Event__c</referenceTo>
+        <relationshipName>Event_Teams</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Maximum_Number_of_Actual_Invitees__c</fullName>
+        <description>Maximum number of guests per Event Team Member</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Maximum number of guests for this Event Team Member. This is the Maximum Number of your Invitees that can attend, which will be Decided based on the Prioritised List which will need to be Approved by the Event Coordinator and Compliance Prior.</inlineHelpText>
+        <label>Maximum Guests</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Maximum_Number_of_Proposed_Invitees__c</fullName>
+        <description>Maximum Number of Proposed Invitees</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Maximum Number of Proposed Invitees. This is the Maximum Number of Invitees that you can propose for the event.</inlineHelpText>
+        <label>Maximum Invitees</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Number_of_Delegates__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Total number of Delegates linked to this Team Member regardless of status</inlineHelpText>
+        <label>Number of Delegates</label>
+        <summaryForeignKey>Event_Team_Members_Delegates__c.Event_Team_Member__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Team_Member__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Event Team Member Name</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Event Team Member Name and Salesforce User</inlineHelpText>
+        <label>Team Member</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Team_Member</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Event Team Member</label>
+    <nameField>
+        <label>Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Event Team Members</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Proposed_vs_Actual_Invitees</fullName>
+        <active>true</active>
+        <description>Validation that Proposed Invitees is Greater or Equal to Actual Invitees</description>
+        <errorConditionFormula>Maximum_Number_of_Actual_Invitees__c &gt; Maximum_Number_of_Proposed_Invitees__c</errorConditionFormula>
+        <errorMessage>Maximum Number of Actual Invitees cannot be greater than Maximum Number of Proposed Invites</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

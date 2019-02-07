@@ -1,0 +1,166 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.MatterBudgetController" tabStyle="advpm__Matter__c" showHeader="false" sidebar="false">
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+            body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+            .gt-timeline {font-family: "Salesforce Sans", Arial, sans-serif;}
+        </style>
+        <style type="text/css">
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {padding: 8px!important;}
+            .slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 8px!important;}
+            .slds .slds-table tr.headerRow > th.headerRow:first-child, .slds .slds-table tr.dataRow > td.dataCell:first-child {padding-left: 8px!important;}
+            .slds .slds-table tr > th.headerRow:first-child, .slds .slds-table tr > td.dataCell:first-child {padding-left: 8px!important;}
+            .htmlDetailElementTable tr > td {padding: 0px!important;}
+            .htmlDetailElementTable tr > td:first-child {padding-left: 0px!important;}
+            .arrow-left, .arrow-right{position: absolute;}
+            .arrow-left{left:0px;}
+            #matterTimeline > div {display: inline-block;}
+            #matterTimeline {left: 40px;}
+        </style>
+    </apex:outputPanel>
+    <style type="text/css">
+        .text-center {text-align:center!important;}
+        .text-right {text-align:right!important;}
+        .subtotal-heading {font-weight:bold;font-style:italic;}
+        .subtotal {font-weight:bold;}
+        .tk-cell {background-color:#f8f8f8;}
+        tr td:nth-child(6) {border-left:1px solid #e0e3e5!important;}
+        .v-neg {color:#b94a48}
+        .editPage .bPageBlock {border-top-width:3px;}
+    </style>
+    <apex:form id="theForm">
+        <apex:outputPanel styleClass="{!IF(isLightning,'slds','')}">
+            <apex:pageBlock mode="edit">
+                <apex:pageMessages />
+                <apex:outputPanel layout="block">
+                    <table class="list slds-table" border="0" cellpadding="0" cellspacing="0">
+                        <thead>
+                            <apex:outputPanel layout="none" rendered="{!hasData}">
+                            <tr class="headerRow">
+                                <th class="headerRow {!IF(isLightning,'slds-text-heading--label','')}" colspan="2"></th>
+                                <th class="headerRow text-center {!IF(isLightning,'slds-text-heading--label','')}" colspan="3">Total</th>
+                                <apex:outputPanel layout="none" rendered="{!timekeepers.size > 0}">
+                                    <th class="headerRow text-center {!IF(isLightning,'slds-text-heading--label','')}" colspan="{!timekeepers.size}">{!$ObjectType.advpm__Timekeeper__c.labelPlural}</th>
+                                </apex:outputPanel>
+                            </tr>
+                            <tr class="headerRow">
+                                <th class="headerRow {!IF(isLightning,'slds-text-heading--label','')}">{!$ObjectType.advpm__Budget__c.label}</th>
+                                <th class="headerRow {!IF(isLightning,'slds-text-heading--label','')}">{!$ObjectType.advpm__Summary_Budget__c.fields.advpm__UTBMS_Code__c.label}</th>
+                                <th class="headerRow text-right {!IF(isLightning,'slds-text-heading--label','')}">Budgeted</th>
+                                <th class="headerRow text-right {!IF(isLightning,'slds-text-heading--label','')}">Actual</th>
+                                <th class="headerRow text-right {!IF(isLightning,'slds-text-heading--label','')}">Difference</th>
+                                <apex:repeat value="{!timekeepers}" var="tk">
+                                    <th class="headerRow text-right {!IF(isLightning,'slds-text-heading--label','')}">{!tk.Name}</th>
+                                </apex:repeat>
+                            </tr>
+                            </apex:outputPanel>
+                        </thead>
+                        <tbody>
+                            <apex:variable var="bud_diff" value="{!0}" />
+                            <apex:variable var="mat_bud_tot" value="{!0}" />
+                            <apex:variable var="mat_act_tot" value="{!0}" />
+                            <apex:repeat value="{!budgets}" var="b" rendered="{!hasData}">
+                                <apex:variable var="b_ind" value="{!0}" />
+                                <apex:variable var="b_act_tot" value="{!0}" />
+                                <apex:variable var="b_tk_act_tot" value="{!0}" />
+                                <apex:repeat value="{!b.advpm__Summary_Budgets__r}" var="sb">
+                                    <tr class="dataRow">
+                                        <td class="dataCell slds-truncate">
+                                            <apex:outputPanel rendered="{!b_ind == 0}">
+                                                <apex:outputLink target="{!IF(isLightning,'','_top')}" value="{!$Site.Prefix}/{!b.Id}">
+                                                    <apex:outputField value="{!b.advpm__Start_Date__c}" />&nbsp;-&nbsp;<apex:outputField value="{!b.advpm__End_Date__c}" />
+                                                </apex:outputLink>
+                                            </apex:outputPanel>
+                                            <apex:variable var="b_ind" value="{!(b_ind + 1)}" />
+                                        </td>
+                                        <td class="dataCell slds-truncate">{!sb.advpm__UTBMS_Code__c}</td>
+                                        <td class="dataCell text-right slds-truncate">
+                                            <apex:outputField value="{!sb.advpm__Amount__c}" />
+                                        </td>
+                                        <td class="dataCell text-right slds-truncate">
+                                            <c:CustomFormatter inputStringValue="{!map_totalActual[b.Id + '_' + sb.advpm__UTBMS_Code__c]}" displayFormatType="CURRENCY" />
+                                            <apex:variable var="b_act_tot" value="{!(b_act_tot + map_totalActual[b.Id + '_' + sb.advpm__UTBMS_Code__c])}" />
+                                        </td>
+                                        <td class="dataCell diff-cell text-right slds-truncate">
+                                            <apex:variable var="sb_diff" value="{!(sb.advpm__Amount__c - (map_totalActual[b.Id + '_' + sb.advpm__UTBMS_Code__c]))}" />
+                                            <span class="{!IF(sb_diff < 0,'v-neg','')}"><c:CustomFormatter inputStringValue="{!sb_diff}" displayFormatType="CURRENCY" /></span>
+                                        </td>
+                                        <apex:repeat value="{!timekeepers}" var="tk">
+                                            <td class="dataCell tk-cell text-right slds-truncate">
+                                                <c:CustomFormatter inputStringValue="{!map_totalTkSbActual[b.Id + '_' + tk.Id + '_' + sb.advpm__UTBMS_Code__c]}" displayFormatType="CURRENCY" />
+                                                <apex:variable var="b_tk_act_tot" value="{!(b_tk_act_tot + map_totalTkSbActual[b.Id + '_' + tk.Id + '_' + sb.advpm__UTBMS_Code__c])}" />
+                                            </td>
+                                        </apex:repeat>
+                                    </tr>
+                                </apex:repeat>
+                                <tr class="dataRow">
+                                    <td class="dataCell slds-truncate">&nbsp;</td>
+                                    <td class="dataCell subtotal-heading slds-truncate">Subtotal</td>
+                                    <td class="dataCell subtotal text-right slds-truncate">
+                                        <apex:variable var="bud_tot" value="{!(IF(ISBLANK(b.advpm__Fee_Budget__c),0,b.advpm__Fee_Budget__c) + IF(ISBLANK(b.advpm__Expense_Budget__c),0,b.advpm__Expense_Budget__c))}" />
+                                        <c:CustomFormatter inputStringValue="{!bud_tot}" displayFormatType="CURRENCY" />
+                                        <apex:variable var="mat_bud_tot" value="{!mat_bud_tot + bud_tot}" />
+                                    </td>
+                                    <td class="dataCell subtotal text-right slds-truncate">
+                                        <c:CustomFormatter inputStringValue="{!b_act_tot}" displayFormatType="CURRENCY" />
+                                        <apex:variable var="mat_act_tot" value="{!mat_act_tot + b_act_tot}" />
+                                    </td>
+                                    <td class="dataCell subtotal diff-cell text-right slds-truncate">
+                                        <apex:variable var="bud_diff" value="{!(bud_tot - b_act_tot)}" />
+                                        <apex:outputPanel rendered="{!ISBLANK(bud_diff)}" styleClass="IF(bud_diff < 0,'v-neg','')}"><c:CustomFormatter inputStringValue="{!bud_diff}" displayFormatType="CURRENCY" /></apex:outputPanel>
+                                        <apex:outputPanel rendered="{!!ISBLANK(bud_diff)}" styleClass="IF(bud_diff < 0,'v-neg','')}"><c:CustomFormatter inputStringValue="{!bud_diff}" displayFormatType="CURRENCY" /></apex:outputPanel>
+                                    </td>
+                                    <apex:repeat value="{!timekeepers}" var="tk">
+                                        <td class="dataCell tk-cell subtotal text-right slds-truncate">
+                                            <c:CustomFormatter inputStringValue="{!map_totalTkActual[b.Id + '_' + tk.Id]}" displayFormatType="CURRENCY" />
+                                        </td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr class="dataRow">
+                                    <td class="dataCell slds-truncate">&nbsp;</td>
+                                    <td class="dataCell slds-truncate">&nbsp;</td>
+                                    <td class="dataCell slds-truncate">&nbsp;</td>
+                                    <td class="dataCell slds-truncate">&nbsp;</td>
+                                    <td class="dataCell diff-cell slds-truncate">&nbsp;</td>
+                                    <apex:repeat value="{!timekeepers}" var="tk">
+                                        <td class="dataCell tk-cell slds-truncate">&nbsp;</td>
+                                    </apex:repeat>
+                                </tr>
+                            </apex:repeat>
+                            <apex:outputPanel layout="none" rendered="{!hasData}">
+                            <tr class="dataRow">
+                                <td class="dataCell slds-truncate">&nbsp;</td>
+                                <td class="dataCell subtotal-heading slds-truncate">Matter Total</td>
+                                <td class="dataCell subtotal text-right slds-truncate">
+                                    <c:CustomFormatter inputStringValue="{!mat_bud_tot}" displayFormatType="CURRENCY" />
+                                </td>
+                                <td class="dataCell subtotal text-right slds-truncate">
+                                    <c:CustomFormatter inputStringValue="{!mat_act_tot}" displayFormatType="CURRENCY" />
+                                </td>
+                                <td class="dataCell subtotal diff-cell text-right slds-truncate">&nbsp;</td>
+                                <apex:repeat value="{!timekeepers}" var="tk">
+                                    <td class="dataCell tk-cell subtotal text-right slds-truncate">
+                                        <c:CustomFormatter inputStringValue="{!map_totalTk[tk]}" displayFormatType="CURRENCY" />
+                                    </td>
+                                </apex:repeat>
+                            </tr>
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel layout="none" rendered="{!!hasData}">
+                            <tr class="dataRow">
+                                <td class="dataCell slds-truncate" colspan="{!5 + timekeepers.size}">No records to display</td>
+                            </tr>
+                            </apex:outputPanel>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    
+        <!-- Visualforce: Require following fields to be fetched other error thrown -->
+        <apex:outputField value="{!advpm__Matter__c.advpm__Fee_Budget__c}" rendered="false" />
+        <apex:outputField value="{!advpm__Matter__c.advpm__Expense_Budget__c}" rendered="false" />
+        <apex:outputField value="{!advpm__Matter__c.advpm__Total_Time_Amount__c}" rendered="false" />
+    </apex:form>
+</apex:page>

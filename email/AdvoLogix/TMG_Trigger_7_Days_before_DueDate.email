@@ -1,0 +1,40 @@
+<messaging:emailTemplate subject=" Trigger {!relatedTo.Trigger__r.Name} will be due for {!relatedTo.Trigger__r.Deal__r.Name} on {!relatedTo.Due_Date__c}" recipientType="User" relatedToType="Watcher__c">
+<messaging:htmlEmailBody >
+        <html>
+            <body>
+
+            <p>Good day {!relatedTo.Trigger__r.Person_Responsible__r.Name},</p>
+            <p>Trigger  {!relatedTo.Trigger__r.Name} will be due for {!relatedTo.Trigger__r.Deal__r.Name} on 
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Due_Date__c}" />
+            </apex:OutputText>
+            :</p>
+            
+            <p>
+            Deal Name: {!relatedTo.Trigger__r.Deal__r.Name}<br/>
+            Agreement Name:{!relatedTo.Trigger__r.Agreement__r.Name}<br/>
+            Trigger Name:  {!relatedTo.Trigger__r.Name} <br/>
+            Trigger Status: {!relatedTo.Watcher_Status__c}<br/>
+            Trigger Due Date: 
+            <apex:outputText value="{0, date, YYYY/MM/DD}">
+                <apex:Param value="{!relatedTo.Due_Date__c}" />
+            </apex:OutputText><br/>
+            </p>
+            
+            <p>
+            <apex:outputlink value="{!LEFT($Api.Partner_Server_URL_140,FIND('.com',$Api.Partner_Server_URL_140)+4)+relatedTo.Trigger__r.Id}" target="_blank">Click here to view in Salesforce</apex:outputlink>
+            </p>
+            
+            <p>
+            Kind regards,<br/>
+            Transaction Management Group
+            </p>
+            
+            <p>
+            <center><b><i> Auto generated email , please do not reply to this email. </i></b></center>
+            </p>
+            
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

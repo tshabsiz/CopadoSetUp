@@ -1,0 +1,795 @@
+<apex:page standardController="advpm__Matter__c" tabStyle="advpm__Matter__c" cache="false" readOnly="true" sidebar="false" 
+            showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.fw)=='1'}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fw)=='1','Participation Map: '+advpm__Matter__c.Name,'')}">
+    
+    <apex:outputField value="{!advpm__Matter__c.Name}" rendered="false" />
+    <c:ParticipationMap recordId="{!advpm__Matter__c.Id}" recordName="{!advpm__Matter__c.Name}" fieldName="advpm__Matter__c" />
+<!-- extensions="MatterParticipationMapController" showHeader="{!!isInlineLayout}" title="{!IF(isInlineLayout,'','Participation Map: '+Matter__c.Name)}"
+
+    <apex:styleSheet value="{!URLFOR($Resource.d3_contextMenu, 'css/d3-context-menu.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.jQueryZip, 'js/jquery-2.2.4.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.d3, 'd3.v4.422.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.d3_contextMenu, 'js/d3-context-menu.js')}" />
+    <c:includeSLDS />
+    <style type="text/css">
+        .slds .slds-icon__container--circle {/*pointer-events: all;stroke: none;*/padding: 3px;}
+        .icon-first-node .slds-icon-custom-{!matIconNo} {padding:3px;background-color: #000;}/*904d4c*/
+        .slds-icon-custom-{!matIconNo} svg, .slds-icon-custom-{!partIconNo} svg {width:28px!important;height:28px!important;}
+        .icon-first-node .slds-icon-custom-{!matIconNo} svg {width:32px!important;height:32px!important;}
+        
+        /*.node-collapsed .slds-icon-custom-{!matIconNo} svg, .slds-icon-custom-{!partIconNo} svg {width:24px!important;height:24px!important;}*/
+        .node-collapsed .slds-icon__container {/*background-color: #0070d2border: 4px solid;border-color: #4a4a56;padding: 1px;*/}
+        .node-collapsed-moon {position: relative;/*top: -40px;right: -30px;*/top: 0;margin-bottom: 12px; border: 0px solid!important;padding: 4px!important;}
+        .icon-first-node .node-collapsed-moon {/*top: -42px;right: -32px;*/}
+        .icon-node .slds-icon__container {cursor: pointer;}
+        
+        .slds .slds-text-heading--label {text-transform: none;}
+        /*.slds-text-heading--small {color: #aaa!important;}*/
+        .svg-container {display: inline-block;position: relative;width: 100%;/*padding-bottom: 100%;*/ /* aspect ratio */vertical-align: top!important;overflow: hidden;}
+        .svg-content-responsive {display: inline-block;/*position: absolute;*/left:10px;right:10px;top:10px;}
+        .slds-text-heading--small {color: #54698d;font-size: 14px!important;}
+        .slds .slds-section-title--divider:first-child {margin-top: 0px;}
+        .slds .slds-section-title--divider {margin: 0px;padding: 6px 16px;}
+        .slds .slds-picklist .slds-dropdown {max-height: 500px;}
+        .slds-list--vertical {margin-top: 5px!important;margin-bottom: 20px!important;}
+        .slds .slds-dropdown[class*="slds-nubbin--top"] {margin-top: 2px;}
+        .slds .slds-is-selected .slds-icon--selected {fill: #0070d2;opacity: 1;}
+        .slds .slds-is-not-selected .slds-icon--selected {fill: #bbb;opacity: 1;}
+        .links line, line {stroke: #aaa;}
+        .nodes circle {/*pointer-events: all;stroke: none;*/stroke-width: 40px;}
+        .nodes foreignObject {/*pointer-events: all;stroke: none;*/}
+        .nodes foreignObject body {/*pointer-events: all;stroke: none;*/}
+        .label-first-node {font-weight:bold;text-decoration:underline;}
+        /*text.shadow {stroke: white;stroke-width: 2.5px;opacity: 0.9;}*/
+        svg g image {cursor: move;}
+        .menu-icon, .menu-icon:hover {fill:#ffffff!important;}
+        .loading-spin {position: fixed;z-index: 999;overflow: show;margin: auto;top: 0;left: 0;bottom: 0;right: 0;}
+        .loading-spin:before {content: '';display: block;position: fixed;top: 0;left: 0;width: 100%;height: 100%;}
+        .slds .slds-button--small {line-height: 20px;min-height: 22px;font-size: 12px;padding-left: 6px;padding-right: 6px;}
+        .labels-type.hide-labels svg, .labels-role.hide-labels svg {fill: #aaa!important}
+        .labels-type.show-labels svg, .labels-role.show-labels svg {fill: #0070d2!important}
+        .labels-type, .labels-role {color: #54698d!important}
+        .nav-menu-heading {padding:3px;}
+        .linetext {fill:#7B7D7D;font-size:11px;}
+        ul li, ol li {margin-left: 0px;padding-left: 0px;}
+        div.d3-tooltip {position: absolute;text-align: center;padding: 8px;font: 12px sans-serif;background: lightsteelblue;border: 0px;border-radius: 8px;}
+    </style>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <style type="text/css">
+            .slds {font-family: Arial,Helvetica,sans-serif!important;}
+            .slds-text-heading--small {font-size: 12px!important;}
+            .slds .slds-text-heading--label {font-size: 12px;line-height: 1.25;letter-spacing: 0px;}
+            body .bPageTitle {padding: 5px 0 0;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <style type="text/css">
+            html body.sfdcBody {overflow: hidden;}
+        </style>
+    </apex:outputPanel>
+    <apex:pageMessages />
+    <script type="text/javascript">
+        var selectedRoles = [];
+        var selectedTypes = [];
+        var isLtng = {!isLightning};
+        var maturl_ltng = "{!URLFOR($Resource.SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#'+matIconName)}";
+        var parturl_ltng = "{!URLFOR($Resource.SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#'+partIconName)}";
+        
+        $(document).ready(function() {
+            $('.slds-dropdown-trigger--click').on('click', function(){
+                showDropMenu($(this));
+            });
+            $('.slds-dropdown').on('click', function(e){
+                e.stopPropagation();
+            });
+            /*$(document).on('mousedown', function(e) {
+                //console.log(e);
+                if($(e.target).closest('.slds-is-open').length != 0) return false;
+                $('.slds-is-open').removeClass('slds-is-open');
+            });*/
+            
+            $('.labels-type').on('click', function(e){
+                e.stopPropagation();
+                
+                $(this).toggleClass('show-labels').toggleClass('hide-labels');
+                
+                saveOptionsToDB();
+                
+                $('.loading-spin').removeClass('slds-hide');
+                
+                fillOptions();
+                
+                reloadGraph();
+            });
+            
+            $('.labels-role').on('click', function(e){
+                e.stopPropagation();
+                
+                $(this).toggleClass('show-labels').toggleClass('hide-labels');
+                
+                saveOptionsToDB();
+                
+                $('.loading-spin').removeClass('slds-hide');
+                
+                fillOptions();
+                
+                reloadGraph();
+            });
+            
+            loadData();
+        });
+        function fillOptions() {
+            selectedRoles = [];
+            selectedTypes = [];
+            $('ul.item-roles li.slds-dropdown__item').each(function(i){
+                if ($(this).hasClass('slds-is-selected'))
+                    selectedRoles.push($(this).find('a').data('key'));
+            });
+            $('ul.item-types li.slds-dropdown__item').each(function(i){
+                if ($(this).hasClass('slds-is-selected'))
+                    selectedTypes.push($(this).find('a').data('key'));
+            });
+        }
+        function showDropMenu(ele){
+            var opened = false;
+            if($(ele).hasClass('slds-is-open')){
+                $(ele).removeClass('slds-is-open');
+                opened = true;
+            }
+            $('.slds-dropdown-trigger--click').each(function(){
+                if($(this).hasClass('slds-is-open')){
+                    $(this).removeClass('slds-is-open');
+                }
+            });
+            if(!opened){
+                $(ele).addClass('slds-is-open');
+            }
+        }
+    </script>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning && !isInlineLayout && NOT(ISBLANK(Matter__c.Id))}">
+        <div class="bPageTitle">
+            <div class="ptBody secondaryPalette brandSecondaryBrd">
+                <div class="content">
+                    <img src="{!matIconUrlCust}" height="32" width="32" class="pageTitleIcon userDefinedImage" title="Matter" alt="Matter" />
+                    <h1 class="pageType">Participation Map</h1>
+                    <span class="titleSeparatingColon">:</span>
+                    <h2 class="pageDescription">{!advpm__Matter__c.Name}</h2>
+                    <div class="blank"></div>
+                </div>
+            </div>
+            <div class="slds" style="position:absolute;top:10px;right:10px;">
+                <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="width:36px;">
+                    <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                        <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right">
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-types" role="menu">
+                            
+                        </ul>
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Roles</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-roles" role="menu">
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!Matter__c.id}">Back to matter</apex:outputLink></div>
+        <br /><br />
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning && NOT(ISBLANK(Matter__c.Id))}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="Participation Map" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.Matter__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.Matter__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Matter__c.Name}" 
+                            parentRecordID="{!Matter__c.ID}"
+                            rendered="{!isLightning && !isInlineLayout}">
+            <div class="slds-button-space-left" aria-haspopup="true">
+                <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="margin-top:-45px;">
+                    <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                        <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right">
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-types" role="menu">
+                            
+                        </ul>
+                        <div class="slds-dropdown__header">
+                            <div class="slds-grid">
+                                <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Roles</span></div>
+                                <div class="slds-col">
+                                    <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                        <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                        Labels
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="dropdown__list item-roles" role="menu">
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </c:slds_pageheader>
+        <apex:outputPanel layout="none" rendered="{!isLightning && isInlineLayout}">
+            <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="">
+                <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                    <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                </button>
+                <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right">
+                    <div class="slds-dropdown__header">
+                        <div class="slds-grid">
+                            <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                            <div class="slds-col">
+                                <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                    <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                    Labels
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="dropdown__list item-types" role="menu">
+                        
+                    </ul>
+                    <div class="slds-dropdown__header">
+                        <div class="slds-grid">
+                            <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Roles</span></div>
+                            <div class="slds-col">
+                                <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                    <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                    Labels
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="dropdown__list item-roles" role="menu">
+                        
+                    </ul>
+                </div>
+            </div>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!NOT(ISBLANK(Matter__c.Id))}">
+        <div class="slds-spinner--large loading-spin">
+            <img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." />
+        </div>
+        <div class="slds-grid">
+            <div id="err-msgs" class="slds-col message errorM4 slds-hide slds-float--left" style="margin-left:0px;margin-right:0px;"></div>
+        </div>
+        <apex:outputPanel layout="none" rendered="{!!isLightning && isInlineLayout}">
+            <div class="slds-picklist slds-dropdown-trigger--click slds-float--right" aria-expanded="false" style="width:36px;">
+                <button class="slds-button slds-button--icon-border menu-icon" aria-haspopup="true" aria-activedescendant="" style="background-color:#16325c;padding: 0.4rem;">
+                    <c:svg styleClass="slds-button__icon menu-icon" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#rows')}" />
+                </button>
+                <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right">
+                    <div class="slds-dropdown__header">
+                        <div class="slds-grid">
+                            <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Types</span></div>
+                            <div class="slds-col">
+                                <button style="border-width:0px;" class="labels-type slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideTypeLabels,'hide-labels','show-labels')}">
+                                    <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                    Labels
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="dropdown__list item-types" role="menu">
+                        
+                    </ul>
+                    <div class="slds-dropdown__header">
+                        <div class="slds-grid">
+                            <div class="slds-col nav-menu-heading"><span class="slds-text-heading--label">Roles</span></div>
+                            <div class="slds-col">
+                                <button style="border-width:0px;" class="labels-role slds-button slds-button--neutral slds-button--small slds-float--right {!IF(hideRoleLabels,'hide-labels','show-labels')}">
+                                    <c:svg styleClass="slds-button__icon--stateful slds-button__icon--left" path="{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                                    Labels
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="dropdown__list item-roles" role="menu">
+                        
+                    </ul>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <div class="slds-grid slds-grid--pull-padded d3-context-menu-container" id="force-container-grid">
+            <div class="slds-col--padded slds-size--12-of-12 slds-medium-size--12-of-12 slds-large-size--12-of-12" id="matter-force-container"></div>
+        </div>
+    </apex:outputPanel>
+    <script type="text/javascript">
+        function advpm__Advologix_Planner_Options__c() {
+            this.advpm__ParticipationMap_Hide_Type_Labels__c     = null;
+            this.advpm__ParticipationMap_Hide_Role_Labels__c     = null;
+        }
+        function saveOptionsToDB(){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__ParticipationMap_Hide_Type_Labels__c  = $('.labels-type').hasClass('hide-labels');
+            setting.advpm__ParticipationMap_Hide_Role_Labels__c  = $('.labels-role').hasClass('hide-labels');
+            
+            advpm.MatterParticipationMapController.saveOptionsInPlanner(setting, function(result, event){
+                if (event.status){ }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function loadData() {
+            var img         = '{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}';
+            advpm.MatterParticipationMapController.loadMatterForceGraphData('{!advpm__Matter__c.Id}', '{!JSENCODE(advpm__Matter__c.Name)}', false, function(result, event){
+                //console.log(result);
+                if (event.status && result){
+                    var ul_type = $('.item-types');
+                    var ul_role = $('.item-roles');
+                    
+                    $.each(result.types, function(){
+                        var li = '<li class="slds-dropdown__item slds-is-selected"><a href="javascript:void(0)" role="menuitemradio" data-key="'+this+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+this+'</span></p></a></li>';
+                        
+                        ul_type.append(li);
+                    });
+                    $.each(result.roles, function(){
+                        var li = '<li class="slds-dropdown__item slds-is-selected"><a href="javascript:void(0)" role="menuitemradio" data-key="'+this+'"><p class="slds-truncate"><svg aria-hidden="true" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="'+img+'" /></svg><span class="opt-text">'+this+'</span></p></a></li>';
+                        
+                        ul_role.append(li);
+                    });
+                    
+                    $('.slds-dropdown a').on('click', function(e){
+                        e.stopPropagation();
+                        $(this).parent().toggleClass('slds-is-selected').toggleClass('slds-is-not-selected');
+                        
+                        $('.loading-spin').removeClass('slds-hide');
+                        
+                        fillOptions();
+                        
+                        //d3.select("div#matter-force-container svg").remove();
+                        
+                        reloadGraph();
+                    });
+                    
+                    fillOptions();
+                    //console.log(result);
+                    createGraph(result);
+                } else {
+                    $('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                }
+            }, {escape:false,buffer:false,timeout:120000});
+        }
+        function reloadGraph() {
+            var img = '{!URLFOR($Resource.SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#check')}';
+            advpm.MatterParticipationMapController.reloadMatterForceGraphData('{!advpm__Matter__c.Id}', '{!JSENCODE(advpm__Matter__c.Name)}', true, selectedTypes, selectedRoles, function(result, event){
+                if (event.status && result){
+                    
+                    createGraph(result);
+                } else {
+                    $('#err-msgs').append('<span class="messageCell"><div class="messageText"><span style="color:#cc0000"><strong>Error:</strong></span>&nbsp;Graph could not be loaded.&nbsp;'+event.message+'</div></span>').toggleClass('slds-hide', false);
+                }
+            }, {escape:false,buffer:false,timeout:120000});
+        }
+        function getPartIconUrl(t) {
+            if (t === 'account')
+                return "{!URLFOR($Resource.SLDS0202, 'assets/icons/standard-sprite/svg/symbols.svg#account')}";
+            if (t === 'contact')
+                return "{!URLFOR($Resource.SLDS0202, 'assets/icons/standard-sprite/svg/symbols.svg#contact')}";
+            if (t === 'user')
+                return "{!URLFOR($Resource.SLDS0202, 'assets/icons/standard-sprite/svg/symbols.svg#user')}";
+            return parturl_ltng;
+        }
+        
+        function createGraph(data) {
+            $('.loading-spin').addClass('slds-hide');
+            var nodes_text_enabled = $('.labels-type').hasClass('show-labels');
+            var links_text_enabled = $('.labels-role').hasClass('show-labels');
+            
+            //var graph = JSON.parse( data );
+            var graph = data;
+            //console.log(graph);
+            //console.log(JSON.stringify( data ));
+            /*
+            // create a name: node map
+            var dataMap = {};
+            graph.nodes.forEach(function(node) {
+                dataMap[node.id] = node;
+            });
+            
+            // create the tree array
+            var tree = [];
+            graph.nodes.forEach(function(node) {
+                // add to parent
+                var parent = dataMap[node.parent];
+                console.log(node.parent);
+                if (parent) {
+                    // create child array if it doesn't exist
+                    (parent.children || (parent.children = []))
+                        // add node to child array
+                        .push(node);
+                } else {
+                    // parent is null or missing
+                    tree.push(node);
+                }
+            });
+            console.log(tree[0]);
+            //graph = d3.hierarchy(tree[0]);
+            //console.log(graph);
+            */
+            /*
+            for(var i=0; i<graph.nodes.length; i++) {
+                graph.nodes[i].collapsing = 0;
+                graph.nodes[i].collapsed = false;
+            }
+            */
+            var edges = [];
+            graph.links.forEach(function(e) {
+                var sourceNode = graph.nodes.filter(function(n) {
+                    return n.id === e.source;
+                })[0],
+                targetNode = graph.nodes.filter(function(n) {
+                    return n.id === e.target;
+                })[0];
+                
+                edges.push({
+                    source: sourceNode,
+                    target: targetNode,
+                    relation: e.relation
+                });
+            });
+
+            var x = $("div#matter-force-container").width(),
+                y = 630;//$(window).height();
+            
+            var maxW        = {!isLightning} ? 850 : 1000;
+            var width       = x < maxW ? maxW : x;
+            var height      = y < 550 ? 550 : y;
+            var img_w       = 32;
+            var img_h       = 32;
+            var k           = Math.sqrt(graph.nodes.length / (width * height));
+            var text_dx     = -20;
+            var text_dy     = 20;
+            var img_mat     = '{!JSENCODE(matIconUrl)}';
+            var img_part    = '{!JSENCODE(partIconUrl)}';
+            
+            var svg = d3.select("div#matter-force-container")
+                        .html('')
+                        .append("svg")
+                        .classed("svg-container", true) //container class to make it responsive
+                        .attr("width", width)
+                        .attr("height", height)
+                        .classed("svg-content-responsive", true); 
+    
+            var simulation  = d3.forceSimulation()
+                                .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(150))
+                                .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16))
+                                .force("charge", d3.forceManyBody().strength(-2 / k))
+                                .force("center", d3.forceCenter(width / 2, height / 3));
+            
+            var link, links_text, node, nodes_text, tip;
+            var cmenu = [
+                {
+                    title: 'Open',
+                    action: function(elm, d, i) {
+                        if (isLtng == true) {
+                            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                sforce.one.navigateToSObject(d.recordid);
+                            }
+                        }
+                        else {
+                            var win = window.open('/'+encodeURIComponent(d.recordid), '_blank');
+                            win.focus();
+                        }
+                    }
+                },{
+                    title: 'Go To',
+                    action: function(elm, d, i) {
+                        if (d.id != 0 && d.type === 'Matter') {
+                            var ur = "{!$Site.prefix}/apex/advpm__MatterParticipationMap?id="+encodeURIComponent(d.recordid)+"&retUrl="+encodeURIComponent(d.recordid)+"{!IF(JSENCODE($CurrentPage.parameters.fw)!='','&fw='+JSENCODE($CurrentPage.parameters.fw),'')}";
+                            if (isLtng == true) {
+                                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                                    sforce.one.navigateToURL(ur, true);
+                                }
+                            }
+                            else {
+                                location.href = ur;
+                            }
+                        }
+                    }
+                },
+                {
+                    divider: true
+                },
+                {
+                    title: function(d) {
+                        return (d.collapsed ? 'Expand' : 'Collapse');
+                        //return "Expand all/Collapse all"
+                    },
+                    action: function(elm, d, i) {
+                        togglenode(d);
+                        simulation.restart();
+                    }
+                }
+            ];
+            
+            update();
+            
+            function update() {
+                svg.selectAll("rect").remove();
+                svg.selectAll("text").remove();
+                svg.selectAll("line").remove();
+                svg.selectAll("foreignObject").remove();
+                svg.selectAll("g").remove();
+                d3.selectAll(".d3-tooltip").remove();
+                
+                //console.log(graph.links);
+                
+                var nodes = graph.nodes.filter(function(d) {
+                    return d.collapsing == 0;
+                });
+                
+                var links = edges.filter(function(d) {
+                    return d.source.collapsing == 0 && d.target.collapsing == 0;
+                });
+                
+                // create the div element that will hold the context menu
+                tip     = d3.select("body")
+                            .append("div")
+                            .attr("class", "d3-tooltip")
+                            .style("opacity", 0);
+                
+                //console.log(links);
+                
+                link   = svg.append("g")
+                            .attr("class", "links")
+                            .selectAll("line")
+                            .data(links)
+                            .enter().append("line");
+            
+                node   = svg.append("g")
+                            .attr("class", "nodes")
+                            .selectAll("foreignObject")
+                            .data(nodes)
+                            .enter().append("svg:foreignObject")
+                                    .attr("width",function(d){
+                                        return (d.id==0?img_w+6:img_w+2)+(d.collapsed?8:0);
+                                    })
+                                    .attr("height",function(d){
+                                        return (d.id==0?img_h+6:img_h+2);
+                                    })
+                                    .attr("class",function(d){
+                                        return (d.id==0?"icon-first-node icon-node":"icon-node")+(d.collapsed?" node-collapsed":"");
+                                    })
+                            .append("xhtml:body")
+                            .html(function(d){
+                                var collapsedMoon = '';
+                                if (d.collapsed)
+                                    collapsedMoon = '<span class="slds-icon__container slds-icon__container--circle slds-icon-'+(d.image==='IMG_MAT'?'custom-{!matIconNo}':'custom-{!partIconNo}')+' node-collapsed-moon"></span>'; 
+                                return '<span class="slds-icon__container slds-icon__container--circle slds-icon-'+(d.image==='IMG_MAT'?'custom-{!matIconNo}':'custom-{!partIconNo}')+'"><svg aria-hidden="true" class="slds-icon slds-icon--small"><use xlink:href="'+(d.image==='IMG_MAT'?maturl_ltng:(d.image==='IMG_PART' && d.type!=''?getPartIconUrl(d.type.toLowerCase()):parturl_ltng))+'"></use></svg><span class="slds-assistive-text">'+(d.image==='IMG_MAT'?'Matter':'Participant')+'</span></span>'+collapsedMoon;
+                            })
+                            .on("click", togglenode)
+                            .on("contextmenu", d3.contextMenu(cmenu, {
+                                onOpen: function(d) {
+                                    if (d.id == 0 || d.type != 'Matter')
+                                        $('.d3-context-menu ul li:eq(1)').addClass('is-disabled');
+                                }
+                            }))
+                            .on("mouseover", function(d) {
+                                if (nodes_text_enabled==false && d.id>0) {
+                                    tip.transition()
+                                       .duration(200)
+                                       .style("opacity", 0.9);
+                                    tip.html( d.name )
+                                       .style("left", (d3.event.pageX) + 10 + "px")             
+                                       .style("top", (d3.event.pageY - 28) + "px");
+                                }
+                            })
+                            .on("mouseout", function(d) {
+                                tip.transition()
+                                   .duration(200)
+                                   .style("opacity", 0);
+                            })
+                            .call(d3.drag()
+                                    .on("start", dragstarted)
+                                    .on("drag", dragged)
+                                    .on("end", dragended));
+                
+                
+                if (links_text_enabled) {
+                    links_text     = svg.selectAll(".linetext")
+                                        .data(links)
+                                        .enter()
+                                        .append("text")
+                                        .attr("class","linetext ")
+                                        .attr("text-anchor", "middle")
+                                        .text(function(d){
+                                            return d.relation!=''?d.relation.toLowerCase():'';
+                                        });
+                }
+                
+                nodes_text     = svg.selectAll(".nodetext")
+                                    .data(nodes)
+                                    .enter()
+                                    .append("text")
+                                    .attr("class",function(d){
+                                        return (d.id==0?"nodetext slds-text-heading--label label-first-node":"nodetext slds-text-heading--label")+(nodes_text_enabled==false && d.id>0?' slds-hide':'');
+                                    })
+                                    .attr("fill",function(d){
+                                        return (d.id==0?"#000":"");
+                                    })
+                                    .attr("text-anchor", "middle")
+                                    .attr("dx",text_dx)
+                                    .attr("dy",text_dy)
+                                    .text(function(d){
+                                        return d.name;
+                                    });
+                
+                simulation
+                        .nodes(nodes)
+                        .on("tick", ticked)
+                        .on("end", graphended);
+        
+                simulation
+                        .force("link")
+                        .links(links);
+                
+            }
+            
+            function graphended() {
+                
+                svg.selectAll("rect").remove();
+                if (links_text_enabled) {
+                    links_text.each(function(d) {
+                                        var bbox = this.getBBox();
+                                        svg.insert("rect", "text")
+                                            .attr("fill", "#fff")
+                                            .attr("x", bbox.x)
+                                            .attr("y", bbox.y)
+                                            .attr("width", bbox.width)
+                                            .attr("height", bbox.height);
+                                    });
+                }
+                nodes_text.each(function(d) {
+                                    var bbox = this.getBBox();
+                                    var cl = (nodes_text_enabled==false && d.id>0?' slds-hide':'');
+                                    svg.insert("rect", "text")
+                                        .attr("class", function(d2){
+                                            return cl;
+                                        })
+                                        .attr("fill", "#fff")
+                                        .attr("x", bbox.x)
+                                        .attr("y", bbox.y)
+                                        .attr("width", bbox.width)
+                                        .attr("height", bbox.height);
+                                });
+                
+            }
+            
+            function ticked() {
+                
+                svg.selectAll("foreignObject")
+                            .attr("x", function(d) {
+                                var xPos = findPosX(d.x, img_w);
+                                return xPos-img_w/2;
+                            })
+                            .attr("y", function(d) {
+                                var yPos = findPosY(d.y, img_h);
+                                return yPos-img_h/2;
+                            });
+                
+                nodes_text
+                    .attr("x",function(d){ return findPosX(d.x, img_w) + 20; })
+                    .attr("y",function(d){ return findPosY(d.y, img_h) + 10 + (d.id==0?8:3); });
+                
+                link
+                    .attr("x1", function(d) { 
+                        var xPos = findPosX(d.source.x, img_w);
+                        return xPos;
+                        //return d.source.x; 
+                    })
+                    .attr("y1", function(d) { 
+                        var yPos = findPosY(d.source.y, img_h);
+                        return yPos;
+                        //return d.source.y; 
+                    })
+                    .attr("x2", function(d) { 
+                        var xPos = findPosX(d.target.x, img_w);
+                        return xPos;
+                        //return d.target.x; 
+                    })
+                    .attr("y2", function(d) { 
+                        var yPos = findPosY(d.target.y, img_h);
+                        return yPos;
+                        //return d.target.y; 
+                    });
+                
+                if (links_text_enabled) {
+                    links_text
+                        .attr("x",function(d){ return (findPosX(d.source.x, img_w) + findPosX(d.target.x, img_h)) / 2; })
+                        .attr("y",function(d){ return (findPosY(d.source.y, img_h) + findPosY(d.target.y, img_h)) / 2; });
+                }
+                
+            }
+            function findPosX(initPos, img_w) {
+                var pos = initPos;
+                pos = pos - img_w/2 < 0     ? img_w/2 : pos ;
+                pos = pos + img_w/2 > width ? width - img_w/2 : pos ;
+                return pos;
+            }
+            function findPosY(initPos, img_h) {
+                var pos = initPos;
+                pos = pos - img_h/2 < 0     ? img_h/2 : pos ;
+                pos = pos + img_h/2 + text_dy > height ? height - img_h/2 - text_dy : pos ;
+                return pos;
+            }
+            function dragstarted(d) {
+                svg.selectAll("rect").remove();
+                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+            function dragended(d) {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+            function togglenode(d) {
+                //console.log('clicked node... '+d.id);
+                //console.log(d);
+                if (!d3.event.defaultPrevented) {
+                    var inc = d.collapsed ? -1 : 1;
+                    recurse(d);
+                    
+                    function recurse(sourceNode){
+                        //check if link is from this node, and if so, collapse
+                        edges.forEach(function(l) {
+                            if (l.source.id === sourceNode.id){
+                                l.target.collapsing += inc;
+                                recurse(l.target);
+                            }
+                        });
+                    }
+                    
+                    d.collapsed = !d.collapsed;
+                    
+                    update();
+                }
+            }
+        }
+    </script>
+    
+-->
+</apex:page>

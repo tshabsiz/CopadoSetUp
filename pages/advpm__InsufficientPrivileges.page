@@ -1,0 +1,14 @@
+<apex:page title="Insufficient Privileges">
+<div style="display:none;" id="errorTitle">Insufficient Privileges</div>
+<div style="display:none;" id="errorDesc">You do not have the level of access necessary to perform the operation you requested. Please contact the owner of the record or your administrator if access is necessary.</div>
+<table cellspacing="10">
+<tbody><tr><td><span style="font-weight: bold; font-size: 12pt;">Insufficient Privileges</span></td></tr>
+<tr><td>
+You do not have the level of access necessary to perform the operation you requested. Please contact the owner of the record or your administrator if access is necessary.
+<br /><br />
+
+    Click&nbsp;<apex:outputLink rendered="{!JSINHTMLENCODE($CurrentPage.parameters.recid) != ''}" value="/{!JSINHTMLENCODE($CurrentPage.parameters.recid)}" target="_top">here</apex:outputLink><apex:outputLink rendered="{!JSINHTMLENCODE($CurrentPage.parameters.recid) == ''}" value="/home/home.jsp" target="_top">here</apex:outputLink> to return to the previous page.
+
+</td></tr>
+</tbody></table>
+</apex:page>

@@ -1,0 +1,54 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 26/06/2017 - PG    - Create VF page.  
+ 18/08/2017 - PG    - Changed standardController to agreement.
+15/01/2018  - TdB	- Add disableBtn(newText) to prevent double clicking on Save Button
+                                                           
+-->
+<apex:page standardController="Agreement__c" extensions="Agreement_Party_Override"> 
+
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <script type="text/javascript">
+        $jq = jQuery.noConflict();
+        function disableBtn(newText) {
+            $jq("[id$='theSaveButton']").prop('disabled',true).addClass('btnDisabled');
+            if (newText.length>0) $jq("[id$='theSaveButton']").val(newText);        
+        }
+    </script>
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Agreement Party Edit" subtitle="Update Agreement Parties"/>
+    
+    <apex:form >
+        <apex:pageBlock >
+
+            <apex:pageMessages />
+            
+            <apex:pageBlockButtons >
+                <apex:actionFunction name="Save" action="{!saveRecord}"/>
+                <apex:commandButton value="Save"  onclick="disableBtn('Processing...');Save();" id="theSaveButton"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!partyWrappers}" var="wrapperItem">
+                
+                <apex:column headerValue="Select / Deselect"> 
+                    <apex:inputCheckbox value="{!wrapperItem.selected}" />
+                </apex:column>
+                <apex:column value="{!wrapperItem.party.Relationship__c}" /> 
+                <apex:column value="{!wrapperItem.party.Party_Type__c}" /> 
+                <apex:column value="{!wrapperItem.party.Conditions_Monitored_By__c}" />
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

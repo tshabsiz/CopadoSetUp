@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>For internal notifications on new matter participants</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>Matter Participant Notification</name>
+    <style>freeForm</style>
+    <subject>Matter ID : {!advpm__Matter__c.Matter_ID__c}</subject>
+    <textOnly>Dear {!advpm__Participant__c.Name}
+You were added as a Participant to a new Matter.
+
+
+
+Matter ID : {!advpm__Participant__c.advpm__MatterId__c}
+
+Matter Name : {!advpm__Participant__c.advpm__Matter__c}
+
+Created By : {!advpm__Participant__c.CreatedBy}
+
+Client Name: {!advpm__Matter__c.advpm__Primary_Account__c}
+
+View Matter: {!advpm__Matter__c.Link}
+
+Comment: {!advpm__Participant__c.advpm__Comment__c}
+
+
+
+Regards,Salesforce Team
+
+Auto generated email, please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

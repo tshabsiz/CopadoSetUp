@@ -1,0 +1,423 @@
+<apex:page controller="advpm.AdvologixSetupPageController" sidebar="false" title="AdvoLogix Setup">
+<style type="text/css">
+     .content { 
+        /*width:720px; margin-left:155px; background-color:white; padding-left:50px; padding-right:50px;*/
+     }
+     .activeTab {display:inline-block;white-space:nowrap;background-color: #1797C0; color:white !important; background-image:none; padding: 5px; font-weight: bold !important;}
+     .inactiveTab {display:inline-block;white-space:nowrap;background: url("/img/alohaSkin/tabbar_sprite.png") repeat-x scroll left -73px transparent !important; color:black !important; font-weight: normal !important; cursor: pointer !important;}
+     .detailFormStyle {font-size:100%;}
+     .formDataA {  }
+     .rich-tabpanel-content {
+        background-color: white;
+        border: 0px;
+        border-bottom-color: white;
+        border-left-color: white;
+        border-right-color: white;
+        color: #000000;
+        font-family: Arial,Verdana,sans-serif;
+        font-size: 12px;
+    }
+    .rich-tabpanel-content {
+        border: 0px;
+        border-bottom-style: solid;
+        border-bottom-width: 0px;
+        border-left-style: solid;
+        border-left-width: 0px;
+        border-right-style: solid;
+        border-right-width: 0px;
+        vertical-align: top;
+    }
+    .outer td.oRight {
+        padding: 0 10px 0;
+    }
+    .labelCol {
+        color: #4A4A56;
+    }
+    .labelCol {
+        color: #333333;
+        font-size: 91%;
+        font-weight: bold;
+        text-align: right;
+        width: 150px;
+    }
+    body .bEditBlock .pbBottomButtons, body .apexp .bPageBlock.apexDefaultPageBlock .pbBottomButtons {
+        border-top: 0px solid #DBDBDB !important;
+    }
+    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .overlayDialog .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+        background-color: #ffffff;
+        border-bottom: 1px solid #ffffff;
+        border-left: 1px solid #ffffff;
+        border-radius: 4px 4px 4px 4px;
+        border-right: 1px solid #ffffff;
+    }
+    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .overlayDialog .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+        background-color: #ffffff;
+        border-bottom: 1px solid #ffffff;
+        border-left: 1px solid #ffffff;
+        border-radius: 4px 4px 4px 4px;
+        border-right: 1px solid #ffffff;
+    }
+    .Custom50Tab .listViewport .subNav .linkBar, .Custom50Tab .mComponent .cHeader, .Custom50Tab .genericTable, .Custom50Tab .bSubBlock, .Custom50Tab .bPageBlock {
+        border-top: 3px solid #ffffff;
+    }
+    .Custom50Tab .secondaryPalette, .individualPalette .Custom50Block .secondaryPalette {
+        background-color: #ffffff;
+        border-color: #ffffff;
+    }
+    .Custom50Tab .listViewport .subNav .linkBar, .Custom50Tab .mComponent .cHeader, .Custom50Tab .genericTable, .Custom50Tab .bSubBlock, .Custom50Tab .bPageBlock {
+        border-top: 3px solid #ffffff;
+    }
+    .Custom50Tab .secondaryPalette, .individualPalette .Custom50Block .secondaryPalette {
+        background-color: #ffffff;
+        border-color: #ffffff;
+    }
+    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .overlayDialog .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+        background-color: #ffffff;
+        border-bottom: 1px solid #ffffff;
+        border-left: 1px solid #ffffff;
+        border-radius: 4px 4px 4px 4px;
+        border-right: 1px solid #ffffff;
+    }
+    body .bPageBlock {
+        border-top-width: 3px;
+        margin-bottom: 10px;
+        padding: 0;
+    }
+    body .bPageBlock, body .bPageBlock .pbBody, body .bPageBlock .pbBottomButtons {
+        background-color: transparent;
+        background-image: none;
+        margin: 0;
+    }
+    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .overlayDialog .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+        background-color: #ffffff;
+        border-bottom: 1px solid #ffffff;
+        border-left: 1px solid #ffffff;
+        border-radius: 4px 4px 4px 4px;
+        border-right: 1px solid #ffffff;
+    }
+    body .bPageBlock {
+        border-top-width: 3px;
+        margin-bottom: 10px;
+        padding: 0;
+    }
+    body .bPageBlock, body .bPageBlock .pbBody, body .bPageBlock .pbBottomButtons {
+        background-color: transparent;
+        background-image: none;
+        margin: 0;
+    }
+    .bPageBlock {
+        background-color: #ffffff;
+        background-image: url("/img/bgPageBlockLeft.gif");
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        border-top: 4px solid #222222;
+        clear: both;
+        margin-bottom: 9px;
+        padding-bottom: 9px;
+    }
+    .linksTabLabelCol a:link, .linksTabLabelCol a:visited {
+        color: #1468B6;
+        text-decoration: none;
+        width: 150px;
+        text-align: right;
+        font-weight: bold;
+    }
+</style>
+
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+<apex:includescript value="{!URLFOR($Resource.advpm__CKEditor, 'ckeditor/ckeditor.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Cookie, 'js/jquery.cookie.js')}"></apex:includeScript>
+
+<script type="text/javascript">
+    $j = jQuery.noConflict();
+    $j(document).ready(function(){
+        
+    });
+</script>
+<script type="text/javascript">
+    function AdjustIframeHeight(i) {document.getElementById("frame_timeline").style.height = parseInt(i) + "px";}
+</script>
+<br />
+<apex:pageBlock mode="maindetail" id="thePBlock" rendered="{!firmrecord.Id == null}">
+    <apex:pageMessages />
+    <apex:pageBlockButtons location="bottom">
+        <apex:form >
+            <apex:commandButton value="  Initialize Settings  " styleClass="btnPrimary publishersharebutton cxchattersubmit btn" action="{!ValidateFirmSettings}" />
+        </apex:form>
+    </apex:pageBlockButtons>
+</apex:pageBlock>
+<apex:outputPanel styleClass="content" rendered="{!firmrecord.Id != null}">
+    <apex:tabPanel switchType="server" value="{!SelectedTab}" tabClass="activeTab" inactiveTabClass="inactiveTab">
+        <apex:tab label="Help/Getting Started" name="tabMore" styleclass="detailFormStyle" id="moreWeb">
+            <apex:iframe src="https://advologix.secure.force.com/products/productsandlinks_docs" scrolling="true" height="700" />
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabMore', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+        </apex:tab>
+        <apex:tab label="Products/Services" name="tabMore2" styleclass="detailFormStyle" id="moreWeb2">
+            <apex:iframe src="https://advologix.secure.force.com/products/productsandlinks" scrolling="true" height="700" />
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabMore2', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+        </apex:tab>
+        <apex:tab label="General Settings" name="tabGeneralSettings" styleClass="detailFormStyle">
+            <apex:form id="theForm" styleClass="block_GenSettings">
+                <div>
+                    <br />
+                    {!$Label.setup_generalSettings}
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabGeneralSettings', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+                    <script type="text/javascript">
+                        function toggleEdit(obj)
+                        {
+                            obj.parent().find('.dataLabel').css('display', 'none');
+                            obj.parent().find('.inlineEditUndoLink').css('display', 'inline');
+                            obj.parent().find('.dataControl').css('display', 'inline');
+                        }
+                        function toggleUndo(obj)
+                        {
+                            obj.parent().find('.dataLabel').css('display', 'inline');
+                            obj.parent().find('.dataControl').css('display', 'none');
+                            obj.parent().find('.inlineEditUndoLink').css('display', 'none');
+                        }
+                    </script>
+                    <script type="text/javascript">
+                        function blockUI_GenSettings()
+                        {
+                            $j('.block_GenSettings').block({ 
+                                   message: '<div ><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Processing ...</span></div>', 
+                                   css: { padding: '5px' } 
+                            });
+                        }
+                        function unblockUI_GenSettings()
+                        {
+                            $j('.block_GenSettings').unblock();
+                        }
+                    </script>
+                    <apex:actionStatus id="loadingGenSettings" onstart="blockUI_GenSettings();" onstop="unblockUI_GenSettings();" />
+                </div>
+                <apex:pageBlock mode="maindetail" id="theGeneralSettingPageBlock">
+                    <apex:pageBlockSection title="Settings" showHeader="false" columns="1" collapsible="false">
+                        <apex:outputField value="{!firmrecord.advpm__Default_Library__c}" />
+                        <apex:outputField value="{!firmrecord.advpm__Default_Content_Type__c}" rendered="{!SMDetected}" />
+                        <apex:pageBlockSectionItem helpText="Select and Move Items from Disabled Objects List to Enabled Objects List to enable Timeline recordings on that Object.">
+                            <apex:outputLabel value="Select Objects to Enable on Timeline" />
+                            <c:MultiPicklist leftLabel="Disabled Objects"
+                                             leftOptions="{!disabledTimelineObjects}"
+                                             rightLabel="Enabled Objects"
+                                             rightOptions="{!enabledTimelineObjects}"
+                                             size="8"
+                                             showUpDown="false"
+                                             timelineMode="true"
+                                             width="150px" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem helpText="{!$ObjectType.advpm__Advologix_Global_Options__c.fields.advpm__Disable_Matter_Content_Auto_Chatter_Post__c.InlineHelpText}">
+                            <apex:outputLabel value="Disable Matter Content Auto Chatter Post?" />
+                            <apex:outputPanel style="display:inline; width:100%;">
+                                <apex:outputPanel styleClass="dataLabel" title="Click to Edit" onclick="toggleEdit( $j(this) );" style="width:150px;">
+                                    <apex:outputField value="{!globalOptions.advpm__Disable_Matter_Content_Auto_Chatter_Post__c}" />
+                                </apex:outputPanel>
+                                <apex:inputField styleclass="dataControl" value="{!globalOptions.advpm__Disable_Matter_Content_Auto_Chatter_Post__c}" onchange="javascript:doSaveOptions();" style="display:none;" />
+                                <apex:outputPanel onclick="javascript:toggleUndo( $j(this) );" styleclass="inlineEditUndoLink" title="Undo" style="display: none;"><img width="16px" height="16px" src="/s.gif" alt="Undo" class="inlineEditUndo" /></apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form> 
+        </apex:tab>
+        <apex:tab label="Portal Settings" name="tabPortalSettings" styleclass="detailFormStyle">
+            <apex:form >
+                <div>
+                    <br />
+                    {!$Label.setup_portalSettings}
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabPortalSettings', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+                </div>
+                <apex:pageBlock mode="detail" id="thePortalSettingPageBlock">
+                    <apex:pageMessages />
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:commandButton value="  Save  " action="{!Save}" rendered="{!EditPortalSettingsMode}" />
+                        <apex:commandButton value="  Edit  " action="{!EditPortalSettings}" rendered="{!!EditPortalSettingsMode}" />
+                        <apex:commandButton value="  Cancel  " action="{!Reload}" style="margin-left:1em;" rendered="{!EditPortalSettingsMode}" />
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="Customer Portal Welcome Message" showHeader="false" columns="1" collapsible="false">
+                        <apex:pageBlockSectionItem rendered="{!EditPortalSettingsMode}">
+                            <apex:outputLabel value="Customer Portal Welcome Message" />
+                            <apex:inputTextArea id="portalMsg" value="{!firmrecord.advpm__Customer_Portal_Welcome__c}" styleClass="ckeditor" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem rendered="{!!EditPortalSettingsMode}">
+                            <apex:outputLabel value="Customer Portal Welcome Message" />
+                            <apex:outputField value="{!firmrecord.advpm__Customer_Portal_Welcome__c}" />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form> 
+        </apex:tab>
+        <!-- <apex:tab label="Invoice Settings" name="tabInvoiceSettings" styleclass="detailFormStyle" rendered="{!ShowInvoiceSettings}">
+            <apex:form >
+                <div>
+                    <br />
+                    {!$Label.setup_invoiceSettings}
+                </div>
+                <apex:pageBlock mode="detail" id="theInvoiceSettingPageBlock">
+                    <apex:pageMessages />
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:commandButton value="  Save  " action="{!Save}" rendered="{!EditInvoiceSettingsMode}" />
+                        <apex:commandButton value="  Edit  " action="{!EditInvoiceSettings}" rendered="{!!EditInvoiceSettingsMode}" />
+                        <apex:commandButton value="  Cancel  " action="{!Reload}" style="margin-left:1em;" rendered="{!EditInvoiceSettingsMode}" />
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="Customer Invoice Welcome Message" showHeader="false" columns="1" collapsible="false">
+                        <apex:pageBlockSectionItem rendered="{!EditInvoiceSettingsMode}">
+                            <apex:outputLabel value="Invoice Default Workspace" />
+                            <apex:selectList value="{!InvoiceDefaultWorkpaceID}" multiselect="false"  size="1">
+                                <apex:selectOptions value="{!workspaces}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem rendered="{!!EditInvoiceSettingsMode}">
+                            <apex:outputLabel value="Invoice Default Workspace" />
+                            <apex:outputLabel value="{!InvoiceDefaultWorkpaceName}" />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlock>
+            </apex:form>
+        </apex:tab> -->
+        <apex:tab label="Timekeepers" name="tabTimekeepers" styleclass="detailFormStyle">
+            <div>
+                <br />
+                {!$Label.setup_timekeeperTab}
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabTimekeepers', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+            </div>
+            <apex:enhancedList type="Timekeeper__c" height="800" />
+        </apex:tab>
+        <apex:tab label="Rates" name="tabRates" styleclass="detailFormStyle">
+            <apex:form >
+                <div id="rptminitabsall">
+                    <div id="rptminitabstabs">
+                        <div class="miniTab secondaryPalette">
+                            <ul class="miniTabList">
+                                <li class="{!IF(RateListMode == true,'currentTab','secondaryPalette')}">
+                                    <apex:commandLink id="minitab_0" action="{!ToggleRateList}" value="{!$ObjectType.advpm__Rate__c.LabelPlural}"></apex:commandLink>
+                                </li>
+                                <li class="{!IF(RateListMode == false,'currentTab','secondaryPalette')}">
+                                    <apex:commandLink id="minitab_1" action="{!ToggleRateList}" value="{!$ObjectType.advpm__Rate_Group__c.LabelPlural}"></apex:commandLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </apex:form>
+            <apex:outputPanel rendered="{!!RateListMode}">
+                <br />
+                {!$Label.setup_rateGroupsTab}
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!RateListMode}">
+                <br />
+                {!$Label.setup_ratesTab}
+            </apex:outputPanel>
+            <script type="text/javascript">
+                $j.cookie("apex__advpm__selTab_value", 'tabRates', {
+                    expires: 365,
+                    path: "/",
+                    secure: !0
+                });
+            </script>
+            <apex:enhancedList type="{!IF(RateListMode == true, 'Rate__c', 'Rate_Group__c')}" height="800" />
+        </apex:tab>
+        <apex:tab label="Action Plans" name="tabActionPlans" styleclass="detailFormStyle">
+            <apex:form >
+                <div id="rptminitabsall">
+                    <div id="rptminitabstabs">
+                        <div class="miniTab secondaryPalette">
+                            <ul class="miniTabList">
+                                <li class="{!IF(ActionPlanListMode == false,'currentTab','secondaryPalette')}">
+                                    <apex:commandLink id="minitab_1" action="{!ToggleActionPlanList}" value="{!$ObjectType.advpm__ActionPlanTemplate__c.LabelPlural}"></apex:commandLink>
+                                </li>
+                                <li class="{!IF(ActionPlanListMode == true,'currentTab','secondaryPalette')}">
+                                    <apex:commandLink id="minitab_0" action="{!ToggleActionPlanList}" value="{!$ObjectType.advpm__ActionPlan__c.LabelPlural}"></apex:commandLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </apex:form>
+            <apex:outputPanel rendered="{!ActionPlanListMode}">
+                <br />
+                {!$Label.setup_ActionPlanTab}
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!!ActionPlanListMode}">
+                <br />
+                {!$Label.setup_ActionPlanTemplatesTab}
+            </apex:outputPanel>
+            <script type="text/javascript">
+                $j.cookie("apex__advpm__selTab_value", 'tabActionPlans', {
+                    expires: 365,
+                    path: "/",
+                    secure: !0
+                });
+            </script>
+            <apex:enhancedList type="{!IF(ActionPlanListMode == true, 'ActionPlan__c', 'ActionPlanTemplate__c')}" height="800" />
+        </apex:tab>
+        <apex:tab label="Export Templates" name="tabExportTemplates" styleclass="detailFormStyle">
+            <div>
+                <br />
+                {!$Label.setup_ExportTemplatesTab}
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabExportTemplates', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+            </div>
+            <apex:enhancedList type="Export_Template__c" height="800" />
+        </apex:tab>
+        <!-- <apex:tab label="Submit Your Ideas" name="tabIdeas" styleclass="detailFormStyle" id="ideas">
+            <apex:iframe src="https://advologix.secure.force.com/myideas/ideas?mgacc={!$User.Manage_Advologix_Subscription__c}&orgid={!$Organization.Id}&email={!$User.Email}&fn={!$User.FirstName}&ln={!$User.LastName}&selCategory=Advologix AMM Matter Management" scrolling="true" height="700" />
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabIdeas', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+        </apex:tab> -->
+        <apex:tab label="Support" name="tabSupport" styleclass="detailFormStyle" id="support">
+            <apex:iframe src="https://advologix.secure.force.com/bwaccount/bw_support?mgacc={!$User.advpm__Manage_Advologix_Subscription__c}&orgid={!$Organization.Id}&email={!$User.Email}&fn={!$User.FirstName}&ln={!$User.LastName}&selCategory=Advologix AMM Matter Management" scrolling="true" height="700" />
+                    <script type="text/javascript">
+                        $j.cookie("apex__advpm__selTab_value", 'tabSupport', {
+                            expires: 365,
+                            path: "/",
+                            secure: !0
+                        });
+                    </script>
+        </apex:tab>
+    </apex:tabPanel>
+    
+    <apex:pageMessages id="msgs" />
+</apex:outputPanel>
+
+</apex:page>

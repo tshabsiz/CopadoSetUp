@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Call_Report__c$Name</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$Relationship__c</field>
+    </columns>
+    <currency>KES</currency>
+    <description>To track the number of calls done by CSAs</description>
+    <filter>
+        <criteriaItems>
+            <column>Call_Report__c$Relationship__c.Owner</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>AYUMA,ODHIAMBO,LILIAN MAINA,LILY,MBOGA,IRENE JANET,KAHWAI,WAMALWA,NTHIA,KANYUA,ODERO,ZAHARAA,NZAU,ALEM</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Call_Report__c.Attendees__r$Barclays_Attendee__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>ORINDA,MWANGI,INGUDI,MWARASOMBA,LUGALIA,GITHUI,ASIATI,LAVENDA,ASENGI</value>
+        </criteriaItems>
+    </filter>
+    <format>Matrix</format>
+    <groupingsAcross>
+        <dateGranularity>Week</dateGranularity>
+        <field>Call_Report__c$Meeting_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsAcross>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c$Relationship__c.Owner</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>CSC Call Report</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Call_Reports_with_Owner_Region__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Call_Report__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CURFY</interval>
+    </timeFrameFilter>
+</Report>

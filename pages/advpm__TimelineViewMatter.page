@@ -1,0 +1,639 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.TimelineController" tabStyle="advpm__Matter__c" readOnly="true" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" sidebar="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}"><!--  title="{!IF(fullView,'Timeline: '+Matter__c.Name,'')}" -->
+<!-- <c:TimelineViewer recName="{!advpm__Matter__c.Name}" recType="{!$ObjectType.Matter__c.label}" /> -->
+<apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Matter__c.Id))}">
+
+    <apex:outputField value="{!advpm__Matter__c.Name}" rendered="false" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/js/bootstrap.min.js')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/css/bootstrap.min.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/js/bootstrap-checkbox-custom-varun.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/css/bootstrap-checkbox-custom-varun.css')}" />
+    
+    <script type="text/javascript">
+    function setFocusOnLoad() {}
+    Date.prototype.adjust = function(part, amount){
+        part = part.toLowerCase();
+        
+        var map = { 
+                    years: 'FullYear', months: 'Month', weeks: 'Hours', days: 'Hours', hours: 'Hours', 
+                    minutes: 'Minutes', seconds: 'Seconds', milliseconds: 'Milliseconds',
+                    utcyears: 'UTCFullYear', utcmonths: 'UTCMonth', weeks: 'UTCHours', utcdays: 'UTCHours', 
+                    utchours: 'UTCHours', utcminutes: 'UTCMinutes', utcseconds: 'UTCSeconds', utcmilliseconds: 'UTCMilliseconds'
+                },
+            mapPart = map[part];
+    
+        if(part == 'weeks' || part == 'utcweeks')
+            amount *= 168;
+        if(part == 'days' || part == 'utcdays')
+            amount *= 24;
+        
+        this['set'+ mapPart]( this['get'+ mapPart]() + amount );
+    
+        return this;
+    }
+    Date.prototype.each = function(endDate, part, step, fn, bind){
+        var fromDate = new Date(this.getTime()),
+            toDate = new Date(endDate.getTime()),
+            pm = fromDate <= toDate? 1:-1,
+            i = 0;
+    
+        while( (pm === 1 && fromDate <= toDate) || (pm === -1 && fromDate >= toDate) ){
+            if(fn.call(bind, fromDate, i, this) === false) break;
+            i += step;
+            fromDate.adjust(part, step*pm);
+        }
+        return this;
+    }
+    </script>
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__jQuery_jqTimeline, 'css/jquery.jqtimeline.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_jqTimeline, 'js/jquery.jqtimeline(custom-adv).js')}" />
+    
+    <style type="text/css">
+        .gt-timeline, .gt-timeline .month { color: #002654 }
+        .gt-timeline div.main_line { border-top: 3px solid #002654 }
+        .gt-timeline div.odd-month, .gt-timeline div.even-month { border-left: 3px solid #002654 }
+        .gt-timeline div.even-month .month, .gt-timeline div.odd-month .month { position: relative;top: -18px;left: -10px }
+        .gt-timeline { top: 20px }
+        .gt-timeline div.e-message .msg a { text-decoration: none;}
+        .gt-timeline div.e-message .msg:hover{ text-decoration: underline;}
+        .e-message .msg a,.e-message .msg a:link,.e-message .msg a:hover,.e-message .msg a:visited,.e-message .msg a:active { color:#ffffff }
+        .e-message {max-width:135px;}
+        .msg-container { max-height: {!IF(fullview,'350','150')}px; overflow-x: hidden; overflow-y: auto; }
+        .arrow-left.disabled, .arrow-right.disabled{opacity:.2;}
+        .arrow-left, .arrow-right{opacity:1;}
+    </style>
+    <style type="text/css">
+        body { padding: 0px!important }
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody {margin: 0px;}
+        .pShowMore {/*padding: 9px 0 25px 1px;*/padding: 1px 0 24px 1px;}
+        .fewerMore {padding-top: 6px !important;padding-bottom: 6px !important;padding-right: 1px !important;height:14px !important;}
+        .waitingSearchDiv {position: relative;top: 5px;}
+        .bNext .next a,.bPrevious .previous a {color: #015ba7;text-decoration: none;}
+        .bNext .next {font-size: 100%;}
+        .listElementBottomNav {display: block;}
+        ul li, ol li {margin-left: 0 !important;}
+        ul li, ol li {margin-left:0;padding-left:0}
+        label {display: inline !important;}
+        .dropdown-menu {padding: 0px!important;margin: 0px!important;}
+        /*.dropdown-menu > li > div {margin: 0px 20px;}*/
+        .dropdown-menu > li > div {margin: 0px 10px;}
+        .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {color: #000000;background-color: none;background-image: none;filter: none;}
+        .dropdown-menu > li {margin-top: 6px;margin-bottom: 6px;} 
+        .dropdown-menu > li > div.item-bg-plain {margin:4px 8px;padding-right:10px;}
+        [class^="cb-icon-"], [class*=" cb-icon-"] {
+            margin-top: 3px;
+            background-image: url("{!URLFOR($Resource.Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/img/icons-gray.png')}");
+        }
+        .bootstrap-checkbox button.btn > span.cb-icon-check-empty,
+        .bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-empty,
+        .bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-empty{
+            background-position: -24px -25px !important;
+        }
+        .bootstrap-checkbox button.btn > span.cb-icon-check-indeterminate,
+        .bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-indeterminate,
+        .bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-indeterminate{
+            background-position: -48px -25px !important;
+        }
+        .bootstrap-checkbox > a.btn-adv {padding: 7px 5px 4px 2px;}
+        
+        .advwrap .dropdown-menu li {min-width: 100px!important;}
+        .optionColBorder {border-left:1px solid gray;border-right:1px solid gray;}
+        @media screen and (max-width: 791px){
+            .columns{
+                height: 240px;
+                overflow-x:hidden;
+                overflow-y:auto;
+            }
+        }
+        @media screen and (min-width: 792px){
+            .columns{
+                -moz-column-count:2; /* Firefox */
+                -webkit-column-count:2; /* Safari and Chrome */
+                column-count:2;
+            }
+        }
+        .advwrap.timeline_options * {
+          -webkit-border-radius: 0 !important;
+             -moz-border-radius: 0 !important;
+                  border-radius: 0 !important;
+        }
+        .dropdown-menu > li {margin-left: 6px!important;margin-right: 6px;}
+        .mytb td.coltb {min-width:100px;}
+        table.htmlDetailElementTable td {border-width: 0 0 0px 0!important;padding: 0px;}
+        .dataLabel { font-weight:bold !important;margin-bottom:0px !important;font-size: 12px !important;line-height: 14px !important; }
+        .loadingImage {min-width:16px;min-height:16px;}
+        .timeline_options {margin-left: -2px;margin-bottom: 5px;}
+        .timeline_options .dateFormat { display:none; }
+        .timeline_options td { vertical-align:bottom;}
+        .timeline_options td.cellLoading { vertical-align:middle;min-width:30px}
+        .timeline_options .btn-group-dropdown .dropdown-toggle { font-weight:normal;font-size:12px;padding:2px 12px;text-align:justify;width:70px; }
+        .timeline_options .action-btn-menu .dropdown-toggle {padding-bottom: 10px;margin-top: 0px;padding-top: 2px;}
+        .timeline_options .search-input {width:160px;}
+        .dateInput input {width:70px;}
+        .advwrap select, .advwrap textarea, .advwrap input[type="text"], .advwrap input[type="password"], .advwrap input[type="datetime"], .advwrap input[type="datetime-local"], .advwrap input[type="date"], .advwrap input[type="month"], .advwrap input[type="time"], .advwrap input[type="week"], .advwrap input[type="number"], .advwrap input[type="email"], .advwrap input[type="url"], .advwrap input[type="search"], .advwrap input[type="tel"], .advwrap input[type="color"], .advwrap .uneditable-input {
+            height: 18px;padding: 3px 4px;margin-bottom: 0px;font-size: 12px;line-height: 18px;
+        }
+        .timeline_options ul li, .timeline_options ol li {margin-left:0px!important;margin-right: 0px!important;}
+        .timeline_options ul li, .timeline_options ol li {padding-left:0}
+        /*.pageTitleIcon{background-image: none!important;}*/
+    </style>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        var isLtng = {!isLightning};
+        $j(document).ready(function(){
+            //init();
+            initComplete();
+        });
+        function initComplete() {
+            $j('.cal-options-dropdown .dropdown-menu').on({
+                "click":function(e){
+                    e.stopPropagation();
+                }
+            });
+            /*if ($j('table.list tr').length >= 7) {
+                $j('.cal-options-dropdown').addClass('dropup');
+            }*/
+            if ({!fullview}==false) {
+                $j('.cal-options-dropdown').addClass('dropup');
+            }
+            $j('.checkbox').checkbox({
+                checkedClass: 'cb-icon-check',
+                uncheckedClass: 'cb-icon-check-empty'
+            });
+            /*if ({!isLightning}) {
+                $j('.main-container').hover(
+                    function () {
+                        $j(this).addClass("slds-scrollable--x");
+                        $j(this).find('table.slds-table tr:first th:last').append('<img class="dummy-el" src="/s.gif" height="0px" width="0px" />');
+                    },
+                    function () {
+                        $j(this).removeClass("slds-scrollable--x");
+                        $j(this).find('table.slds-table tr:first th:last').find('.dummy-el').remove();
+                    }
+                );
+            }*/
+        }
+        function saveSortOptionsToDB(){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__Timeline_ListView_State_Settings__c = $j('.hd_sortField').val()+':'+$j('.hd_sortDir').val();
+    
+            advpm.TimelineController.saveTimelineOptionsInPlanner(setting, function(result, event){
+                if (event.status){ }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function saveViewModeOptionsToDB_NoLoad(showChartMode){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__Timeline_Show_In_Chart_View__c = showChartMode;
+    
+            advpm.TimelineController.saveTimelineViewModeInPlanner(setting, function(result, event){
+                if (event.status){ 
+                }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function saveViewModeOptionsToDB(showChartMode){
+            var setting = new advpm__Advologix_Planner_Options__c();
+            setting.advpm__Timeline_Show_In_Chart_View__c = showChartMode;
+    
+            advpm.TimelineController.saveTimelineViewModeInPlanner(setting, function(result, event){
+                if (event.status){
+                    if (isLtng) {
+                        window.location.reload();
+                    }
+                    else {
+                        if (result == '1') {
+                            loadChartView('1','0');
+                        }
+                        else {
+                            loadListView('0','0');
+                        }
+                    }
+                    
+                }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function saveOptionsToDB(timelineObjId, obj){
+            var objEnabled = $j(obj).is(':checked');
+            
+            advpm.TimelineController.saveTimelineUserOption(timelineObjId, objEnabled, function(result, event){
+                if (event.status){
+                    initAfterSaveOptions();
+                }
+                else {
+                    alert('Setting could not be saved.&nbsp;'+event.message);
+                }
+            }, {escape:true});
+        }
+        function advpm__Advologix_Planner_Options__c() {
+            this.advpm__Timeline_ListView_State_Settings__c = null;
+            this.advpm__Timeline_Show_In_Chart_View__c      = null;
+        }
+        function openUrl(ur) {
+            if (isLtng) {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToURL(ur, true);
+                }
+            }
+            else {
+                window.top.location = ur;
+            }
+        }
+    </script>
+    
+    <apex:outputPanel layout="none" rendered="{!!fullView}">
+    <style type="text/css">
+        .main-container {min-height:{!IF(isLightning,'247px','270px')};max-height:{!IF(isLightning,'247px','270px')};overflow-y:{!IF(isLightning,'hidden','auto')};overflow-x:hidden;{!IF(chartMode,'min-height',IF(isLightning,'250px','270px'))}}
+        /*body .bPageBlock {border-top-width: 0px;}*/
+        .arrow-left-container, .arrow-right-container {top: 37px;}
+    </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!fullView}">
+    <style type="text/css">
+        #matterTimeline {margin-top: 30px;}
+        .gt-timeline {height: 460px;}
+        .gt-timeline div.e-message {position:absolute;top:70px;}
+        .arrow-container {vertical-align: top!important;}
+        .arrow-left, .arrow-right {padding-top: 38px;}
+    </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+            body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+            .gt-timeline {font-family: "Salesforce Sans", Arial, sans-serif;}
+            #matterTimeline {left:50px;}
+        </style>
+        <apex:outputPanel layout="none" rendered="{!!fullView}">
+        <style type="text/css">
+            body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {padding: 8px!important;}
+            .slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 8px!important;}
+            .slds .slds-table tr.headerRow > th.headerRow:first-child, .slds .slds-table tr.dataRow > td.dataCell:first-child {padding-left: 8px!important;}
+            .slds .slds-table tr > th.headerRow:first-child, .slds .slds-table tr > td.dataCell:first-child {padding-left: 8px!important;}
+            .htmlDetailElementTable tr > td {padding: 0px!important;}
+            .htmlDetailElementTable tr > td:first-child {padding-left: 0px!important;}
+            .arrow-left, .arrow-right{position: absolute;}
+            .arrow-left{left:0px;}
+            #matterTimeline > div {display: inline-block;}
+        </style>
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!fullView}">
+        <style type="text/css">
+            body .apexp .pbBody table.list {border-top-width: 0px;}
+            .timeline_options td { padding: 2px!important;}
+            .timeline_options td:first-child {padding-left:24px!important;}
+            .dateInput input {width:85px!important;}
+            .pbBody .slds-table.list th {border-top: 1px solid #e0e3e5!important;}
+        </style>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="block" styleClass="bPageTitle" rendered="{!fullView && !isLightning}"><!-- $Site.Prefix}/servlet/servlet.ImageServer?id={!imageLogoId}&oid={!$Organization.Id -->
+        <div class="ptBody"><div class="content"><img src="{!matIconUrl}" alt="{!$ObjectType.Matter__c.label}" class="pageTitleIcon userDefinedImage" title="{!$ObjectType.Matter__c.label}" /><h1 class="pageType">Timeline</h1><span class="titleSeparatingColon">:</span><h2 class="pageDescription">{!advpm__Matter__c.Name}</h2><div class="blank">&nbsp;</div></div></div>
+        <div class="ptBreadcrumb">&#171;&nbsp;<a href="{!$Site.Prefix}/{!JSINHTMLENCODE(parentId)}" target="{!IF(isLightning,'','_top')}">{!$ObjectType.Matter__c.label}: {!advpm__Matter__c.Name}</a></div>
+    </apex:outputPanel>
+    <apex:form id="theForm">
+    <apex:outputPanel styleClass="{!IF(isLightning && !chartMode,'slds','')}">
+        <apex:outputPanel layout="block" styleClass="slds" rendered="{!fullView && isLightning}">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="Timeline" 
+                                parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Matter__c.labelPlural)}" 
+                                parentEntityLink="{!$ObjectType.advpm__Matter__c.keyPrefix}" 
+                                parentRecordName="{!advpm__Matter__c.Name}" 
+                                parentRecordID="{!JSINHTMLENCODE(parentId)}">
+                <div class="slds-button-group slds-button-space-left btn-viewmode" data-toggle="buttons-radio" style="margin-top:-45px;">
+                    <button class="slds-button slds-button--icon-border btn-viewmode-list {!IF(chartMode,'slds-not-selected','slds-is-selected')}" onclick="LEListMode(true);return false;">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#list')}" />
+                        <!-- <apex:image value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility/down_60.png')}" style="height:18px;" /> -->
+                        <span class="slds-assistive-text">List</span>
+                    </button>
+                    <button class="slds-button slds-button--icon-border btn-viewmode-chart {!IF(chartMode,'slds-is-selected','slds-not-selected')}" onclick="LEChartMode(true);return false;">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#checkin')}" />
+                        <span class="slds-assistive-text">Map</span>
+                    </button>
+                </div>
+                <script type="text/javascript">
+                    function LEListMode(saveOptToDB) {
+                        if(saveOptToDB) saveViewModeOptionsToDB_NoLoad(false);
+                        var u = "{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!IF(totalRows>50,'50',totalRows)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}";
+                        sforce.one.navigateToURL(u, true);
+                    }
+                    function LEChartMode(saveOptToDB) {
+                        if(saveOptToDB) saveViewModeOptionsToDB_NoLoad(true);
+                        var u = "{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!IF(totalRows>50,'50',totalRows)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&srcm=1";
+                        sforce.one.navigateToURL(u, true);
+                    }
+                </script>
+                <span class="advwrap">
+                    <div class="btn-group btn-adv-group pull-right cal-options-dropdown pg-header" style="text-align:left;margin-top:-45px;margin-left:5px;">
+                        <a class="slds-button slds-button--neutral btn btn-adv btn-mini dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" style="padding:8px 10px;height:36px;background-color:transparent;">
+                            Show&nbsp;
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="unstyled dropdown-menu ">
+                            <li>
+                                <table border="0" class="mytb">
+                                    <apex:repeat value="{!optionsRows}" var="row">
+                                    <tr>
+                                        <apex:repeat value="{!optionsCols}" var="col">
+                                            <apex:variable var="ind" value="{!1}" />
+                                            <apex:repeat value="{!map_timelineObjects[col]}" var="tm">
+                                                <apex:outputpanel layout="none" rendered="{!row==ind && !ISBLANK(tm.Id)}">
+                                                    <td class="coltb">
+                                                        <span>
+                                                            <apex:inputcheckbox styleclass="checkbox timelineoption" id="chkTimelineObject" style="display:none;" value="{!map_timelineUserEnabled[tm.Id]}" onchange="saveOptionsToDB('{!tm.Id}', this);" />
+                                                            <apex:outputlabel for="chkTimelineObject" value="{!tm.advpm__Object_Label__c}" styleclass="label-checkbox" />
+                                                        </span>
+                                                    </td>
+                                                </apex:outputpanel>
+                                                <apex:outputpanel layout="none" rendered="{!row==ind && ISBLANK(tm.Id) && enableKeyDates}">
+                                                <td class="coltb">
+                                                    <span>
+                                                        <apex:inputcheckbox styleclass="checkbox timelineoption" id="chkTimelineObjectKeyDate" style="display:none;" value="{!map_timelineUserEnabled['KEYDATE']}" onchange="saveOptionsToDB('KEYDATE', this);" />
+                                                        <apex:outputlabel for="chkTimelineObjectKeyDate" value="{!tm.advpm__Object_Label__c}" styleclass="label-checkbox" />
+                                                    </span>
+                                                </td>
+                                                </apex:outputpanel>
+                                                <apex:variable var="ind" value="{!ind+1}" />
+                                            </apex:repeat>
+                                        </apex:repeat>
+                                    </tr>
+                                    </apex:repeat>
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <apex:outputPanel layout="none" id="links_top">
+            <apex:outputPanel layout="block" styleClass="bNext{!IF(isLightning,' slds','')}" rendered="{!fullView && !chartMode}">
+                <div class="withFilter">
+                    <apex:outputPanel layout="block" id="filter_options" rendered="{!fullView}" style="float:left;">
+                        <table class="timeline_options advwrap slds-table slds-table--cell-buffer slds-no-row-hover" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td class="cell1"><label for="{!$Component.theForm.f_frm}" class="dataLabel {!IF(isLightning,'slds','')}">From</label></td>
+                                <td class="cell2"><label for="{!$Component.theForm.f_to}" class="dataLabel {!IF(isLightning,'slds','')}">To</label></td>
+                                <td class="cell3"><label for="{!$Component.theForm.f_srch}" class="dataLabel {!IF(isLightning,'slds','')}">Search</label></td>
+                                <td class="cell4">&nbsp;</td>
+                                <td class="cellLoading">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td class="cell1"><apex:inputField value="{!frmDt.advpm__Entry_Date__c}" id="f_frm" styleClass="slds-input" /></td>
+                                <td class="cell2"><apex:inputField value="{!toDt.advpm__Entry_Date__c}" id="f_to" styleClass="slds-input" /></td>
+                                <td class="cell3"><apex:inputText value="{!searchText}" id="f_srch" styleClass="slds-input search-input" /></td>
+                                <td class="cell4">
+                                    <div class="btn-group action-btn-menu">
+                                        <apex:commandButton value=" Refresh " id="btnFilterData" styleClass="slds slds-button slds-button--neutral btn-adv btn btn-small btn-filter" rerender="links_top,msgs" status="loadingReport" />
+                                        <a class="slds slds-button slds-button--neutral btn-adv btn dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" style="{!IF(isLightning,'padding: 15px 8px;','')}">
+                                            <span class="caret pull-right" style="{!IF(isLightning,'margin-top: 0px','')}"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><apex:commandLink value=" Printable View " id="btnExport" styleClass="btn-small" rerender="links_top,msgs" status="loadingExport" /></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td class="cellLoading">
+                                    <apex:actionStatus id="loadingReport" onstop="doFilterData();">
+                                        <apex:facet name="start">
+                                            <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" class="loadingImage" />
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                    <apex:actionStatus id="loadingExport" onstop="doExportData();">
+                                        <apex:facet name="start">
+                                            <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" class="loadingImage" />
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <apex:actionFunction name="doFilterData" action="{!filterData}" />
+                        <apex:actionFunction name="doExportData" action="{!exportData}" rerender="links_top,msgs" />
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="block" styleClass="next" rendered="{!fullView && !chartMode && !isLightning && !(offset==0 && rowsPerPage>currentRows)}" style="float:right;margin-top: 30px;margin-right:3px;">
+                        <apex:outputPanel styleClass="greyedLink" rendered="{!offset==0}">&lt;Previous Page</apex:outputPanel><apex:outputLink value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!rowsPerPage}&ofs={!offset - rowsPerPage}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}" rendered="{!offset>0}">&lt;Previous Page</apex:outputLink>
+                         |&nbsp;<apex:outputPanel styleClass="greyedLink" rendered="{!rowsPerPage>currentRows}">Next Page&gt;</apex:outputPanel><apex:outputLink value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!rowsPerPage}&ofs={!rowsPerPage + offset}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}" rendered="{!rowsPerPage==currentRows}">Next Page&gt;</apex:outputLink>
+                    </apex:outputPanel>
+                    <div class="clearingBox"></div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:pageBlock id="thePage">
+            <apex:pageMessages id="msgs" />
+            <apex:outputPanel layout="block" id="container" styleClass="main-container slds-scrollable--x"><!-- <apex:variable var="ind" value="{!0}" /> -->
+                <apex:inputText value="{!sortField}" style="display:none;" styleClass="hd_sortField" />
+                <apex:inputText value="{!sortDir}" style="display:none;" styleClass="hd_sortDir" />
+                <apex:outputPanel layout="none" rendered="{!chartMode}">
+                    <div id="matterTimeline"></div>
+                    <style type="text/css">
+                        .main-container {min-height:{!IF(fullView,'460px',IF(isLightning,'250px','260px'))}}
+                    </style>
+                    <script type="text/javascript">
+                        var timelineItems = JSON.parse("{!JSENCODE(TimelineJson)}");
+                        for(var i=0; i<timelineItems.length; i++) {
+                            timelineItems[i].on = convertDateToUTC(new Date(timelineItems[i].on));
+                            timelineItems[i].onTime = convertDateToUTC(new Date(timelineItems[i].onTime));
+                        }
+                        function convertDateToUTC(date) { 
+                            return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); 
+                        }
+                    </script>
+                    <script type="text/javascript">
+                        $j(window).resize(function() {
+                            if ({!chartMode}) {
+                                initTimeline();
+                            }
+                        });
+                    </script>
+                    <script type="text/javascript">
+                        function initTimeline() {
+                            $j('#matterTimeline').html('');
+                            $j('#matterTimeline').jqtimeline({
+                                events : timelineItems,
+                                groupEventWithinPx: 0,
+                                numYears: {!numYears},
+                                numMonths: {!numMonths},
+                                startYear: {!startYear},
+                                startMonth: {!startMonth},
+                                endYear: {!endYear},
+                                endMonth: {!endMonth},
+                                startDate: (new Date({!startYear}, {!startMonth}, 1)),
+                                endDate: (new Date({!endYear}, {!endMonth}, 0)),
+                                nScroll: false,
+                                commUrl: '{!$Site.Prefix}',
+                                leftImageUrl: "{!URLFOR($Resource.FontAwesome, 'img/play_reverse.png')}",
+                                rightImageUrl: "{!URLFOR($Resource.FontAwesome, 'img/play.png')}",
+                                fullView: {!fullView},
+                                isLtng: {!isLightning},
+                                click:function(e,event){
+                                    
+                                }
+                            });
+                        }
+                        $j(document).ready(function(){
+                            initTimeline();
+                        });
+                    </script>
+                </apex:outputPanel>
+                <apex:pageBlockTable value="{!tLines}" var="t" styleClass="list slds-table" rendered="{!currentRows > 0 && NOT(chartMode)}">
+                    <apex:column width="140px" headerClass="{!IF(isLightning,'slds-text-heading--label','')}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!SortToggle}" rerender="thePage" status="loadingData" oncomplete="saveSortOptionsToDB();initComplete()">
+                                <apex:param name="sortField" value="tDate" assignTo="{!sortField}" />
+                                <apex:outputText value="Date" /><apex:image rendered="{!JSINHTMLENCODE(sortField)=='tDate'}" value="/s.gif" alt="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" styleClass="sort{!IF(JSINHTMLENCODE(sortDir)='asc','Asc','Desc')}" title="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" />
+                            </apex:commandLink>
+                        </apex:facet>
+                        <!-- <apex:variable var="ind" value="{!(ind+1)}" />{!ind}. -->
+                        <apex:outputLink value="/{!t.t_id}" target="{!IF(isLightning,'','_top')}" rendered="{!t.t_showDateOnly}"><apex:outputField value="{!t.t_proxydate.ActivityDate}" /></apex:outputLink>
+                        <apex:outputLink value="/{!t.t_id}" target="{!IF(isLightning,'','_top')}" rendered="{!!t.t_showDateOnly}"><apex:outputField value="{!t.t_proxydate.StartDateTime}" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column value="{!t.t_type}" width="110px" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="{!IF(fullView,'','slds-truncate')}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!SortToggle}" rerender="thePage" status="loadingData" oncomplete="saveSortOptionsToDB();initComplete()">
+                                <apex:param name="sortField" value="tType" assignTo="{!sortField}" />
+                                <apex:outputText value="Type" /><apex:image rendered="{!JSINHTMLENCODE(sortField)=='tType'}" value="/s.gif" alt="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" styleClass="sort{!IF(JSINHTMLENCODE(sortDir)='asc','Asc','Desc')}" title="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" />
+                            </apex:commandLink>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="{!IF(fullView,'','slds-truncate')}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!SortToggle}" rerender="thePage" status="loadingData" oncomplete="saveSortOptionsToDB();initComplete()">
+                                <apex:param name="sortField" value="tTitle" assignTo="{!sortField}" />
+                                <apex:outputText value="Title" /><apex:image rendered="{!JSINHTMLENCODE(sortField)=='tTitle'}" value="/s.gif" alt="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" styleClass="sort{!IF(JSINHTMLENCODE(sortDir)='asc','Asc','Desc')}" title="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" />
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputPanel layout="none" rendered="{!t.t_isRichText}"><apex:outputField value="{!t.t_title_proxy.advpm__Details__c}" /></apex:outputPanel>
+                        <apex:outputText rendered="{!!t.t_isRichText}" value="{!t.t_title}" />
+                    </apex:column>
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="{!IF(fullView,'','slds-truncate')}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!SortToggle}" rerender="thePage" status="loadingData" oncomplete="saveSortOptionsToDB();initComplete()">
+                                <apex:param name="sortField" value="tStatus" assignTo="{!sortField}" />
+                                <apex:outputText value="Status" /><apex:image rendered="{!JSINHTMLENCODE(sortField)=='tStatus'}" value="/s.gif" alt="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" styleClass="sort{!IF(JSINHTMLENCODE(sortDir)='asc','Asc','Desc')}" title="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" />
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputPanel layout="none" rendered="{!t.t_isRichText}"><apex:outputField value="{!t.t_status_proxy.advpm__Details__c}" /></apex:outputPanel>
+                        <apex:outputText rendered="{!!t.t_isRichText}" value="{!t.t_status}" />
+                    </apex:column>
+                    <apex:column headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="{!IF(fullView,'','slds-truncate')}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!SortToggle}" rerender="thePage" status="loadingData" oncomplete="saveSortOptionsToDB();initComplete()">
+                                <apex:param name="sortField" value="tUser" assignTo="{!sortField}" />
+                                <apex:outputText value="User" /><apex:image rendered="{!JSINHTMLENCODE(sortField)=='tUser'}" value="/s.gif" alt="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" styleClass="sort{!IF(JSINHTMLENCODE(sortDir)='asc','Asc','Desc')}" title="Sorted {!IF(JSINHTMLENCODE(sortDir)='asc','Ascending','Descending')}" />
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputLink value="/{!t.t_userid}" target="{!IF(isLightning,'','_top')}">{!t.t_username}</apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="{!IF(fullView,'fewerMore','pShowMore')}">
+                <apex:outputPanel id="footer_info">
+                    <apex:outputPanel layout="block" style="float:left;{!IF(isLightning,'padding-top: 3px;','')}" rendered="{!!fullView && totalRows > 10 && !chartMode}">
+                        <apex:outputLink rendered="{!totalRows>currentRows}" value="javascript:showMoreList('{!(rowsPerPage + 10)}');">Show {!IF((totalRows - currentRows)<10,(totalRows - currentRows),10)} more &raquo;</apex:outputLink>
+                        <apex:outputPanel rendered="{!totalRows>currentRows}" layout="none">&nbsp;|&nbsp;</apex:outputPanel>
+                        <apex:outputLink rendered="{!totalRows>currentRows}" value="javascript:openUrl('{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!IF(totalRows>50,'50',totalRows)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}');">Go to list ({!IF(totalRows>50,'50+',totalRows)})&nbsp;&raquo;</apex:outputLink>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!fullView && totalRows > 10 && currentRows > 10 && !chartMode}">
+                        Show me&nbsp;<apex:outputLink rendered="{!currentRows > 10}" value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!(rowsPerPage - 10)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}">fewer&nbsp;<apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility/up_60.png')}" alt="Show Fewer" styleClass="" title="Show Fewer" style="height:16px;" /><apex:image rendered="{!!isLightning}" value="/s.gif" alt="Show Fewer" styleClass="fewerArrow" title="Show Fewer" /></apex:outputLink>
+                        <apex:outputPanel rendered="{!currentRows==rowsPerPage && currentRows > 10}" layout="none">&nbsp;/&nbsp;</apex:outputPanel>
+                        <apex:outputLink rendered="{!currentRows==rowsPerPage}" value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!(rowsPerPage + 10)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}"><apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility/down_60.png')}" alt="Show More" styleClass="" title="Show More" style="height:16px;" /><apex:image rendered="{!!isLightning}" value="/s.gif" alt="Show More" styleClass="moreArrow" title="Show More" />&nbsp;more</apex:outputLink>&nbsp;records per list page
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="block" style="float:left;" rendered="{!currentRows == 0 && dataLoadComplete && !chartMode}">
+                        No records to display
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <div class="advwrap" style="float:right;margin-top:{!IF(fullView,IF(isLightning,'0px','-5px'),IF(isLightning,'1px','-4px'))};">
+                    <apex:actionStatus id="loadingData">
+                        <apex:facet name="start"><img src="/img/loading.gif" title="Please Wait..." style="margin:4px;" /></apex:facet>
+                    </apex:actionStatus>
+                    <apex:outputPanel styleClass="" rendered="{!!fullView || (fullView && !isLightning)}">
+                        <div class="btn-group btn-mini {!IF($currentpage.parameters.srcm_ovrr=='1','hide','')}" data-toggle="buttons-radio">
+                            <button type="button" class="slds-button slds-button--neutral btn btn-viewmode-list {!IF(chartMode,'','active')}" onclick="saveViewModeOptionsToDB(false);"><i class="icon-list-alt"></i></button>
+                            <button type="button" class="slds-button slds-button--neutral btn btn-viewmode-chart {!IF(chartMode,'active','')}" onclick="saveViewModeOptionsToDB(true);"><i class="icon-map-marker"></i></button>
+                        </div>
+                        <div class="btn-group btn-mini {!IF($currentpage.parameters.srcm_ovrr=='1','','hide')}" data-toggle="buttons-radio">
+                            <a class="slds-button slds-button--neutral btn btn-viewmode-list {!IF(chartMode,'','active')}" href="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!IF(totalRows>50,'50',totalRows)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.Entry_Date__c)}&tmfm={!MONTH(frmDt.Entry_Date__c)}&tmfd={!DAY(frmDt.Entry_Date__c)}&tmty={!YEAR(toDt.Entry_Date__c)}&tmtm={!MONTH(toDt.Entry_Date__c)}&tmtd={!DAY(toDt.Entry_Date__c)}" target="{!IF(isLightning,'','_top')}"><i class="icon-list-alt"></i></a>
+                            <a class="slds-button slds-button--neutral btn btn-viewmode-chart {!IF(chartMode,'active','')}" href="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!IF(totalRows>50,'50',totalRows)}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&srcm=1&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}" target="{!IF(isLightning,'','_top')}"><i class="icon-map-marker"></i></a>
+                        </div>
+                        <div class="btn-group btn-adv-group pull-right cal-options-dropdown {!IF(currentRows < 7,'','dropup')}" style="text-align:left;">
+                            <a class="slds-button slds-button--neutral btn btn-adv btn-mini dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);">
+                                Show&nbsp;
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="unstyled dropdown-menu ">
+                                <li>
+                                    <table border="0" class="mytb">
+                                        <apex:repeat value="{!optionsRows}" var="row">
+                                        <tr>
+                                            <apex:repeat value="{!optionsCols}" var="col">
+                                                <apex:variable var="ind" value="{!1}" />
+                                                <apex:repeat value="{!map_timelineObjects[col]}" var="tm">
+                                                    <apex:outputpanel layout="none" rendered="{!row==ind && !ISBLANK(tm.Id)}">
+                                                        <td class="coltb">
+                                                            <span>
+                                                                <apex:inputcheckbox styleclass="checkbox timelineoption" id="chkTimelineObject" style="display:none;" value="{!map_timelineUserEnabled[tm.Id]}" onchange="saveOptionsToDB('{!tm.Id}', this);" />
+                                                                <apex:outputlabel for="chkTimelineObject" value="{!tm.advpm__Object_Label__c}" styleclass="label-checkbox" />
+                                                            </span>
+                                                        </td>
+                                                    </apex:outputpanel>
+                                                    <apex:outputpanel layout="none" rendered="{!row==ind && ISBLANK(tm.Id) && enableKeyDates}">
+                                                    <td class="coltb">
+                                                        <span>
+                                                            <apex:inputcheckbox styleclass="checkbox timelineoption" id="chkTimelineObjectKeyDate" style="display:none;" value="{!map_timelineUserEnabled['KEYDATE']}" onchange="saveOptionsToDB('KEYDATE', this);" />
+                                                            <apex:outputlabel for="chkTimelineObjectKeyDate" value="{!tm.advpm__Object_Label__c}" styleclass="label-checkbox" />
+                                                        </span>
+                                                    </td>
+                                                    </apex:outputpanel>
+                                                    <apex:variable var="ind" value="{!ind+1}" />
+                                                </apex:repeat>
+                                            </apex:repeat>
+                                        </tr>
+                                        </apex:repeat>
+                                    </table>
+                                </li>
+                            </ul>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        <apex:outputPanel layout="none" id="links_bottom">
+            <apex:outputPanel layout="block" styleClass="listElementBottomNav" rendered="{!fullView && !chartMode && !(offset==0 && rowsPerPage>currentRows)}">
+                <div class="bNext {!IF(isLightning,'slds-hide','')}">
+                    <div class="next">
+                        <apex:outputPanel styleClass="greyedLink" rendered="{!offset==0}">&lt;Previous Page</apex:outputPanel><apex:outputLink value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!rowsPerPage}&ofs={!offset - rowsPerPage}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}" rendered="{!offset>0}">&lt;Previous Page</apex:outputLink>
+                        |&nbsp;<apex:outputPanel styleClass="greyedLink" rendered="{!rowsPerPage>currentRows}">Next Page&gt;</apex:outputPanel><apex:outputLink value="{!$Site.Prefix}/apex/advpm__TimelineViewMatter?id={!JSINHTMLENCODE(parentId)}&fpw=1&rpp={!rowsPerPage}&ofs={!rowsPerPage + offset}&srtf={!JSINHTMLENCODE(sortField)}&srtd={!JSINHTMLENCODE(sortDir)}&tmfy={!YEAR(frmDt.advpm__Entry_Date__c)}&tmfm={!MONTH(frmDt.advpm__Entry_Date__c)}&tmfd={!DAY(frmDt.advpm__Entry_Date__c)}&tmty={!YEAR(toDt.advpm__Entry_Date__c)}&tmtm={!MONTH(toDt.advpm__Entry_Date__c)}&tmtd={!DAY(toDt.advpm__Entry_Date__c)}" rendered="{!rowsPerPage==currentRows}">Next Page&gt;</apex:outputLink>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:actionFunction name="showMoreList" action="{!loadTimelines}" status="loadingData" rerender="container,footer_info,links_top,links_bottom,msgs" oncomplete="initComplete()">
+            <apex:param name="rpp" value="" /> 
+        </apex:actionFunction>
+        <apex:actionFunction name="init" action="{!init}" rerender="theForm" status="loadingData" oncomplete="initComplete()" />
+        <apex:actionFunction name="initAfterSaveOptions" action="{!init}" rerender="thePage,footer_info,links_top,links_bottom,msgs" status="loadingData" oncomplete="initComplete()" />
+        <apex:actionFunction name="loadChartView" action="{!init}" rerender="thePage,footer_info,links_top,links_bottom,msgs" status="loadingData" oncomplete="initComplete()">
+            <apex:param name="srcm" value="1" />
+            <apex:param name="srcm_ovrr" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="loadListView" action="{!init}" rerender="thePage,footer_info,links_top,links_bottom,msgs" status="loadingData" oncomplete="initComplete()">
+            <apex:param name="srcm" value="" />
+            <apex:param name="srcm_ovrr" value="" />
+        </apex:actionFunction>
+    </apex:outputPanel>
+    </apex:form>
+    
+</apex:outputPanel>
+</apex:page>

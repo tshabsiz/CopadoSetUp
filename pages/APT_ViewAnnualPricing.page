@@ -1,0 +1,65 @@
+<apex:page standardController="Annual_Pricing__c" extensions="APT_ViewAnnualPricingController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<style>
+		.inline-mode{
+			display: none;
+		}
+	</style>
+	<apex:form >
+		<apex:inputHidden value="{!Annual_Pricing__c.Approval_Status__c}" /> 
+		<apex:inputHidden value="{!Annual_Pricing__c.Pricing_Template__c}" />
+		
+		<apex:detail title="true" showChatter="true" relatedList="false" relatedListHover="false"/>
+		<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } });" onstop="$.unblockUI();"/>
+
+		<apex:pageBlock id="pb">
+			<apex:pageMessages id="pageMsg"/>
+
+			<apex:pageBlockButtons >
+				<apex:commandButton id="btn-edit" action="{!edit}" value="Edit Price" rendered="{!NOT(isReadOnly) && NOT(editMode)}" status="processing" reRender="pb"/>
+				<apex:commandButton id="btn-submit" action="{!submit}" value="Request for Approval" rendered="{!isReadyToRequestForApproval && NOT(editMode)}" status="processing" reRender="pb"/>
+				<!--apex:commandButton id="btn-ms-word" action="{!generate}" value="Generate Letter in MS Word" rendered="{!isReadyToGeneratePricingLetter && NOT(editMode)}"/>
+				<apex:commandButton id="btn-pdf" action="{!generatePdf}" value="Generate Letter in PDF" rendered="{!isReadyToGeneratePricingLetter && NOT(editMode)}"/-->
+				<apex:commandButton id="btn-pdf" action="{!generate}" value="Generate Pricing Letter" rendered="{!isReadyToGeneratePricingLetter && NOT(editMode)}" status="processing" reRender="pb"/>
+				<apex:commandButton id="btn-inline-save" styleClass="inline-mode" action="{!save}" value="Save" rendered="{!NOT(editMode)}" status="processing" reRender="pb"/>
+				<apex:commandButton id="btn-inline-cancel" styleClass="inline-mode" action="{!cancel}" value="Cancel" rendered="{!NOT(editMode)}" status="processing" reRender="pb"/>
+				<apex:commandButton id="btn-save" action="{!save}" value="Save" rendered="{!editMode}" status="processing" reRender="pb"/>
+				<apex:commandButton id="btn-cancel" action="{!cancel}" value="Cancel" rendered="{!editMode}" status="processing" reRender="pb"/>
+			</apex:pageBlockButtons>
+
+			<apex:repeat value="{!pricingGroups}" var="pg">
+				<apex:pageBlockSection columns="1" title="{!pg.pricingGroup.Name}">
+					<apex:pageBlockTable value="{!pg.annualPricingItems}" var="api">
+						<apex:column width="15%" headerValue="{!$ObjectType.Annual_Pricing_Item__c.fields.Name.Label}">
+							<apex:outputLink value="/{!api.annualPricingItem.Id}" target="_blank">{!api.annualPricingItem.Name}</apex:outputLink>
+						</apex:column>
+						<apex:column width="15%" value="{!api.pricingDealProduct.Product_Category__c}"/>
+						<apex:column width="15%" value="{!api.pricingDealProduct.Product_Type__c}"/>
+						<apex:column width="15%" value="{!api.pricingDealProduct.Pricing_Deal_Product_Name__c}"/>
+						<apex:column width="10%" value="{!api.annualPricingItem.Standard_Price__c}"/>
+						<apex:column width="10%" value="{!api.annualPricingItem.Standard_VAT_Inclusive__c}"/>
+						<apex:column width="10%" headerValue="{!$ObjectType.Annual_Pricing_Item__c.fields.Final_Price__c.Label}">
+							<apex:inputField rendered="{!NOT(api.annualPricingItem.isLocked__c) && editMode}" value="{!api.annualPricingItem.Final_Price__c}" />
+							<apex:outputField rendered="{!api.annualPricingItem.isLocked__c && editMode}" value="{!api.annualPricingItem.Final_Price__c}" />
+							<apex:outputField rendered="{!NOT(editMode)}" value="{!api.annualPricingItem.Final_Price__c}">
+								<apex:inlineEditSupport disabled="{!api.annualPricingItem.isLocked__c}" showOnEdit="btn-inline-save,btn-inline-cancel" hideOnEdit="btn-edit,btn-submit,btn-ms-word,btn-pdf" event="ondblclick" resetFunction="resetInlineEdit"/>
+							</apex:outputField>
+						</apex:column>
+						<apex:column rendered="{!NOT(editMode)}" width="10%" value="{!api.annualPricingItem.Status_Icon__c}" />
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+			</apex:repeat>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:relatedList list="CombinedAttachments" subject="{!Annual_Pricing__c}" rendered="{!NOT(editMode)}"/>
+
+</apex:page>

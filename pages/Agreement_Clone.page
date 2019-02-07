@@ -1,0 +1,36 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+                                                           
+ 
+*** CHANGE LOG ***
+ 
+ 21/06/2017 - PG    - Created Class.
+            
+--> 
+<apex:page controller="Agreement_Clone">
+    
+    <apex:sectionHeader title="New Agreement" subtitle="Clone Agreement {!IF(NOT(showError), '- '+agreement.Name,'')}" />
+    
+    <apex:pageBlock title="Technical Issue" rendered="{!showError}">
+        <apex:pageMessages rendered="{!showError}" escape="false" />
+    </apex:pageBlock>
+    
+    <apex:form >
+        <apex:pageBlock title="Confirmation to Proceed" rendered="{!NOT(showError)}">
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Clone Agreement" action="{!cloneAgreement}" />
+                <apex:commandButton value="Cancel" />
+            </apex:pageBlockButtons>
+            
+            By clicking the <b>"Clone Agreement"</b> button you will create a new agreement with all the information pre-populated / cloned from the original agreement.
+            
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

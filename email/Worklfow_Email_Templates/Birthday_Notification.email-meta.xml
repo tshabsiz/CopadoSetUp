@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>email sent to contact owner 48 hours prior to contact&apos;s birthday</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Birthday Notification</name>
+    <style>freeForm</style>
+    <subject>Birthday notification:  {!Contact.Name}</subject>
+    <textOnly>Dear {!Contact.OwnerFirstName},
+
+Your contact {!Contact.Name}, {!Contact.Job_Role__c} at {!Contact.Contact_Relationship__c}, has a birthday coming up on {!Contact.Next_Birthday__c}!
+
+For your convenience his/her contact details are:
+
+Job title:  {!Contact.Job_title__c}
+Mobile:  {!Contact.MobilePhone}
+Phone:  {!Contact.Phone}
+Email:  {!Contact.Email}
+
+Paste this link into your Chrome Browser to visit the contact&apos;s page in Salesforce.com: {!Contact.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

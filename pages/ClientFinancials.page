@@ -1,0 +1,2680 @@
+<apex:page controller="ClientFinancialsController" standardStylesheets="false" sidebar="false" id="thepageid" docType="html-5.0">
+
+    <div class="slds"> 
+    
+        <c:ClientPlanHeader />
+        <c:ProgressBarLightning />
+        <c:LightningToast />
+        <c:LightningAlert />
+    
+        <apex:stylesheet value="{!URLFOR($Resource.bootstrap_datepicker, 'bootstrap-datepicker.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.jquery_ui_1114_nodatepicker, '/jquery-ui-1.11.4.custom/jquery-ui.min.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.jquery_ui_1114_nodatepicker, '/jquery-ui-1.11.4.custom/jquery-ui.min.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.bootstrap_datepicker, 'bootstrap-datepicker.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.ckeditor_basic, 'ckeditor/ckeditor.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.typeahead)}"/>
+    
+        <script>
+            $('document').ready(function() {
+                selectLabel(3);
+                setPageMinHeight();
+                prepareDatePicker('.dateOfLatestAFSPanel','#dateOfLatestAFS');
+                prepareDatePicker('.lastReviewDateFieldPanel','#lastReviewDate');
+                prepareClientSecurity();
+                prepareTypeaheadForCountries();
+            });
+            
+            function setPageMinHeight() {
+                var height = window.innerHeight - 230;
+                $('.slds').css('min-height', height);
+            }
+                    
+            function prepareDatePicker(panelWithValue, prepareFor) {
+                var millisString = $(panelWithValue).html();
+                //console.log(millisString);
+                var elem = $(prepareFor);
+                
+                millis = parseInt(millisString);
+                $(elem).datepicker({
+                    format: 'dd/mm/yyyy'
+                });
+                
+                if(millis != 0) {
+                    $(elem).datepicker('setDate', new Date(millis));
+                }
+                
+                $(elem).on('changeDate', function() {
+                    $(elem).datepicker('hide');
+                });
+            }
+            /*MSR :  
+                - Add controle format
+                - tfl = replaceComma(tfl);
+                - $('#tflField').val(tfl);
+            */
+
+            var countryBloodhound;
+            var countries;
+            function prepareTypeaheadForCountries() {
+                //default typeahead result
+                var countriesString = $('.countriesPanel').html();
+                countries = JSON.parse(countriesString);
+                
+                countryBloodhound = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.whitespace,
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    local: countries
+                });
+                
+                $('#country').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 0
+                    },{
+                    name: 'countryBloodhound',
+                    source: countriesWithDefaults
+                });
+            }
+
+            function countriesWithDefaults(q, sync) {
+                countryBloodhound.search(q, sync);
+            }
+
+            function onBeforeSave() {
+                closeAlert();
+                startLoading('{!$Label.lbl_Saving}');
+                var tfl = $('#tflField').val().trim();
+                if (!isNumber(tfl) && tfl != '') {
+                    endLoading();
+                    showToast('Please make sure that {!$ObjectType.Client_Plan__c.fields.TFL__c.Label} is a number');
+                    return;
+                }
+                tfl = replaceComma(tfl);
+                $('#tflField').val(tfl);
+               
+               
+                var fais = $('#faisField').val();
+                var faisstatuscomment = $('#FAISStatusComment').val();
+                var commentStatus = $('#FAISStatusComment');
+                var netAssetValue;
+                try{
+                    netAssetValue = document.getElementById('thepageid:theformid:latestNAV').value;
+                }
+                catch(err){
+                    netAssetValue= '';
+                }
+                document.getElementById('FAISStatusComment').style.background = 'white';
+                
+                if(netAssetValue){
+                    if(netAssetValue <= 20000000 )
+                    {
+                        if(fais == 'Not Applicable' && faisstatuscomment.length === 0)
+                        {
+                            document.getElementById('FAISStatusComment').style.background = '#db9797';
+                            endLoading();
+                            showToast('{!$Label.errMsgFIASStatusComment}');
+                            return;
+                            
+                        }
+                    }
+                }
+                else
+                {
+                    if(fais == 'Not Applicable' && faisstatuscomment.length === 0)
+                    {
+                        document.getElementById('FAISStatusComment').style.background = '#db9797';
+                        endLoading();
+                        showToast('{!$Label.errMsgFIASStatusComment}');
+                        return;
+                        
+                    }
+                }
+                
+                
+                var fiscalMonth = $('#fiscalMonthField').val();
+                
+                var dateOfLatestAFS = $('#dateOfLatestAFS').val();
+                var dateOfLatestAFSMillis = convertDateToTimestamp(dateOfLatestAFS);
+
+                var lastReviewDate = $('#lastReviewDate').val();
+                var lastReviewDateMillis = convertDateToTimestamp(lastReviewDate);
+                
+                var CurrencyIsoCode = $('#CurrencyIsoCodeField').val();
+                
+                var rorwa = $('#rorwaField').val();
+                rorwa = replacePercent(rorwa);
+                
+                closeToast();
+                saveData(tfl, fais, fiscalMonth, dateOfLatestAFSMillis, lastReviewDateMillis, rorwa, CurrencyIsoCode, faisstatuscomment);
+            }
+            
+			function onBeforeCommentarySave() {
+                closeAlert();
+                startLoading('{!$Label.lbl_Saving}');
+                var financialCommentaryContent = CKEDITOR.instances['thepageid:theformid:financialCommentary'].getData();
+                closeToast();
+                saveCommentary(financialCommentaryContent);
+            }
+        
+            function convertDateToTimestamp(dateString) {
+                if (dateString === '') {
+                    return 0;
+                }
+                
+                var dateSplit = dateString.split('/');
+                if (dateSplit.length != 3) {
+                    return 0;
+                }
+                
+                var month = parseInt(dateSplit[1]) - 1;
+                
+                var timestamp = new Date(dateSplit[2], month, dateSplit[0]).getTime();
+                if (isNaN(timestamp)) {
+                    return 0;
+                }
+                return timestamp;
+            }
+            
+            
+            //error messages functions
+            function checkErrorMessage() {
+                var content = $('.errorMessagePanel').text();
+                if (content != '') {
+                    showAlert(content);
+                }
+            }
+            
+            
+            //financial table functions
+            var finFieldName;
+            var recordId;
+            
+            function showFinValueModal(field, id) {
+                finFieldName = field;
+                recordId = id;
+                $('#finValueModal').show();
+            }
+            
+            function closeFinValueModal() {
+                closeToast();
+                $('#finValueModal').hide();
+            }
+            
+            function onBeforeSaveFinValue() {
+                closeAlert();
+                var value = $('#finValueModalInput').val();
+                if (isNaN(value)) {
+                    showToast('{!$Label.errMsg_OnlyNumeric}');
+                } else {
+                    closeFinValueModal();
+                    startLoading('{!$Label.lbl_Saving}');
+                    saveFinValue(recordId, finFieldName, value);
+                }
+            }
+            
+            function setFocusOnLoad() {}
+
+            //year modal functions
+            function closeYearModal() {
+                closeToast();
+                $('#yearModal').hide();
+            }
+
+            function showYearModal(id,imageID) {
+                
+                closeAlert();
+                yearId = id;
+                var yearValue;
+                if (id != '') {
+                    yearValue = fillYearModal(id,imageID);
+                    setYearHeaderLabel('{!$Label.lbl_EditFinInfo}');
+                } else {
+                    cleanYearModal();
+                    setYearHeaderLabel('{!$Label.lbl_AddFinInfo}');
+                }
+
+
+                var existingYearsJson = $('.existingYears').text();
+                var existingYears = JSON.parse(existingYearsJson);
+                
+                $('#yearValue option').each( function() {
+                
+                    var year = $(this).text();
+                    var disable = false;
+                    
+                    for (var i = 0; i < existingYears.length; i++) {
+                        if (existingYears[i] == year && existingYears[i] != yearValue) {
+                            disable = true;
+                            break;
+                        }
+                    }
+                    $(this).prop('disabled', disable);
+                });
+                
+                 ToggleMonth();
+                 TogglePeriod();
+             
+              
+                $('#yearModal').show();
+            }
+
+            function determineNodeForYearEdit(id) {
+                return $('#' + id).index() + 1;
+            }
+
+            function setYearHeaderLabel(label) {
+                $('#yearHeaderLabel').text(label);
+            }
+            
+           function ToggleMonth() {
+                if ($('#FinancialResults').val()!=null && $('#FinancialResults').val() == 'Audited Full Year'){
+                    $('#monthDiv').hide();      
+               }
+               else{
+                   $('#monthDiv').show();
+                }
+              }
+          function TogglePeriod() {
+               if ($('#FinancialResults').val()!=null && $('#FinancialResults').val() != 'Management Accounts'){
+                    $('#periodDiv').hide();      
+               }
+               else{
+                   $('#periodDiv').show();
+                }
+            }
+        
+            
+            function fillYearModal(id,imageID) {
+                var index = determineNodeForYearEdit(id);
+                
+                var yearValue;
+                var monthValue;
+                var periodValue;
+                var financialResults;
+                var totalAssets;
+                var turnover;
+                var netAssetValue;
+                var cashGenByOperations;
+                var ebitda;
+                var ebit;
+                var netDebt;
+                var roe;
+                var roa;
+                var debtEquity;
+                var currentRatio;
+                var eps;
+                var interestCoverRatio;
+                var marketCap;
+                
+                //Tonga MM : Additional fields added on form
+                var netInterestExpenseIncome;var netInterestExpenseBAGLfacilities;var PAT;var netWorth;
+                var tangibleNetWorth;var totalLiabilities;var cashFlowFromOperatingActivities;
+                var cashFlowFromOperatingActivitiesAdj;var Capex;var freeCashFlow;var netCashGenerationUtilization;
+                var totalTangibleAssets;var grossDebt;var subordinatedShareholderLoans;var cashAndCashEquivalents;
+                
+                if(imageID!='' ||imageID!=null)
+                {
+                    yearValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .yearValueHeader').text().trim();
+                    $('#yearValue').val(yearValue);
+                    
+                    monthValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .monthValueHeader').text().trim().split(' ')[0];
+                    $('#monthValue').val(monthValue);
+                    
+                    periodValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .periodValueHeader').text().trim().split(' ')[0].replace('(', '');
+                    $('#periodValue').val(periodValue);
+            
+                    
+                    financialResults = $('#financialsTable tr:nth-child(1) td:nth-child(' + index +') span').text().trim();
+                    financialResults = replaceComma(financialResults);
+                    $('#FinancialResults').val(financialResults);
+                    
+                    turnover = $('#financialsTable tr:nth-child(3) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    turnover = replaceComma(turnover);
+                    $('#turnover').val(turnover);
+                    ebitda = $('#financialsTable tr:nth-child(4) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    ebitda = replaceComma(ebitda);
+                    $('#ebitda').val(ebitda);
+                    
+                    netInterestExpenseIncome = $('#financialsTable tr:nth-child(6) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netInterestExpenseIncome = replaceComma(netInterestExpenseIncome);
+                    $('#netInterestExpenseIncome').val(netInterestExpenseIncome);
+                    
+                    netInterestExpenseBAGLfacilities = $('#financialsTable tr:nth-child(7) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netInterestExpenseBAGLfacilities = replaceComma(netInterestExpenseBAGLfacilities);
+                    $('#netInterestExpenseBAGLfacilities').val(netInterestExpenseBAGLfacilities);
+                    
+                    PAT = $('#financialsTable tr:nth-child(8) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    PAT = replaceComma(PAT);
+                    $('#PAT').val(PAT);
+                    
+                    totalAssets = $('#financialsTable tr:nth-child(10) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    totalAssets = replaceComma(totalAssets);
+                    $('#totalAssets').val(totalAssets);
+                    
+                    totalTangibleAssets= $('#financialsTable tr:nth-child(11) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    totalTangibleAssets = replaceComma(totalTangibleAssets);
+                    $('#totalTangibleAssets').val(totalTangibleAssets);
+                    
+                    grossDebt= $('#financialsTable tr:nth-child(12) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    grossDebt = replaceComma(grossDebt);
+                    $('#grossDebt').val(grossDebt);
+                    
+                    subordinatedShareholderLoans= $('#financialsTable tr:nth-child(13) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    subordinatedShareholderLoans = replaceComma(subordinatedShareholderLoans);
+                    $('#subordinatedShareholderLoans').val(subordinatedShareholderLoans);
+                    
+                    cashAndCashEquivalents= $('#financialsTable tr:nth-child(14) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    cashAndCashEquivalents = replaceComma(cashAndCashEquivalents);
+                    $('#cashAndCashEquivalents').val(cashAndCashEquivalents);
+                    
+                    netDebt= $('#financialsTable tr:nth-child(15) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netDebt = replaceComma(netDebt);
+                    $('#netDebt').val(netDebt);
+                    
+                    //Cash flows
+                     netWorth = $('#financialsTable tr:nth-child(17) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netWorth = replaceComma(netWorth);
+                    $('#netWorth').val(netWorth);
+                     tangibleNetWorth = $('#financialsTable tr:nth-child(18) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    tangibleNetWorth = replaceComma(tangibleNetWorth);
+                    $('#tangibleNetWorth').val(tangibleNetWorth);
+                    
+                    totalLiabilities = $('#financialsTable tr:nth-child(19) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    totalLiabilities = replaceComma(totalLiabilities);
+                    $('#totalLiabilities').val(totalLiabilities);
+                    
+                    cashGenByOperations= $('#financialsTable tr:nth-child(20) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    cashGenByOperations = replaceComma(cashGenByOperations);
+                    $('#cashGenByOperations').val(cashGenByOperations);
+                    
+                    cashFlowFromOperatingActivitiesAdj = $('#financialsTable tr:nth-child(21) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    cashFlowFromOperatingActivitiesAdj = replaceComma(cashFlowFromOperatingActivitiesAdj);
+                    $('#cashFlowFromOperatingActivitiesAdj').val(cashFlowFromOperatingActivitiesAdj);
+                    Capex = $('#financialsTable tr:nth-child(22) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    Capex = replaceComma(Capex);
+                    $('#Capex').val(Capex);
+                    
+                    freeCashFlow = $('#financialsTable tr:nth-child(23) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    freeCashFlow = replaceComma(freeCashFlow);
+                    $('#freeCashFlow').val(freeCashFlow);
+                    
+                    netCashGenerationUtilization = $('#financialsTable tr:nth-child(24) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netCashGenerationUtilization = replaceComma(netCashGenerationUtilization);
+                    $('#netCashGenerationUtilization').val(netCashGenerationUtilization);
+                    
+                    //Ratios 
+                    
+                    //Other 
+                    
+                    netAssetValue = $('#financialsTable tr:nth-child(31) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netAssetValue = replaceComma(netAssetValue);
+                    $('#netAssetValue').val(netAssetValue);
+                    
+                    eps= $('#financialsTable tr:nth-child(32) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    eps = replaceComma(eps);
+                    $('#eps').val(eps);
+                    
+                    ebit= $('#financialsTable tr:nth-child(33) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    ebit = replaceComma(ebit);
+                    $('#ebit').val(ebit);
+                    
+                    marketCap= $('#financialsTable tr:nth-child(34) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    marketCap = replaceComma(marketCap);
+                    $('#marketCap').val(marketCap);
+                    
+                    roe= $('#financialsTable tr:nth-child(35) td:nth-child(' + index +')').text().trim();
+                    roe = replacePercent(roe);
+                    $('#roe').val(roe);
+                    
+                    roa= $('#financialsTable tr:nth-child(36) td:nth-child(' + index +')').text().trim();
+                    roa = replacePercent(roa);
+                    $('#roa').val(roa);
+                    
+                    // Tonga MM : Business nolonger requires the user of this field 
+                    /*interestBearingDebt = $('#financialsTable tr:nth-child(37) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    interestBearingDebt = replaceComma(interestBearingDebt);
+                    $('#interestBearingDebt').val(interestBearingDebt);
+                    */
+                    debtEquity= $('#financialsTable tr:nth-child(37) td:nth-child(' + index +')').text().trim();
+                    debtEquity = replacePercent(debtEquity);
+                    $('#debtEquity').val(debtEquity);
+                    
+                    currentRatio= $('#financialsTable tr:nth-child(38) td:nth-child(' + index +')').text().trim();
+                    currentRatio = replacePercent(currentRatio);
+                    $('#currentRatio').val(currentRatio);
+                    
+                    interestCoverRatio= $('#financialsTable tr:nth-child(39) td:nth-child(' + index +')').text().trim();
+                    interestCoverRatio = replacePercent(interestCoverRatio);
+                    $('#interestCoverRatio').val(interestCoverRatio);
+                    //document.getElementById("interestCoverRatio").disabled = true;
+                    
+                }
+                else
+                {
+                    yearValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .yearValueHeader').text().trim();
+                    $('#yearValue').val(yearValue);
+                    
+                    monthValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .monthValueHeader').text().trim().split(' ')[0];
+                    $('#monthValue').val(monthValue);
+                    
+                    periodValue = $('#financialsTable tr:nth-child(1) th:nth-child(' + index +') .periodValueHeader').text().trim().split(' ')[0].replace('(', '');
+                    $('#periodValue').val(periodValue);
+                    
+                    financialResults = $('#financialsTable tr:nth-child(1) td:nth-child(' + index +') span').text().trim();
+                    financialResults = replaceComma(financialResults);
+                    $('#FinancialResults').val(financialResults);
+                    
+                    turnover = $('#financialsTable tr:nth-child(2) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    turnover = replaceComma(turnover);
+                    $('#turnover').val(turnover);
+                    
+                     ebitda = $('#financialsTable tr:nth-child(3) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    ebitda = replaceComma(ebitda);
+                    
+                    $('#ebitda').val(ebitda);
+                    netDebt= $('#financialsTable tr:nth-child(4) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netDebt = replaceComma(netDebt);
+                    $('#netDebt').val(netDebt);
+                    
+                    netAssetValue = $('#financialsTable tr:nth-child(5) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    netAssetValue = replaceComma(netAssetValue);
+                    $('#netAssetValue').val(netAssetValue);
+                    
+                    marketCap= $('#financialsTable tr:nth-child(6) td:nth-child(' + index +')').text().trim().split(' ')[1];
+                    marketCap = replaceComma(marketCap);
+                    $('#marketCap').val(marketCap);
+                }
+                
+                return yearValue;               
+            }
+
+            function replaceComma(valueToReplace) {
+                if(typeof valueToReplace !== 'undefined') {
+                    valueToReplace = valueToReplace.replace(/,/g,'');
+                }
+                return valueToReplace;
+            }
+
+            function replacePercent(valueToReplace) {
+                if(typeof valueToReplace !== 'undefined') {
+                    valueToReplace = valueToReplace.replace('%','');
+                }
+                return valueToReplace;
+            }
+            
+            function cleanYearModal() {
+                $('#yearValue').val('');
+                $('#monthValue').val(null);
+                $('#periodValue').val(null);
+                $('#turnover').val('');
+                $('#marketCap').val('');
+                $('#totalAssets').val('');
+                $('#netAssetValue').val('');
+                // $('#interestBearingDebt').val('');
+                $('#cashGenByOperations').val('');
+                $('#ebitda').val('');
+                $('#ebit').val('');
+                $('#netDebt').val('');
+                $('#roe').val('');
+                $('#roa').val('');
+                $('#debtEquity').val('');
+                $('#currentRatio').val('');
+                $('#eps').val('');
+                $('#interestCoverRatio').val('');
+                
+                var elementExists = document.getElementById("interestCoverRatio");
+                
+                if(elementExists!=null)
+                {
+                    document.getElementById("interestCoverRatio").disabled = true;
+                }
+                 $('#FinancialResults').val('');
+                
+                
+                $('#netInterestExpenseIncome').val('');
+                $('#netInterestExpenseBAGLfacilities').val('');
+                $('#PAT').val('');
+                $('#netWorth').val('');
+                $('#tangibleNetWorth').val('');
+                $('#totalLiabilities').val('');
+                $('#cashFlowFromOperatingActivitiesAdj').val('');
+                $('#Capex').val('');
+                $('#freeCashFlow').val('');
+                $('#netCashGenerationUtilization').val('');
+                $('#totalTangibleAssets').val('');
+                $('#grossDebt').val('');
+                $('#subordinatedShareholderLoans').val('');
+                $('#cashAndCashEquivalents').val('');
+                
+
+            }
+            
+            function closeYearModal() {
+                cleanYearModal();
+                closeToast();
+                $('#yearModal').hide();
+            }
+            
+            function onBeforeModifyYear(limitFields,lastFinInforYear) {
+                
+                //Tonga MM: Get the latest financial year period
+                var highestYearValue;
+                try{
+                    highestYearValue = document.getElementById('thepageid:theformid:hSize').value;
+                }
+                catch(err) 
+                {
+                    highestYearValue='';
+                }
+                               
+                var interestCoverRatio ='';
+                var eps='';
+                var debtEquity ='';
+                var roa = '';
+                var roe = '';
+                var ebit = '';
+                var cashGenByOperations='';
+                var netAssetValue='';
+                var totalAssets = '';
+                var currentRatio='';
+                
+                //Tonga MM : Added additional fields 
+                 var netInterestExpenseIncome='';var netInterestExpenseBAGLfacilities='';var PAT='';var netWorth='';
+                var tangibleNetWorth='';var totalLiabilities='';var cashFlowFromOperatingActivities='';
+                var cashFlowFromOperatingActivitiesAdj='';var Capex='';var freeCashFlow='';var netCashGenerationUtilization='';
+                var totalTangibleAssets='';var grossDebt='';var subordinatedShareholderLoans='';var cashAndCashEquivalents='';
+                
+                
+                if(!limitFields)
+                {
+                    netAssetValue = $('#netAssetValue').val().trim();
+                    cashGenByOperations = $('#cashGenByOperations').val().trim();
+                    ebit = $('#ebit').val().trim();
+                    eps = $('#eps').val().trim();
+                    debtEquity = $('#debtEquity').val().trim();
+                    roa = $('#roa').val().trim();
+                    roe = $('#roe').val().trim();
+                    totalAssets = $('#totalAssets').val().trim();
+                    interestCoverRatio= $('#interestCoverRatio').val().trim();
+                    currentRatio = $('#currentRatio').val().trim();
+                    
+                    netInterestExpenseIncome = $('#netInterestExpenseIncome').val().trim();
+                    netInterestExpenseBAGLfacilities = $('#netInterestExpenseBAGLfacilities').val().trim();
+                    PAT = $('#PAT').val().trim();
+                    netWorth = $('#netWorth').val().trim();
+                    
+                    
+                        
+                    tangibleNetWorth = $('#tangibleNetWorth').val().trim();
+                    totalLiabilities = $('#totalLiabilities').val().trim();
+                    
+                    
+                    cashFlowFromOperatingActivitiesAdj = $('#cashFlowFromOperatingActivitiesAdj').val().trim();
+                    Capex = $('#Capex').val().trim();
+                    netCashGenerationUtilization = $('#netCashGenerationUtilization').val().trim();
+                    freeCashFlow = $('#freeCashFlow').val().trim();
+                    
+                    totalTangibleAssets = $('#totalTangibleAssets').val().trim();
+                    grossDebt = $('#grossDebt').val().trim();
+                    subordinatedShareholderLoans = $('#subordinatedShareholderLoans').val().trim();
+                    cashAndCashEquivalents = $('#cashAndCashEquivalents').val().trim();
+                    
+                }
+                var fais = $('#faisField').val();
+                var turnover = $('#turnover').val().trim();
+                var financialResults = $('#FinancialResults').val();
+                var yearValue = $('#yearValue').val().trim();
+                var marketCap = $('#marketCap').val().trim();
+                var ebitda = $('#ebitda').val().trim();
+                netAssetValue = $('#netAssetValue').val().trim();
+                var netDebt = $('#netDebt').val().trim();
+                var faisstatuscomment = $('#FAISStatusComment').val();
+                
+                if (!isNumber(netAssetValue) && netAssetValue != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label} is a number');
+                    return;                
+                }
+                
+                if(highestYearValue)
+                {
+                    if(parseInt(highestYearValue) <= parseInt(yearValue)){
+                        if (netAssetValue < 20000000 && fais == 'Not Applicable') {
+                            if(fais == 'Not Applicable' && faisstatuscomment.length === 0)
+                            {
+                                document.getElementById('FAISStatusComment').style.background = '#db9797';
+                                endLoading();
+                                showToast('{!$Label.errMsgFIASStatusComment}');
+                                return;
+                            }
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    if (netAssetValue < 20000000 && fais == 'Not Applicable') {
+                        if(fais == 'Not Applicable' && faisstatuscomment.length === 0)
+                        {
+                            document.getElementById('FAISStatusComment').style.background = '#db9797';
+                            endLoading();
+                            showToast('{!$Label.errMsgFIASStatusComment}');
+                            return;
+                        }
+                    }
+                }
+                
+               var monthValue = null;
+                if ($('#monthValue').val()!=null) monthValue = $('#monthValue').val().trim()
+                
+                var periodValue = null;
+                if ($('#periodValue').val()!=null) periodValue = $('#periodValue').val().trim()
+                
+                if (!isNumber(netInterestExpenseIncome) && netInterestExpenseIncome != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(netInterestExpenseBAGLfacilities) && netInterestExpenseBAGLfacilities != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_BAGL_facilities__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(PAT) && PAT != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.PAT__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(netWorth) && netWorth != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_Worth__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(tangibleNetWorth) && tangibleNetWorth != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(totalLiabilities) && totalLiabilities != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label} is a number');
+                    return;
+                }
+                
+                
+                if (!isNumber(cashFlowFromOperatingActivitiesAdj) && cashFlowFromOperatingActivitiesAdj != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label} is a number');
+                    return;
+                }                  
+                
+                if (!isNumber(Capex) && Capex != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Capex__c.Label} is a number');
+                    return;
+                }                
+                
+                if (!isNumber(netCashGenerationUtilization) && netCashGenerationUtilization != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(freeCashFlow) && freeCashFlow != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Free_Cash_Flow__c.Label} is a number');
+                    return;
+                }
+                if (!isNumber(totalTangibleAssets) && totalTangibleAssets != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Total_Tangible_Assets__c.Label} is a number');
+                    return;
+                }
+                if (!isNumber(grossDebt) && grossDebt != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label} is a number');
+                    return;
+                }
+                if (!isNumber(subordinatedShareholderLoans) && subordinatedShareholderLoans != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label} is a number');
+                    return;
+                }
+                if (!isNumber(cashAndCashEquivalents) && cashAndCashEquivalents != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(turnover) && turnover != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Turnover__c.Label} is a number');
+                    return;
+                }
+
+                
+                if (!isNumber(marketCap) && marketCap != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label} is a number');
+                    return;
+                }
+
+                
+                if (!isNumber(totalAssets) && totalAssets != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Total_Assets__c.Label} is a number');
+                    return;
+                }
+               
+                if (!isNumber(cashGenByOperations) && cashGenByOperations != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Cash_Generated_by_Operations__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(ebitda) && ebitda != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(ebit) && ebit != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.EBIT__c.Label} is a number');
+                    return;
+                }
+
+                
+                if (!isNumber(netDebt) && netDebt != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Net_Debt__c.Label} is a number');
+                    return;
+                }
+
+                if (!isNumber(roe) && roe != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.ROE__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(roa) && roa != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.ROA__c.Label} is a number');
+                    return;
+                }
+                
+                if (!isNumber(debtEquity) && debtEquity != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.Debt_Equity__c.Label} is a number');
+                    return;
+                }
+                
+
+                
+                if (!isNumber(eps) && eps != '') {
+                    showToast('Please make sure that {!$ObjectType.Financial_Information__c.fields.EPS__c.Label} is a number');
+                    return;
+                }
+              
+                closeYearModal();          
+                
+                if (yearId == '') {
+                    startLoading('{!$Label.lbl_AddingYear}');
+                } else {
+                    startLoading('{!$Label.lbl_EditingYear}');
+                }
+                modifyYear(netAssetValue, yearValue, monthValue, periodValue, turnover, marketCap, totalAssets, 
+                           cashGenByOperations, ebitda, ebit, netDebt, roe, roa, debtEquity, currentRatio, eps, interestCoverRatio, 
+                           yearId,financialResults,
+                          netInterestExpenseIncome,netInterestExpenseBAGLfacilities,PAT,netWorth,tangibleNetWorth,totalLiabilities,cashFlowFromOperatingActivities,
+                        cashFlowFromOperatingActivitiesAdj,Capex,netCashGenerationUtilization,freeCashFlow,totalTangibleAssets,grossDebt,subordinatedShareholderLoans,
+                        cashAndCashEquivalents);
+            }
+
+            function isNumber(n) {
+              return !isNaN(parseFloat(n)) && isFinite(n);
+            }         
+
+            // facility functions
+            var facType;
+            var facId;
+            
+            function showFacilityModal(facilityType, id) {
+                facType = facilityType;
+                facId = id;
+                
+                preparefacilityModalLabelsAndFields(facType, id);
+                
+                if(id == '') {
+                    cleanFacilityModal();
+                } else {
+                    fillFacilityModal(id);
+                }
+                
+                closeAlert();
+
+                $('#facilityModal').show();
+                $('#facilityModal').css("display","block");
+            }
+
+            function preparefacilityModalLabelsAndFields(facType, id) {
+                var modalLabel;
+                
+                if(facType == 'ABSA') {
+                    if (id == '') {
+                        modalLabel = '{!$Label.lbl_AddAbsaFacility}';
+                    } else {
+                        modalLabel = '{!$Label.lbl_EditAbsaFacility}';
+                    }
+
+                    $('#bankDiv').hide();
+                    $('#utilisationDiv').show();
+                } else {
+                    if(id == '') {
+                        modalLabel = '{!$Label.lbl_AddOtherFacility}';
+                    } else {
+                        modalLabel = '{!$Label.lbl_EditOtherFacility}';
+                    }
+
+                    $('#utilisationDiv').hide();
+                    $('#bankDiv').show();         
+                }
+
+                $('#facilityModalHeaderLabel').text(modalLabel);
+            }
+
+            function cleanFacilityModal() {
+                $('#productSearchCmpWrapper input').val('');
+                selectedClientPlanProduct = '';
+                $('#limit').val('');
+                $('#utilisation').val('');
+                $('#bank').val('');
+                $('#country').val('');
+                $('#searchProductsId').val('');
+                $('#currencyVal').val('ZAR');
+            }
+            
+            function fillFacilityModal(id) {
+                var productId = $('#' + id + ' .productId').text().trim();
+                var productName = $('#' + id + ' .absFacProduct').text().trim();
+
+                //Pre-populate the product selector
+                selectedProductLevelAndId = '3||' + productId;
+                selectedProductName = productName;
+                $('#productSearchCmpWrapper input').val(productName);
+
+                var limit = $('#' + id + ' .absFacLimit').text().trim().split(' ')[1];
+                limit = replaceComma(limit);
+
+                var utilisation = $('#' + id + ' .absFacUtilisation').text().trim().split(' ')[1];
+                utilisation = replaceComma(utilisation);
+
+                var bank = $('#' + id + ' .absFacBank').text().trim();
+                var country = $('#' + id + ' .absFacCountry').text().trim();
+                var currencyVal = $('#' + id + ' .absFacCurrency').text().trim();
+                
+                $('#limit').val(limit);
+                $('#utilisation').val(utilisation);
+                $('#bank').val(bank);
+                $('#country').val(country);
+                $('#currencyVal').val(currencyVal);
+            }
+            
+            function closeFacilityModal() {
+                cleanFacilityModal();
+                closeToast();
+                $('#facilityModal').hide();
+            }
+            
+            function onBeforeModifyFacility() {
+                var country = $('#country').val().trim();
+                if(country.trim() == '') {
+                    showToast('Please make sure that a Country is entered');
+                    return;
+                }
+
+                var limit = $('#limit').val();
+                if (!isNumber(limit) && limit != '') {
+                    showToast('Please make sure that {!$ObjectType.Client_Plan_Facility__c.fields.Limit__c.Label} is a number');
+                    return;
+                }
+
+                var utilisation = $('#utilisation').val().trim();
+                if (!isNumber(utilisation) && utilisation != '') {
+                    showToast('Please make sure that {!$ObjectType.Client_Plan_Facility__c.fields.Utilisation__c.Label} is a number');
+                    return;
+                }
+
+                //var product = selectedClientPlanProduct;
+                //if(product.trim() == '') {
+                //    showToast('Please make sure that a Product has been selected');
+                //    return;
+                //}
+
+                if(selectedProductLevelAndId.length == 0 || selectedProductName.length == 0) {
+                    showToast('Please make sure that a Product has been selected');
+                    return;
+                }
+
+                //If a product has been selected - check if it's a level3
+                //Split Level and ID
+                var selectedProductLevel = selectedProductLevelAndId.substring(0, selectedProductLevelAndId.indexOf('||'));
+                var selectedProductId = selectedProductLevelAndId.substring(selectedProductLevelAndId.indexOf('||') + 2);
+
+                console.log('Product selected [Level: ' + selectedProductLevel + ', ID: ' + selectedProductId + ', Name: ' + selectedProductName + ']');
+                if(selectedProductLevel != '3') {
+                    showToast('Please select a Level 3 Product');
+                    return;
+                }
+
+                var bank = $('#bank').val().trim();            
+                var currencyVal = $("#currencyVal").val();
+
+                closeFacilityModal();
+                startLoading('{!$Label.lbl_Saving}');
+                
+                modifyFacility(facId, selectedProductId, bank, country, utilisation, limit, facType, currencyVal);
+            }
+
+            //security functions
+            var absaSecId;
+
+            function showSecurityModal(id) {
+                absaSecId = id;
+
+                if(id == '') {
+                    cleanSecurityModal();
+                } else {
+                    fillSecurityModal(id);
+                }
+
+                closeAlert();
+                $('#securityModal').show();
+            }
+
+            function prepareCKEditor(textarea) {
+                startLoading('{!$Label.lbl_PreparingEditor}');
+                CKEDITOR.on("instanceReady", function(event) {
+                     endLoading();
+                });
+                CKEDITOR.replace(textarea);
+            }
+
+            function closeEditSecurityModal() {
+                closeToast();
+                $('#securityModal').hide();
+            }
+
+            function cleanSecurityModal() {
+                if(CKEDITOR.instances.clientSecurityRichtextArea == undefined) {
+                    prepareCKEditor('clientSecurityRichtextArea');
+                }
+
+                CKEDITOR.instances.clientSecurityRichtextArea.setData('');
+                $('#valueMod').val('');
+                $('#absSecCurrency').val('ZAR');
+            }
+
+            function fillSecurityModal(id) {
+                var securityEditable = $('#' + id + ' .absSecEditable');
+                
+                var value = $('#' + id + ' .absSecValue')[0].innerText.trim().split(' ')[1].split('.')[0];
+                value = replaceComma(value);
+                $('#valueMod').val(value);
+                
+                var currency = $('#' + id + ' .absSecValue')[0].innerText.trim().split(' ')[0];
+                $('#absSecCurrency').val(currency);
+
+                var clientSecurity = $(securityEditable).html();
+
+                if(CKEDITOR.instances.clientSecurityRichtextArea == undefined) {
+                    prepareCKEditor('clientSecurityRichtextArea');
+                }
+                
+                CKEDITOR.instances.clientSecurityRichtextArea.setData(clientSecurity);            
+            }
+
+            function prepareClientSecurity() {
+                $('.absSecEditable').each(function() {
+                    var content = $(this).siblings('.absSecEditableSource').text();
+                    $(this).html(content);
+                    this.contentEditable = false;
+                });
+            }        
+
+            function onBeforeModifySecurity() {
+                var value = $('#valueMod').val();
+                if (!isNumber(value) && value != '') {
+                    showToast('Please make sure that {!$ObjectType.Client_Plan_Security__c.fields.Value__c.Label} is a number');
+                    return;
+                }
+                var clientSecurity = CKEDITOR.instances.clientSecurityRichtextArea.getData();
+                if (clientSecurity.trim() == '') {
+                    showToast('Please make sure that a Security Description is entered.');
+                    return;
+                }
+                
+                var currency = $('#absSecCurrency').val();
+
+                closeEditSecurityModal();
+                startLoading('{!$Label.lbl_Saving}');
+
+                modifySecurity(absaSecId, value, clientSecurity, currency);
+            }
+
+            //image functions
+            function showImageModal() {
+                $('#imageModal').show();
+            }
+            
+            function closeImageModal() {
+                $('#imageModal').hide();
+            }
+            
+            function onBeforeDeleteImage(e) {
+                var proceed = confirm('{!$Label.msg_DiscardUnsaved} {!$Label.msg_DeleteImageConfirm}');
+                if(!proceed) {
+                    e.preventDefault();
+                }
+            }
+        </script>
+    
+        <style>
+            @media (min-width: 48em) {
+                .slds-form-element {
+                    text-align: left !important;
+                }
+                
+                .slds .slds-form--horizontal .slds-form-element + .slds-form-element {
+                    margin-top: 2em;
+                }
+                
+                .slds-form-element label {
+                    width: 165px;
+                }
+                
+                #tflFieldLabel {
+                    top: 10px;
+                }
+                
+                #faisFieldLabel, 
+                #fiscalMonthLabel {
+                    top: 8px;
+                }
+                
+                #lastReviewDateLabel {
+                    top: 1px;
+                }
+                
+                #dateOfLatestAFSLabel {
+                    top: 0px;
+                }
+                
+                #financialsTableFirstCol {
+                    width: 25%;
+                }
+                
+                .financialsTableCol {
+                    width: 15%;
+                }
+            }
+        
+            .pageCenter {
+                width: 1000px;
+                margin: auto;
+                padding-top: 3em;
+                padding-bottom: 3em;
+            }
+            
+            .slds {
+                background-color: #F4F6F9 !important;
+            }
+            
+            .slds-tabs--default {
+                background-color: white;
+            }
+            
+            .slds .slds-select {
+                padding-left: 10px;
+            }
+            
+            #lastReviewDateField .slds-form-element__control {
+                padding-left: 12px;
+            }
+            
+            #financialsTable td {
+                text-align: right !important;
+            }
+            
+            .alignRight {
+                text-align: right;
+            }
+            
+            .alignCenter {
+                text-align: center !important;
+            }
+            
+            .slds-form-element__label {
+                font-weight: bold !important;
+                font-size: inherit !important;
+                width: 18em !important;
+            }
+            
+            .bold {
+                font-weight: bold !important;
+            }
+            
+            .datepicker-dropdown {
+                position: absolute;
+                top: 2.75em;
+                left: 11em;
+                display: block;
+                background-color: white;
+                border: 1px solid #d8dde6;
+            }
+            
+            #clientRatingPanelLeft {
+                width: 40%;
+                margin-right: 12%;
+            }
+            
+            #financialsTable {
+                margin-top: 3em;
+            }
+            
+            <!--#financialsTable tr td {
+                font-weight: bold;
+            }-->
+            
+            #pageLabel {
+                margin-bottom: 2em;
+            }
+            
+            .inline {
+                display: inline-block;
+            }
+            #clientRatingPanelRight {
+                vertical-align: top;
+            }
+            #finValueModal .slds-modal__container {
+                width: 30em;
+            }
+            <!--#financialsTable tbody th {
+                text-transform: uppercase;
+            }-->
+            .editButton {
+                float: right;
+            }
+            #yearModalContainer {
+                z-index: 10000;
+            }
+            .marginTop1em {
+                margin-top: 1em;
+            }
+            #absaFac,
+            #otherFac,
+            #absaSec{
+                width: 100% 
+            }
+            #country {
+                min-height: 34px;
+                height: 34px;
+            }
+            .tt-menu {
+                width: 100%;
+                margin: 12px 0;
+                padding: 8px 0;
+                background-color: #fff;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+                box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                cursor: pointer;
+            }
+            .tt-suggestion {
+                padding: 3px 5px;
+                font-size: 18px;
+                line-height: 24px;
+            }
+            .tt-suggestion:hover {
+                background-color: #00AEEF;
+            }
+            .richTextAlert {
+                color: red;
+                font-size: 10px;
+            }
+            .absSecEditableSource {
+                display: none;
+            }
+            .absSecEditable {    
+                max-width: 750px;           
+                white-space: normal;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }    
+            .optionsWrapper {
+                width: 100%;
+                text-align: center;
+                padding-top: 1em;
+                padding-right: 1em;
+            }
+            .imageWrapper {
+                text-align: center;
+                padding-bottom: 1em;
+            }
+            .deleteImageDiv {
+                width: 100%;
+                padding-top: 1em;
+                padding-right: 1em;
+                text-align: right;
+            } 
+            .jloc-reference
+            {
+                border-style: ridge;
+                border-color: #960528;
+                border-width: 1px
+            }
+        </style>
+
+        <apex:form id="theformid">
+              <apex:inputHidden value="{!financeList[0].Year__c}" id="hSize" rendered="{!!financeList.Empty}"/>
+             <apex:inputHidden value="{!financeList[0].Net_Asset_Value__c}" id="latestNAV" rendered="{!!financeList.Empty}"/>
+            <div style="display:inline-block ; margin: 5px;">
+         <apex:outputPanel rendered="{!isGlobalParent}">
+           <label   class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                {!$Label.lblUnderlyingClientPlans}</b>
+            </label><br/>
+            <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                <apex:selectOptions value="{!ChildClientPlans}" />
+            </apex:SelectList><br/>
+           </apex:outputPanel>
+        </div>
+            <apex:outputPanel id="wholePage" styleClass="pageCenter" layout="block" rendered="{!planLoaded}">
+            
+                <h2 id="pageLabel" class="bold"><apex:outputText value="{!$Label.lbl_ClientRating}"/></h2>
+                <div id="clientRatingPanelLeft" class="slds-form--horizontal inline">
+                    <div class="slds-form-element">
+                        <label id="CurrencyIsoCodeFieldLabel" class="slds-form-element__label">
+                            <apex:outputText value="Currency (TFL & Client Financials)"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="CurrencyIsoCodeField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!CurrencyOptions}" var="f">
+                                    <apex:outputPanel rendered="{!IF(f.label == plan.CurrencyIsoCode, true, false)}">
+                                        <option selected="selected">{!f.label}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(f.label == plan.CurrencyIsoCode, false, true)}">
+                                        <option>{!f.label}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label id="tflFieldLabel" class="slds-form-element__label">
+                            <apex:outputText id="tflCurrencyCode" value="{!$Label.lbl_TFL} ({!plan.CurrencyIsoCode})"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <input id="tflField" class="slds-input" type="Currency" value="{!plan.TFL__c}" onfocusout="onBeforeSave();return false;"/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label id="faisFieldLabel" class="slds-form-element__label">
+                            <apex:outputText value="{!$Label.lbl_FAISStatus}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="faisField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!FAISOptions}" var="f">
+                                    <apex:outputPanel rendered="{!IF(f.value == plan.FAIS_Status__c, true, false)}">
+                                        <option selected="selected">{!f.value}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(f.value == plan.FAIS_Status__c, false, true)}">
+                                        <option>{!f.value}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                        </div>
+                    </div>
+                    <br/>
+                    <apex:outputPanel id="FAISStatusCommentPanel" >
+                        <div class="slds-form-element">
+                            <label id="rorwaLabel" class="slds-form-element__label">
+                                {!$ObjectType.Client_Plan__c.fields.FAIS_Status_Comment__c.Label}
+                            </label>
+                            <div class="slds-form-element__control">
+                                <input id="FAISStatusComment" class="slds-input" type="text" value="{!plan.FAIS_Status_Comment__c}" onchange="onBeforeSave();return false;"/>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                <div id="clientRatingPanelRight" class="slds-form--horizontal inline">
+                    <div class="slds-form-element">
+                        <label id="rorwaLabel" class="slds-form-element__label">
+                            {!$ObjectType.Client_Plan__c.fields.RoRWA_Existing__c.Label}
+                        </label>
+                        <div class="slds-form-element__control">
+                            <input id="rorwaField" class="slds-input" type="Percentage" value="{!plan.RoRWA_Existing__c}" onfocusout="onBeforeSave();return false;"/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label id="fiscalMonthLabel" class="slds-form-element__label">
+                            <apex:outputText value="{!$Label.lbl_ClientsYearEnd}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <select id="fiscalMonthField" class="slds-select" onchange="onBeforeSave();return false;">
+                                <apex:repeat value="{!FiscalMonthOptions}" var="f">
+                                    <apex:outputPanel rendered="{!IF(f.value == plan.Financial_Year_End__c, true, false)}">
+                                        <option selected="selected">{!f.value}</option>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!IF(f.value == plan.Financial_Year_End__c, false, true)}">
+                                        <option>{!f.value}</option>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label id="dateOfLatestAFSLabel" class="slds-form-element__label">
+                            <apex:outputText value="{!$Label.lbl_DateOfLatestAFS}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <input class="slds-input" id="dateOfLatestAFS" value="" data-date-end-date="0d" type="text" onchange="onBeforeSave();return false;" />
+                        </div>
+                    </div>
+                    <div id="lastReviewDateField" class="slds-form-element">
+                        <label id="lastReviewDateLabel" class="slds-form-element__label">
+                            <apex:outputText value="{!$Label.lbl_LastReviewDate}"/>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <input class="slds-input" id="lastReviewDate" value="" data-date-end-date="0d" type="text" onchange="onBeforeSave();return false;"/>
+                        </div>                    
+                    </div>
+                    
+                </div>
+                
+                <br/>
+                <br/>
+
+                <apex:outputPanel id="finTablePanel" layout="block">
+                      
+                    <br/>
+                    <h2 id="pageLabel" class="bold">{!$Label.lbl_CreditStatistics}</h2>
+                    <apex:inputHidden value="{!lastFinInforYear}" id="hLastFinInforYear"/>
+                    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <div id="CreditStatistics">
+                            <table>
+                                <tr>
+                                    <td> <apex:outputPanel styleClass="buttonWrapper inline" rendered="{!plan.Financial_Information_Image_ID__c == null}" layout="none">
+                                    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="optionsWrapper">
+                                        <svg aria-hidden="true" class="slds-slds-icon slds-icon--large">
+                                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#cases')}"></use>
+                                        </svg>
+                                        <div class="buttonWrapper inline">
+                                            <button class="slds-button slds-button--brand" onclick="showImageModal();return false;">Upload Financial Results Image</button>
+                                        </div>
+                                        </div>
+                                </apex:outputPanel></td>
+                                    <td><apex:outputPanel styleClass="buttonWrapper inline" id="CreditStatisticsOptionsPanel" rendered="{!financeList.empty}" layout="none">
+                                    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="optionsWrapper">
+                                        <svg aria-hidden="true" class="slds-slds-icon slds-icon--large">
+                                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#cases')}"></use>
+                                        </svg>
+                                      
+                                        <div class="buttonWrapper inline jloc-reference">
+                                            <button class="slds-button slds-button--brand" onclick="showYearModal('','{!plan.Financial_Information_Image_ID__c}');return false;">Manually Control Financial Results</button>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel></td>
+                                </tr>
+                            </table>
+                            <div>
+                               
+                                
+                                
+                            </div>
+                            
+                            <div>
+                                <apex:outputPanel id="CreditStatisticsImagePanel" rendered="{!plan.Financial_Information_Image_ID__c != null}" layout="none" styleClass="imageWrapper">
+                                    <apex:image url="/servlet/servlet.FileDownload?file={!plan.Financial_Information_Image_ID__c}" />
+                                    <div class="deleteImageDiv">
+                                        <apex:commandButton value="Delete Image" action="{!deleteImage}" onclick="onBeforeDeleteImage(event);" styleClass="slds-button slds-button--brand" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+
+                            <div>
+                                <apex:outputPanel id="CreditStatisticsInputPanel" rendered="{!!financeList.empty}" layout="none">
+                                    <div class="jloc-reference">
+                                    <table id="financialsTable" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                        <thead>
+                                            <tr class="slds-text-heading--label">
+                                                <th id="financialsTableFirstCol" scope="col"/>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <th scope="col" class="alignCenter financialsTableCol" id="{!f.Id}">
+                                                        <span class="monthValueHeader">
+                                                            <apex:outputText value="{!f.Month__c} " rendered="{!f.Month__c != null && (f.Financial_Results__c == null || f.Financial_Results__c != 'Audited Full Year')}"/>
+                                                            <apex:outputText value="{!plan.Financial_Year_End__c} " rendered="{!plan.Financial_Year_End__c != null && f.Financial_Results__c != null && f.Financial_Results__c == 'Audited Full Year'}"/>           
+                                                        </span>
+                                                        <span class="yearValueHeader">
+                                                            {!f.Year__c}
+                                                        </span>
+                                                        <span class="periodValueHeader">
+                                                            <apex:outputText value="(" rendered="{!f.Financial_Results__c != null && f.Financial_Results__c == 'Management Accounts' && f.Period_Of_Months__c != null}" />
+                                                            <apex:outputText value="{!f.Period_Of_Months__c}" rendered="{!f.Financial_Results__c != null && f.Financial_Results__c == 'Management Accounts' && f.Period_Of_Months__c != null}" />
+                                                            <apex:outputText value=" month period)" rendered="{!f.Financial_Results__c != null && f.Financial_Results__c == 'Management Accounts' && f.Period_Of_Months__c != null}" />
+                                                        </span>
+                                                        <div class="slds-dropdown-trigger editButton">
+                                                            <button class="slds-button slds-button--icon-bare" onclick="return false;">
+                                                                <svg aria-hidden="true" class="slds-button__icon">
+                                                                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                                                </svg>
+                                                            </button>
+                                                            <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                                              <ul class="slds-dropdown__list" role="menu">
+                                                                <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                                    <a class="slds-truncate" role="menuitem" onclick="showYearModal('{!f.Id}','{!plan.Financial_Information_Image_ID__c}');return false;">{!$Label.lbl_Edit}</a>
+                                                                </li>
+                                                                <li id="menu-28-0" href="#" class="slds-dropdown__item">
+                                                                    <a class="slds-truncate" role="menuitem" onclick="if(confirm('Do you really want to delete this financial record?')){deleteFinInfo('{!f.Id}'); startLoading('{!$Label.lbl_DeletingFinInfo}');}; return false;">{!$Label.lbl_Delete}</a>
+                                                                </li>
+                                                              </ul>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                </apex:repeat>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           <tr class="slds-hint-parent">
+                                                <th scope="row">
+                                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Financial_Results__c.Label}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <b><apex:outputField value="{!f.Financial_Results__c}" rendered="{!f.Financial_Results__c != null}"/></b>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>  
+                                            <tr style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th><b>{!$Label.lbl_IncomeStatement}</b></th>
+                                            </tr>
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row">
+                                                    <apex:outputText value="{!$Label.lbl_Turnover}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Turnover__c}" rendered="{!f.Turnover__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>              
+                                           
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_EBITDA}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.EBITDA__c}" rendered="{!f.EBITDA__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                               
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.EBITDA_Margin__c.Label}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.EBITDA_Margin__c}" rendered="{!f.EBITDA_Margin__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td>
+                                                            <apex:outputField value="{!f.Net_Interest_Expense_Income__c}" rendered="{!f.Net_Interest_Expense_Income__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$Label.lbl_NetInterestExpenseIncomeBAGLFacilitiesOnly}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Net_Interest_Expense_BAGL_facilities__c}" rendered="{!f.Net_Interest_Expense_BAGL_facilities__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                                <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.PAT__c.Label}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.PAT__c}" rendered="{!f.PAT__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th><b>{!$Label.lbl_BalanceSheet}</b></th>
+                                            </tr>
+                                             <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_TotalAssets}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Total_Assets__c}" rendered="{!f.Total_Assets__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$Label.lbl_TotalTangibleAssets}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Total_Tangible_Assets__c}" rendered="{!f.Total_Tangible_Assets__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Gross_Debt__c}" rendered="{!f.Gross_Debt__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Subordinated_Shareholder_Loans__c}" rendered="{!f.Subordinated_Shareholder_Loans__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Cash_and_cash_equivalents__c}" rendered="{!f.Cash_and_cash_equivalents__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_NetDebt}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Net_Debt__c}" rendered="{!f.Net_Debt__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th><b>{!$Label.lbl_CashFlows}</b></th>
+                                            </tr>
+                                                <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$Label.lbl_NetWorth}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Net_Worth__c}" rendered="{!f.Net_Worth__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Tangible_Net_Worth__c}" rendered="{!f.Tangible_Net_Worth__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Total_Liabilities__c}" rendered="{!f.Total_Liabilities__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_CashGeneratedByOperations}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Cash_Generated_by_Operations__c}" rendered="{!f.Cash_Generated_by_Operations__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                        
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Cash_flow_from_operating_activities_Adj__c}" rendered="{!f.Cash_flow_from_operating_activities_Adj__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Capex__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Capex__c}" rendered="{!f.Capex__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_FreeCashFlow}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Free_Cash_Flow__c}" rendered="{!f.Free_Cash_Flow__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Net_cash_generation_utilization__c}" rendered="{!f.Net_cash_generation_utilization__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th><b>{!$Label.lbl_Ratios}</b></th>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.EBITDA_Net_Interest_cover__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.EBITDA_Net_Interest_cover__c}" rendered="{!f.EBITDA_Net_Interest_cover__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row">{!$Label.lbl_NetDebtEbitda}</th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Net_Debt_Cash_Ebitda__c}" rendered="{!f.Net_Debt_Cash_Ebitda__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row">{!$Label.lbl_GrossDebtEbitda}</th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Gross_Debt_Cash_Ebitda__c}" rendered="{!f.Gross_Debt_Cash_Ebitda__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Tangible_Gearing_Net_Debt_TNW__c.Label}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td> 
+                                                        <apex:outputField value="{!f.Tangible_Gearing_Net_Debt_TNW__c}" rendered="{!f.Tangible_Gearing_Net_Debt_TNW__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th><b>{!$Label.lbl_Others}</b></th>
+                                            </tr>
+                                            <tr class="slds-hint-parent" >
+                                                <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Net_Asset_Value__c}" rendered="{!f.Net_Asset_Value__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_EPS}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.EPS__c}" rendered="{!f.EPS__c != null}"/>
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                             <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$Label.lbl_EBIT}"/></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td>
+                                                            <apex:outputField value="{!f.EBIT__c}" rendered="{!f.EBIT__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                                <tr class="slds-hint-parent" >
+                                                    <th scope="row"><apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}" /></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td> 
+                                                            <apex:outputField value="{!f.Market_Cap__c}" rendered="{!f.Market_Cap__c != null}"/>
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            
+                                                <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                    <th scope="row"><apex:outputText value="{!$Label.lbl_ROE}"/></th>
+                                                    <apex:repeat value="{!financeList}" var="f">
+                                                        <td>
+                                                            <apex:outputField value="{!f.ROE__c}" rendered="{!f.ROE__c != null}"/>
+                                                            
+                                                        </td>
+                                                    </apex:repeat>
+                                                </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_ROA}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.ROA__c}" rendered="{!f.ROA__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                                </tr>
+                                           
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_DebtEquity}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Debt_Equity__c}" rendered="{!f.Debt_Equity__c != null}"/>
+                                                       
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            <tr class="slds-hint-parent" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_CurrentRatio}"/></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Current_Ratio__c}" rendered="{!f.Current_Ratio__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                            
+                                            
+                                            <tr class="slds-hint-parent" render="false" style="display: {!IF(!ISBLANK(plan.Financial_Information_Image_ID__c), 'none', 'table-row')};">
+                                                <th scope="row"><apex:outputText value="{!$Label.lbl_InterestCoverRatio}" /></th>
+                                                <apex:repeat value="{!financeList}" var="f">
+                                                    <td>
+                                                        <apex:outputField value="{!f.Interest_Cover_Ratio__c}" rendered="{!f.Interest_Cover_Ratio__c != null}"/>
+                                                        
+                                                    </td>
+                                                </apex:repeat>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="alignRight marginTop1em">
+                                        <button class="slds-button slds-button--brand slds-button--small" onclick="showYearModal('','{!plan.Financial_Information_Image_ID__c}');return false;">
+                                            {!$Label.lbl_Add}
+                                        </button>
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <apex:outputPanel id="FinancialCommentaryPanel" rendered="{!plan.Financial_Information_Image_ID__c != null || !financeList.Empty}">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="financialCommentary">
+                                <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.FinancialCommentary__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea richText="false" id="financialCommentary" rows="3" styleClass="ckeditor" value="{!plan.FinancialCommentary__c}"/>
+  								<script>
+    								CKEDITOR.replace('{!$Component.financialCommentary}');
+                                	CKEDITOR.instances['thepageid:theformid:financialCommentary'].on('blur', function() {
+										onBeforeCommentarySave();return false;
+                					});
+  								</script>
+                            </div>
+                       	</div>
+                        <br/>
+                    </apex:outputPanel>
+                    
+                    <h2 id="pageLabel" class="bold"><apex:outputText value="{!$Label.lbl_TotalFacilitiesBreakdownSchedule}"/></h2>
+
+                    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <div id="otherFac" class="inline">
+
+                            <h3 class=""><apex:outputText value="{!$Label.lbl_OtherFacilities}"/></h3>
+                            <div class="jloc-reference">
+                                
+                                
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                    <thead>
+                                        <tr class="slds-text-heading--label">
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Bank__c.Label}" />
+                                                </span>
+                                            </th>
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Country__c.Label}" />
+                                                </span>
+                                            </th>
+                                            <th scope="col" style="display:none;">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.CurrencyIsoCode.Label}" />
+                                                </span>
+                                            </th>                                         
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Product_Level_3__c.Label}" />
+                                                </span>
+                                            </th>
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Limit__c.Label}" />
+                                                </span>
+                                            </th>
+                                            <th/>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!otherFacility}" var="othFac">
+                                            <tr id="{!othFac.Id}" class="slds-hint-parent">
+                                                <td class="absFacBank">
+                                                    <apex:outputText value="{!othFac.Bank__c}" />
+                                                </td>                                           
+                                                <td class="absFacCountry">
+                                                    <apex:outputText value="{!othFac.Country__c}" />
+                                                </td>
+                                                <td class="absFacProduct">
+                                                    <apex:outputText value="{!othFac.Product_Level_3__r.Name}" />
+                                                </td>
+                                                <td class="absFacCurrency" style="display:none;">
+                                                    <apex:outputField value="{!othFac.CurrencyIsoCode}" />
+                                                </td>                                                
+                                                <td class="productId" style="display:none;">
+                                                    <apex:outputText value="{!othFac.Product_Level_3__c}" />
+                                                </td>
+                                                <td class="absFacLimit">
+                                                    <apex:outputField value="{!othFac.Limit__c}" />
+                                                </td>
+                                                <td class="slds-row-action">
+                                                    <div class="slds-dropdown-trigger">
+                                                        <button xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                                                class="slds-button slds-button--icon-container optionsButton" onclick="return false;">
+                                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                                            </svg>
+                                                        </button>
+                                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                            <ul class="slds-dropdown__list" role="menu">
+                                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                                    <a onclick="showFacilityModal('Other','{!othFac.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                                        {!$Label.lbl_Edit}
+                                                                    </a>
+                                                                </li>
+                                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                                    <a onclick="if(confirm('Do you really want to delete this facility record?')){deleteFacility('{!othFac.Id}'); startLoading('{!$Label.lbl_DeletingFacilityInfo}');}; return false;" class="slds-truncate" role="menuitem">
+                                                                        {!$Label.lbl_Delete}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                        <tr>
+                                            <th class="absFacCountry" colspan="5">{!$Label.lbl_CurrencySubTotal}</th>
+                                        </tr>
+                                        <apex:repeat value="{!currencyTotalsMap}" var="key">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-row-action"></td>
+                                                <td class="slds-row-action"></td>
+                                                <td class="slds-row-action"></td>
+                                                <td class="slds-row-action"  style="text-align: left;">
+                                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                                        {!key} &nbsp;<apex:param value="{!currencyTotalsMap[key].subTotal}" />
+                                                    </apex:outputText>
+                                                    ( {!userCurrencyCode} 
+                                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                                        <apex:param value="{!currencyTotalsMap[key].convertedSubTotal}" />
+                                                    </apex:outputText>)
+                                                </td>
+                                                <td class="slds-row-action"></td>
+                                            </tr>
+                                        </apex:repeat>
+                                        <tr>
+                                            <th class="absFacCountry" colspan="5">{!$Label.lbl_OtherFacilityTotal}</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="slds-row-action"></td>
+                                            <td class="slds-row-action"></td>
+                                            <td class="slds-row-action"></td>
+                                            <td class="slds-row-action" style="text-align: left;">
+                                                <apex:outputText value="{0, number, ###,###,###.##}">
+                                                    {!userCurrencyCode}&nbsp; <apex:param value="{!totalOtherFacilities}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alignRight marginTop1em">
+                        <button class="slds-button slds-button--brand slds-button--small" onclick="showFacilityModal('Other','');return false;">
+                            {!$Label.lbl_Add}
+                        </button>
+                    </div>  
+
+                    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <div id="absaSec" class="inline">
+
+                            <h3 class=""><apex:outputText value="{!$Label.lbl_AbsaSecurity}"/></h3>
+                            <div class="jloc-reference">
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                    <thead>
+                                        <tr class="slds-text-heading--label">
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Security_Description__c.Label}" />
+                                                </span>
+                                            </th>                                    
+                                            <th scope="col">
+                                                <span class="slds-truncate">
+                                                    <apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Value__c.Label}" />
+                                                </span>
+                                            </th>
+                                            <th/>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!absaSecurity}" var="absSec">
+                                            <tr id="{!absSec.Id}" class="slds-hint-parent">
+                                                <td>
+                                                    <div class="absSecEditableSource">{!absSec.Security_Description__c}</div>
+                                                    <div class="absSecEditable"></div>
+                                                </td>
+                                                <td class="absSecValue">
+                                                    <apex:outputField value="{!absSec.Value__c}" />
+                                                </td>
+                                                <td class="slds-row-action">
+                                                    <div class="slds-dropdown-trigger">
+                                                        <button xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                                                class="slds-button slds-button--icon-container optionsButton" onclick="return false;">
+                                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                                            </svg>
+                                                        </button>
+                                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                            <ul class="slds-dropdown__list" role="menu">
+                                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                                    <a onclick="showSecurityModal('{!absSec.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                                        {!$Label.lbl_Edit}
+                                                                    </a>
+                                                                </li>
+                                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                                    <a onclick="if(confirm('Do you really want to delete this security record?')){deleteSecurity('{!absSec.Id}'); startLoading('{!$Label.lbl_DeletingSecurityInfo}');}; return false;" class="slds-truncate" role="menuitem">
+                                                                        {!$Label.lbl_Delete}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alignRight marginTop1em">
+                        <button class="slds-button slds-button--brand slds-button--small" onclick="showSecurityModal('');return false;">
+                            {!$Label.lbl_Add}
+                        </button>
+                    </div>  
+
+                </apex:outputPanel>
+                
+                <apex:actionFunction action="{!save}" name="saveData" oncomplete="checkErrorMessage();endLoading();prepareClientSecurity();" reRender="finTablePanel,errorMessagePanel,tflCurrencyCode,latestNAV">
+                    <apex:param name="tfl" assignTo="{!plan.TFL__c}" value=""/>
+                    <apex:param name="fais" assignTo="{!plan.FAIS_Status__c}" value=""/>
+                    <apex:param name="fiscalMonth" assignTo="{!plan.Financial_Year_End__c}" value=""/>
+                    <apex:param name="dateOfLatestAFS" assignTo="{!dateOfLatestAFS}" value=""/>
+                    <apex:param name="lastReviewDate" assignTo="{!lastReviewDate}" value=""/>
+                    <apex:param name="rorwa" assignTo="{!plan.RoRWA_Existing__c}" value=""/>
+                    <apex:param name="CurrencyIsoCode" assignTo="{!plan.CurrencyIsoCode}" value=""/>
+                    <apex:param name="faisstatuscomment" assignTo="{!plan.FAIS_Status_Comment__c}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!save}" name="saveCommentary" oncomplete="checkErrorMessage();endLoading();prepareClientSecurity();" reRender="finTablePanel,errorMessagePanel,tflCurrencyCode,latestNAV">
+                    <apex:param name="financialCommentary" assignTo="{!plan.FinancialCommentary__c}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!saveFinValue}" name="saveFinValue" onComplete="checkErrorMessage();endLoading(); prepareClientSecurity();" reRender="finTablePanel,errorMessagePanel,hSize,latestNAV">
+                    <apex:param name="recordId" assignTo="{!recordId}" value=""/>
+                    <apex:param name="finFieldName" assignTo="{!finFieldName}" value=""/>
+                    <apex:param name="finValue" assignTo="{!finValue}" value=""/>
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!modifyYear}" name="modifyYear" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel, existingYears,hSize,latestNAV">
+                    <apex:param name="netAssetValue" assignTo="{!netAssetValue}" value=""/>
+                    <apex:param name="yearValue" assignTo="{!yearValue}" value=""/>
+                    <apex:param name="monthValue" assignTo="{!monthValue}" value=""/>
+                    <apex:param name="periodValue" assignTo="{!periodValue}" value=""/>
+                    <apex:param name="turnover" assignTo="{!turnover}" value=""/>
+                    <apex:param name="marketCap" assignTo="{!marketCap}" value=""/>
+                    <apex:param name="totalAssets" assignTo="{!totalAssets}" value=""/>
+                    <apex:param name="cashGenByOperations" assignTo="{!cashGenByOperations}" value=""/>
+                    <apex:param name="ebitda" assignTo="{!ebitda}" value=""/>
+                    <apex:param name="ebit" assignTo="{!ebit}" value=""/>
+                    <apex:param name="netDebt" assignTo="{!netDebt}" value=""/>
+                    <apex:param name="roe" assignTo="{!roe}" value=""/>
+                    <apex:param name="roa" assignTo="{!roa}" value=""/>
+                    <apex:param name="debtEquity" assignTo="{!debtEquity}" value=""/>
+                    <apex:param name="currentRatio" assignTo="{!currentRatio}" value=""/>
+                    <apex:param name="eps" assignTo="{!eps}" value=""/>
+                    <apex:param name="interestCoverRatio" assignTo="{!interestCoverRatio}" value=""/>
+                    <apex:param name="yearId" assignTo="{!RecordId}" value=""/>
+                    <apex:param name="financialResults" assignTo="{!financialResults}" value=""/>
+                    <apex:param name="netInterestExpenseIncome" assignTo="{!netInterestExpenseIncome}" value=""/>
+                    <apex:param name="netInterestExpenseBAGLfacilities" assignTo="{!netInterestExpenseBAGLfacilities}" value=""/>
+                    <apex:param name="PAT" assignTo="{!PAT}" value=""/>
+                    <apex:param name="netWorth" assignTo="{!netWorth}" value=""/>
+                    <apex:param name="tangibleNetWorth" assignTo="{!tangibleNetWorth}" value=""/>
+                    <apex:param name="totalLiabilities" assignTo="{!totalLiabilities}" value=""/>
+                    <apex:param name="cashFlowFromOperatingActivities" assignTo="{!cashFlowFromOperatingActivities}" value=""/>
+                    <apex:param name="cashFlowFromOperatingActivitiesAdj" assignTo="{!cashFlowFromOperatingActivitiesAdj}" value=""/>
+                    <apex:param name="Capex" assignTo="{!Capex}" value=""/>
+                    <apex:param name="netCashGenerationUtilization" assignTo="{!netCashGenerationUtilization}" value=""/>
+                    <apex:param name="freeCashFlow" assignTo="{!freeCashFlow}" value=""/>
+                    <apex:param name="totalTangibleAssets" assignTo="{!totalTangibleAssets}" value=""/>
+                    <apex:param name="grossDebt" assignTo="{!grossDebt}" value=""/>
+                    <apex:param name="subordinatedShareholderLoans" assignTo="{!subordinatedShareholderLoans}" value=""/>
+                    <apex:param name="cashAndCashEquivalents" assignTo="{!cashAndCashEquivalents}" value=""/>
+                    
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!modifyFacility}" name="modifyFacility" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel">
+                    <apex:param name="facilityId" assignTo="{!facilityId}" value="" />
+                    <apex:param name="productLvl3" assignTo="{!productLvl3}" value="" />
+                    <apex:param name="bank" assignTo="{!bank}" value="" />
+                    <apex:param name="country" assignTo="{!country}" value="" />
+                    <apex:param name="utilisation" assignTo="{!utilisation}" value="" />
+                    <apex:param name="limit" assignTo="{!facLimit}" value="" />
+                    <apex:param name="facType" assignTo="{!facType}" value="" />
+                    <apex:param name="currencyVal" assignTo="{!currencyVal}" value="" />
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!deleteFacility}" name="deleteFacility" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel">
+                    <apex:param name="facilityToDelete" assignTo="{!facilityId}" value=""/>
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!deleteFinInfo}" name="deleteFinInfo" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel,hSize,latestNAV">
+                    <apex:param name="finInfoToDelete" assignTo="{!RecordId}" value=""/>
+                </apex:actionFunction>
+
+                <apex:actionFunction action="{!modifySecurity}" name="modifySecurity" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel">
+                    <apex:param name="absaSecId" assignTo="{!absaSecId}" value="" />
+                    <apex:param name="value" assignTo="{!value}" value="" />
+                    <apex:param name="clientSecurity" assignTo="{!clientSecurity}" value="" />
+                    <apex:param name="clientSecurityCurrency" assignTo="{!clientSecurityCurrency}" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction action="{!deleteSecurity}" name="deleteSecurity" oncomplete="checkErrorMessage(); endLoading(); prepareClientSecurity();" reRender="finTablePanel, errorMessagePanel">
+                    <apex:param name="securityToDelete" assignTo="{!absaSecId}" value=""/>
+                </apex:actionFunction>
+
+                <apex:outputPanel id="dateOfLatestAFSPanel" styleClass="dateOfLatestAFSPanel hidden">{!dateOfLatestAFS}</apex:outputPanel>
+
+                <apex:outputPanel id="lastReviewDateFieldPanel" styleClass="lastReviewDateFieldPanel hidden">{!LastReviewDate}</apex:outputPanel>
+                
+                <apex:outputPanel id="errorMessagePanel" styleClass="errorMessagePanel hidden">{!ErrorMessage}</apex:outputPanel>
+
+                <apex:outputPanel id="existingYears" styleClass="existingYears hidden">{!ExistingYearOptions}</apex:outputPanel>          
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+    <div class="slds">
+        <div id="yearModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              
+                <div id="yearModalContainer" class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 id="yearHeaderLabel" class="slds-text-heading--medium"></h2>
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeYearModal();return false;">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                            </button>
+                    </div>
+                          
+                    <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+
+                            <div class="slds-form-element">
+                                <label id="fiscalMonthLabel" class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Year__c.Label}"/>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <select id="yearValue" class="slds-select">
+                                        <apex:repeat value="{!YearOptions}" var="y">
+                                            <option>{!y.value}</option>
+                                        </apex:repeat>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Financial_Results__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <select id="FinancialResults" class="slds-select" onchange="ToggleMonth();TogglePeriod();">
+                                        <apex:repeat value="{!FinancialResultOptions}" var="m">
+                                            <option>{!m.value}</option>
+                                        </apex:repeat>
+                                    </select>
+                                    <br/>
+                                    
+                                </div>
+                            </div>
+                            <div id="monthDiv" class="slds-form-element">
+                                <label id="fiscalMonthLabel" class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Month__c.Label}"/>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <select id="monthValue" class="slds-select">
+                                        <apex:repeat value="{!MonthOptions}" var="m">
+                                            <option>{!m.value}</option>
+                                        </apex:repeat>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="periodDiv" class="slds-form-element">
+                                <label id="fiscalperiodLabel" class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Period_Of_Months__c.Label}"/>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <select id="periodValue" class="slds-select">
+                                        <apex:repeat value="{!PeriodOptions}" var="m">
+                                            <option>{!m.value}</option>
+                                        </apex:repeat>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Turnover__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    
+                                    <input id="turnover" class="slds-input" type="currency" />
+                                </div>
+                            </div>
+                            
+                            
+                            
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="ebitda" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netInterestExpenseIncome" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$Label.lbl_NetInterestExpenseIncomeBAGLFacilitiesOnly}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netInterestExpenseBAGLfacilities" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.PAT__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="PAT" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Total_Assets__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="totalAssets" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="grossDebt" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="subordinatedShareholderLoans" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="cashAndCashEquivalents" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Debt__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netDebt" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Worth__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netWorth" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="tangibleNetWorth" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="totalLiabilities" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Cash_Generated_by_Operations__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="cashGenByOperations" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="cashFlowFromOperatingActivitiesAdj" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Capex__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="Capex" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Free_Cash_Flow__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="freeCashFlow" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netCashGenerationUtilization" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="netAssetValue" class="slds-input" type="currency" />
+                                    </div>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.EPS__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="eps" class="slds-input" type="text" />
+                                    </div></apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.EBIT__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="ebit" class="slds-input" type="text" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                             <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="marketCap" class="slds-input" type="currency" />
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.ROE__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="roe" class="slds-input" type="text" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.ROA__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="roa" class="slds-input" type="text" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            
+                        <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Debt_Equity__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="debtEquity" class="slds-input" type="text" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Current_Ratio__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="currentRatio" class="slds-input" type="text" />
+                                    </div></apex:outputPanel>
+                            </div>
+                            
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                    <label class="slds-form-element__label">
+                                        <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Interest_Cover_Ratio__c.Label}" />
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <input id="interestCoverRatio" class="slds-input"  type="text" />
+                                    </div>
+                                </apex:outputPanel>
+                                
+                            </div>        
+
+                            <div class="slds-form-element">
+                                <apex:outputPanel rendered="{!plan.Financial_Information_Image_ID__c == null}">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Financial_Information__c.fields.Total_Tangible_Assets__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="totalTangibleAssets" class="slds-input" type="currency" />
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>        
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeYearModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyYear({!IF(plan.Financial_Information_Image_ID__c==null,false,true)},{!financeList.size});return false;">Save</button>
+                    </div>
+                </div>
+                <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+            </div>
+        </div>
+    </div>
+    <div class="slds">
+        <div id="finValueModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">{!$Label.lbl_ChangeValue}</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeFinValueModal();return false;">
+                        <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                        </svg>
+                        </button>
+                    </div>
+
+                    <div class="slds-modal__content">
+                        <input id="finValueModalInput" class="slds-input" type="number"/>
+                    </div>
+
+
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeFinValueModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeSaveFinValue();return false;">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </div>
+    <div class="slds">
+        <div id="facilityModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 id="facilityModalHeaderLabel" class="slds-text-heading--medium"></h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeFacilityModal();return false;">
+                        <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                        </svg>
+                        </button>
+                    </div>
+
+                    <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element" id="bankDiv">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Bank__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="bank" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element" id="countryDiv">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Country__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="country" class="slds-input" type="text" />
+                                </div>
+                            </div>        
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Product__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <c:ClientPlanProductSearch identificator="facilityModalProduct"/>
+                                </div>
+                            </div>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Limit__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="limit" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                            <div class="slds-form-element" id="utilisationDiv">
+                                <label class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Utilisation__c.Label}" />
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <input id="utilisation" class="slds-input" type="text" />
+                                </div>
+                            </div>                               
+                            <div class="slds-form-element">
+                                <label id="fiscalMonthLabel" class="slds-form-element__label">
+                                    <apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.CurrencyIsoCode.Label}"/>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <select id="currencyVal" class="slds-select">
+                                        <apex:repeat value="{!CurrencyOptions}" var="cO">
+                                            <option>{!cO.label}</option>
+                                        </apex:repeat>
+                                    </select>
+                                </div>
+                            </div>            
+                        </div>    
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeFacilityModal();return false;">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyFacility();return false;">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </div>
+    <div class="slds">
+        <div id="securityModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">Add a client security</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeEditSecurityModal();return false;">
+                            <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="clientStrategyRichtextArea">
+                                <apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Security_Description__c.Label}" />
+                            </label>
+                            <div class="slds-form-element__control">
+                                <textarea id="clientSecurityRichtextArea"/>
+                            </div>
+                        </div>
+                        <div>
+                            <apex:outputText styleClass="richTextAlert" value="{!$Label.lbl_CopyPasteRichTextAlert}"/>
+                        </div>  
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                                <apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Value__c.Label}" />
+                            </label>
+                        </div>
+                        <div class="slds-form-element__control">
+                            <input id="valueMod" class="slds-input" type="number" />
+                        </div>
+                        <div class="slds-form-element">
+                             <label class="slds-form-element__label">
+                                <apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.CurrencyIsoCode.Label}" />
+                             </label>
+                             <div class="slds-form-element__control">
+                                <select id="absSecCurrency" class="slds-select">
+                                    <apex:repeat value="{!CurrencyOptions}" var="cO">
+                                        <option>{!cO.label}</option>
+                                    </apex:repeat>
+                                </select>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeEditSecurityModal();return false;">Cancel</button>
+                        <button id="editStrategyButton" class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifySecurity(); return false;">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </div>  
+    <div class="slds">
+        <div id="imageModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">{!$Label.lbl_UploadImage}</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeImageModal();return false;">
+                            <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <apex:form styleClass="imageForm">
+                        <div class="slds-modal__content">
+                            <h2>* {!$Label.msg_DiscardUnsaved}</h2>
+                            <h2>* {!$Label.msg_ImageSizeLimit}</h2>
+                            <apex:inputFile contentType="{!imageContentType}" value="{!imageBody}" fileName="{!imageName}" styleclass="marginTop15em"/>
+                        <table>
+                                <tr><td>NB : Use below example when uploading an image</td></tr>
+                                <tr><td><apex:image url="{!$Resource.ClientPlanTable}" /></td></tr>
+                            </table>
+                        </div>
+
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button--neutral" onclick="closeImageModal();return false;">Cancel</button>
+                            <apex:commandButton value="Upload Image" action="{!uploadImage}" styleClass="slds-button slds-button--brand" />
+                        </div>
+                    </apex:form>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>  
+    </div>
+    <div style="display: none">
+        <apex:outputPanel id="countriesPanel" styleClass="countriesPanel">{!countriesJson}</apex:outputPanel>
+    </div>
+</apex:page>

@@ -1,0 +1,447 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction" controller="lscNewCaseExt">
+    <ltng:require scripts='../../soap/ajax/37.0/connection.js, ../../soap/ajax/37.0/apex.js,/support/console/35.0/integration.js'/>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:attribute name="model" type="object" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="recordTypeId" type="String" default=""/>
+    <aura:attribute name="callReportId" type="String" default=""/>
+    <aura:attribute name="OwnerId" type="String" default="" />
+    <aura:attribute name="recordEditFormLoaded" type="Boolean" default="false" />
+    <aura:attribute name="includesClosed" type="Boolean" default="false" />
+    <aura:attribute name="comptaint" type="String" default="Yes"/>
+    <aura:attribute name="stopExecuting" type="String" default=""/>
+    <aura:attribute name="tabId" type="String" default=""/>
+    <aura:attribute name="UserName" type="String" default="" access="public"/>
+    <aura:attribute name="isUserSearch" type="boolean" default="true" access="private"/>
+  <ltng:require styles="{!$Resource.lscCommon}" />
+    <aura:attribute name="accountOptions" type="array" />
+    <div  >
+    <div class="slds-box slds-clearfix">
+        <lightning:layout horizontalAlign="end">
+            
+                <aura:if isTrue="{!v.model.isCSCProfile_r}">
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <lightning:button variant="brand" class="slds-m-top--medium" aura:id="cifSearch"  label="View CIF Details" onclick="{! c.viewCifDetails }" />
+                    </lightning:layoutItem>
+                </aura:if>
+            
+                   
+            
+                  <lightning:layoutItem flexibility="auto" padding="around-small">
+               <lightning:select aura:id="relationships" value="{!v.accountOptions[0].Id}" name="relationships" onchange="{!c.addAccount}" label="">
+                    <aura:iteration items="{!v.accountOptions}" var="source">                                                
+                        <option name="{!source.Id}" label="{!source.name}" value="{!source.Id}"/>
+                    </aura:iteration>
+                </lightning:select> 
+            </lightning:layoutItem>
+          
+            <lightning:layoutItem flexibility="auto" padding="around-small"> 
+                
+                <aura:if isTrue="{!v.model.isCSCProfile_r}">
+                    
+                    <lightning:layoutItem flexibility="auto" padding="around-small">                    
+                        <lightning:select aura:id="SearchBy" name="SearchBy" label="">
+                            <option value="SearchBy">Search By</option>                      
+                            <option class="accSearch" value="accountNumber">Account Number</option>
+                            <option class="regSearch" value="passport">Reg. No / Passport</option>
+                            <option class="idSearch" value="identityDocument">ID Number</option>
+                            <option class="cifsfSearch" value="cif2cif">CIF No</option>
+                            <option class="cifSearch" selected = "true" value="cif">Relationship Name</option>
+                        </lightning:select>                    
+                    </lightning:layoutItem>
+                    
+                </aura:if>
+                
+                <aura:if isTrue="{!!v.model.isCSCProfile_r}">
+                    <lightning:select aura:id="SearchBy" name="SearchBy" label="">
+                        <option class="cifSearch" selected = "true" value="cif">Relationship Name</option>
+                    </lightning:select>             
+                    
+                </aura:if>
+                
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <span onkeypress="{!c.keyCheck}">
+                    <lightning:input aura:id="regId" name="regId" value="" type="text" placeholder="Search Value" label="" /> 
+                </span>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:button variant="brand" class="slds-m-top--medium" aura:id="cifSearch"  label="Search" onclick="{! c.searchSF }" />
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+    
+    <aura:renderIf isTrue="{!greaterthan(v.model.PrimaryClients_r.length, 1)}">
+        <div class="slds-box slds-clearfix">
+            <lightning:layout horizontalAlign="end">
+                
+                
+                <div class="slds-form-element" id="blockseccif" columns="4">                
+                    
+                    <aura:renderIf isTrue="{!greaterthan(v.model.PrimaryClients_r.length, 1)}">
+                        <output value="CIF Data" />
+                    </aura:renderIf>
+                    <lightning:layout horizontalAlign="center">                    
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">                            
+                                <aura:renderIf isTrue="{!greaterthan(v.model.PrimaryClients_r.length, 1)}">
+                                    <lightning:select aura:id="cifrelationships" onchange="{!c.cifAccount}" label="Relationship Name(s)">
+                                        <aura:iteration items="{!v.model.cifdataOptions_r}" var="source">
+                                            <ui:inputSelectOption text="{!source.lable}" label="{!source.value}"/>
+                                        </aura:iteration>                        
+                                    </lightning:select>                                
+                                </aura:renderIf>                            
+                            </div>
+                        </lightning:layoutItem>                    
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                            </div>
+                        </lightning:layoutItem>
+                    </lightning:layout>                
+                </div> 
+                
+            </lightning:layout>
+        </div>
+    </aura:renderIf>
+     <div class="" style="background-color: rgba(0, 0, 0, 0.10);">
+        <lightning:spinner  aura:id="TheSpinner1" variant="brand" size="large"/>
+    </div>
+<lightning:notificationsLibrary aura:id="notifLib"/> 
+    <aura:if isTrue="{!and(v.recordTypeId != '', v.recordTypeId != null)}">
+        <lightning:recordEditForm aura:id="recordViewForm" 
+                                  recordId="{!v.recordId}"
+                                  recordTypeId= "{!v.recordTypeId}"
+                                  onload="{!c.handleAccountLoaded}"
+                                  objectApiName="Case">
+            <lightning:messages /> 
+            
+            
+            <div class="slds-box slds-clearfix">
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                       
+                        <aura:if isTrue="{!v.model.caseOwnerName_r == ''}"> 
+                            <div style="width: 30%; float: left">
+                                <lightning:select aura:id="SearchUserBy" label="Case Owner" onchange="{!c.caseOwnerTypeChanged}">
+                                    <aura:if isTrue="{!((v.model.theCase_r.Owner.Type != 'User') == true)== ((v.model.theCase_r.Owner.Type != 'Queue')==true)}">
+                                        <option value="None" selected = "{!((v.model.theCase_r.Owner.Type != 'User') == true)== ((v.model.theCase_r.Owner.Type != 'Queue')==true)}">--None--</option>
+                                    </aura:if>
+                                    <option value="User" selected = "{!v.model.theCase_r.Owner.Type == 'User'}">User</option>
+                                    <option value="Queue" selected = "{!v.model.theCase_r.Owner.Type == 'Queue'}">Queue</option>
+                                </lightning:select>    
+                            </div>
+                        </aura:if>
+                         <aura:if isTrue="{!v.model.caseOwnerName_r != ''}"> 
+                                <div style="width: 30%; float: left">
+                                <lightning:select aura:id="SearchUserBy" label="Case Owner" onchange="{!c.caseOwnerTypeChanged}">
+                                    <option value="User" >User</option>
+                                    <option value="Queue" >Queue</option>
+                                </lightning:select>    
+                            </div>
+                         </aura:if>
+                        
+                        <div style="width: 60%; float: left">                    
+                            
+                            <aura:if isTrue="{!and(v.recordEditFormLoaded, or(v.model.caseOwnerName_r == null, v.model.caseOwnerName_r == ''))}">                         
+                                <c:lscSearchAccount isUserSearch = "{!v.isUserSearch}" UserName="{!v.UserName}" SelectedAccount="{!v.OwnerId}" UserID="" HasAccount="false" Lable="."/>
+                            </aura:if>
+                            
+                            <aura:if isTrue="{!and(v.recordEditFormLoaded, and(v.model.caseOwnerName_r != null, v.model.caseOwnerName_r != ''))}">
+                                <c:lscSearchAccount  isUserSearch = "{!v.isUserSearch}" UserName="{!v.UserName}" SelectedAccount="{!v.OwnerId}" UserID="{!v.model.caseOwnerName_r}" HasAccount="true" Lable="."/>
+                            </aura:if>
+                            
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <aura:if isTrue="{!v.recordEditFormLoaded}">
+                                Case Record Type
+                                <br />
+                                {!v.model.recordTypeDescription_r}
+                            </aura:if>
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField 
+                                                  aura:id="Email_Sender_Name__c" 
+                                                  fieldName="Email_Sender_Name__c"/>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                  
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Email_From_Address__c" fieldName="Email_From_Address__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Status" fieldName="Status" onchange="{!c.statusChanged}"/>
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Suppress_Acknowledge_Alert__c" fieldName="Suppress_Acknowledge_Alert__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Priority" fieldName="Priority" />
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Incident_Date__c" fieldName="Incident_Date__c" />
+                        </div>
+                    </lightning:layoutItem>
+                  
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Origin__c" fieldName="Origin__c"  value = "Telephone"/>
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                
+                <!--</lightning:layout>-->
+            </div>
+            <div class="slds-box slds-clearfix">
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Subject" fieldName="Subject" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                  
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%; max-height: 400px">
+                            <lightning:inputField aura:id="Description" fieldName="Description" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                  
+                </lightning:layout>
+                
+                
+            </div>
+            <div class="slds-box slds-clearfix">
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Complaint_Service_Category__c" fieldName="Complaint_Service_Category__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Resolving_Area__c" fieldName="Resolving_Area__c" />
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Complaint_Service_Type__c" fieldName="Complaint_Service_Type__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Resolving_Team__c" fieldName="Resolving_Team__c" />
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Complaint_Service_Sub_Category__c" fieldName="Complaint_Service_Sub_Category__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                  
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Complaint_Channel__c" fieldName="Complaint_Channel__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                  
+                </lightning:layout>
+                
+            </div>
+            <!--
+                </aura:if>-->
+            <div class="slds-box slds-clearfix">
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Staff_Error__c" fieldName="Staff_Error__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="MNPI__c" fieldName="MNPI__c" onchange="{!c.OpportunityNameRequired}"/>
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Staff_Error_Description__c" fieldName="Staff_Error_Description__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Opportunity_Name__c" fieldName="Opportunity_Name__c"/>
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+                <lightning:layout horizontalAlign="center">
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            <lightning:inputField aura:id="Staff_Member_Name__c" fieldName="Staff_Member_Name__c" />
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6">
+                        <div style="width: 80%">
+                            
+                        </div>
+                    </lightning:layoutItem>                
+                </lightning:layout>
+                
+            </div>
+            
+            <aura:if isTrue="{!v.includesClosed}">
+                <div class="slds-box slds-clearfix">
+                    <lightning:layout horizontalAlign="center">
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Desired_Action__c" fieldName="Desired_Action__c" />
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Root_Cause_Category__c" fieldName="Root_Cause_Category__c"/>
+                            </div>
+                        </lightning:layoutItem>                
+                    </lightning:layout>
+                    
+                    <lightning:layout horizontalAlign="center">
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Action_Taken__c" fieldName="Action_Taken__c" />
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Root_Cause__c" fieldName="Root_Cause__c"/>
+                                
+                            </div>
+                        </lightning:layoutItem>                
+                    </lightning:layout>
+                    
+                    <lightning:layout horizontalAlign="center">
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Business_Owner_Action__c" fieldName="Business_Owner_Action__c"/>                       
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                
+                            </div>
+                        </lightning:layoutItem>                
+                    </lightning:layout>
+                    
+                    <lightning:layout horizontalAlign="center">
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Resolution_Detail__c" fieldName="Resolution_Detail__c" />              
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                
+                            </div>
+                        </lightning:layoutItem>                
+                    </lightning:layout>
+                    
+                    <lightning:layout horizontalAlign="center">
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                <lightning:inputField aura:id="Resolved_In_Favour_Of__c" fieldName="Resolved_In_Favour_Of__c"/>                       
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <div style="width: 80%">
+                                
+                            </div>
+                        </lightning:layoutItem>                
+                    </lightning:layout>
+                    
+                </div>
+            </aura:if>
+            
+            <br/>
+            <lightning:layout horizontalAlign="end">
+                <lightning:layoutItem size="6">
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6">
+                    <div style="float:right">
+                        <lightning:button variant="brand" aura:id="buttonNewCase" class="buttonNewCase" label="Create Case" onclick="{! c.newCase }" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            
+        </lightning:recordEditForm>
+    </aura:if>
+    
+    
+    
+     </div>
+</aura:component>

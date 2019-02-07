@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EscalationRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <escalationRule>
+        <fullName>CSC Case Escalation</fullName>
+        <active>true</active>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Closed Resolved,Closed Duplicate,Awaiting Feedback - Client,Closed - No Response from client</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>1 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>60</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Closed Resolved,Closed Duplicate,Awaiting Feedback - Client,Closed - No Response from client</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>2 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>120</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Closed Resolved,Closed Duplicate,Awaiting Feedback - Client,Closed - No Response from client</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>3 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>180</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved,Escalated</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>4 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>240</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved,Escalated</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>1 Day(s),8 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>540</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved,Escalated</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>10 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>600</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>2 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>1080</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>3 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>1620</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>30 Hour(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>1800</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>4 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>2160</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>5 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>2700</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>10 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>5400</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>30 Day(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>16200</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>CSC Default Support Cases</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Escalated,Awaiting Feedback - Client,Closed Duplicate,Closed - No Response from client,Closed Resolved</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.SLA__c</field>
+                <operation>equals</operation>
+                <value>8 Week(s)</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>21600</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Complaint,MNPI Complaint</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>On Hold,Escalated,Awaiting Feedback - Client,Closed Resolved,Closed Duplicate,Closed - No Response from client,Closed Unresolved,Closed - FPOC</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>1080</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+        <ruleEntry>
+            <businessHours>Monday to Friday 07:30 - 17:00</businessHours>
+            <businessHoursSource>Static</businessHoursSource>
+            <criteriaItems>
+                <field>Case.Queue__c</field>
+                <operation>equals</operation>
+                <value>Internal Support Queue</value>
+            </criteriaItems>
+            <criteriaItems>
+                <field>Case.IsClosed</field>
+                <operation>notEqual</operation>
+                <value>True</value>
+            </criteriaItems>
+            <escalationAction>
+                <minutesToEscalation>480</minutesToEscalation>
+                <notifyCaseOwner>false</notifyCaseOwner>
+                <notifyEmail>tyrone.manual@absa.co.za</notifyEmail>
+                <notifyEmail>nakedi.mashapa@absacapital.com</notifyEmail>
+                <notifyEmail>Lorraine.Taylor-Mawisa@absacapital.com</notifyEmail>
+                <notifyToTemplate>Internal_Support/X2nd_Escalation</notifyToTemplate>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+        </ruleEntry>
+    </escalationRule>
+    <escalationRule>
+        <fullName>Level 1 escalation</fullName>
+        <active>false</active>
+        <ruleEntry>
+            <businessHoursSource>None</businessHoursSource>
+            <escalationAction>
+                <assignedTo>LEVEL_1_ESCALATION_QUEUE</assignedTo>
+                <assignedToTemplate>unfiled$public/SUPPORTCaseescalationnotificationSAMPLE</assignedToTemplate>
+                <assignedToType>Queue</assignedToType>
+                <minutesToEscalation>7230</minutesToEscalation>
+                <notifyCaseOwner>true</notifyCaseOwner>
+                <notifyToTemplate>unfiled$public/SUPPORTCaseescalationnotificationSAMPLE</notifyToTemplate>
+            </escalationAction>
+            <escalationAction>
+                <assignedTo>LEVEL_2_ESCALATION_QUEUE</assignedTo>
+                <assignedToTemplate>unfiled$public/SUPPORTCaseescalationnotificationSAMPLE</assignedToTemplate>
+                <assignedToType>Queue</assignedToType>
+                <minutesToEscalation>57600</minutesToEscalation>
+                <notifyCaseOwner>true</notifyCaseOwner>
+                <notifyToTemplate>unfiled$public/SUPPORTCaseescalationnotificationSAMPLE</notifyToTemplate>
+            </escalationAction>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+            <formula>(TEXT(Status)=&apos;New&apos; || TEXT(Status)=&apos;In Progress&apos;)</formula>
+        </ruleEntry>
+    </escalationRule>
+    <escalationRule>
+        <fullName>Old Emails</fullName>
+        <active>false</active>
+    </escalationRule>
+</EscalationRules>

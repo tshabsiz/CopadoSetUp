@@ -1,0 +1,161 @@
+<messaging:emailTemplate subject="Call Report: {!RelatedTo.Relationship__r.name & ' - ' & TEXT(RelatedTo.Meeting_Date__c)}" recipientType="User" relatedToType="Call_Report__c">
+
+<messaging:htmlEmailBody >
+
+<h1><span style="font-family:arial,helvetica,sans-serif;"><span style="color:#333333;"><strong>{!RelatedTo.Relationship__r.name}</strong></span></span></h1>
+<h2><span style="font-family:arial,helvetica,sans-serif;"><span style="color:#333333;"><strong>Call Report -&nbsp;</strong></span><a href='https://barclaysafrica--dev2.cs82.my.salesforce.com/{!RelatedTo.id}'>{!RelatedTo.name}</a></span></h2>
+
+<table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="width:18.0cm;margin-left:0pt;border-collapse:collapse;border:none" width="680">
+    <tbody>
+        <tr>
+            <td style="width:106.35pt;border:solid gray 1.0pt;
+  background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="142">
+            <h3 class="MsoNormal" style="margin: 2.4pt 0cm;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Date of Meeting</span></span></h3>
+            </td>
+            <td style="width:120.45pt;border:solid gray 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="161">
+            <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+  margin-bottom:2.4pt;margin-left:0cm"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">{!RelatedTo.meeting_date__c} </span></span></p>
+            </td>
+        </tr>
+        <tr style="page-break-inside:avoid">
+            <td style="width:106.35pt;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="142">
+            <h3 class="MsoNormal" style="margin: 2.4pt 0cm;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Venue</span></span></h3>
+            </td>
+            <td colspan="1" style="width:403.95pt;border-top:none;
+  border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="539">
+            <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+  margin-bottom:2.4pt;margin-left:0cm"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt">{!RelatedTo.location__c}</span></p>
+            </td>
+        </tr>
+        <tr style="page-break-inside:avoid">
+            <td style="width:106.35pt;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="142">
+            <h3 class="MsoNormal" style="margin: 2.4pt 0cm;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Subject</span></span></h3>
+            </td>
+            <td colspan="1" style="width:403.95pt;border-top:none;
+  border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="539">
+            <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+  margin-bottom:2.4pt;margin-left:0cm"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt">{!RelatedTo.subject__c}</span></p>
+            </td>
+        </tr>
+        <tr style="page-break-inside:avoid;height:19.35pt">
+            <td style="width:106.35pt;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:19.35pt" valign="top" width="142">
+            <h3 class="MsoNormal" style="margin: 2.4pt 0cm;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Client/s</span></span></h3>
+            </td>
+            <td colspan="1" style="width:403.95pt;border-top:none;
+  border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:19.35pt" valign="top" width="539">
+                <table border="1" cellpadding="0" cellspacing="0" style="font-family:arial,helvetica,sans-serif;font-size:11pt">
+                    <thead>
+                        <tr>
+                            <td style="text-align: left;">{!$ObjectType.Attendee__c.fields.Attendee_Name__c.Label}</td>
+                            <td style="text-align: left;">{!$ObjectType.Contact.fields.Job_title__c.Label}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat var="att" value="{!relatedTo.Attendees__r}">   
+                            <apex:outputPanel rendered="{!att.Client_Attendee__c != null}">
+                                <tr>
+                                   <td>{!att.Attendee_Name__c}</td>
+                                    <td>{!att.Client_Attendee__r.Job_title__c}</td> 
+                                </tr>
+                            </apex:outputPanel>
+                        </apex:repeat> 
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr style="page-break-inside:avoid;height:15.1pt">
+            <td style="width:106.35pt;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="142">
+            <h3 class="MsoNormal" style="margin: 2.4pt 0cm;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Staff in attendance</span></span></h3>
+            </td>
+            <td colspan="1" style="width:403.95pt;border-top:none;
+  border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="539">
+                <table border="1" cellpadding="0" cellspacing="0" style="font-family:arial,helvetica,sans-serif;font-size:11pt">
+                    <thead>
+                        <tr>
+                            <td style="text-align: left;">{!$ObjectType.Attendee__c.fields.Attendee_Name__c.Label}</td>
+                            <td style="text-align: left;">{!$ObjectType.User.fields.Hub__c.Label}</td>
+                            <td style="text-align: left;">{!$ObjectType.User.fields.Team__c.Label}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat var="att" value="{!relatedTo.Attendees__r}">   
+                            <apex:outputPanel rendered="{!att.Barclays_Attendee__c != null}">
+                            
+                           <tr>
+                                    <td>{!att.Attendee_Name__c}</td>
+                                    <td>{!att.Barclays_Attendee__r.Hub__c}</td>
+                                    <td>{!att.Barclays_Attendee__r.Team__c}</td>
+                                </tr>
+                                
+                            </apex:outputPanel>
+                        </apex:repeat> 
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="MsoNormal" style="margin: 4.8pt 0cm;">&nbsp;</div>
+
+<table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="border-collapse: collapse; border: none; margin-left: 0pt; width: 18cm;" width="680">
+    <tbody>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <h3 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Meeting reasons</span></span></h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><strong>Main meeting reason</strong> :&nbsp;{!RelatedTo.meeting_reason__c}
+            {!RelatedTo.background_to_meeting__c}</span></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <h3 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Meeting details </span></span></h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><apex:outputText escape="false" value="{!RelatedTo.Description__c}" /></span></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <h3 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt"><span lang="EN-GB">Proposed Products</span></span></h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+            <p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span style="font-family:arial,helvetica,sans-serif;font-size:11pt">{!RelatedTo.Proposed_Products__c}</span>
+            </p>
+            </td>
+        </tr>
+     </tbody>
+</table>
+
+<br />
+<br />
+
+
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

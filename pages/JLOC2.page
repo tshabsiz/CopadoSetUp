@@ -1,0 +1,259 @@
+<apex:page standardController="JLOC__c" extensions="JLOC2Controller">
+    <style type="text/css">
+       body {
+           padding: 0px !important;
+           margin: 0px !important;
+       }
+       
+       ul, li {
+           margin-left: 0px !important;
+       }
+    </style>
+    <!-- build:bootstrap -->
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/mw-bootstrap.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/themes/mw-paper.css')}"/>
+    <!-- endbuild -->
+
+    <!-- build:css -->
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/lib/bootstrap-chosen.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/lib/bootstrap-datetimepicker.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/wait.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/containers.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/select.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/textarea.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/table.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/input.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/outcome.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/loading.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/modal.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/group.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/pagination.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/notifications.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/navigation.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/feed.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/files.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.manywho, 'manywho/css/debug.css')}"/>
+    <!-- endbuild -->
+
+    <div id="manywho"></div>
+    <div id="loader" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: black; opacity: 0.3;">
+        <div style="position: absolute; width: 100%; top: 50%; left: 0; margin-top: -4em; text-align: center; color: white;">
+            <p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 2em">Initializing ManyWho</p>
+        </div>
+    </div>
+
+    <script>
+        // Get any data stored in the cookie
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+            }
+            return "";
+        }
+        
+        // Set any data we need to get from cookies based on oauth redirect
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+        
+        var manywho = {
+            cdnUrl: 'https://d2sz60yu6avxg2.cloudfront.net',
+            initialize: function () {   
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+                var stateId = null;
+                
+                // This is the parameter that puts the page into mobile mode
+                var isdtp = queryParameters['isdtp'];
+
+                // Check to see if we re dealing with mobile, we have the cookie and we ve just completed the authorization sequence
+                if (getCookie('isdtp') == 'p1' &&
+                    queryParameters['initialization'] != null &&
+                    queryParameters['initialization'].trim().length > 0 &&
+                    queryParameters['authorization'] != null &&
+                    queryParameters['authorization'].trim().length > 0) {
+                    var locationUrl = '';
+                    
+                    // Grab the current location
+                    locationUrl += [ location.protocol, '//', location.host, location.pathname ].join('');
+                    // Append the state identifier
+                    locationUrl += '?join=' + queryParameters['join'];
+                    // Append the initialization and authorization
+                    locationUrl += '&authorization=' + queryParameters['authorization'];
+                    locationUrl += '&initialization=' + queryParameters['initialization'];
+                    // Append the mobile indicator
+                    locationUrl += '&isdtp=p1';
+                    
+                    // Blank out the mobile cookie
+                    setCookie('isdtp', '', 1);
+                    
+                    // Send the user around the loop again
+                    window.location.replace(locationUrl);
+                }
+                
+                // Check to see if we have the mobile parameter, if we do, set it in the cookie. We ll need this
+                // cookie once the authorization sequence has completed.
+                if (isdtp != null &&
+                    isdtp.toLowerCase() == 'p1') {
+                    setCookie('isdtp', 'p1', 1);
+                } else {
+                    // Blank out the mobile cookie
+                    setCookie('isdtp', '', 1);
+                }
+                
+                // When the page first loads, we have the state identifier but will then redirect through oauth and we lose the record
+                // reference as a result so need to get it back with join identifier                
+                if ('{!stateId}'.trim().length == 0) {
+                    // Grab the state identifier from the join - we just use that
+                    stateId = queryParameters['join'];
+                } else {
+                    // Assign the state identifier from the underlying record
+                    stateId = '{!stateId}';
+                }
+
+                var inputValues = [];
+                
+                // If we re finishing the authorization sequence, we grab the values from the cookie - we also ignore
+                // the join id here as we ll need to re-initialize now the user has authenticated correctly
+                if (queryParameters['initialization'] != null &&
+                    queryParameters['initialization'] == 'true' ||
+                    queryParameters['initialization'] == true) {
+                    // Null the state identifier as we ll create a new state
+                    stateId = null;
+                    
+                    // Apply the input values
+                    inputValues[0] = {
+                        "developerName": "Opportunity Id",
+                        "contentType": "ContentString",
+                        "contentValue": getCookie('oppId')
+                    }
+                    inputValues[1] = {
+                        "developerName": "Account Id",
+                        "contentType": "ContentString",
+                        "contentValue": getCookie('accId')
+                    }
+                    inputValues[2] = {
+                        "developerName": "JLOC Type",
+                        "contentType": "ContentString",
+                        "contentValue": getCookie('jlocType')
+                    }
+                } else if (queryParameters['oppId'] && queryParameters['accId'] && queryParameters['jlocType']) {
+                    // Stick the input values in a cookie so we re have them with oauth2 returns
+                    setCookie('oppId', queryParameters['oppId'], 1);
+                    setCookie('accId', queryParameters['accId'], 1);
+                    setCookie('jlocType', queryParameters['jlocType'], 1);
+                }
+
+                manywho.settings.initialize({
+                    isFullWidth: false,
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    platform: {
+                        uri: 'https://flow.manywho.com'
+                    }
+                });
+                var options = {
+                    authentication: null,
+                    mode: null, //'DEBUG_STEPTHROUGH',
+                    reportingMode: queryParameters['reporting-mode'],
+                    trackLocation: false,
+                    replaceUrl: true,
+                    collaboration: {
+                        isEnabled: true
+                    },
+                    autoFocusInput: true,
+                    inputs: inputValues,
+                    annotations: null,
+                    navigation: {
+                        isFixed: false
+                    }
+                };
+                var settings = window.devOptions || {};
+                manywho.engine.initialize(
+                    '{!tenantId}',
+                    '{!flowId}', // Flow Id
+                    null, // Flow Version Id
+                    'main',
+                    stateId,
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+            }
+        };
+    
+    </script>
+
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/jquery.min.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/bootstrap.min.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/react.min.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/socket.io-1.3.2.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/chosen.jquery.min.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/moment-with-locales.min.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/vendor/loglevel.min.js')}"/>
+    
+    <!-- build:js -->
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/lib/react-chosen.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/lib/datetimepicker.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/lib/jquery.plugins.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/lib/jquery.textcomplete.js')}"/>
+
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/ajax.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/model.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/component.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/styling.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/collaboration.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/state.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/engine.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/theming.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/settings.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/json.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/utils.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/authorization.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/callbacks.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/social.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/services/log.js')}"/>
+    
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/mixins.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/main.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/navigation.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/group.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/inline.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/vertical.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/horizontal.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/presentation.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/input.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/textarea.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/content.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/outcome.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/select.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/table-container.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/table-large.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/table-small.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/feed.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/pagination.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/wait.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/modal.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/notifications.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/file-upload.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/debug.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/status.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/voting.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/image.js')}"/>
+    <apex:includeScript loadOnReady="true" value="{!URLFOR($Resource.manywho, 'manywho/js/components/returnToParent.js')}"/>
+    <!-- endbuild -->
+    
+    <script src="https://flow.manywho.com/js/constants"></script>
+
+    <!-- build:loader -->
+    <apex:includeScript loadOnReady="true" value="{!$Resource.manywhofinish}"/>
+    <!-- endbuild -->
+
+</apex:page>

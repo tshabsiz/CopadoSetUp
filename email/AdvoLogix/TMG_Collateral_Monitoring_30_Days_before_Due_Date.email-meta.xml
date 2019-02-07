@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Collateral Monitoring 30 Days before Due Date</name>
+    <style>freeForm</style>
+    <subject>{!Collateral_Monitoring__c.Name} will be due for : {!Collateral_Monitoring__c.Deal__c} on {!Collateral_Monitoring__c.Due_Date__c}</subject>
+    <textOnly>Dear {!Collateral_Monitoring__c.Person_Responsible__c}
+
+{!Collateral_Monitoring__c.Name} will be due for {!Collateral_Monitoring__c.Deal__c} on {!Watcher__c.Due_Date__c}:
+
+
+
+Collateral Name: {!Collateral_Monitoring__c.Collateral__c}
+
+Collateral Group:
+
+Collateral Type: {!Collateral_Monitoring__c.Collateral_Type__c}
+
+
+Deal Name : {!Collateral_Monitoring__c.Deal__c}
+Agreement Name : {!Collateral_Monitoring__c.Agreement__c}
+Collateral Monitoring Name: {!Collateral_Monitoring__c.Name}
+Collateral Type : {!Collateral_Monitoring__c.Collateral_Type__c}
+Item to Monitor : {!Collateral_Monitoring__c.Item_to_Monitor__c}
+Collateral Monitoring  Status: {!Watcher__c.Watcher_Status__c}
+Due Date : {!Watcher__c.Due_Date__c}
+
+
+Click on the below link to view the Collateral Monitoring:
+{!Collateral_Monitoring__c.Link}
+
+Kind regards,
+
+Transaction Management Group</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,4 @@
+<apex:page standardController="Contact" tabStyle="Contact" cache="false" readOnly="true" sidebar="false" showHeader="{!NOT(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1')}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1','','Participation Map: '+Contact.Name)}">
+    <apex:outputField value="{!Contact.Name}" rendered="false" />
+    <c:ParticipationMap recordId="{!Contact.Id}" recordName="{!Contact.Name}" fieldName="advpm__Contact__c" />
+</apex:page>

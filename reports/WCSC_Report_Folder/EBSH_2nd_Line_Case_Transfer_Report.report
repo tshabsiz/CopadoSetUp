@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CASE_NUMBER</field>
+    </columns>
+    <columns>
+        <field>Case_Transfer_Tracking__c.From__c</field>
+    </columns>
+    <columns>
+        <field>Case_Transfer_Tracking__c.In__c</field>
+    </columns>
+    <columns>
+        <field>Case_Transfer_Tracking__c.Total_Time_Hrs__c</field>
+    </columns>
+    <columns>
+        <field>Case_Transfer_Tracking__c.Out__c</field>
+    </columns>
+    <columns>
+        <field>Case_Transfer_Tracking__c.To__c</field>
+    </columns>
+    <columns>
+        <field>ORIGIN</field>
+    </columns>
+    <columns>
+        <field>Case.Service_Type__c</field>
+    </columns>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>Invalid escalations</description>
+    <filter>
+        <criteriaItems>
+            <column>Case.Department__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>EBSH</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case_Transfer_Tracking__c.From__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>EBSH - 2nd Line</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case_Transfer_Tracking__c.To__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>Gershwin Ntsie,EBSH - 2nd Line,Bongani Khoza,Delewe Nku,Simangele Radebe,EBSS - CSC Documentation,Chandler Walstroom,Channel Specialist</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <name>EBSH 2nd Line Case Transfer Report</name>
+    <params>
+        <name>units</name>
+        <value>h</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CaseCustomEntity$Case_Transfer_Tracking__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATEONLY</dateColumn>
+        <endDate>2018-05-31</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2018-01-01</startDate>
+    </timeFrameFilter>
+</Report>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Deal Approval</name>
+    <style>freeForm</style>
+    <subject>{!Approval__c.OwnerFullName}, has requested documentation and governance sign-off for the following</subject>
+    <textOnly>Transaction Administration, TMG has requested documentation and governance sign off for the following:
+
+[Deal Name] : {!Approval__c.Matter_Deal__c}
+
+[Product Area] : {!Approval__c.Product_Area__c}
+
+[Agreement Product Grouping] : {!Approval__c.Agreement_Product_Grouping__c}
+
+[Counterparty Name] : {!Approval__c.Relationship__c}
+
+[Counterparty SDS ID] : {!Approval__c.SDS_ID_Deal__c}
+
+Please provide your approval,
+
+as Credit Analyst, that credit approval is still valid and sanctioning conditions have not changed.
+
+as Legal Counsel, that the agreement(s) comply with the credit approval and Conditions Precedents has been fulfilled, deferred, condoned or waived.
+
+as Product Specialist, that the solution is correct and suits the client’s needs.
+
+Click on the below link for the Fit to Lend checklist and approval:
+
+{!Approval__c.Link}
+
+Kind Regards,
+Transaction Management Group
+
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

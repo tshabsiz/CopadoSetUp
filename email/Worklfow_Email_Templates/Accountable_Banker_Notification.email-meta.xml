@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Notifies Accountable Banker of assignment to Opportunity</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Accountable Banker Notification</name>
+    <style>freeForm</style>
+    <subject>You have been assigned as Accountable Banker on an Opportunity</subject>
+    <textOnly>Good day
+
+This is to notify you that  have been assigned as the Accountable Banker on an Opportunity:
+
+Opportunity name: {!Opportunity.Name}
+Opportunity owner:  {!Opportunity.OwnerFullName}
+Client: {!Opportunity.Account}
+Stage: {!Opportunity.StageName}
+Description: {!Opportunity.Description}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
