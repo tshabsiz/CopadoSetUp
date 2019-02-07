@@ -1,0 +1,1687 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_PrintViewController" applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" renderAs="pdf">
+    <head>
+        <style>
+            body {
+                font-family: sans-serif;
+                font-size: 90%;
+            }
+            @page {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+            @page {
+                @top-center {
+                    content: '&nbsp;';
+                    font-family: sans-serif;
+                    font-size: 12px;
+                    color: #FF0000;
+                }
+                @top-right {
+                    content: '{!$ObjectType.JLOC__c.fields.JLOC_Status__c.Label}: {!JLOC__c.JLOC_Status__c} \A' 'Salesforce ID: {!JLOC__c.Name}';
+                    white-space: pre-wrap;
+                    font-family: sans-serif;
+                    font-size: 9px;
+                }
+                @bottom-left {
+                    /*content: 'Page ' counter(page) ' of ' counter(pages) '&nbsp;&nbsp;|&nbsp;&nbsp;{!JLOC__c.Organisation__r.Name}&nbsp;&nbsp;|&nbsp;&nbsp;Confidential';*/
+                    content: counter(page) '&nbsp;&nbsp;|&nbsp;&nbsp;{!JLOC__c.Organisation__r.Name}&nbsp;&nbsp;|&nbsp;&nbsp;Confidential&nbsp;&nbsp;|&nbsp;&nbsp;Document generated at<apex:outputText value="{0,date,' ' yyyy-MM-dd ' ' HH:mm:ss z}"><apex:param value="{!NOW()}" /></apex:outputText>';
+                    font-family: sans-serif;
+                    font-size: 9px;
+                }                
+            }
+            .page-break {
+                    display: block;
+                    page-break-after: always;
+            }
+            table.header {
+                border-collapse: collapse;
+                width: 100%;                
+            }
+            table.header td {
+                width: 100%;
+                text-align: center;
+            }
+            table.header td.title {
+                font-size: 24px;
+                color: #00AEEF;
+                padding-top: 4px;
+                padding-bottom: 0px;
+            }
+            table.header td.subtitle {
+                font-size: 18px;
+                padding-top: 0px;
+                padding-bottom: 6px;
+            }
+            div.title {
+                font-size: 26px;
+                font-weight: none;
+                color: #00AEEF;
+                margin-bottom: 2px;
+            }
+            div.section {
+                max-width: 780px;
+                margin-top: 6px;
+                margin-bottom: 6px;
+            }
+            /*div.section:before {
+                content: '\A';
+            }*/
+            table.grid {
+                margin: 0 0;
+                width: 100%;
+                max-width: inherit;
+                page-break-inside: avoid;
+                font-size: 11px;
+                border-collapse: collapse;
+            }
+            table.grid tr {
+                margin: 0;
+            }
+            table.grid th {
+                margin: 0;
+                background-color: #525252;
+                color: white;
+                font-weight: bold;
+                vertical-align: top;
+                padding: 2px;
+                border-collapse: collapse;
+                border: 1px solid #525252;
+            }
+            table.grid td {
+                margin: 0;
+                vertical-align: top;
+                padding: 2px;
+                padding-left: 3px;
+            }
+            table.grid td.label {
+                font-weight: bold;
+                background-color: #E2E2E2;
+                border-collapse: collapse;
+                border: 1px solid #525252;
+            }
+            table.grid td.field {
+                background-color: #F7F7F7; 
+                border-collapse: collapse;
+                border: 1px solid #525252;
+            }
+            td.label.fourw {
+                width: 18%;
+            }
+            td.field.fourw {
+                /*width: 32%;*/
+            }
+            td.label.sixw {
+            }
+            td.field.sixw {
+                white-space: nowrap;
+            }
+            td.label.sixws {
+                text-align: center;
+            }
+            td.YesNo {
+                width: 40px;
+                text-align: center;
+            }
+            td.securityDescription {
+                max-width: 600px;           
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+            td.securityCurrency {
+                width: 100px;
+                text-align: right;
+            }
+            table.creditstatistics {
+                font-size: 9px;
+            }
+            table.team {
+                width: 100%;
+                margin: 0 0;
+                padding: 1px;
+            }
+            table.team td {
+                margin: 0 0;
+                padding: 2px;
+            }
+            table.team td.label {
+                background-color: #000000;          
+                color: white;
+            }
+            table.finTable {
+                padding: 2px;
+                margin: 0 0;
+            	border-collapse: collapse;
+            }
+            table.finTable th {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            table.finTable td {
+                margin: 0;
+                padding: 2px;
+                padding-left: 3px;
+                border-collapse: collapse;
+                border: 1px solid #525252;
+            }
+            table.finTable td.field {
+                background-color: #FBFBFB; 
+                min-width: 115px;
+                text-align: right;
+            }
+            table.revProduct {
+                width: 100%;
+                padding: 2px;
+                margin: 0 0;
+            	border-collapse: collapse;
+            }
+            table.revProduct td {
+                margin: 0;
+                padding-left: 2px;
+            	border: 1px solid #525252;
+            }
+            table.revProduct td.label {
+                font-weight: bold;
+                background-color: #F7F7F7;
+                border-collapse: collapse;
+                border: 1px solid #525252;
+            }
+            table.revProduct td.prob {
+                width: 50px;
+                background-color: #FEFFE9;
+                text-align: right;
+            }            
+            table.revProduct td.included {
+                width: 40px;
+                text-align: center;
+            }
+            table.revProduct td.sum {
+                background-color: #E2E2E2;
+                color: black;
+                text-align: right;
+            }
+            table.revProduct td.rev {
+                text-align: right;
+            }
+            table.revProduct td.included img {
+                width: 12px;
+            }
+            .sfdc_richtext {
+                border: 0px solid black;
+            }
+            .sfdc_richtext p {
+                display: block !important;
+                margin: 0px !important;
+                border: 0px !important;
+                padding: 0px !important;
+            }
+            .sfdc_richtext img {
+                max-width: 100% !important;
+                /*height: auto !important;*/
+            }
+            .standaloneImgWrapper {
+                width: 100%;
+                text-align: center;
+            }
+            .standaloneImg {
+                width: 740px !important;
+                height: auto !important;
+                /*max-width: 660px !important;*/
+            }
+        </style>
+    </head>
+    <body>
+        <table class="header">
+            <tr>
+                <td class="title">{!JLOC__c.Organisation__r.Name}</td>
+            </tr>
+            <tr>
+                <td class="subtitle">{!$Label.lbl_JLOCProposal} - <i>{!$Label.lbl_MeetingDate}:</i>&nbsp;<apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!JLOC__c.Date__c != null}"><apex:param value="{!JLOC__c.Date__c}" /></apex:outputText></td>
+            </tr>
+        </table>
+        <div class="title">1. {!$Label.lbl_ExecutiveSummary}</div>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="4">{!$Label.lbl_RelationshipDetails}</th>
+                    </tr>
+                    <tr>
+                        <td class="label fourw">{!$Label.lbl_OriginationCountry}</td>
+                        <td class="field fourw">{!jlocRelationship.Client_Country__c}</td>
+                        <td class="label fourw">{!$ObjectType.JLOC__c.fields.Compliance__c.Label}</td>
+                        <td class="field fourw"><apex:outputText value="{!JLOC__c.Compliance__c}" /></td>
+                    </tr>
+                    <tr>
+                        <td class="label fourw">{!$Label.lbl_BookingCountry}</td>
+                        <td class="field fourw">{!jlocOpportunity.Opportunity_Country__c}</td>
+                        <td class="label fourw">{!$Label.lbl_DateLastJLOC}</td>
+                        <td class="field fourw"><apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!JLOC__c.Date_of_last_JLOC__c != null}"><apex:param value="{!JLOC__c.Date_of_last_JLOC__c}" /></apex:outputText></td>
+                    </tr>
+                    <tr>
+                        <td class="label fourw">{!$Label.lbl_CoverageBanker}</td>
+                        <td class="field fourw">{!JLOC__c.Organisation__r.Owner.Name}</td>
+                        <td class="label fourw">{!$Label.lbl_ClosedJLOC}?</td>
+                        <td class="field fourw">{!IF(JLOC__c.Is_this_a_closed_JLOC__c, "Yes", "No")}</td>
+                    </tr>               
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!jlocOpenOpportunitiesIncluded.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="6">{!$Label.lbl_ListOpenOpportunitiesIncluded}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$ObjectType.Opportunity.fields.Name.Label}</td>
+                        <td class="label">{!$Label.lblRelatedGroupClient}</td>
+                        <td class="label">{!$Label.lbl_Stage}</td>
+                        <td class="label">{!$Label.lbl_CloseDate}</td>
+                    </tr>
+                    <apex:repeat value="{!jlocOpenOpportunitiesIncluded}" var="opp">
+                        <tr>
+                            <td class="field"><apex:outputField value="{!opp.Name}"/></td>
+                             <td class="field"><apex:outputText value="{!opp.Related_Group_Client__r.Name}"/></td>
+                            <td class="field"><apex:outputField value="{!opp.StageName}"/></td>
+                            <td class="field"><apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!opp.CloseDate != null}"><apex:param value="{!opp.CloseDate}" /></apex:outputText></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!jlocFinancials != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                       <th colspan="6">{!$Label.lbl_RelationshipFinancials}
+				            (<apex:outputField value="{!jlocFinancials.Financial_Results__c}" rendered="{!jlocFinancials.Financial_Results__c != null}"/>-&nbsp; 
+                             <apex:outputField value="{!jlocFinancials.Month__c}" rendered="{!jlocFinancials.Month__c != null}"/>&nbsp; 
+                             <apex:outputField value="{!jlocFinancials.Year__c}" rendered="{!jlocFinancials.Year__c != null}"/>&nbsp;
+                             <apex:outputText value="for  {!jlocFinancials.Period_Of_Months__c} months" rendered="{!jlocFinancials.Financial_Results__c != null && jlocFinancials.Financial_Results__c == 'Management Accounts' && jlocFinancials.Period_Of_Months__c != null}" />)
+                       </th>
+                    </tr>
+                    <tr>
+                        <td class="label sixw">{!$ObjectType.Financial_Information__c.fields.Turnover__c.Label}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocFinancials.Turnover__c}" rendered="{!jlocFinancials.Turnover__c != null}"/></td>
+                        <td class="label sixw">{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocFinancials.Market_Cap__c}" rendered="{!jlocFinancials.Market_Cap__c != null}"/></td>
+                        <td class="label sixw" colspan="2" />
+                    </tr>
+                    <tr>
+                        <td class="label sixw">{!$Label.lbl_NetDebt}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocFinancials.Net_Debt__c}" rendered="{!jlocFinancials.Net_Asset_Value__c != null}"/></td>
+                        <td class="label sixw">{!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocFinancials.EBITDA__c}" rendered="{!jlocFinancials.EBITDA__c != null}"/></td>
+                        <td class="label sixw">{!$Label.lbl_NetDebt} / {!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}</td>
+                        <td class="field sixw"><apex:outputText value="{!jlocFinancialsCalcDebDivtEbitda}" rendered="{!jlocFinancialsCalcDebDivtEbitda != null}"/></td>
+                    </tr>
+                    <tr><td class="label sixws" colspan="6" rendered="{!jlocFinancials.Financial_Results__c != null && jlocFinancials.Financial_Results__c != 'Audited Full Year' }" ><apex:outputText value="An annualised EBITDA has been used to calculate the net Debt Ratio" rendered="{!jlocFinancials.Financial_Results__c != null && jlocFinancials.Financial_Results__c != 'Audited Full Year' }" /></td></tr>
+                </table>
+           </div>       
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="8">{!$Label.lbl_LendingDetails}</th>
+                    </tr>
+                    <tr>
+                        <td class="label sixw">{!$ObjectType.JLOC__c.fields.Reason_for_JLOC__c.Label}</td>
+                        <td class="fieldWrap sixw" colspan="5"><apex:outputField value="{!JLOC__c.Reason_for_JLOC__c}" rendered="{!JLOC__c.Reason_for_JLOC__c != null}"/></td>
+                    </tr>
+                    <tr>
+                        <td class="label sixw">{!$Label.lbl_ProductsRoRWA}</td>
+                        <td class="field sixw"><apex:outputField value="{!JLOC__c.Future_RoRWA__c}"/></td>
+                        <td class="label sixw">{!$Label.lbl_ExistingRelationShipRoRWA}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocClientPlan.RoRWA_Existing__c}" /></td>                      
+                        <td class="label sixw">{!$Label.lbl_TotalRelationShipRoRWA}</td>
+                        <td class="field sixw"><apex:outputField value="{!JLOC__c.Total_RoRWA__c}"/></td>                        
+                    </tr>
+                    <tr>
+                        <td class="label sixw">{!$Label.lbl_TotalFinancingLimits}</td>
+                        <td class="field sixw"><apex:outputField value="{!jlocClientPlan.TFL__c}"/></td>
+                        <td class="label sixw">{!$ObjectType.JLOC__c.fields.Total_Fin_Limits_Proposed__c.Label}</td>
+                        <td class="field sixw"><apex:outputField value="{!JLOC__c.Total_Fin_Limits_Proposed__c}"/></td>
+                        <td class="label sixw">{!$Label.lbl_NewFinancingLimits}</td>
+                        <td class="field sixw"><apex:outputText value="{!jlocNewFinancingLimits}"/></td>
+                    </tr>
+                </table>
+                <br/>
+                <table class="grid">
+                    <tr>
+                        <td class="label">{!$Label.lbl_DGTTC}</td>
+                        <td class="field"><apex:outputField value="{!jlocClientPlan.DG__c}"/></td>
+                        <td class="label" style="{!IF(ISBLANK(jlocRelationship.External_Credit_Rating__c),"display:none","")}">{!$ObjectType.Account.fields.External_Credit_Rating__c.Label}</td>
+                        <td class="field" style="{!IF(ISBLANK(jlocRelationship.External_Credit_Rating__c),"display:none","")}"><apex:outputField value="{!jlocRelationship.External_Credit_Rating__c}"/></td>
+                        <td class="label">{!$ObjectType.JLOC__c.fields.CLGD_Consumption__c.Label}</td>
+                        <td class="field"><apex:outputField value="{!JLOC__c.CLGD_Consumption__c}"/></td>
+                        <td class="label">{!$ObjectType.JLOC__c.fields.Status__c.Label}</td>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Status__c}"/></td>
+                    </tr>              
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Brief_Transaction_Description_Without__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th>{!$Label.lbl_TransactionSummary}</th>
+                    </tr>
+                    <tr>
+                        <td class="field">
+                            <apex:outputField value="{!JLOC__c.Brief_Transaction_Description_Without__c}" />
+                        </td>
+                    </tr>              
+                </table>
+            </div>     
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Transaction_Structure__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th>{!$Label.lbl_TransactionStructure}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Transaction_Structure__c}"/></td>
+                    </tr>              
+                </table>
+            </div>     
+        </apex:outputPanel>
+        
+        <!-- ############## SECTION 2 ################## -->
+        <div class="page-break"></div>
+        <div class="title">2. {!$Label.lbl_Products}</div>
+        <apex:outputPanel rendered="{!!jlocProposedProducts.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="14">{!$Label.lbl_ProposedProducts}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_Product}</td>
+                        <td class="label">{!$Label.lbl_Country}</td>
+                        <td class="label">{!$Label.lbl_Tenor}</td>
+                        <td class="label">{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}</td>
+                        <td class="label">{!$Label.lbl_AvgUtilisation}</td>
+                        <td class="label">{!$ObjectType.OpportunityLineItem.fields.Base_Rate__c.Label}</td>
+                        <td class="label">{!$Label.lbl_GrossMargin}</td>
+                        <td class="label">{!$Label.lbl_FTP}</td>
+                        <td class="label">{!$Label.lbl_NetMargin}</td>
+                        <td class="label">{!$Label.lbl_ArrangFee}</td>
+                        <td class="label">{!$Label.lbl_ComFees}</td>
+                        <td class="label">{!$Label.lbl_AnnFacFees}</td>
+                        <td class="label">{!$ObjectType.OpportunityLineItem.fields.Threshold__c.Label}</td>
+                        <td class="label">{!$Label.lbl_RoRWA}</td>
+                    </tr>
+                    <apex:repeat value="{!jlocProposedProducts}" var="product">
+                        <tr>
+                            <td class="field">
+                                <apex:outputField value="{!product.Product_Level_3__r.Name}"   rendered="{!product.Product_Level_3__c != null}"/>
+                                <apex:outputField value="{!product.Product_Level_2__r.Name}"   rendered="{!product.Product_Level_3__c == null && product.Product_Level_2__c != null}"/>
+                                <apex:outputField value="{!product.Product_Name__c}"           rendered="{!product.Product_Level_3__c == null && product.Product_Level_2__c == null && product.Product_Name__c != null}"/>
+                            </td>
+                            <td class="field"><apex:outputField value="{!jlocOpportunity.Opportunity_Country__c}"/></td>
+                            <td class="field">
+                                <apex:outputText rendered="{!product.Term_Interval__c==NULL || product.Term_Interval__c=='Years'}">{!product.Terms_Years__c} {!product.Term_Interval__c}</apex:outputText>
+                                <apex:outputText rendered="{!product.Term_Interval__c!=NULL && product.Term_Interval__c=='Months'}">{!ROUND((product.Terms_Years__c * 12),2)} {!product.Term_Interval__c}</apex:outputText>
+                                <apex:outputText rendered="{!product.Term_Interval__c!=NULL && product.Term_Interval__c=='Days'}">{!FLOOR(product.Terms_Years__c * 12 * 30.43687500000008)} {!product.Term_Interval__c}</apex:outputText>
+                            </td>
+                            <td class="field" style="text-align: right">
+                                <apex:outputField value="{!product.Hold_Size__c}" rendered="{!product.Product2.Family != NULL && product.Product2.Family == 'Debt'}"/>
+                                <apex:outputField value="{!product.Balance__c}" rendered="{!product.Product2.Family == NULL || product.Product2.Family != 'Debt'}"/>
+                            </td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Estimated_Utilisation__c}"/></td>
+                            <td class="field"><apex:outputField value="{!product.Base_Rate__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Gross_Margin__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Ftp__c}"/><apex:outputText value="%" rendered="{!product.Ftp__c != null}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Margin__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Arranging_Fee__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Committment_Fee__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Annual_Facility_Fee__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.Threshold__c}"/></td>
+                            <td class="field" style="text-align: right"><apex:outputField value="{!product.RoRWA__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!jlocOpenOpportunitiesExcluded.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="7">{!$Label.lbl_OtherPipelineOpportunities}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_OpenOpportunity}</td>
+                        <td class="label">{!$Label.lbl_Product}</td>
+                        <td class="label">{!$Label.lbl_TotalBalanceFacilitySize}</td>
+                        <td class="label">{!$Label.lbl_AnnualisedIncome}</td>
+                        <td class="label">{!$Label.lbl_CloseDate}</td>
+                        <td class="label">{!$Label.lbl_Probability}</td>
+                        <td class="label">{!$Label.lbl_Stage}</td>
+                    </tr>
+
+                    <apex:variable value="{!0}" var="rowNum"/>
+                    <apex:repeat value="{!jlocOpenOpportunitiesExcluded}" var="opp">
+                        <tr>
+                            <td class="field"><apex:outputField value="{!opp.Name}"/></td>
+                            <td class="field">
+                                <apex:variable value="{!0}" var="prodNum"/>            
+                                <apex:repeat value="{!opp.OpportunityLineItems}" var="prod">
+                                    <apex:outputText value=", " rendered="{!prodNum > 0}"/>
+                                    <apex:outputText value="{!prod.Product_Name__c}"/>
+                                    <apex:variable var="prodNum" value="{!prodNum + 1}"/>
+                                </apex:repeat>
+                            </td>
+                            <td class="field"><apex:outputField value="{!opp.Total_Balance_Facility_Size__c}"/></td>
+                            <td class="field"><apex:outputField value="{!opp.Annualised_Income__c}"/></td>
+                            <td class="field"><apex:outputText value="{0,date,dd/MM/yyyy}" rendered="{!opp.CloseDate != null}"><apex:param value="{!opp.CloseDate}" /></apex:outputText></td>
+                            <td class="field"><apex:outputField value="{!opp.Probability}"/></td>
+                            <td class="field"><apex:outputField value="{!opp.StageName}"/></td>
+                        </tr>
+                        <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!clientPlanFinancialsController.acmfsKeys.empty}">
+            <div class="section">
+        		<table class="grid">
+                    <tr>
+                        <th colspan="12">{!$Label.lbl_ExistingProducts}</th>
+                    </tr>
+                	<tr>
+                    	<td class="label">{!$ObjectType.ACMFacility__c.fields.FACILITYPRODUCTDESCRIPTION__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.Country__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.EXPIRYDATE__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.FACILITYAMOUNT__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.LOSSGIVENDEFAULT__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.ACMUTILIZATIONAMOUNT__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.GROSS_MARGIN__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.FTP_bps__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.Net_Margin__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.Arrang_Fee__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.COM_FEES__c.Label}</td>
+                        <td class="label">{!$ObjectType.ACMFacility__c.fields.RoRWA__c.Label}</td>
+                    </tr>
+                    <tbody>
+                    	<apex:variable value="{!0}" var="acmfsKeyIndex"/>
+                        <apex:repeat value="{!clientPlanFinancialsController.acmfsKeys}" var="acmfsKey">
+                        	<tr id="{!acmfsKey}" class="slds-hint-parent">
+                            	<td colspan="13" bgcolor="#bfbfbf">{!clientPlanFinancialsController.acmfsLabels[acmfsKeyIndex]}</td>
+                            </tr>
+                            <apex:repeat value="{!clientPlanFinancialsController.acmfsMap[acmfsKey]}" var="acmf">
+                            	<tr>
+                                	<td class="field">{!acmf.FACILITYPRODUCTDESCRIPTION__c}</td>
+                                    <td class="field">{!acmf.Country__c}</td>
+                                    <td class="field">
+                                    	<apex:outputText value="{0, date, dd/MM/yyyy}" rendered="{!acmf.EXPIRYDATE__c != null}">
+                                        	<apex:param value="{!acmf.EXPIRYDATE__c}" /> 
+                                        </apex:outputText>
+                                    </td>
+                                    <td class="field" style="text-align: right">
+                                    	{!acmf.FACILITYCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.FACILITYAMOUNT__c}"/></apex:outputText>
+                                    </td>
+                                    <td class="field">{!acmf.LOSSGIVENDEFAULT__c}</td>
+                                    <td class="field" style="text-align: right">
+                                    	{!acmf.ACMUTILIZATIONCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.ACMUTILIZATIONAMOUNT__c}"/></apex:outputText>
+                                    </td>
+                                    <td class="field"><apex:outputText value="{!acmf.GROSS_MARGIN__c}" /></td>
+                                    <td class="field"><apex:outputText value="{!acmf.FTP_bps__c}"/></td>
+                                    <td class="field"><apex:outputText value="{!acmf.NET_MARGIN__c}"/></td>
+                                    <td class="field"><apex:outputText value="{!acmf.Arrang_Fee__c}"/></td>
+                                    <td class="field"><apex:outputText value="{!acmf.COM_FEES__c}"/></td>
+                                    <td class="field"><apex:outputText value="{!acmf.RoRWA__c}"/></td>
+								</tr>
+                            </apex:repeat>
+                            <apex:variable var="acmfsKeyIndex" value="{!acmfsKeyIndex + 1}"/>
+						</apex:repeat>
+                        <tr>
+                        	<th colspan="12">{!$Label.lbl_ACMSubTotal}</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanFinancialsController.facilitySubTotalMap}" var="key">
+                        	<tr>
+                                <td class="field" colspan="3" />
+                                <td class="field" style="text-align: right">
+                                    {!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!clientPlanFinancialsController.facilitySubTotalMap[key].facilityAmountSubTotal}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td class="field"/>
+                                <td class="field" style="text-align: right">
+                                	{!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!clientPlanFinancialsController.facilitySubTotalMap[key].utilizationAmountSubTotal}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td class="field" colspan="6" />
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                        	<th colspan="12" class="facilityProductDescription">{!$Label.lbl_ACMTotal}</th>
+                        </tr>
+                        <tr> 
+                        	<td class="field" colspan="3" />
+                            <td class="field" style="text-align: right">
+                            	{!clientPlanFinancialsController.userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                <apex:param value="{!clientPlanFinancialsController.ACMFacilityFacilityTotal}"/>
+                                </apex:outputText>
+                            </td>
+                            <td class="field"/>
+                            <td class="field" style="text-align: right">
+                            	{!clientPlanFinancialsController.userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                <apex:param value="{!clientPlanFinancialsController.ACMFacilityUtilizationTotal}"/>
+                            	</apex:outputText>
+                            </td>
+                            <td class="field" colspan="6" />
+                    	</tr>
+                	</tbody>
+            	</table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!clientPlanFinancialsController.otherFacility.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="5">{!$Label.lbl_OtherFacilities}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_Product}</td>
+                        <td class="label">{!$Label.lbl_Bank}</td>
+                        <td class="label">{!$Label.lbl_Country}</td>
+                        <td class="label">{!$Label.lbl_Currency}</td>
+                        <td class="label">{!$Label.lbl_Limit}</td>
+                    </tr>
+                    <apex:repeat value="{!clientPlanFinancialsController.otherFacility}" var="facility">
+                        <tr>
+                            <td class="field"><apex:outputField value="{!facility.Product_Level_3__r.Name}"/></td>
+                            <td class="field"><apex:outputField value="{!facility.Bank__c}"/></td>
+                            <td class="field"><apex:outputField value="{!facility.Country__c}"/></td>
+                            <td class="field"><apex:outputField value="{!facility.CurrencyIsoCode}"/></td>
+                            <td class="field"><apex:outputField value="{!facility.Limit__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                    <tr>
+                            <th  colspan="5">{!$Label.lbl_CurrencySubTotal}</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanFinancialsController.currencyTotalsMap}" var="key">
+                            <tr class="slds-hint-parent">
+                                <td class="field"></td>
+                                <td class="field"></td>
+                                <td class="field"></td>
+                                <td class="field"></td>
+                                <td class="field"  style="text-align: left;">
+                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                        {!key} &nbsp;<apex:param value="{!clientPlanFinancialsController.currencyTotalsMap[key].subTotal}" />
+                                    </apex:outputText>
+                                    ( {!clientPlanFinancialsController.userCurrencyCode} 
+                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                        <apex:param value="{!clientPlanFinancialsController.currencyTotalsMap[key].convertedSubTotal}" />
+                                    </apex:outputText>)
+                                </td>
+                                
+                            </tr>
+                        </apex:repeat>
+                    <tr>
+                            <th class="header" colspan="5">{!$Label.lbl_OtherFacilityTotal}</th>
+                        </tr>
+                        <tr>
+                            <td class="field"></td>
+                            <td class="field"></td>
+                            <td class="field"></td>
+                            <td class="field"></td>
+                            <td class="field" style="text-align: left;">
+                                <apex:outputText value="{0, number, ###,###,###.##}">
+                                    {!clientPlanFinancialsController.userCurrencyCode}&nbsp; <apex:param value="{!clientPlanFinancialsController.totalOtherFacilities}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!jlocRevByProduct != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th>
+                            <apex:outputText value="{!$Label.lbl_RevenuesByProduct}"/>
+                            <apex:outputText value="{!' - ' + $Label.lbl_RelationshipCurrency + ': ' + jlocRelationship.CurrencyIsoCode}" rendered="{!jlocRelationship.CurrencyIsoCode != null}"/>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="field" width="100%">
+                            <!--
+                            <apex:image value="{!$Resource.checkbox_checked}"/>
+                            <apex:image value="{!$Resource.checkbox_unchecked}"/>
+                            -->
+                            <table class="revProduct">
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductIncludedRoRwa}</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductLast12M}</td>
+                                    <td class="label">{!$Label.lbl_RWA}</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductNext12M}</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductNext12MProb}</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductNext1224M}</td>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductNext1224MProb}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductAssetSales}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_AssetSalesFinance__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_AssetSalesFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_AssetSalesFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_AssetSalesFinance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_AssetSalesFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_AssetSalesFinance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_AssetSalesFinance__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductAvgDepBal}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_AverageDepositBalance__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_AverageDepositBalance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_AverageDepositBalance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_AverageDepositBalance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_AverageDepositBalance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_AverageDepositBalance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_AverageDepositBalance__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductCommercialPropertyFinance}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_CommercialPropertyFinance__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_CommercialPropertyFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_CommercialPropertyFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_CommercialPropertyFinance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_CommercialPropertyFinance__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_CommercialPropertyFinance__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_CommercialPropertyFinance__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductDebt}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Debt__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Debt__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Debt__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Debt__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Debt__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Debt__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Debt__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductDeposits}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Deposits__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Deposits__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Deposits__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Deposits__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Deposits__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Deposits__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Deposits__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductEquities}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Equities__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Equities__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Equities__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Equities__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Equities__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Equities__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Equities__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductFixedIncome}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_FixedIncome__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_FixedIncome__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_FixedIncome__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_FixedIncome__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_FixedIncome__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_FixedIncome__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_FixedIncome__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductFX}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_FX__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_FX__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_FX__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_FX__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_FX__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_FX__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_FX__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductOtherMA}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_OtherMADCMECM__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_OtherMADCMECM__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_OtherMADCMECM__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_OtherMADCMECM__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_OtherMADCMECM__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_OtherMADCMECM__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_OtherMADCMECM__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductOtherRBB}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_OtherRBBWealth__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_OtherRBBWealth__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_OtherRBBWealth__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_OtherRBBWealth__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_OtherRBBWealth__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_OtherRBBWealth__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_OtherRBBWealth__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductOtherTrade}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_OtherTrade__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_OtherTrade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_OtherTrade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_OtherTrade__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_OtherTrade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_OtherTrade__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_OtherTrade__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductPassive}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Passive__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Passive__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Passive__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Passive__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Passive__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Passive__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Passive__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductPrimeServices}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_PrimeServices__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_PrimeServices__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_PrimeServices__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_PrimeServices__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_PrimeServices__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_PrimeServices__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_PrimeServices__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductPrivateEquity}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_PrivateEquity__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_PrivateEquity__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_PrivateEquity__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_PrivateEquity__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_PrivateEquity__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_PrivateEquity__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_PrivateEquity__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductTrade}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Trade__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Trade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Trade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Trade__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Trade__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Trade__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Trade__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductTransProd}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_TransactionProducts__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_TransactionProducts__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_TransactionProducts__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_TransactionProducts__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_TransactionProducts__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_TransactionProducts__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_TransactionProducts__c}" /></td>
+                                </tr>
+                                <!--<tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductDerivatives}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Derivatives__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Derivatives__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Derivatives__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Derivatives__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Derivatives__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Derivatives__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Derivatives__c}" /></td>
+                                </tr>-->
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductTreasury}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_Treasury__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_Treasury__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_Treasury__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_Treasury__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_Treasury__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_Treasury__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_Treasury__c}" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_RevenuesByProductWorkingCapital}</td>
+                                    <td class="included"><apex:outputField value="{!jlocRevByProduct.rorwa_WorkingCapital__c}"/></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.H12_WorkingCapital__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.RWA_WorkingCapital__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F12_WorkingCapital__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F12P_WorkingCapital__c}" /></td>
+                                    <td class="rev"><apex:outputField value="{!jlocRevByProduct.F24_WorkingCapital__c}" /></td>
+                                    <td class="prob"><apex:outputField value="{!jlocRevByProduct.F24P_WorkingCapital__c}" /></td>
+                                </tr>
+                                <!-- Calculations -->
+                                <tr>
+                                    <td colspan="2">{!$Label.lbl_RevenuesByProductTotalCon}</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_H12_Contribution__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F12_Contribution__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F24_Contribution__c}" /></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">{!$Label.lbl_RevenuesByProductTotalNonLenCon}</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_H12_Non_Lending_Contrib__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F12_Non_Lending_Contrib__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F24_Non_Lending_Contrib__c}" /></td>
+                                    <td>&nbsp;</td>
+                                </tr>                           
+                                <tr>
+                                    <td colspan="4">{!$Label.lbl_RevenuesByProductTotalConWei}</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F12_Contrib_Weighted__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F24_Contrib_Weighted__c}" /></td>
+                                    <td>&nbsp;</td>
+                                </tr>                                   
+                                <tr>
+                                    <td colspan="4">{!$Label.lbl_RevenuesByProductTotalNonLenConWei}</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F12_Non_Lendng_Contrib_Weighted__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.Tot_F24_Non_Lendng_Contrib_Weighted__c}" /></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">{!$Label.lbl_DerivativesLegacyTotals}</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.H12_Derivatives__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.F12_Derivatives__c}" /></td>
+                                    <td>&nbsp;</td>
+                                    <td class="sum"><apex:outputField value="{!jlocRevByProduct.F24_Derivatives__c}" /></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Client_Revenue_History_and_Projections__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$Label.lbl_PricingClientRevenueHistory}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Client_Revenue_History_and_Projections__c}" styleClass="text-area"/></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!jlocPotentialOpportunities.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="6">{!$Label.lbl_PotentialFutureOpps}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}</td>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}</td>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}</td>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}</td>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}</td>
+                        <td class="label">{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}</td>
+                    </tr>
+
+                    <apex:repeat value="{!jlocPotentialOpportunities}" var="opp">
+                        <tr>
+                            <td class="field"><apex:outputText value="{!opp.Name}"/></td>
+                            <td class="field">
+                                <apex:outputText value="{!opp.Product_Level_3__r.Name}" rendered="{!opp.Product_Level_3__r != null}"/>
+                                <apex:outputText value="{!opp.Product_Level_2__r.Name}" rendered="{!opp.Product_Level_3__r == null && opp.Product_Level_2__r != null}" />
+                                <apex:outputText value="{!opp.Product_Level_1__r.Name}" rendered="{!opp.Product_Level_3__r == null && opp.Product_Level_2__r == null && opp.Product_Level_1__r != null}" />
+                            </td>
+                            <td class="field"><apex:outputText value="{!opp.Stage__c}"/></td>
+                            <td class="field"><apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!opp.Close_Date__c != null}"><apex:param value="{!opp.Close_Date__c}" /></apex:outputText></td>
+                            <td class="field"><apex:outputText value="{!opp.Probability__c}"/></td>
+                            <td class="field"><apex:outputText value="{!opp.Type__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+
+        <!-- ############## SECTION 3 ################## -->
+        <div class="page-break"></div>
+        <div class="title">3. About {!JLOC__c.Organisation__r.Name}</div>
+        <apex:outputPanel rendered="{!jlocClientPlan.Client_Overview__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.Brief_Client_Description__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!jlocClientPlan.Client_Overview__c}" styleClass="text-area" /></td>
+                        
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!jlocClientPlan.Financial_Information_Image_ID__c != null}">
+            <div class="section">
+                <table class="grid creditstatistics">
+                    <tr>
+                        <th>{!$Label.lbl_CreditStatistics}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <div class="standaloneImgWrapper">
+                                <apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!jlocClientPlan.Financial_Information_Image_ID__c}" />
+                            </div>
+                        </td>
+                    </tr>
+               </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!!jlocFinanceList.empty && jlocClientPlan.Financial_Information_Image_ID__c == null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th>{!$Label.lbl_CreditStatistics}</th>
+                    </tr>
+                    <tr>
+                        <td class="field">
+                            <apex:outputPanel rendered="{!jlocClientPlan.Financial_Information_Image_ID__c == null}">
+                            <table id="finTable" class="finTable">
+                                <thead>
+                                    <tr>
+                                        <td style="border-collapse: collapse; border-width: 1px">&nbsp;</td>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <th>
+                                                <apex:outputText value="{!f.Month__c} " rendered="{!f.Month__c != null && (f.Financial_Results__c == null || f.Financial_Results__c != 'Audited Full Year')}"/>
+                                                <apex:outputText value="{!jlocClientPlan.Financial_Year_End__c} " rendered="{!jlocClientPlan.Financial_Year_End__c != null && f.Financial_Results__c != null && f.Financial_Results__c == 'Audited Full Year'}"/>
+                                                <apex:outputField value="{!f.Year__c}"/>
+                                            </th>
+                                        </apex:repeat>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Financial_Results__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Financial_Results__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$Label.lbl_Turnover}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Turnover__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.EBITDA__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.EBITDA_Margin__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.EBITDA_Margin__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_Income__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$Label.lbl_NetInterestExpenseIncomeBAGLFacilitiesOnly}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_BAGL_facilities__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.PAT__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.PAT__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="3">Balance Sheet</th>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$Label.lbl_TotalAssets}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Total_Assets__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$Label.lbl_TotalTangibleAssets}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Total_Tangible_Assets__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Gross_Debt__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Subordinated_Shareholder_Loans__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Cash_and_cash_equivalents__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$Label.lbl_NetDebt}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Debt__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="3">Cash Flows</th>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$Label.lbl_NetWorth}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Worth__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Tangible_Net_Worth__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Total_Liabilities__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    
+                                    
+                                    <tr>
+                                        <th>{!$Label.lbl_CashFlowFromOperationsActivities}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Cash_Generated_by_Operations__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Cash_flow_from_operating_activities_Adj__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Capex__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Capex__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$Label.lbl_FreeCashFlow}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Free_Cash_Flow__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_cash_generation_utilization__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="3">Ratios</th>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.EBITDA_Net_Interest_cover__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.EBITDA_Net_Interest_cover__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                     <tr>
+                                        <th>{!$Label.lbl_NetDebtEbitda}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Debt_Cash_Ebitda__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{{!$Label.lbl_GrossDebtEbitda}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Gross_Debt_Cash_Ebitda__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                   
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Tangible_Gearing_Net_Debt_TNW__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Tangible_Gearing_Net_Debt_TNW__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="3">Others</th>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Net_Asset_Value__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.EPS__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.EPS__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.EBIT__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.EBIT__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Market_Cap__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.ROE__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.ROE__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.ROA__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.ROA__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <!--<tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Total_Interest_Bearing_Debt__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Total_Interest_Bearing_Debt__c}"/></td>
+                                        </apex:repeat>
+                                    </tr> -->
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Debt_Equity__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Debt_Equity__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Current_Ratio__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Current_Ratio__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                    <tr>
+                                        <th>{!$ObjectType.Financial_Information__c.fields.Interest_Cover_Ratio__c.Label}</th>
+                                        <apex:repeat value="{!jlocFinanceList}" var="f">
+                                            <td class="field"><apex:outputField value="{!f.Interest_Cover_Ratio__c}"/></td>
+                                        </apex:repeat>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+        </apex:outputPanel>
+        <br/>
+        <apex:outputPanel id="FinancialCommentary" rendered="{!(!jlocFinanceList.empty||jlocClientPlan.Financial_Information_Image_ID__c!=null)&&(jlocClientPlan.FinancialCommentary__c!=NULL && jlocClientPlan.FinancialCommentary__c!='')}" layout="none" style="overflow-y:auto;">
+            <table class="grid">
+            	<tr>
+                	<th><apex:outputText value="{!$ObjectType.Client_Plan__c.fields.FinancialCommentary__c.Label}"/></th>
+                </tr>
+                <td class="field">
+                	<apex:outputField value="{!jlocClientPlan.FinancialCommentary__c}"/>
+                </td>
+            </table>
+            <br/>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!jloc.Stress_Case_ID__c != null}">
+                
+                <div >
+                    <table class="grid">
+                        <tr>
+                            <th>Client Projections - Stress Case</th>
+                        </tr>
+                        <tr><td class="field"><apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!jloc.Stress_Case_ID__c}" /></td></tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        <br/>
+        <apex:outputPanel rendered="{!jloc.Banker_Case_ID__c != null}">
+                
+                <div >
+                    <table class="grid">
+                        <tr>
+                            <th>Client Projections - Bank Case</th>
+                        </tr>
+                        <tr><td class="field"><apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!jloc.Banker_Case_ID__c}" /></td></tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        <br/>
+         <apex:outputPanel rendered="{!jloc.Management_Case_ID__c != null}">
+                
+                <div >
+                    <table class="grid">
+                        <tr>
+                            <th>Client Projections - Management Case</th>
+                        </tr>
+                        <tr><td class="field"><apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!jloc.Management_Case_ID__c}" /></td></tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        <br/>
+         <apex:outputPanel rendered="{!jloc.Forecast_Not_Available__c}">
+                
+                <div >
+                    <table class="grid">
+                        <tr>
+                            <th colspan="2">Client Projections - Not Applicable</th>
+                        </tr>
+                        <tr><td class="field">Not Application Description</td><td class="field">{!jloc.Forecast_Description__c}</td></tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        <br/>
+        <apex:outputPanel rendered="{!!jlocPresences.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="3">{!$Label.lbl_Presence}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_Country}</td>
+                        <td class="label">{!$Label.lbl_PrimaryBank}</td>
+                        <td class="label">{!$Label.lbl_Note}</td>
+                    </tr>
+                    <apex:repeat value="{!jlocPresences}" var="presence">
+                        <tr>
+                            <td class="field"><apex:outputField value="{!presence.Banking_Country__c}"/></td>
+                            <td class="field"><apex:outputField value="{!presence.Primary_Bank__c}"/></td>
+                            <td class="field"><apex:outputField value="{!presence.Engaged__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!jlocClientPlan.Org_Structure_Image_ID__c != null || jlocBorrowers != null || jlocGuarantors != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th>{!$Label.lbl_OwnershipStructure}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <div class="standaloneImgWrapper">
+                              <apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!jlocClientPlan.Org_Structure_Image_ID__c}" rendered="{!jlocClientPlan.Org_Structure_Image_ID__c != null}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <table class="team">
+                                <tr>
+                                    <td class="label fourw">{!$Label.lbl_Borrowers}</td>
+                                    <td class="field">
+                                        <apex:repeat value="{!jlocBorrowers}" var="b">
+                                            <apex:outputText rendered="{!jlocBorrowers[0] != b}">,&nbsp;</apex:outputText>
+                                            <apex:outputText value="{!b}" />
+                                        </apex:repeat>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label fourw">{!$Label.lbl_Guarantors}</td>
+                                    <td class="field">
+                                        <apex:repeat value="{!jlocGuarantors}" var="g">
+                                            <apex:outputText rendered="{!jlocGuarantors[0] != g}">,&nbsp;</apex:outputText>
+                                            <apex:outputText value="{!g}" />
+                                        </apex:repeat>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+
+        <!-- ############## SECTION 4 ################## -->
+        <div class="page-break"></div>
+        <div class="title">4. {!$Label.lbl_KeyRisksMitigants}</div>
+        <apex:outputPanel rendered="{!JLOC__c.Key_Risks__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.Key_Risks__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Key_Risks__c}" styleClass="text-area" /></td>
+                        
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Key_Mitigants__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.Key_Mitigants__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Key_Mitigants__c}" styleClass="text-area" /></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+            <apex:outputPanel rendered="{!JLOC__c.ReputationalMatters__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.ReputationalMatters__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.ReputationalMatters__c}" styleClass="text-area" /></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <!-- ############## SECTION 5 ################## -->
+        <apex:outputPanel rendered="{!JLOC__c.Syndicate__c != null}">
+            <div class="page-break"></div>
+            <div class="title">5. {!$Label.lbl_UnderwriteOrDistribution} ({!$Label.lbl_Optional})</div>
+            <apex:outputPanel rendered="{!JLOC__c.Syndicate__c != null}">
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <th colspan="1">{!$ObjectType.JLOC__c.fields.Syndicate__c.Label}</th>
+                        </tr>
+                        <tr>
+                            <td class="field"><apex:outputField value="{!JLOC__c.Syndicate__c}" styleClass="text-area"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+           
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Recommendation__c != null}">
+            <div class="page-break"></div>
+            <div class="title">6. {!$Label.lbl_Recommendation}</div>
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.Recommendation__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Recommendation__c}" styleClass="text-area"/></td>
+                        
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <!-- ############## SECTION 6 ################## -->
+        <div class="page-break"></div>
+        <div class="title">7. {!$Label.lbl_Declaration}</div>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_GeneralQuestionnaire}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">1. {!$Label.lbl_DealPresentedToDealForum}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Deal_Presented_To_Deal_Forum__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">2. {!$Label.lbl_GoApprovalFromDealForumQuorum}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Go_Approval_From_Deal_Forum_Quorum__c, "Yes", "No")}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">3. {!$Label.lbl_ApprovedByFinancialCrimeCompliance}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Approved_By_Financial_Crime_Compliance__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">4. {!$Label.lbl_DealClearedForConflicts}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Deal_Cleared_For_Conflicts__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">5. {!$Label.lbl_AffectedExchangeControlRegulation}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Affected_of_Exchange_Control_Regulation__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">6. {!$Label.lbl_SecuritizedAssetsLiquidityFacility}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Securitized_Assets_Liquidity_Facility__c, "Yes", "No")}</td>
+                    </tr>
+                     <tr>
+                        <td class="label">&nbsp;&nbsp;a. {!$Label.lbl_AbsaHold5NetEconomicValue}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Absa_Hold_5_of_the_Net_Economic_Value__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">7. {!$Label.lbl_TransfereeOptionsDiscussed}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Transferee_Options_Discussed__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">&nbsp;&nbsp;a. {!$Label.lbl_ProvideDetailsUnderBriefClient}</td>
+                        <td class="field YesNo">&nbsp;</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_AncillaryOpportunities}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">1. {!$Label.lbl_DiscussedWithRM_FX_IRD_other}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Discussed_with_RM_re_FX_IRD_other_op__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">2. {!$Label.lbl_DiscussedWithBBTOperatingProduct}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Discussed_with_BBT_re_operating_product__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">3. {!$Label.lbl_SubInvestmentGradeCredit}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Sub_investment_grade_credit__c, "Yes", "No")}</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_IfSyndicationApplicable}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">1. {!$Label.lbl_MarketToBookrun_Facility}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Market_to_bookrun_this_facility__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">2. {!$Label.lbl_SynTeamAdvisedFacilitySyndicati}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Syn_team_advised_on_Facility_Syndicati__c, "Yes", "No")}</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_Regulatory}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">1. {!$Label.lbl_VolckerRuleGuidanceDocumentCompleted}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Volcker_Rule_Guidance_Document_Completed__c, "Yes", "No")}</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_Credit}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_DiscussedWithCredit}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Discussed_with_Credit__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="field"><apex:outputField value="{!JLOC__c.Credit_Appetite_Comment__c}" styleClass="text-area"/></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NonSADeals}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_Booking}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_AssetHubFrameworkConsidered}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Asset_Hub_Framework_considered__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="field">{!JLOC__c.Asset_Hub_Comment__c}</td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel >
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_DealTeam}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_DealTeamPolicesConfirmation}</td>
+                        <td class="field YesNo">{!IF(JLOC__c.Deal_Team_Polices_Confirmation__c, "Yes", "No")}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table class="team">
+                                <apex:variable value="{!0}" var="rowNum"/>
+                                <apex:repeat value="{!jlocDealTeam}" var="member">
+                                    <apex:outputText escape="false" rendered="{!mod(rowNum, 2) == 0}" value="<tr>" />
+                                        
+                                        <td class="label"><apex:outputField value="{!member.User.Name}"/></td>
+                                        <td class="field"><apex:outputField value="{!member.TeamMemberRole}"/></td>
+                                    
+                                    <apex:outputText escape="false" rendered="{!mod(rowNum, 2) == 1}" value="</tr>" />
+
+                                    <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                                </apex:repeat>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>      
+        </apex:outputPanel>
+
+        <!-- ############## SECTION 7 ################## -->
+        <div class="page-break"></div>
+        <div class="title">8. {!$Label.lbl_Appendix}</div>
+        <apex:outputPanel rendered="{!!jlocSecurities.empty}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="3">{!$ObjectType.Client_Plan_Security__c.fields.Security_Description__c.Label}</th>
+                    </tr>
+                    <apex:variable value="{!1}" var="rowNum"/>
+                    <apex:repeat value="{!jlocSecurities}" var="security">
+                        <tr>
+                            <td class="label" width="20px">{!rowNum}.</td>
+                            <td class="label securityDescription"><apex:outputField value="{!security.Security_Description__c}"/></td>
+                            <td class="field securityCurrency"><apex:outputField value="{!security.Value__c}"/></td>
+                        </tr>
+                        <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                    </apex:repeat>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Pricing_and_Returns_Document_ID__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$Label.lbl_PricingAndReturns}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <div class="standaloneImgWrapper">
+                                <apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!JLOC__c.Pricing_and_Returns_Document_ID__c}" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Pricing_Justification__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$ObjectType.JLOC__c.fields.Pricing_Justification__c.Label}</th>
+                    </tr>
+                    <tr>
+                        <td class="label"><apex:outputField value="{!JLOC__c.Pricing_Justification__c}"/></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Guidelines_Mandate_and_Scale__c != null || JLOC__c.Guidelines_CLGD__c != null || JLOC__c.Guidelines_MEG__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="2">{!$Label.lbl_KeyCreditPrudentialGuidelines}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_MandateAndScale}</td>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Guidelines_Mandate_and_Scale__c}"/></td>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_CLGD}</td>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Guidelines_CLGD__c}"/></td>
+                    </tr>
+                    <tr>
+                        <td class="label">{!$Label.lbl_MEG}</td>
+                        <td class="field"><apex:outputField value="{!JLOC__c.Guidelines_MEG__c}"/></td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!JLOC__c.Ancillary_Calculation_Document_ID__c != null}">
+            <div class="section">
+                <table class="grid">
+                    <tr>
+                        <th colspan="1">{!$Label.lbl_AncillaryCalculation}</th>
+                    </tr>
+                    <tr>
+                        <td class="label">
+                            <div class="standaloneImgWrapper">
+                                <apex:image styleClass="standaloneImg" url="/servlet/servlet.FileDownload?file={!JLOC__c.Ancillary_Calculation_Document_ID__c}" />
+                            </div>
+                        </td>                            
+                    </tr>
+                </table>
+            </div>      
+        </apex:outputPanel>
+    </body>
+</apex:page>

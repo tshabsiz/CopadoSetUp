@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Call_Report__c$Name</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c.Attendees__r$Name</field>
+    </columns>
+    <columns>
+        <field>Call_Report__c$CreatedBy.Team__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Call_Report__c$Owner.UserRole</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>ZAF - CIB - Coverage - CSM - Sandton</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c$Owner</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c$CreatedBy</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Call_Report__c.Attendees__r$Barclays_Attendee__c.Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Call Report - Sandton</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Call_Reports_with_Attendees_and_Clients__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Call_Report__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CURY</interval>
+    </timeFrameFilter>
+</Report>

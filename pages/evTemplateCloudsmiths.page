@@ -1,0 +1,210 @@
+<apex:page sidebar="false" showHeader="false" docType="html-5.0" standardStylesheets="false" applyHtmlTag="false" controller="evSiteTemplate_Controller">
+
+<!--
+2017-08-10	DH	Implemented new SiteTemplate_Controller
+-->
+
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /> <!-- Bootstrap CSS -->
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" /> <!-- Font Awesome Font Library -->
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" /> <!-- JQUERY -->
+        <apex:includeScript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"/> <!-- Bootstrap JS -->
+        <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"/>
+         
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <apex:includeScript value="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" />
+            <style>
+                .container {
+                width: 1170px;
+                }
+                .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+                float: left;
+                }
+                .col-md-12 {
+                width: 100%;
+                }
+                .col-md-11 {
+                width: 91.66666667%;
+                }
+                .col-md-10 {
+                width: 83.33333333%;
+                }
+                .col-md-9 {
+                width: 75%;
+                }
+                .col-md-8 {
+                width: 66.66666667%;
+                }
+                .col-md-7 {
+                width: 58.33333333%;
+                }
+                .col-md-6 {
+                width: 50%;
+                }
+                .col-md-5 {
+                width: 41.66666667%;
+                }
+                .col-md-4 {
+                width: 33.33333333%;
+                }
+                .col-md-3 {
+                width: 25%;
+                }
+                .col-md-2 {
+                width: 16.66666667%;
+                }
+                .col-md-1 {
+                width: 8.33333333%;
+                }
+                .col-xs-9 {
+                margin-right: 0 !important; 
+                margin-left: 0 !important; 
+                }
+            </style>
+        <![endif]-->
+        <!--[if lt IE 10]>
+            <apex:includeScript value="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" />
+            <style>
+            .col-ie {
+            width: 100%;
+            margin-bottom: 30px;
+            }
+            </style>
+        <![endif]-->
+        
+        <!-- move to external - base stylesheet -->
+        <style>
+            
+            @media (min-width: 1200px) {
+                .container {
+                width: 970px;
+            }
+            }
+            
+            h1, .h1 {
+            	font-size: 32px;
+            }
+            
+            .btn {
+            	border-radius: 0px;
+            }
+            
+            .btn-row {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .page-content {
+            	padding: 20px;
+            }
+            
+            .page-section {
+            	margin-top: 30px;
+            	margin-bottom: 30px;
+            }
+            
+			
+            .event-banner {
+            	margin-top: 20px;
+            }
+            
+            .disclaimer {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                font-size: 10px;
+            }
+            
+            .status-msg {
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+            
+            .status-icon {
+                font-size: 25px;
+                vertical-align: middle;
+                margin-right: 10px;
+            }
+            
+            .green {
+            	color: green;
+            }
+            
+            .red {
+            	color: red;
+            }
+            
+            .well {
+                border: none;
+                border-radius: 0px;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+            }
+            
+            .help-block {
+                margin-bottom: -5px;
+            }
+            
+            .v-err {
+            	font-size: small;
+            }
+            
+        </style>
+        
+        <c:evThemeConfiguration /> 
+        
+        <apex:insert name="title"/>
+        
+    </head>
+    
+    <!-- HEADER -->
+    <div class="container-fluid">
+        <div class="page-content">
+            
+            <!-- HEADER: Logos -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <img src="{!thisEvent.Theme__r.Primary_Logo__c}" />
+                </div>
+                <div class="col-sm-6 text-right">
+                    <img src="{!thisEvent.Theme__r.Secondary_Logo__c}" />
+                </div>
+            </div>
+            <!-- HEADER: Logos END -->
+            
+            <!-- HEADER: Banner -->
+            <apex:outputPanel rendered="{!thisEvent.Web_Pages_Banner_URL__c != ''}">
+                <div class="row">
+                    <div class="event-banner">
+                        <img style="width: 100%" src="{!thisEvent.Web_Pages_Banner_URL__c}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- HEADER: Banner END -->
+            
+        </div>  
+    </div>
+    <!-- HEADER END -->
+    
+    <!-- BODY -->
+    <div class="container-fluid">
+        <div class="page-content">
+            <apex:insert name="body"/>
+        </div>  
+    </div>
+    <!-- BODY END -->
+    
+    <!-- FOOTER -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 disclaimer">
+                <apex:outputText escape="false" value="{!thisEvent.Terms_and_Conditions__r.Disclaimer__c}" /> 
+            </div>
+        </div>
+    </div>
+    <!-- FOOTER END -->
+    
+</apex:page>

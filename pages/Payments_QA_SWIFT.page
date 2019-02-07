@@ -1,0 +1,268 @@
+<apex:page standardController="Case" extensions="Payments_QA_SWIFT_Ext" showHeader="false" sidebar="false" >
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm">
+        <apex:messages ></apex:messages>
+        <div class="slds" style="width:520px;height:600px;overflow:scroll;">
+            <div class="slds-form--stacked" id="gbp">
+                <div class="slds-form-element" id="divgbp">
+                    <label class="slds-form-element__label">ABSA Reference</label>
+                    <div class="slds-form-element__control">
+                        <apex:outputField id="gbpin" value="{!parentCase.SWIFT_GBP_Reference__c}" styleclass="slds-input" ></apex:outputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="divgbp">
+                    <label class="slds-form-element__label">Sender Address</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="saddress" value="{!newSWIFT.Sender_Address__c}" styleclass="slds-input" required="true"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="mtype">
+                    <label class="slds-form-element__label">Message Type</label>
+                    <div class="slds-form-element__control">
+                        <apex:selectList size="1" value="{!selectedType}" id="selectLst" styleclass="slds-select" onchange="toggelFields();">
+                            <apex:selectOptions value="{!typeOptions}"/>
+                        </apex:selectList>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="bentity">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Business Entity</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="bentityin" value="{!newSWIFT.BusinessEntity__c}" styleclass="slds-input" required="true"></apex:inputField>
+                    </div>
+                </div>
+                 <div class="slds-form-element" id="daddress">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Destination Address(M)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="daddressin" value="{!newSWIFT.DestinationAddress__c}" styleclass="slds-input" onblur="uppreCase(this)"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="tref">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Transaction Referance(20)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="trefin" value="{!newSWIFT.TransactionReference__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="rref">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Related Reference(21)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="rrefin" value="{!newSWIFT.RelatedReference__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                 <div class="slds-form-element" id="qwer">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Queries(75)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="qwerin" value="{!newSWIFT.Queries__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="ans">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Answers(76)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="ansin" value="{!newSWIFT.Answers__c}" styleclass="slds-input" ></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="narr">
+                    <label class="slds-form-element__label"><abbr id="narabbr" class="slds-required" title="required">*</abbr>Narrative(77)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="nar" value="{!newSWIFT.Narrative__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="narrOrig">
+                    <label class="slds-form-element__label"><abbr id="narabbrOrig" class="slds-required" title="required">*</abbr>Narrative_Originalmsg(79)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="narOrig" value="{!newSWIFT.Narrative_OriginalMsg__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="mtoriginalmsg">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>MT of the Original Message(11s)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="mtoriginalmsginput" value="{!newSWIFT.MT_the_Original_Message__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                <div class="slds-form-element" id="ormsg">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Date of the original message(11s)</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputField id="orig" value="{!newSWIFT.DateOfOriginalMessage__c}" styleclass="slds-input"></apex:inputField>
+                    </div>
+                </div>
+                 
+                <!--
+                <div class="slds-form-element" id="ormsg">
+                    <label class="slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Message Approver</label>
+                    <div class="slds-form-element__control">
+                         <c:Typeahead style="width:50%;" searchBoxId="userSearchBox" object="User" primaryField="Name" secondaryField="Email" 
+                            searchScope="NAME" placeholder="Enter an Approver....." minSearchLength="3" 
+                            destinationForSelectedId="userId" destinationForSelectedValue="userName" stealFocus="false" /> 
+                            <input type="hidden" name="userId" id="userId" />   
+                            <input type="hidden" name="userName" id="userName"  />
+                    </div>
+                </div>
+                -->
+            </div>
+            <br/>
+            <div class="slds-form-element slds-float--right">
+                <span id="newMsg">
+                <button id="btn" class="slds-button slds-button--brand" type="button" onclick="newMessage();" >
+                    Submit for Approval
+                </button>
+                    <apex:actionFunction name="swiftAction" action="{!sendSWIFT}" reRender="divgbp" />
+                    <!--<apex:param assignTo="{!userId}" name="myParam" value="" />
+                 </apex:actionFunction>
+                   -->
+                </span>
+            </div>
+        </div>
+       
+    </apex:form> 
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+    //var userID = document.getElementById('userId');
+    //var userElement = document.getElementById('userSearchBox');
+    toggelFields();
+    function upperCase(normalText){
+        alert('');
+   normalText.toUpperCase();
+}
+    function toggelFields() {
+        var mtype = document.getElementById('{!$Component.mainFrm.selectLst}');
+        //var ansin = document.getElementById('{!$Component.mainFrm.ansin}');
+         
+        var bentity = document.getElementById('bentity');
+        var dad = document.getElementById('daddress');
+        var rref = document.getElementById('rref');
+        var tref = document.getElementById('tref');
+        var ans = document.getElementById('ans');
+        var qwer = document.getElementById('qwer');
+        var narr = document.getElementById('narr');
+        var narrOrig = document.getElementById('narrOrig');
+        var narabbr = document.getElementById('narabbrOrig');
+        var ormsg = document.getElementById('ormsg');
+        var mtoriginalmsg = document.getElementById('mtoriginalmsg');
+        
+        if(mtype.value == '192'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';//21
+            tref.style.display = 'block';//20
+            ans.style.display = 'none';//76 
+            qwer.style.display = 'none';//75 
+            ormsg.style.display = 'block';//115
+            narrOrig.style.display = 'block';//79
+            narr.style.display = 'none';//77A
+            mtoriginalmsg.style.display = 'block';
+        }else if (mtype.value == '196'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'block';
+            qwer.style.display = 'none';
+            narrOrig.style.display = 'block';
+            narabbr.style.display = 'none';
+            narr.style.display = 'block';//77A
+            ormsg.style.display = 'block';
+            mtoriginalmsg.style.display = 'block';
+        }else if (mtype.value == '292'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none';
+            qwer.style.display = 'none';
+            narrOrig.style.display = 'block';
+            narr.style.display = 'none';//77A
+            ormsg.style.display = 'block';
+            mtoriginalmsg.style.display = 'block';
+        }else if (mtype.value == '299'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none';
+            qwer.style.display = 'none';
+            narrOrig.style.display = 'block';
+            narr.style.display = 'none';//77A
+            ormsg.style.display = 'none';
+            mtoriginalmsg.style.display = 'none';
+       }else if (mtype.value == '999'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none';
+            qwer.style.display = 'none';
+            narrOrig.style.display = 'block';
+           narr.style.display = 'none';//77A
+            ormsg.style.display = 'none';
+           mtoriginalmsg.style.display = 'none';
+       }else if (mtype.value == '195'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none';
+            qwer.style.display = 'block';
+            narrOrig.style.display = 'block';
+           narr.style.display = 'block';//77A
+            ormsg.style.display = 'block';
+           mtoriginalmsg.style.display = 'block';
+       }else if (mtype.value == '199'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none  ';
+            qwer.style.display = 'none';
+            narrOrig.style.display = 'block';
+           narr.style.display = 'none';//77A
+            ormsg.style.display = 'none';
+           mtoriginalmsg.style.display = 'none';
+       }else if (mtype.value == '295'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'none';
+            qwer.style.display = 'block';
+            narrOrig.style.display = 'block';
+           narr.style.display = 'block';//77A
+            ormsg.style.display = 'block';
+           mtoriginalmsg.style.display = 'block';
+       }else if (mtype.value == '296'){
+            bentity.style.display = 'block';
+            dad.style.display = 'block';
+            rref.style.display = 'block';
+            tref.style.display = 'block';
+            ans.style.display = 'block';
+            qwer.style.display = 'none';
+           narrOrig.style.display = 'block';
+           ormsg.style.display = 'block';
+           mtoriginalmsg.style.display = 'block';
+           narr.style.display = 'block';//77A
+       }
+    };
+    
+    function newMessage(){
+        //document.getElementById('btn').;
+        //swiftAction(userID.value);
+        swiftAction();
+        RefreshPrimaryTab();
+        location.reload();
+    };
+        
+    function RefreshPrimaryTab(){
+        if (sforce.console.isInConsole()){
+            sforce.console.getFocusedPrimaryTabId(showTabId);
+        }else{
+            window.top.location.href = '/' + consoleCaseId;
+        }
+    };
+        
+    var showTabId = function showTabId(result){
+        var tabId = result.id;
+        sforce.console.refreshPrimaryTabById(tabId, true);
+    };
+    
+    </script>
+</apex:page>

@@ -1,0 +1,37 @@
+<apex:component controller="TreeViewController">
+	<apex:attribute name="Checkboxes" description="Determines if checkboxes plugin is enabled." type="Boolean" required="true" />
+
+	<apex:stylesheet value="{!URLFOR($Resource.jsTree, 'themes/default/style.min.css')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.jsTree, 'jstree.min.js')}"/>
+
+	<div id="sds_hierarchy_tree"></div>
+	<script>
+		function drawSdsHierarchyTree(accountId) {
+			Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.TreeViewController.getSdsHierarchy}',
+               	accountId, {!Checkboxes},
+               	function(result, event) {
+					//console.log('JSON: '+result);
+                	if({!Checkboxes}){
+                		$('#sds_hierarchy_tree').jstree(JSON.parse(result));
+                	} else{
+                		$('#sds_hierarchy_tree').jstree(JSON.parse(result)).on("select_node.jstree", function (e, data) {
+           					if((typeof sforce != 'undefined') && (sforce != null)) {
+								sforce.one.navigateToURL('/'+data.node.id);
+							} else{
+								window.top.location.href = '/'+data.node.id;
+							}
+    					});
+                	}
+				},
+				{ escape: false }
+            );
+		}
+
+		function redrawSdsHierarchyTree(accountId) {
+			$.jstree.destroy();
+			drawSdsHierarchyTree(accountId);
+		}
+	</script>
+</apex:component>

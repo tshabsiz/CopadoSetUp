@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>Clientcare_Case_Creation_Port Shepstone</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Subject}: {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Thank you for your request.
+
+Your request has been received and we will attend
+to your request within: {!Case.SLA_Units__c} Business {!Case.SLA_Time_Measure__c} .
+
+Important: Please respond to this e-mail for any future correspondence regarding the below case number.
+
+Your case number: #{!Case.CaseNumber}
+
+{!User.Name} {!User.Surname}
+Electronic Banking Service Helpdesk
+
+
+Local:   0860 227 232
+International:  +27(0)113 354 007</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

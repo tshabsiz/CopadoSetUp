@@ -1,0 +1,28 @@
+<apex:page applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" standardStylesheets="false" controller="evRSVP_Controller" >
+    <apex:composition template="evTemplateSocial">
+        <apex:define name="title">
+            <title>RSVP | {!thisEvent.name}</title>
+        </apex:define>
+        
+        <apex:define name="body">
+            
+            <br/>
+            <h2 class="light">Oops... we have encountered an unexpected technical error!<br/><br/>  We apologise for any inconvenience caused.</h2>
+            <br/>
+            <h4 class="light">
+                Our technical team has been alerted and will bend over backwards to solve this problem.  
+                <br/><br/><br/>
+                If the error persists please send an email to <a href="mailto:SupportEmailAddress__c">{!thisEvent.SupportEmailAddress__c}</a> with the details below:<br/><br/>
+            </h4>
+            <hr/>
+            <h4>
+                Error: {!$Site.ErrorMessage} on {!$Site.OriginalURL} 
+            </h4><br/>
+            <apex:outputText escape="false" value="{!$Site.ErrorDescription}"/>
+            <br/><br/>
+            
+            <br/>
+            <br/>
+        </apex:define>
+    </apex:composition>  
+</apex:page>

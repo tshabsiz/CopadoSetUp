@@ -1,0 +1,29 @@
+<apex:page standardController="advpm__Matter__c" showHeader="false" sidebar="false">
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+<apex:outputPanel layout="block" styleClass="slds" rendered="{!$User.UITheme == 'Theme4d'}">
+    <c:includeSLDS sldsV2="true" />
+    <style type="text/css">
+        .slds iframe {-webkit-overflow-scrolling: touch;max-width: 100%;overflow: hidden;overflow-x: auto; }
+        .slds iframe::-webkit-scrollbar {width: 10px;height: 10px; }
+        .slds iframe::-webkit-scrollbar:window-inactive {opacity: 0; }
+        .slds iframe::-webkit-scrollbar-thumb {background: #e0e5ee;border-radius: 8px;box-shadow: #a8b7c7 0 0 0 1px inset; }
+        .slds iframe::-webkit-scrollbar-track {background: #a8b7c7; }
+    </style>
+</apex:outputPanel>
+<iframe id="iframe_panel" frameborder="0" height="310px" scrolling="yes" title="At a Glance" width="100%" src="about:blank"></iframe>
+<script type="text/javascript">
+    $j = jQuery.noConflict();
+    $j(document).ready(function () {
+        var ht = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        var ur = "{!URLFOR($Site.Prefix+'/apex/advpm__AtGlanceCharts',null,[id=Matter__c.Id,ltng=IF($User.UITheme == 'Theme4d','1','0'),ltngcmp=JSENCODE($CurrentPage.parameters.ltngcmp)])}";
+        if ( {!$User.UITheme == 'Theme4d'} ) {
+            if (ht >= 450 ) {
+                ur += "&wrap=1";
+            }
+        }
+        $j("#iframe_panel").contents().empty();
+        $j("#iframe_panel").attr("height", ht);
+        $j("#iframe_panel").attr("src", ur);
+    });
+</script>
+</apex:page>

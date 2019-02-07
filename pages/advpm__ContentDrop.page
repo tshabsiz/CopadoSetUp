@@ -1,0 +1,6 @@
+<apex:page standardController="advpm__Matter__c" tabstyle="advpm__Matter__c" sidebar="false" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.p) == '1'}">
+
+    <apex:outputField value="{!advpm__Matter__c.Name}" rendered="false" />
+    <c:EnhancedContent MatterId="{!advpm__Matter__c.ID}" MatterName="{!advpm__Matter__c.Name}" rendered="{!NOT(ISBLANK(advpm__Matter__c.Id))}" />
+
+</apex:page>

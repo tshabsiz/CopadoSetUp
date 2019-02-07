@@ -1,0 +1,85 @@
+<apex:page standardController="Annual_Pricing__c" extensions="APT_NewAnnualPricingController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<apex:form >
+		<apex:pageBlock id="pb">
+			<apex:pageMessages id="pageMsg"/>
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+				border: 'none', 
+				padding: '15px', 
+				backgroundColor: '#000', 
+				'-webkit-border-radius': '10px', 
+				'-moz-border-radius': '10px', 
+				opacity: .5, 
+				color: '#fff' 
+			} });" onstop="$.unblockUI();" />
+
+			<apex:pageBlockButtons >
+				<apex:commandButton action="{!next}" value="Next" rendered="{!arePricingGroupsConfigured && NOT(isPricingGroupSelected)}" status="processing" reRender="pb"/>
+				<apex:commandButton action="{!save}" value="Save" rendered="{!isPricingGroupSelected}" status="processing" reRender="pb"/>
+				<apex:commandButton action="{!cancel}" value="Cancel" status="processing" reRender="pb" />
+			</apex:pageBlockButtons>
+			<apex:outputPanel id="pricing-groups-panel" rendered="{!arePricingGroupsConfigured && NOT(isPricingGroupSelected)}">
+				<apex:pageBlockSection columns="2" title="Information">
+					<apex:inputField value="{!Annual_Pricing__c.Organisation__c}" />
+					<apex:inputField value="{!Annual_Pricing__c.Pricing_Template__c}" />
+				</apex:pageBlockSection>
+				<apex:pageBlockSection columns="2" title="Pricing Groups">
+					<apex:pageBlockTable id="pricing-groups-table" value="{!pricingGroups}" var="pg">
+						<apex:column >
+							<apex:facet name="header">
+								<apex:inputCheckbox value="{!areAllPricingGroupsSelected}" />
+							</apex:facet>
+							<apex:inputCheckbox value="{!pg.isSelected}" />
+						</apex:column>
+						<apex:column value="{!pg.pricingGroup.Name}"/>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+				<script type="text/javascript"> 
+					$('th input:checkbox').click(function(e) {
+						$(this).closest('table').find('td input:checkbox').prop('checked', this.checked);
+					});
+				</script>
+			</apex:outputPanel>
+			<apex:outputPanel id="pricing-deal-products-panel" rendered="{!isPricingGroupSelected}">
+				<apex:pageBlockSection columns="2" title="Information">
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="{!$ObjectType.Annual_Pricing__c.fields.Organisation__c.Label}" for="organisation"/>
+						<apex:outputText value="{!organisation}" id="organisation"/>
+					</apex:pageBlockSectionItem>
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="{!$ObjectType.Annual_Pricing__c.fields.Pricing_Template__c.Label}" for="pricing-template"/>
+						<apex:outputText value="{!pricingTemplate}" id="pricing-template"/>
+					</apex:pageBlockSectionItem>
+				</apex:pageBlockSection>
+				<apex:repeat value="{!pricingGroups}" var="pg">
+				<apex:outputPanel rendered="{!pg.isEmpty}">
+					<apex:pageBlockSection columns="1" title="{!pg.pricingGroup.Name}" rendered="{!pg.isSelected}">
+						<apex:outputText value="There is no Pricing Deal Product for selected Pricing Group in current Pricing Template" />
+					</apex:pageBlockSection>
+				</apex:outputPanel>
+				<apex:outputPanel rendered="{!NOT(pg.isEmpty)}">
+					<apex:pageBlockSection columns="1" title="{!pg.pricingGroup.Name}" rendered="{!pg.isSelected}">
+						<apex:pageBlockTable value="{!pg.pricingDealProducts}" var="pdp">
+							<apex:column >
+								<apex:facet name="header">
+									<apex:inputCheckbox value="{!pg.areAllPricingDealProductsSelected}" />
+								</apex:facet>
+								<apex:inputCheckbox value="{!pdp.isSelected}" />
+							</apex:column>
+							<apex:column width="30%" value="{!pdp.pricingDealProduct.Product_Category__c}"/>
+							<apex:column width="30%" value="{!pdp.pricingDealProduct.Product_Type__c}"/>
+							<apex:column width="40%" value="{!pdp.pricingDealProduct.Pricing_Deal_Product_Name__c}"/>
+						</apex:pageBlockTable>
+					</apex:pageBlockSection>
+				</apex:outputPanel>
+				</apex:repeat>
+				<script type="text/javascript"> 
+					$('th input:checkbox').click(function(event) {
+						$(this).closest('table').find('td input:checkbox').prop('checked', this.checked);
+					});
+				</script>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

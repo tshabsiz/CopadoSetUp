@@ -1,0 +1,38 @@
+<apex:page standardController="Collateral_Relationship__c" extensions="CollateralRelationshipExtension" tabStyle="Collateral_Relationship__c" >
+        <apex:sectionHeader title="Collateral Relationship" subtitle="New Collateral Relationship" rendered="{!Collateral_Relationship__c.Id == null }" help="https://help.salesforce.com" />
+    <apex:sectionHeader title="Collateral Relationship" subtitle="{!Collateral_Relationship__c.name}" rendered="{!Collateral_Relationship__c.Id != null }" help="https://help.salesforce.com" />
+    <apex:form >
+            <style>
+          .stopText {color:red;}
+   </style>
+        <apex:pageBlock title="Collateral Relatiosnhip Edit" mode="edit">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save" oncomplete="CallWebService_JS()" />
+                 <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" />
+            </apex:pageBlockButtons>
+             <apex:outputpanel id="t1">
+                            <apex:actionRegion >
+            <apex:pageBlockSection collapsible="false" title="Information" columns="2">
+                <apex:outputField rendered="{!Collateral_Relationship__c.Name != null }" value="{!Collateral_Relationship__c.Name}"/>
+                <apex:outputField rendered="{!Collateral_Relationship__c.Collateral__r.OwnerId != null }" value="{!Collateral_Relationship__c.Collateral__r.OwnerId}"/>
+                <apex:inputField required="true" value="{!Collateral_Relationship__c.Collateral__c}"/>
+                
+                <apex:inputField required="true" value="{!Collateral_Relationship__c.CurrencyIsoCode}"/>
+                
+                <apex:inputField required="true" value="{!Collateral_Relationship__c.Relationship__c}" >
+                </apex:inputField>
+                 <apex:inputField value="{!Collateral_Relationship__c.Active__c}" >
+                </apex:inputField>
+                
+                 <apex:inputField required="true" value="{!Collateral_Relationship__c.Relationship_Type__c}" >
+                </apex:inputField>
+                
+            </apex:pageBlockSection>
+             </apex:actionRegion>
+            </apex:outputpanel>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <content>Drawdown_Route_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>Drawdown_Route_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>Drawdown_Route_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>General_Deal_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>SFA-286 to record client drawdowns as they occur</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Account_Bank__c</fullName>
+        <externalId>false</externalId>
+        <label>Account Bank</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Account_Branch__c</fullName>
+        <externalId>false</externalId>
+        <label>Account Branch</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Account_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Account Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Account_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Account Number</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Advance_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Advance Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Advance_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Advance Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Agent_Notice_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Agent Notice Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Agreement_Type__c</fullName>
+        <externalId>false</externalId>
+        <formula>Agreement__r.Agreement_Type__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Agreement Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Drawdowns</relationshipLabel>
+        <relationshipName>Drawdowns</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Approval_Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Approval Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Submitted</fullName>
+                    <default>false</default>
+                    <label>Submitted</label>
+                </value>
+                <value>
+                    <fullName>Approved</fullName>
+                    <default>false</default>
+                    <label>Approved</label>
+                </value>
+                <value>
+                    <fullName>Rejected</fullName>
+                    <default>false</default>
+                    <label>Rejected</label>
+                </value>
+                <value>
+                    <fullName>New</fullName>
+                    <default>false</default>
+                    <label>New</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Borrower__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>An agreement party linked to the Agreement.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>An agreement party linked to the Agreement.</inlineHelpText>
+        <label>Borrower</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>$Source.Agreement__c</field>
+                <operation>equals</operation>
+                <valueField>Agreement_Party__c.Agreement__c</valueField>
+            </filterItems>
+            <filterItems>
+                <field>Agreement_Party__c.Deal_Party__r.Party_Type__c</field>
+                <operation>equals</operation>
+                <value>Borrower</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Agreement_Party__c</referenceTo>
+        <relationshipLabel>Drawdowns</relationshipLabel>
+        <relationshipName>Drawdowns</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Current_Utilisation__c</fullName>
+        <externalId>false</externalId>
+        <label>Current Utilisation</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Days_in_Status__c</fullName>
+        <externalId>false</externalId>
+        <formula>TODAY() - DATEVALUE( Status_Change_Stamp__c )</formula>
+        <label>Days in Status</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Deal__c</fullName>
+        <externalId>false</externalId>
+        <formula>Agreement__r.Matter_Deal__r.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Deal</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Drawdown_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Drawdown Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Drawdown_date__c</fullName>
+        <externalId>false</externalId>
+        <label>Drawdown date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Limit__c</fullName>
+        <externalId>false</externalId>
+        <label>Limit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Tranche__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility Tranche</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Facility_Tranche__c.Facility__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Facility__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Facility_Tranche__c</referenceTo>
+        <relationshipLabel>Drawdowns</relationshipLabel>
+        <relationshipName>Drawdowns</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Facility__c.Agreement__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Agreement__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Facility__c</referenceTo>
+        <relationshipLabel>Drawdowns</relationshipLabel>
+        <relationshipName>Drawdowns</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Interest_Period__c</fullName>
+        <externalId>false</externalId>
+        <label>Interest Period</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Day(s)</fullName>
+                    <default>false</default>
+                    <label>Day(s)</label>
+                </value>
+                <value>
+                    <fullName>Month(s)</fullName>
+                    <default>false</default>
+                    <label>Month(s)</label>
+                </value>
+                <value>
+                    <fullName>Year(s)</fullName>
+                    <default>false</default>
+                    <label>Year(s)</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Interest_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Interest Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>JIBAR</fullName>
+                    <default>false</default>
+                    <label>JIBAR</label>
+                </value>
+                <value>
+                    <fullName>PRIME</fullName>
+                    <default>false</default>
+                    <label>PRIME</label>
+                </value>
+                <value>
+                    <fullName>LIBOR</fullName>
+                    <default>false</default>
+                    <label>LIBOR</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Lender_Portion_Changed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Lender Portion Changed</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Our_Portion__c</fullName>
+        <externalId>false</externalId>
+        <label>Our Portion</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Parent_Limit__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Facility_Tranche__c != null,  Facility_Tranche__r.Tranche_Limit__c ,  IF( Facility__c != null,  Facility__r.Facility_Limit__c , Agreement__r.Limit__c) )</formula>
+        <label>Parent Limit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Parent_Limit_lowest_level__c</fullName>
+        <externalId>false</externalId>
+        <label>Parent Limit (lowest level)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Payment_Expected__c</fullName>
+        <externalId>false</externalId>
+        <label>Payment Expected</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Period__c</fullName>
+        <externalId>false</externalId>
+        <label>Period</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Reference__c</fullName>
+        <externalId>false</externalId>
+        <label>Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Relationship__c</fullName>
+        <externalId>false</externalId>
+        <formula>Borrower__r.Relationship__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Relationship</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Request_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Request Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>SWIFT_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>SWIFT ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status_Change_Stamp__c</fullName>
+        <defaultValue>NOW()</defaultValue>
+        <externalId>false</externalId>
+        <label>Status Change Stamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Governance and Documentation Check  Incomplete</fullName>
+                    <default>true</default>
+                    <label>Governance and Documentation Check  Incomplete</label>
+                </value>
+                <value>
+                    <fullName>Governance and Documentation Check Complete</fullName>
+                    <default>false</default>
+                    <label>Governance and Documentation Check Complete</label>
+                </value>
+                <value>
+                    <fullName>Cancelled</fullName>
+                    <default>false</default>
+                    <label>Cancelled</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Supporting_Documentation_Uploaded__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Supporting Documentation Uploaded</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Drawdown</label>
+    <listViews>
+        <fullName>Drawdown_by_Status_Complete</fullName>
+        <columns>NAME</columns>
+        <columns>Deal__c</columns>
+        <columns>Agreement__c</columns>
+        <columns>Relationship__c</columns>
+        <columns>Status__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Governance and Documentation Check Complete</value>
+        </filters>
+        <label>Drawdown by Status (Complete)</label>
+    </listViews>
+    <listViews>
+        <fullName>Drawdowns_by_Status_Incomplete</fullName>
+        <columns>NAME</columns>
+        <columns>Deal__c</columns>
+        <columns>Relationship__c</columns>
+        <columns>Reference__c</columns>
+        <columns>Status__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Status__c</field>
+            <operation>equals</operation>
+            <value>Governance and Documentation Check  Incomplete</value>
+        </filters>
+        <label>Drawdowns by Status Incomplete</label>
+    </listViews>
+    <nameField>
+        <label>Drawdown Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Drawdowns</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Drawdown</fullName>
+        <active>true</active>
+        <label>Drawdown</label>
+        <picklistValues>
+            <picklist>Approval_Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Submitted</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Period__c</picklist>
+            <values>
+                <fullName>Day%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Month%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Year%28s%29</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Type__c</picklist>
+            <values>
+                <fullName>JIBAR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>LIBOR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PRIME</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Governance and Documentation Check  Incomplete</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Governance and Documentation Check Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Drawdown_Agency</fullName>
+        <active>true</active>
+        <label>Drawdown - Agency</label>
+        <picklistValues>
+            <picklist>Approval_Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Submitted</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Period__c</picklist>
+            <values>
+                <fullName>Day%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Month%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Year%28s%29</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Type__c</picklist>
+            <values>
+                <fullName>JIBAR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>LIBOR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PRIME</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Governance and Documentation Check  Incomplete</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Governance and Documentation Check Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Drawdown_Cancelled</fullName>
+        <active>true</active>
+        <label>Drawdown Cancelled</label>
+        <picklistValues>
+            <picklist>Approval_Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Submitted</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Period__c</picklist>
+            <values>
+                <fullName>Day%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Month%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Year%28s%29</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Type__c</picklist>
+            <values>
+                <fullName>JIBAR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>LIBOR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PRIME</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Governance and Documentation Check  Incomplete</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Governance and Documentation Check Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Drawdown_ReadOnly</fullName>
+        <active>true</active>
+        <label>Drawdown ReadOnly</label>
+        <picklistValues>
+            <picklist>Approval_Status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>New</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Submitted</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Period__c</picklist>
+            <values>
+                <fullName>Day%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Month%28s%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Year%28s%29</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Interest_Type__c</picklist>
+            <values>
+                <fullName>JIBAR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>LIBOR</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PRIME</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Status__c</picklist>
+            <values>
+                <fullName>Governance and Documentation Check  Incomplete</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Governance and Documentation Check Complete</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <customTabListAdditionalFields>Agreement__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Deal__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Relationship__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Request_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Draw_Down_Completed</fullName>
+        <active>true</active>
+        <description>Please ensure &quot;Supporting Documentation Uploaded&quot; is checked for a completed drawdown.</description>
+        <errorConditionFormula>AND(
+   ISCHANGED(Status__c),
+   ISPICKVAL(Status__c,&quot;Governance and Documentation Check Complete&quot;),
+   NOT( Supporting_Documentation_Uploaded__c )
+)</errorConditionFormula>
+        <errorDisplayField>Supporting_Documentation_Uploaded__c</errorDisplayField>
+        <errorMessage>Please ensure &quot;Supporting Documentation Uploaded&quot; is checked for a completed drawdown.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Drawdown_Utilisation</fullName>
+        <active>true</active>
+        <description>Draw down amount exceeds the  facility limit.</description>
+        <errorConditionFormula>(Advance_Amount__c  +  Current_Utilisation__c ) &gt; Facility_Limit__c &amp;&amp;  ISPICKVAL(Status__c ,&apos;Governance and Documentation Check Complete&apos;) &amp;&amp;  RecordType.DeveloperName == &apos;Drawdown&apos; &amp;&amp; !ISPICKVAL( Approval_Status__c, &apos;Approved&apos;)</errorConditionFormula>
+        <errorMessage>Approval required. Drawdown Amount cannot exceed the Facility Limit without Approval.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Interest_Period_Validation</fullName>
+        <active>true</active>
+        <description>Validation Rule to validate that both interest period and interest has been specified</description>
+        <errorConditionFormula>OR
+(
+ AND( ISBLANK(TEXT(Interest_Period__c)), NOT(ISBLANK(Period__c))),
+ AND( NOT(ISBLANK(TEXT(Interest_Period__c))), ISBLANK( Period__c ) )
+)</errorConditionFormula>
+        <errorMessage>Please ensure that the Period is specified when the Interest period is selected.
+and the Interest Period is specified when the Period is populated.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Lender_Portion_Approval_Validation</fullName>
+        <active>true</active>
+        <errorConditionFormula>RecordType.DeveloperName == &apos;Drawdown_Agency&apos; &amp;&amp;  (ISPICKVAL( Approval_Status__c , &apos;Submitted&apos;) || ISPICKVAL( Approval_Status__c , &apos;Rejected&apos;)) &amp;&amp;  ISPICKVAL(Status__c, &apos;Governance and Documentation Check Complete&apos;)</errorConditionFormula>
+        <errorMessage>You are not allowed to complete the Drawdown without the Lender Portions being Approved</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Cancel_Drawdown</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Cancel Drawdown</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/39.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/39.0/apex.js&quot;)} 
+
+var confirmation = confirm(&quot;Are you sure you want to cancel this drawdown?&quot;);
+
+if(confirmation == true)
+{
+	var soqlQuery = sforce.connection.query(&quot;SELECT Id, Status__c FROM Drawdown__c WHERE Id =&apos;{!Drawdown__c.Id}&apos; LIMIT 1&quot;);
+	var records = soqlQuery.getArray(&quot;records&quot;); 
+	var currentStatus = records[0].Status__c;
+
+	if(currentStatus != &apos;Cancelled&apos;)
+	{
+		//Identify the record.
+		var drawdownRecord = new sforce.SObject(&quot;Drawdown__c&quot;);
+		drawdownRecord.Id = &apos;{!Drawdown__c.Id}&apos;;
+
+		drawdownRecord.Status__c = &quot;Cancelled&quot;;
+
+		//Save the change
+		sforce.connection.update([drawdownRecord]);	
+
+		//refresh the page
+		window.location.reload();
+	}
+	
+	if(currentStatus == &apos;Cancelled&apos;)
+	{
+		alert(&apos;This drawdown has already been cancelled.&apos;)
+	}
+}</url>
+    </webLinks>
+</CustomObject>

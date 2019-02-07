@@ -1,0 +1,170 @@
+<apex:page standardController="advpm__Cross_Reference_Matter__c" tabStyle="advpm__Cross_Reference_Matter__c" extensions="advpm.CrossReferenceMatterController" 
+            applyHtmlTag="{!!isLightning}" applyBodyTag="false" sidebar="{!!isLightning}" showHeader="{!!isLightning}" standardStyleSheets="true">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <title>
+        <apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Cross_Reference_Matter__c.Id)}">Create {!$ObjectType.advpm__Cross_Reference_Matter__c.label}</apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Cross_Reference_Matter__c.Id))}">Edit {!advpm__Cross_Reference_Matter__c.Name}</apex:outputPanel>
+    </title>
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS sldsV2="true" />
+        <style type="text/css">
+            .slds .slds-modal--large .slds-modal__container{width:90%;max-width:960px;min-width:640px;}
+            .slds #editModal .slds-pill{display:block;}
+            .slds #editModal .slds-pill:hover{background-color:#fff;}
+            .slds #editModal .slds-pill__label{max-width:15.5rem;}
+            .slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+            .slds .slds-form-element__static {line-height: 1.75;}
+            .slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+            .slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+            .modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+            .slds-modal__close {right: -.8rem;}
+            .frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+            .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+            .lookupInput input {padding-right:1.5rem!important;}
+            .dateOnlyInput input {width:100%;}
+            .dateFormat {display:none;}
+            .date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+            .datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+            input[type=checkbox]{clear: both;display: block;}
+            .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+            .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+            .uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+        </style>
+    </apex:outputPanel>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        $j(document).ready(function(){
+            $j('select.fld-relationship-field').change(function(){
+                fixControls();
+            });
+            fixControls();
+        });
+        function fixControls() {
+            $j('.slds-form-element .lookupInput a').removeClass('slds-input');
+            setTimeout(function(){
+               $j('.fld-dependent-field select').addClass('slds-select');
+               $j('.fld-dependent-field *').removeClass('slds-hide');
+            }, 500);
+        }
+        function doCancel() {
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                $j('#editModal form')[0].reset();
+                $j('#editModal .slds-modal').removeClass('slds-fade-in-open');
+                $j('#editModal .slds-modal-backdrop').removeClass('slds-modal-backdrop--open');
+                sforce.one.back();
+            }
+        }
+    </script>
+</head>
+<body class="{!IF(isLightning,'slds','')}">
+<div id="editModal">
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+    <script type="text/javascript">
+        toggleButtons('{!$Component.theForm}', false);
+    </script>
+    <apex:sectionHeader title="{!$ObjectType.advpm__Cross_Reference_Matter__c.Label} Edit" subtitle="{!IF(advpm__Cross_Reference_Matter__c.Id == '','New Cross Reference Matter',advpm__Cross_Reference_Matter__c.Name)}" rendered="{!!isLightning}" />
+    
+    <apex:Form id="theForm">
+        <apex:actionFunction name="doSaveMatterRelationship" action="{!saveMatterRelationship}" />
+        
+        <apex:pageblock id="CrossReferenceMatterBlock" title="Cross Reference Matter Edit" mode="edit" rendered="{!!isLightning}">
+            <apex:pageMessages />
+            <apex:pageBlockButtons location="both">
+                <apex:commandButton value="  Save  " action="{!saveMatterRelationship}" styleClass="showOnEditButton" onclick="toggleButtons('{!$Component.theForm}', true)" />
+                <apex:commandButton value="  Cancel  " action="{!cancel}" immediate="true" styleClass="showOnEditButton" />
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Information" columns="2">
+                <apex:outputField value="{!advpm__Cross_Reference_Matter__c.advpm__Matter1__c}" />
+                <apex:inputfield value="{!advpm__Cross_Reference_Matter__c.advpm__Reciprocal_Relationship__c}" required="true" />
+                <apex:inputfield value="{!advpm__Cross_Reference_Matter__c.advpm__Relationship__c}" required="true" />
+                <apex:pageBlockSectionItem />
+                <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Matter2__c}" required="true" />
+                <!-- <apex:outputField value="{!Matter_Relationship__c.OwnerId}" /> -->
+            </apex:pageBlockSection>
+            <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Parent_Relationship__c}" rendered="false" />
+        </apex:pageblock>
+        
+        <apex:outputPanel layout="none" rendered="{!isLightning}">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">
+                            <apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Cross_Reference_Matter__c.Id)}">Create {!$ObjectType.advpm__Cross_Reference_Matter__c.label}</apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Cross_Reference_Matter__c.Id))}">Edit {!advpm__Cross_Reference_Matter__c.Name}</apex:outputPanel>
+                        </h2>
+                        <span class="slds-hint-parent">
+                            <button class="slds-button slds-modal__close form-close-action" onClick="doCancel();return false">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--inverse slds-button__icon--hint modal-icon-close">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS0112, 'assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </span>
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="pg-msgs">
+                            <apex:messages styleClass="slds-notify slds-notify--alert slds-theme--error" />
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <fieldset class="slds-form--compound">
+                                <h2 class="slds-form-element__label frm-sec-header">Information</h2>
+                                <div class="form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                            <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Cross_Reference_Matter__c.fields.advpm__Matter1__c.label}</apex:outputLabel>
+                                            <div class="slds-form-element__control">
+                                                <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                                    <apex:outputField value="{!advpm__Cross_Reference_Matter__c.advpm__Matter1__c}" />
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_rel"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Cross_Reference_Matter__c.fields.advpm__Relationship__c.label}</apex:outputLabel>
+                                            <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Relationship__c}" id="fld_rel" required="true" styleClass="slds-select fld-relationship-field" />
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded fld-dependent-field">
+                                            <apex:outputLabel styleClass="slds-form-element__label slds-hide" for="fld_recirel"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Cross_Reference_Matter__c.fields.advpm__Reciprocal_Relationship__c.label}</apex:outputLabel>
+                                            <div class="slds-hide">
+                                                <apex:inputfield id="fld_recirel" value="{!advpm__Cross_Reference_Matter__c.advpm__Reciprocal_Relationship__c}" required="true" styleClass="slds-select" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_mat"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Cross_Reference_Matter__c.fields.advpm__Matter2__c.label}</apex:outputLabel>
+                                            <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Matter2__c}" id="fld_mat" required="true" styleClass="slds-input" />
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <apex:actionStatus id="loadingStatus" onstop="fixControls()">
+                            <apex:facet name="start"><img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." width="32px" height="32px" /></apex:facet>
+                        </apex:actionStatus>
+                        <input type="button" class="slds-button slds-button--neutral" value="  Cancel  " onClick="doCancel();return false;" />
+                        <input type="button" class="slds-button slds-button--neutral slds-button--brand" value="  Save  " onClick="doSaveMatterRelationship();return false;" />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </apex:outputPanel>
+        
+    </apex:Form>
+</div>
+</body>
+</html>
+</apex:page>

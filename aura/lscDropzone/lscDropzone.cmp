@@ -1,0 +1,29 @@
+<aura:component implements="force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="lscDropzoneExt">
+	<aura:attribute name="recordId" type="String" />
+    
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <center style="z-index:99">
+       <lightning:spinner aura:id="TheSpinner" class="slds-hide" variant="brand" size="large"/>
+    </center>    
+    
+    <div class="slds-grid drop-zone">
+     	<div class="slds-col" style="width: 100%; padding: 0 10px;" >
+            <div class="target" id="preview"></div>
+        </div>
+        <div class="slds-col" style="width: 100%; padding: 0 10px;" >
+            <div class="slds-grid">                    
+                    <div class="slds-col slds-size_2-of-3 slds-p-around_xxx-small" >
+                        <div class="">
+                            <lightning:input type="text" aura:id="fname" class="fname"  name="expenseclient" placeholder="Enter file name" />                    
+                        </div>
+                    </div>
+                     <div class="slds-col slds-size_1-of-3 slds-p-around_xxx-small" style="padding-top: 21px;">                                        
+                        <ui:button label="Attach File" press="{!c.attFile}" aura:id="btn" class="btn-attach slds-button slds-button--brand"/>                
+                        <ui:outputText value=""/>
+                    </div>
+             </div>
+        </div>
+     </div>    
+    
+    <ltng:require scripts="{!join(',', $Resource.jqueryscipt , $Resource.dropzoneLib2)}" afterScriptsLoaded="{!c.doInit}"/>            
+</aura:component>

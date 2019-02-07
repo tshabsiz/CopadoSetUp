@@ -1,0 +1,16 @@
+<apex:page standardController="Opportunity">
+<apex:form >
+        <apex:outputPanel id="redirectPanel" >
+            <apex:outputText rendered="{!(NOT(Opportunity.HasOpportunityLineItem) && Opportunity.Probability >= 40 && $User.Id = Opportunity.OwnerId)}">
+                <script type="text/javascript">
+                  if((typeof sforce != 'undefined') && (sforce != null)) { 
+
+              sforce.one.navigateToURL('/apex/AddProductToOpportunityMobile?Id={!Opportunity.Id}')           
+   } else {
+              window.top.location.href = '/apex/AddProductToOpportunity?oppId={!Opportunity.Id}'; 
+            }    
+                </script>
+            </apex:outputText>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

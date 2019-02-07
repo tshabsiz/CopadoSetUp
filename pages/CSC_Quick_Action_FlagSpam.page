@@ -1,0 +1,100 @@
+<apex:page standardController="Case" sidebar="false" showHeader="false" standardStylesheets="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <!--<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />-->
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+            <script src="../../soap/ajax/38.0/connection.js" type="text/javascript">
+            </script>
+            <apex:includeScript value="/support/console/35.0/integration.js" />
+        </head>
+        <apex:form >
+            <div class="slds">
+                <div class="slds-form--inline slds-m-top--xxx-small">
+                    <div class="slds-form-element">
+                        Are you sure you want to flag this email?
+                    </div>
+                </div>
+                <div class="slds-form--inline slds-m-top--xxx-small">
+                    <div class="slds-form-element slds-float--right">
+                        <button class="slds-button slds-button--brand" type="button" onclick="go2MainTabSpam();return false" >
+                            Spam/Junk
+                        </button>
+                    </div>
+                </div>
+                 <div class="slds-form--inline slds-m-top--xxx-small">
+                    <div class="slds-form-element slds-float--right">
+                        <button class="slds-button slds-button--brand" type="button" onclick="go2MainTabOut();return false"  >
+                            Out-of-Office
+                        </button>
+                    </div>
+                </div>
+                 <div class="slds-form--inline slds-m-top--xxx-small">
+                    <div class="slds-form-element slds-float--right">
+                         <button class="slds-button slds-button--brand" type="button" onclick="go2MainTabDuplicate();return false" >
+                            Duplicate
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <apex:actionFunction name="FlagSpam" action="{!flagCaseSpam}" />
+             <apex:actionFunction name="FlagOut" action="{!flagCaseOut}" />
+             <apex:actionFunction name="FlagDup" action="{!flagCaseDuplicate}" />
+            -->
+        </apex:form>       
+        <script type="text/javascript">
+        var thecase = new sforce.SObject("Case");
+        window.onload = function () {
+            thecase.id = '{!Case.Id}';
+        }
+        function go2MainTabSpam() {
+            //FlagSpam();
+            thecase.Email_Action__c = 'Flag as Spam / Junk';
+            thecase.Email_Status__c = 'Actioned';
+            thecase.Status = 'Closed Resolved';
+            var result = sforce.connection.update([thecase]);
+            
+            if (result[0].getBoolean("success")) {
+                sforce.console.getFocusedPrimaryTabId(closetab);
+            }else{
+                alert('The Case could not be flagged at this stage ' + result[0] + ' ID = ' + thecase.id);
+            }
+        }
+        function go2MainTabOut(){
+            //FlagOut();
+            thecase.Email_Action__c = 'Flag as Out of Office';
+            thecase.Email_Status__c = 'Actioned';
+            thecase.Status = 'Closed Resolved';
+            var result = sforce.connection.update([thecase]);
+            
+            if (result[0].getBoolean("success")) {
+                sforce.console.getFocusedPrimaryTabId(closetab);
+            }else{
+                alert('The Case could not be flagged at this stage');
+            }
+        }
+         function go2MainTabDuplicate() {
+             //FlagDup();
+             thecase.Email_Action__c = 'Flag as Duplicate';
+            thecase.Email_Status__c = 'Actioned';
+            thecase.Status = 'Closed Resolved';
+            var result = sforce.connection.update([thecase]);
+            
+            if (result[0].getBoolean("success")) {
+                sforce.console.getFocusedPrimaryTabId(closetab);
+            }else{
+                alert('The Case could not be flagged at this stage');
+                
+            }
+        }
+        
+        var closetab = function closetab(result) {
+            sforce.console.refreshNavigationTab();
+            sforce.console.focusNavigationTab();
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+        };
+        </script>
+    </html>
+</apex:page>

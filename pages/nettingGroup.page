@@ -1,0 +1,342 @@
+<apex:page standardController="Netting_Group__c" extensions="nettingGroupExtension" doctype="html-5.0">
+    
+    <style>
+        .table-header {
+        font-weight: bold;
+        }
+        
+        .SumoSelect {
+            display: block;
+            width: unset;
+            border-left: 3px solid #c00;
+        	left: -4px;
+        }
+        
+        .SumoSelect.open>.optWrapper {
+        	top: 22px;
+        }
+        
+        .SelectBox {
+        	padding: 2px 3px;
+        }
+    </style>
+
+    <script>
+        function defaultValuesAccordingToNettingType(element){
+
+            if(element.value == 'Novation'){
+                $('[id$=netStrength]').val('3-5');
+                $('[id$=netAcrossBank]').val('No');
+                $('[id$=netAcrossCP]').val('No');
+                $('[id$=crossProduct]').val('Netting Across all Products');
+            }
+            else if(element.value == 'Settlement'){
+                $('[id$=netStrength]').val('1');
+                $('[id$=netAcrossBank]').val('Yes');
+                $('[id$=netAcrossCP]').val('Yes');
+                $('[id$=crossProduct]').val('Netting Across all Products');
+            }
+            else if(element.value == 'Close Out'){
+                $('[id$=netStrength]').val('1');
+                $('[id$=netAcrossBank]').val('Yes');
+                $('[id$=netAcrossCP]').val('Yes');
+                $('[id$=crossProduct]').val('Netting Across all Products');
+            }
+
+            if({!defaultCounterpartyToNo} == true){
+                $('[id$=netAcrossCP]').val('No');
+            }
+
+            $('[id$=crossBankSelect]')[0].sumo.selectAll();
+            $('[id$=crossCounterpartySelect]')[0].sumo.selectAll();
+            $('[id$=TradeInstrumentSelect]')[0].sumo.selectAll();
+        }
+
+        function checkIfWarningMustBeShown(element){
+            if({!defaultCounterpartyToNo} == true){
+                if(element.value == 'Yes'){
+                    alert('Setting Net Across Counterparty to "Yes" implies that downstream system will be netting Counterparties against one another.');
+                }
+            }
+        }
+    </script>
+    
+    <!-- JQUERY -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <!-- Multi Select jQuery Select plugin -->
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.0.2/jquery.sumoselect.min.js" />
+    <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.0.2/sumoselect.min.css" />
+    
+    <apex:sectionHeader title="{!$ObjectType.Netting_Group__c.Label} {!IF(isNewRecord, 'New', 'Edit')}" subtitle="New {!$ObjectType.Netting_Group__c.Label}" />
+    
+    <apex:form id="pageContent">
+        <apex:pageMessages ></apex:pageMessages>
+       
+        <apex:inputHidden id="bankHidden" />
+        <apex:inputHidden id="cpHidden" />
+        <apex:inputHidden id="tiHidden" />
+        <apex:inputHidden id="productHidden" />
+
+        <apex:outputPanel rendered="{!nettingGroupPanel}">
+            <apex:pageBlock id="nettingGroupPgBlock"  title="{!$ObjectType.Netting_Group__c.Label} {!IF(isNewRecord, 'New', 'Edit')}" mode="edit">
+                
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!save}"/>
+                    <apex:commandButton value="Save and New" action="{!saveNew}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+                    <apex:commandButton value="Delete" action="{!deleteNettingGroup}" rendered="{!isNewRecord == false}" immediate="true" html-formnovalidate="formnovalidate" onclick="if(!confirm('Are you sure you want to delete this Netting Group?')) return false;"/>
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockSection title="Netting Group Information" id="nettingGroupPgInfo" columns="2">
+                    <apex:inputField required="true" value="{!Netting_Group__c.Netting_Type__c}" onChange="defaultValuesAccordingToNettingType(this);"/>
+                    <apex:inputField required="true" value="{!Netting_Group__c.Net_Across_Bank__c}" id="netAcrossBank"/>
+                    <apex:inputField required="true" value="{!Netting_Group__c.Netting_Strength__c}" id="netStrength"/>
+                    <apex:inputField required="true" value="{!Netting_Group__c.Net_Across_Counterparty__c}" id="netAcrossCP" onchange="checkIfWarningMustBeShown(this)"/>
+                    <apex:inputField required="true" styleClass="crossProduct" id="crossProduct" onchange="updateTable();" value="{!Netting_Group__c.Cross_Product__c}"  />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Netting Items" columns="2">
+                    <apex:pageBlockSectionItem id="crossBank">
+                        <apex:outputLabel value="Bank Branches" />
+                        <apex:selectList value="{!selectedBankBranches}" required="true" multiselect="true" label="Cross Bank" id="crossBankSelect" styleClass="crossBank"  >
+                            <apex:selectOptions value="{!BankBranches}"/>	
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem id="crossCounterparty">
+                        <apex:outputLabel value="Counterparties" />
+                        <apex:selectList value="{!selectedCounterparties}" required="true" multiselect="true" label="Cross Counterparty" id="crossCounterpartySelect" styleClass="crossCounterparty"  >
+                            <apex:selectOptions value="{!Counterparties}"/>	
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem id="tradeInstruments">
+                        <apex:outputLabel value="Trade Instruments" />
+                        <apex:selectList value="{!selectedTradeInstruments}" required="true" multiselect="true" label="Trade Instruments" id="TradeInstrumentSelect" styleClass="tradeInstruments"  >
+                            <apex:selectOptions value="{!TradeInstruments}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                </apex:pageBlockSection>
+                
+                <br/><br/>
+                <table class="list" >
+                    <thead class="rich-table-thead">
+                        <tr class="headerRow">
+                            <th class="headerRow" scope="col" colspan="1">
+                                Branch Bank
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                Branch Counterparty
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                Trade Instruments
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                Cross Product
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    </tbody>
+                </table>
+                
+            </apex:pageBlock>
+        </apex:outputPanel>  
+ 
+    <script>
+        $(document).ready(function() {
+            
+            //Initialize Sumo Select for Cross Bank multiselect
+            $('.crossBank').SumoSelect(
+                {
+                    search: true, 
+                    searchText: 'Search',
+                    placeholder: 'Select Bank Branches',
+                    selectAll: true
+                }
+            );
+            
+            //Set Bank Branches selected values on load
+            var existingBankBranches = {!bankBranchIdSet};
+            var existingBankBranchesLength = existingBankBranches.length;
+            for (var i = 0; i < existingBankBranchesLength; i++) {
+                console.log('existingBankBranches[i]: ' + existingBankBranches[i])
+            	$('select.crossBank')[0].sumo.selectItem(existingBankBranches[i]);    
+            }
+            
+            //Initialize Sumo Select for Cross Counterparty multiselect
+            $('.crossCounterparty').SumoSelect(
+                {
+                    search: true, 
+                    searchText: 'Search',
+                    placeholder: 'Select Counterparties',
+                    selectAll: true
+                }
+            );
+            
+            //Set Counterparties selected values on load
+            var existingCounterparties = {!CounterpartyBranchIdSet};
+            var existingCounterpartiesLength = existingCounterparties.length;
+            for (var i = 0; i < existingCounterpartiesLength; i++) {
+                $('select.crossCounterparty')[0].sumo.selectItem(existingCounterparties[i]);    
+            }
+
+            //Initialize Sumo Select for Trade Instrument multiselect
+            $('.tradeInstruments').SumoSelect(
+                {
+                    search: true,
+                    searchText: 'Search',
+                    placeholder: 'Select Trade Instruments',
+                    selectAll: true
+                }
+            );
+
+            //Set Bank Branches selected values on load
+            var existingTradeInstruments = {!TradeInstrumentBranchIdSet};
+            var existingTradeInstrumentLength = existingTradeInstruments.length;
+            for (var i = 0; i < existingTradeInstrumentLength; i++) {
+                console.log('existingTradeInstruments[i]: ' + existingTradeInstruments[i])
+            	$('select.tradeInstruments')[0].sumo.selectItem(existingTradeInstruments[i]);
+            }
+            
+            //Set Product selected values on load
+            var epString = document.getElementsByClassName('crossProduct');
+            console.log('epString: ' + epString[0].value)
+            var existingProduct = [epString[0].value];
+            
+            var bankBString = document.getElementsByClassName('crossBank');
+            console.log('bankBString: ' + bankBString);
+
+            //Set on load
+            buildProductTable(true, {!bankBranchNameSet}, {!CounterpartyBranchNameSet}, {!TradeInstrumentBranchNameSet}, existingProduct);
+        });
+        
+        //Set Hidden Fields
+        function setProduct(val) {
+            document.getElementById('{!$Component.pageContent}').elements['{!$Component.productHidden}'].value = val;
+        }
+        function setBank(val) {
+            document.getElementById('{!$Component.pageContent}').elements['{!$Component.bankHidden}'].value = val;
+        }
+        function setCP(val) {
+            document.getElementById('{!$Component.pageContent}').elements['{!$Component.cpHidden}'].value = val;
+        }
+        function setCP(val) {
+            document.getElementById('{!$Component.pageContent}').elements['{!$Component.tiHidden}'].value = val;
+        }
+
+        //change
+        $('.crossBank, .crossCounterparty, .tradeInstruments, .crossProduct').on('change', function(){
+            var exBankString = document.getElementsByClassName('crossBank')[0];
+            var exBank = [];
+            for(i=0; i < exBankString.length; i++){
+                if(exBankString.options[i].selected){
+                    exBank.push(exBankString.options[i].text);
+                }
+            }
+            
+            var exCPString = document.getElementsByClassName('crossCounterparty')[0];
+            var exCP = [];
+            for(i=0; i < exCPString.length; i++){
+                if(exCPString.options[i].selected){
+                    exCP.push(exCPString.options[i].text);
+                }
+            }
+
+            var exTIString = document.getElementsByClassName('tradeInstruments')[0];
+            var exTI = [];
+            for(i=0; i < exTIString.length; i++){
+                if(exTIString.options[i].selected){
+                    exTI.push(exTIString.options[i].text);
+                }
+            }
+            
+            var epString = document.getElementsByClassName('crossProduct');
+            var existingProduct = [epString[0].value];
+            
+            buildProductTable(false, exBank, exCP, exTI, existingProduct);
+        })
+        
+        
+        //Build product table
+        function buildProductTable(onLoad, selBank, selCP, selTI, selProd) {
+            
+            var productTableBody = document.getElementById('productTableBody');
+
+            var bank = selBank;
+            var cp = selCP;
+            var ti = selTI;
+            var prod = selProd;
+
+            console.log('bank: ' + bank);
+            console.log('cp: ' + cp);
+            console.log('ti: ' + ti);
+            console.log('prod: ' + prod);
+
+            banksArray   = bank;
+            cpArray = cp;
+            tiArray = ti;
+            prodArray  = prod;
+            
+            //Clear table body before rebuilding
+            productTableBody.innerHTML = "";       
+            
+            //Loop to create all selected combinations
+            banksArray.forEach(function(banksArray){
+                cpArray.forEach(function(cpArray){
+                    tiArray.forEach(function(tiArray){
+                        prodArray.forEach(function(prodArray){
+                            var tr = document.createElement('tr');
+
+                            tr.appendChild( document.createElement('td') );
+                            tr.appendChild( document.createElement('td') );
+                            tr.appendChild( document.createElement('td') );
+                            tr.appendChild( document.createElement('td') );
+
+                            tr.cells[0].appendChild( document.createTextNode(banksArray) )
+                            tr.cells[1].appendChild( document.createTextNode(cpArray) );
+                            tr.cells[2].appendChild( document.createTextNode(tiArray) );
+                            tr.cells[3].appendChild( document.createTextNode(prodArray) );
+
+                            productTableBody.appendChild(tr);
+                        });
+                    });
+                });
+            });
+        
+        }
+    </script>
+
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <script>
+        $('document').ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+           }
+           else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+           }
+        });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+
+    </apex:form>
+
+</apex:page>

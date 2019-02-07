@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_9412883</developerName>
+        <masterLabel>Coverage Hub</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>User.Hub__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <value>SA Inland LLC / Midcorp</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Public Sector South Africa</sourceValue>
+            </sourceValues>
+            <value>SA Public Sector</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Global Clients Banks</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Global Clients GDO</sourceValue>
+            </sourceValues>
+            <value>Global Clients</value>
+        </values>
+        <values>
+            <value>SA Financial Services</value>
+        </values>
+        <values>
+            <value>SA Coastal</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>HorizontalBar</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>User.Team__c</groupingColumn>
+        <location>CHART_BOTTOM</location>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>FIRST_NAME</field>
+    </columns>
+    <columns>
+        <field>LAST_NAME</field>
+    </columns>
+    <columns>
+        <field>PROFILE</field>
+    </columns>
+    <columns>
+        <field>USERNAME</field>
+    </columns>
+    <columns>
+        <field>EMAIL</field>
+    </columns>
+    <columns>
+        <field>ACTIVE</field>
+    </columns>
+    <columns>
+        <field>LAST_LOGIN</field>
+    </columns>
+    <columns>
+        <field>User.Last_Login_Date__c</field>
+    </columns>
+    <columns>
+        <field>ROLE</field>
+    </columns>
+    <columns>
+        <field>User.Team_Role__c</field>
+    </columns>
+    <columns>
+        <field>USER_ID</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>User.Hub__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Coverage South Africa - Public Sector</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>User.Team_Role__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Coverage Banker(RM),Leadership</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>User.Team__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>KPI - # PS Bankers logged in -30days</name>
+    <params>
+        <name>active</name>
+        <value>active</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>User</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>LAST_LOGIN</sortColumn>
+    <sortOrder>Desc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>LAST_LOGIN</dateColumn>
+        <interval>INTERVAL_LAST30</interval>
+    </timeFrameFilter>
+</Report>

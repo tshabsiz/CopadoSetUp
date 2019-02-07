@@ -1,0 +1,476 @@
+<apex:page sidebar="false" controller="advpm.AdvologixSetupController" tabStyle="Advologix_Setup__tab" title="{!$Label.advpm__setuptab_sidebarheader}">
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v3.2.0/js/bootstrap.min.js')}" />
+<apex:styleSheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v3.2.0/css/bootstrap.min.css')}" />
+<apex:styleSheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/33.0/setup.css')}" />
+<style type="text/css">
+    html {height: 100%;}
+    body {min-height: 100%;}
+    html body.sfdcBody {padding: 0px 0px 0 0px;}
+    .noSidebarCell {padding: 0px;}
+    .bodyDiv {border-top: {!IF(isLightning,'0px solid','1px solid')}}
+    .outer {min-height: 700px;}
+    td.oLeft {width:180px !important;}
+    td.oRight {padding: 10px!important;min-width:830px;}
+    /*.bodyDiv .outerNoSidebar {padding: 0 0px 0px;}
+    .mTreeSelection h2 {margin-top: 0px;margin-left: 10px;padding: .33em .33em .33em .00em;border-bottom: 0px solid #ccc;}
+    .setupNavHeader {font-size: 119%;font-weight: bold;padding: 5px 0px;color: #333435;}
+    .setupNavtree {}
+    .setupTab .oLeft .mTreeSelection #AutoNumber5>.setupNavtree h2.highlight {padding-left: 25px;margin-left: 0px;padding-top: 5px;padding-bottom: 6px;font-size: 13px;}
+    .setupTab .oLeft .mTreeSelection #AutoNumber5>.setupNavtree h2 {padding-left: 25px;margin-left: 0px;padding-top: 5px;padding-bottom: 6px;font-size: 13px;}
+    div#AutoNumber5 {font-size: .917em;padding-left: 0px;padding-bottom: 0px;}
+    #AutoNumber5>.setupNavtree {margin: 0px 0;border-top: 0px solid #d9d9d9;}
+    #AutoNumber5>.setupNavHeader:not(:first-child) {border-top: 2px solid #d9d9d9;}
+    .setupTab .oLeft .mTreeSelection #AutoNumber5>.setupNavtree h2{border-top: 0px solid #fff;}
+    .setupSection {font-weight: normal;text-decoration: none;}
+    .highlight .setupSection {font-weight: bold;text-decoration: none;}*/
+</style>
+<style type="text/css">
+    .table-heading h3 {font-size:20px;}
+    .advwrap .panel-body {padding:0px;}
+    .sfdc_richtext {color:#767676!important;}
+    
+    .app-guide-panel-content .list-group-item, .app-links-panel-content .list-group-item {border: 0px solid #ddd;}
+    .app-guide-table, .app-links-table, .app-news-table {margin-top:15px!important;margin-bottom:15px!important;}
+    .app-guide-panel-content td, .app-links-panel-content td, .app-news-panel-content td {padding:0px!important;border-top: 0px!important;}
+    .app-guide-panel-content td:first-child, .app-news-panel-content td:first-child {border-right: 1px solid #ddd;}
+    .key-dates-panel-content, .participants-panel-content{padding-top:15px!important;}
+    .panel-key-dates, .panel-atglance, .panel-participants {margin-bottom:0px!important;}
+    .key-dates-panel-content, .participants-panel-content{padding: 8px!important;}
+    .key-dates-panel-content .table>tbody>tr>td, .participants-panel-content .table>tbody>tr>td { border:0px; }
+    .app-init-panel-content {padding:15px!important;}
+    .list-group {margin-bottom: 0px!important;}
+    
+    /*Timeline settings adjustments*/
+    .timelineSettingsForm .bPageBlock .detailList .data2Col {padding-top: 0px!important;padding-right: 0px!important;padding-left: 0px!important;}
+    .timelineSettingsForm .bPageBlock .pbBody table.list {border-top: 0px;border-left: 0px;border-right: 0px;}
+    .timelineSettingsForm .pbBody table.list tr.headerRow td, .timelineSettingsForm .pbBody table.list tr.headerRow th {background: #ffffff;}
+    .timelineSettingsForm .apexp .detailList .list .headerRow th {border-bottom: 1px solid #ccc;}
+    .pbSubheader h3 {font-weight:bold;}
+    .pbSubheader img.showListButton, .pbSubheader img.hideListButton {margin-top:-5px;}
+    
+    /*At a Glance settings adjustments*/
+    .atglanceSettingsForm .bPageBlock .detailList .data2Col {padding-top: 0px!important;padding-right: 0px!important;padding-left: 0px!important;}
+    .atglanceSettingsForm .bPageBlock .pbBody table.list {border-top: 0px;border-left: 0px;border-right: 0px;}
+    .atglanceSettingsForm .pbBody table.list tr.headerRow td, .atglanceSettingsForm .pbBody table.list tr.headerRow th {background: #ffffff;}
+    .atglanceSettingsForm .apexp .detailList .list .headerRow th {border-bottom: 1px solid #ccc;border-top: 1px solid #ccc;}
+    .pbSubheader h3 {font-weight:bold;}
+    .pbSubheader img.showListButton, .pbSubheader img.hideListButton {margin-top:-5px;}
+    .table-atglance-global-settings>tbody>tr>td, .table-atglance-global-settings>tfoot>tr>td {border-top: 0px solid #ddd!important;}
+    .table-atglance-global-settings { margin-top: 10px!important;margin-bottom: 10px!important; }
+    
+    /*Loader*/
+    .loaderOverlay {display:none;background:#000000;opacity:0.05;filter:alpha(opacity=05);position:absolute;width:100%;height:100%;top:0px;z-index:4000;}
+    .loaderDiv {display:none;position:absolute;top:33%;left:34%;border:1px solid #dedede;z-index:9999;background:#eee;padding:10px;border-radius:5px;width:160px;}
+    .loaderDiv .circle {width:32px;margin:0 auto;}
+</style>
+<script type="text/javascript">
+$j = jQuery.noConflict();
+$j(document).ready(function(){
+    $j('#iframe_panel_news').bind('load', function() {
+        hideLoader('news');
+    });
+    $j('#iframe_panel_app_status').bind('load', function() {
+        hideLoader('appstatus');
+    });
+    
+    $j('#iframe_panel_news').attr('src', 'https://advologix.secure.force.com/app/rssreader?od={!encryptedOrgId}');
+    $j('#iframe_panel_app_status').attr('src', 'https://advologix.secure.force.com/app/appstatus?od={!encryptedOrgId}&oe={!installedVersion}&a_sid={!sId}&a_bl={!instanceName}&lt={!legacyTimelineEnabled}&ltu={!legacyTimelineURL}&tro={!TrialforceRegisteredOrg}');
+    
+    showLoader('news');
+    showLoader('appstatus');
+});
+function openSearch(e) {
+    e.preventDefault();
+    var t = $j('#searchText').val();
+    window.open('http://help.advologix.com/s/1905/searches?utf8=%E2%9C%93&text='+encodeURIComponent(t)+'&commit=Search', "_blank", 'width=1200,height=800,dependent=no,resizable=yes,toolbar=yes,status=yes,directories=yes,menubar=yes,scrollbars=1', false);
+}
+function showLoader(o) {
+    $j('.loaderDiv.'+o).css('display','table-cell');
+    $j('.loaderOverlay.'+o).fadeIn(300);
+}
+function hideLoader(o) {
+    $j('.loaderDiv.'+o).css('display','none');
+    $j('.loaderOverlay.'+o).fadeOut(300); 
+}
+function openValidateAggregates() {
+    var frmSrc = '{!URLFOR($Page.advpm__MattersBatchAggregate)}';
+    showSFDCSimpleDialog('Validate Aggregates', frmSrc, '');
+}
+var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+function showSFDCSimpleDialog(titleText, iframeSrc, srcElemId) {
+    if (!d) {
+        d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+        d.setWidth(960);
+        d.createDialog();
+    }
+    d.setTitle(titleText);
+    
+    $j(d.dialog).find('#myCustomSFDCDialogInner').html('<iframe src="'+iframeSrc+'" height="700" width="925" border="0" style="border: 0;" />');
+    $j(d.dialog).find('#myCustomSFDCDialogInner iframe').on('load', function() {
+        $j(this).contents().find('input[type="submit"]').on('click', function() {
+            if ($j(this).val() == 'Cancel') d.hide();
+            return false;
+        });
+    });
+    
+    d.show();
+    if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+        d.dialog.style.top = lastMouseY + 10 + 'px';
+    }
+}
+function openUrl(u) {
+    sforce.one.navigateToURL(u, true);
+}
+</script>
+<apex:outputPanel layout="none" rendered="{!isLightning}">
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <style type="text/css">
+        #AutoNumber5 .setupLeaf, #AutoNumber5 .setupHighlightLeaf {padding-top:3px;padding-bottom:3px;}
+        .slds .setupLeaf a, .slds .setupLeaf a:hover, .slds .setupLeaf a:focus {text-decoration: none;color: #333435;}
+        .advwrap .input-group-btn {width: 0px;}
+        .slds .settings-table label, .slds .other-settings-table label, .slds .keydates-settings-table label, .slds .participants-settings-table label {font-weight: normal;}
+        .slds .table-heading .sfdc_richtext {text-align:right;}
+        .pbSubheader .brandTertiaryBgr .tertiaryPalette{width:100%;display:inline;}
+        .timelineSettingsForm .pbSubheader h3 {display:inline;}
+        .slds h1, .slds h2, .slds h3, .slds h4, .slds h5, .slds h6 {font-size: 1.25em;}
+        .slds-text-heading--label {font-size: 0.75rem!important;line-height: 1.25!important;color: #54698d!important;}
+    </style>
+</apex:outputPanel>
+
+<div class="setupTab {!IF(isLightning,'slds','')}">
+    <div class="bodyDiv brdPalette brandPrimaryBrd" id="bodyDiv_setup">
+    <table class="outer" width="100%" id="bodyTable" border="0" cellspacing="0" cellpadding="0">
+    <tbody>
+    <tr>
+        <td class="oLeft">
+            <div class="mTreeSelection" id="setupNavTree">
+                <div id="AutoNumber5">
+                    <img src="/s.gif" alt="" width="180" height="1" title="" style="height:1px;" />
+                    <!-- Setup: AdvoLogix -->
+                    <div class="setupNavtree {!IF(isLightning,'slds-text-heading--label section-header','')}"><h2>{!$Label.advpm__setuptab_sidebarheader}</h2></div>
+                    <div class="{!IF(selTab=='Overview','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('Overview')])}">{!$Label.advpm__setuptab_sidebartaboverview}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='Settings','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('Settings')])}">{!$Label.advpm__setuptab_sidebartabsettings}</apex:outputLink></div>
+                    <!-- <div class="{!IF(selTab=='QuickLinks','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.AdvologixSetup,null,[tb=URLENCODE('QuickLinks')])}">{!$Label.advpm__setuptab_sidebartabquicklinks}</apex:outputLink></div> -->
+                    <div class="{!IF(selTab=='Timekeeping','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('Timekeeping')])}">{!$Label.advpm__setuptab_sidebartabtime}</apex:outputLink></div>
+                    <!-- Setup: Matter -->
+                    <div class="setupNavtree {!IF(isLightning,'slds-text-heading--label section-header','')}"><h2>{!$Label.advpm__setuptab_sidebarheader_matter}</h2></div>
+                    <div class="{!IF(selTab=='AtGlance','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('AtGlance')])}">{!$Label.advpm__setuptab_sidebartabatglance}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='FilesContent','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('FilesContent')])}">{!$Label.advpm__setuptab_sidebartabfilescontent}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='MyMatters','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('MyMatters')])}">{!$Label.advpm__setuptab_sidebartabmymatters}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='KeyDates','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('KeyDates')])}">{!$Label.advpm__setuptab_sidebartabkeydates}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='MatterPlanner','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('MatterPlanner')])}">{!$Label.advpm__setuptab_sidebartabmatterplanner}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='Participants','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('Participants')])}">{!$Label.advpm__setuptab_sidebartabparticipants}</apex:outputLink></div>
+                    <div class="{!IF(selTab=='Timeline','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('Timeline')])}">{!$Label.advpm__setuptab_sidebartabtimeline}</apex:outputLink></div>
+                    <!-- Setup: Integrations -->
+                    <apex:outputPanel rendered="{!hotDocsEnabled || accountingSeedEnabled}" layout="block" styleClass="setupNavtree {!IF(isLightning,'slds-text-heading--label section-header','')}"><h2>Integrations</h2></apex:outputPanel>
+                    <apex:outputPanel rendered="{!accountingSeedEnabled}" layout="block" styleClass="{!IF(selTab=='AccountingSeed','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('AccountingSeed')])}">Accounting Seed</apex:outputLink></apex:outputPanel>
+                    <apex:outputPanel rendered="{!hotDocsEnabled}" layout="block" styleClass="{!IF(selTab=='HotDocs','setupHighlightLeaf','setupLeaf')}"><apex:outputLink value="{!URLFOR($Page.advpm__AdvologixSetup,null,[tb=URLENCODE('HotDocs')])}">HotDocs</apex:outputLink></apex:outputPanel>
+                </div>
+            </div>
+        </td>
+        <td class="oRight advwrap">
+            <!-- Init Settings Panel -->
+            <apex:outputPanel id="initSettingsPanel" layout="block" rendered="{!initSettingsRequired}">
+                <div class="panel panel-default">
+                    <div class="panel-heading slds-text-heading--label"><h4>Application Settings Initialization</h4></div>
+                    <div class="panel-body app-init-panel-content">
+                        <apex:form >
+                            Please <apex:commandLink value="click here to initialize" action="{!initSettings}" /> global settings.
+                        </apex:form>
+                    </div>
+                  </div>
+            </apex:outputPanel>
+            <!-- Tab: Overview -->
+            <apex:outputPanel id="tabOverview" layout="block" rendered="{!!initSettingsRequired && selTab=='Overview'}">
+                <div class="panel panel-default">
+                    <div class="panel-heading slds-text-heading--label"><h4>{!$Label.setupTab_panelAppGuide}</h4></div>
+                    <div class="panel-body app-guide-panel-content">
+                        <table class="table app-guide-table">
+                            <tr>
+                                <td width="50%">
+                                    <div class="list-group">
+                                        <div class="list-group-item">
+                                            <h4><a href="http://help.advologix.com/s/1905/m/8108" class="list-group-item-heading" target="_blank">{!$Label.setupTab_panelAppGuide_quickStart}</a></h4>
+                                            <p class="list-group-item-text">{!$Label.setupTab_panelAppGuide_quickStart_desc}</p>
+                                        </div>
+                                        <div class="list-group-item">
+                                            <h4><a href="http://help.advologix.com/s/1905/m/5115" class="list-group-item-heading" target="_blank">{!$Label.setupTab_panelAppGuide_userGuide}</a></h4>
+                                            <p class="list-group-item-text">{!$Label.setupTab_panelAppGuide_userGuide_desc}</p>
+                                        </div>
+                                        <div class="list-group-item">
+                                            <h4><a href="http://help.advologix.com/s/1905/m/6654" class="list-group-item-heading" target="_blank">{!$Label.setupTab_panelAppGuide_adminGuide}</a></h4>
+                                            <p class="list-group-item-text">{!$Label.setupTab_panelAppGuide_adminGuide_desc}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="50%">
+                                    <div class="app-search-container">
+                                        <table class="table">
+                                            <tr>
+                                                <td valign="middle" align="center" style="border-right:0px;{!IF(isLightning,'text-align:center;','')}">
+                                                    <table class="">
+                                                        <tr>
+                                                            <td style="border-right:0px;padding-top: 40px!important;{!IF(isLightning,'text-align:center;','')}">
+                                                                <label for="searchText" style="font-size:14px;{!IF(isLightning,'margin-left:-50px;','')}">{!$Label.setupTab_panelAppGuide_searchHead}</label>
+                                                                <br />
+                                                                <form class="form-search" onsubmit="openSearch(event);" style="display:inline-block;{!IF(isLightning,'margin-left:-45px;','')}">
+                                                                    <div class="input-group slds-button-group">
+                                                                        <input id="searchText" class="form-control" type="text" placeholder="{!$Label.setupTab_panelAppGuide_searchTextBox}" style="height:30px;width:280px;" />
+                                                                        <span class="input-group-btn">
+                                                                            <input id="searchBtn" class="btn btn-primary btn-sm" type="submit" value="{!$Label.setupTab_panelAppGuide_searchButton}" />
+                                                                        </span>
+                                                                    </div>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading slds-text-heading--label"><h4>{!$Label.setupTab_panelNews}</h4></div>
+                    <div class="panel-body app-news-panel-content">
+                        <table class="table app-news-table">
+                            <tr>
+                                <td width="50%">
+                                    <div style="position:relative;">
+                                        <iframe id="iframe_panel_news" frameborder="0" scrolling="no" title="AdvoLogix Setup: Recent News" width="100%" height="173px" src="about:blank"></iframe>
+                                        <div class="loaderOverlay news"></div>
+                                        <div class="loaderDiv news"><div class="circle"><img src="/img/loading32.gif"/></div></div>
+                                    </div>
+                                </td>
+                                <td width="50%">
+                                    <div class="app-search-container" style="position:relative;height:173px;">
+                                        <table class="table">
+                                            <tr>
+                                                <td valign="middle" align="center" style="border-right:0px;">
+                                                    <iframe id="iframe_panel_app_status" frameborder="0" scrolling="no" title="AdvoLogix Setup: Status" width="100%" height="130px" src="about:blank"></iframe>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="loaderOverlay appstatus"></div>
+                                        <div class="loaderDiv appstatus"><div class="circle"><img src="/img/loading32.gif"/></div></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading slds-text-heading--label"><h4>{!$Label.setupTab_panelQuickLinks}</h4></div>
+                    <div class="panel-body app-links-panel-content">
+                        <table class="table app-links-table">
+                            <tr>
+                                <td width="25%">
+                                    <div class="list-group">
+                                        <a href="{!URLFOR($Action.Account.Tab, $ObjectType.Account)}" class="list-group-item">{!$ObjectType.Account.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.Contact.Tab, $ObjectType.Contact)}" class="list-group-item">{!$ObjectType.Contact.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.advpm__Matter__c.Tab, $ObjectType.advpm__Matter__c)}" class="list-group-item">{!$ObjectType.advpm__Matter__c.labelPlural}</a>
+                                        <a href="/{!$ObjectType.User}" class="list-group-item">{!$ObjectType.User.labelPlural}</a>
+                                    </div>
+                                </td>
+                                <td width="25%">
+                                    <div class="list-group">
+                                        <a href="{!URLFOR($Page.ActivitiesTab)}" class="list-group-item">Activities</a>
+                                        <a href="{!URLFOR($Page.Calendar_Tab)}" class="list-group-item">Matter Calendar</a>
+                                        <a href="{!URLFOR($Page.MatterGanttTab)}" class="list-group-item">Matter Gantt</a>
+                                        <apex:outputLink value="{!URLFOR($Page.advpm__MyMatters)}" styleClass="list-group-item" rendered="{!!isLightning}">Focus Matters</apex:outputLink>
+                                        <apex:outputLink value="javascript:openUrl('#/n/advpm__My_Matters_Lightning');" styleClass="list-group-item" rendered="{!isLightning}">Focus Matters</apex:outputLink>
+                                    </div>
+                                </td>
+                                <td width="25%">
+                                    <div class="list-group">
+                                        <a href="{!URLFOR($Action.advpm__Timekeeper__c.Tab, $ObjectType.advpm__Timekeeper__c)}" class="list-group-item">{!$ObjectType.advpm__Timekeeper__c.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.advpm__Rate__c.Tab, $ObjectType.advpm__Rate__c)}" class="list-group-item">{!$ObjectType.advpm__Rate__c.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.advpm__Export_Template__c.Tab, $ObjectType.advpm__Export_Template__c)}" class="list-group-item">{!$ObjectType.advpm__Export_Template__c.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.advpm__ActionPlanTemplate__c.Tab, $ObjectType.advpm__ActionPlanTemplate__c)}" class="list-group-item">{!$ObjectType.advpm__ActionPlanTemplate__c.labelPlural}</a>
+                                    </div>
+                                </td>
+                                <td width="25%">
+                                    <div class="list-group">
+                                        <a href="{!URLFOR($Action.advpm__Time__c.Tab, $ObjectType.advpm__Time__c)}" class="list-group-item">{!$ObjectType.advpm__Time__c.labelPlural}</a>
+                                        <a href="{!URLFOR($Action.advpm__Expense__c.Tab, $ObjectType.advpm__Expense__c)}" class="list-group-item">{!$ObjectType.advpm__Expense__c.labelPlural}</a>
+                                        <a href="{!URLFOR($Page.BillingPreview)}" class="list-group-item">Billing Preview</a>
+                                        <a href="javascript:void(0);" onclick="openValidateAggregates();return false;" class="list-group-item">Validate Aggregates</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Settings -->
+            <apex:outputPanel id="tabSettings" layout="block" rendered="{!!initSettingsRequired && selTab=='Settings'}">
+                <div class="panel panel-default panel-key-dates">
+                    <div class="panel-heading slds-text-heading--label"><h4>{!$Label.advpm__setuptab_panelsettings}</h4></div>
+                    <div class="panel-body app-settings-panel-content">
+                        <c:SetupGeneralSettings rendered="{!!initSettingsRequired && selTab=='Settings'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Time -->
+            <apex:outputPanel id="tabTime" layout="block" rendered="{!!initSettingsRequired && selTab=='Timekeeping'}">
+                <div class="panel panel-default panel-timeline">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelTime}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;text-align:right;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body">
+                        <c:SetupTime rendered="{!!initSettingsRequired && selTab=='Timekeeping'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Quick Links -->
+            <!-- <apex:outputPanel id="tabQuickLinks" layout="block" rendered="{!!initSettingsRequired && selTab=='QuickLinks'}">
+                <div class="panel panel-default panel-timeline">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelQuickLinks}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;text-align:right;">{!$Label.setupTab_panelQuickLinks_desc}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body">
+                        <c:SetupQuickLinks rendered="{!!initSettingsRequired && selTab=='QuickLinks'}" />
+                    </div>
+                </div>
+            </apex:outputPanel> -->
+            <!-- Tab: Timeline -->
+            <apex:outputPanel id="tabTimeline" layout="block" rendered="{!!initSettingsRequired && selTab=='Timeline'}">
+                <div class="panel panel-default panel-timeline">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelTimeline}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;text-align:right;"><apex:outputField value="{!PanelTimelineDesc.advpm__Details__c}" /></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body">
+                        <c:SetupTimeline rendered="{!!initSettingsRequired && selTab=='Timeline'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: At a Glance -->
+            <apex:outputPanel id="tabAtGlance" layout="block" rendered="{!!initSettingsRequired && selTab=='AtGlance'}">
+                <div class="panel panel-default panel-atglance">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelAtGlance}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;text-align:right;"><apex:outputField value="{!PanelAtGlanceDesc.advpm__Details__c}" /></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body atglance-panel-content">
+                        <c:SetupAtGlance rendered="{!!initSettingsRequired && selTab=='AtGlance'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Key Dates -->
+            <apex:outputPanel id="tabKeyDates" layout="block" rendered="{!!initSettingsRequired && selTab=='KeyDates'}">
+                <div class="panel panel-default panel-key-dates">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelKeyDates}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;{!IF(isLightning,'text-align:right;','')}">{!$Label.setupTab_panelKeyDates_desc}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body key-dates-panel-content">
+                        <c:SetupKeyDates rendered="{!!initSettingsRequired && selTab=='KeyDates'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Files and Content -->
+            <apex:outputPanel id="tabFilesContent" layout="block" rendered="{!!initSettingsRequired && selTab=='FilesContent'}">
+                <div class="panel panel-default panel-files-content">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelFilesContent}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body files-content-panel-content">
+                        <c:SetupFilesContent rendered="{!!initSettingsRequired && selTab=='FilesContent'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Matter Planner -->
+            <apex:outputPanel id="tabMatterPlanner" layout="block" rendered="{!!initSettingsRequired && selTab=='MatterPlanner'}">
+                <div class="panel panel-default panel-matter-planner">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelMatterPlanner}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body matter-planner-panel-content">
+                        <c:SetupMatterPlanner rendered="{!!initSettingsRequired && selTab=='MatterPlanner'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: My Matters -->
+            <apex:outputPanel id="tabMyMatters" layout="block" rendered="{!!initSettingsRequired && selTab=='MyMatters'}">
+                <div class="panel panel-default panel-my-matters">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelMyMatters}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body my-matters-panel-content">
+                        <c:SetupMyMatters rendered="{!!initSettingsRequired && selTab=='MyMatters'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+            <!-- Tab: Accounting Seed -->
+            <apex:outputPanel rendered="{!!initSettingsRequired && accountingSeedEnabled && selTab=='AccountingSeed'}">
+                <apex:iframe src="{!AccountingSeedSetupPanelURL}" rendered="{!!initSettingsRequired && accountingSeedEnabled && selTab=='AccountingSeed'}" frameborder="false" width="100%" height="620px" scrolling="false" />
+            </apex:outputPanel>
+            <!-- Tab: HotDocs -->
+            <apex:outputPanel rendered="{!!initSettingsRequired && hotDocsEnabled && selTab=='HotDocs'}">
+                <apex:iframe src="{!HotDocsSetupPanelURL}" rendered="{!!initSettingsRequired && hotDocsEnabled && selTab=='HotDocs'}" frameborder="false" width="100%" height="660px" scrolling="false" />
+            </apex:outputPanel>
+            <!-- Tab: Participants -->
+            <apex:outputPanel id="tabParticipants" layout="block" rendered="{!!initSettingsRequired && selTab=='Participants'}">
+                <div class="panel panel-default panel-participants">
+                    <div class="panel-heading">
+                        <table width="100%" class="table-heading">
+                            <tr>
+                                <td width="25%" valign="middle" style="vertical-align: middle;" class=" slds-text-heading--label"><h4>{!$Label.setupTab_panelParticipants}</h4></td>
+                                <td width="75%" align="right" style="color:#767676;vertical-align: middle;{!IF(isLightning,'text-align:right;','')}">{!$Label.setupTab_panelParticipants_desc}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="panel-body participants-panel-content">
+                        <c:SetupMatterParticipants rendered="{!!initSettingsRequired && selTab=='Participants'}" />
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+</div>
+</apex:page>

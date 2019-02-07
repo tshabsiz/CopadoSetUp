@@ -1,0 +1,61 @@
+<aura:component >
+	
+    <aura:attribute name="tabId" type="Integer" required="true" />
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    
+    <div class="slds-picklist" aria-expanded="true">
+        <button id="headerDropdownButton" class="slds-button slds-button--neutral slds-picklist__label" aria-haspopup="true" onclick="{!c.onMenuClicked}">
+            <span class="slds-truncate">
+            	{!if(v.tabId == 1, 'Title Page', '')}
+                {!if(v.tabId == 2, 'Overview', '')}
+                {!if(v.tabId == 3, 'Client Financials', '')}
+                {!if(v.tabId == 4, 'Presence', '')}
+                {!if(v.tabId == 5, 'Stakeholders', '')}
+                {!if(v.tabId == 6, 'Strategy', '')}
+                {!if(v.tabId == 7, 'Plan', '')}
+            </span>
+            <c:SVG class="slds-icon" svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+        </button>
+        <div aura:id="headerDropdownMenu" id="headerDropdownMenu" class="slds-dropdown slds-dropdown--right slds-dropdown--menu toggle">
+            <ul class="slds-dropdown__list" role="menu">
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToTitlePage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Title Page</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToOverviewPage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Overview</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToFinancialsPage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Client Financials</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToPresencePage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Presence</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToStakeholdersPage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Stakeholders</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item borderBottom" onclick="{!c.navigateToStrategyPage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Strategy</p>
+                    </a>
+                </li>
+                <li id="menu-16-0" class="slds-dropdown__item" onclick="{!c.navigateToPlanPage}">
+                    <a href="javascript:void(0)" role="menuitemradio">
+                        <p class="slds-truncate">Plan</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+        
+</aura:component>

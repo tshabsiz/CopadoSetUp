@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Business_Unit_Cluster_Segment__c</field>
+    </columns>
+    <columns>
+        <field>FK_$Matter_Spend_Schedule__c.Total_Spend_Amount__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.advpm__Primary_Account__c</field>
+    </columns>
+    <columns>
+        <field>FK_$Matter_Spend_Schedule__c.Closed_Date__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>LEAP Spend Report</description>
+    <filter>
+        <criteriaItems>
+            <column>FK_$Matter_Spend_Schedule__c.Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Closed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>CUST_OWNER_ROLE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>COO Legal</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>CUST_NAME</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>test</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>LEAP Spend Report</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$advpm__Matter__c$Matter_Spend_Document__c@Matter_Spend_Document__c.Matter_Spend_Schedule__c</reportType>
+    <scope>user</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>FK_$Matter_Spend_Schedule__c.Closed_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

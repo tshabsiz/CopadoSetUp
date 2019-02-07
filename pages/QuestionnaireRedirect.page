@@ -1,0 +1,14 @@
+<apex:page standardController="Matter_Spend_Document__c" extensions="QuestionnaireRedirect">
+    <script type="text/javascript">
+        (
+            function(){
+                if(
+                    "{!Matter_Spend_Document__c.Status__c}" === "Approved"
+                ){
+                    alert('Please take the law firm performance survey');
+                    window.open("/apex/LegalPerformanceQuestionnaire?lawFirm={!msd.Law_Firm__c}&matter={!msd.Matter__c}&msd={!msd.id}");
+                }
+            }
+        )();
+    </script>
+</apex:page>

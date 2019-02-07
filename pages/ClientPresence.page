@@ -1,0 +1,916 @@
+<apex:page controller="ClientPresenceController" standardStylesheets="false" sidebar="false" id="thepageid" docType="html-5.0">
+    
+    <script>
+
+        var planId = '{!plan.Id}';
+        var colors;
+        var primaryBankMap = {};
+        var mapDataList;
+        var mapDataJson;
+        var engaged = 'Engaged__c';
+        var pagePaddingConstant = 230;
+        
+        $('document').ready(function() {
+        
+            selectLabel(4);
+            setPageMinHeight();
+            
+            if ({!planLoaded}) {
+                prepareFiltersOnChange();
+                prepareColors();
+                prepareCheckboxUnderlines();
+                setHeights();
+                setMapWidth();
+                prepareTypeaheadForBankingCountry();
+                setCountryModalRules();
+                triggerCountryModalRules();
+                preparePrimaryBankModalFreeText();
+                prepareSearch();
+                queryCountries();
+            }
+            
+        });
+        
+        function setPageMinHeight() {
+            var height = window.innerHeight - pagePaddingConstant;
+            $('.slds').css('min-height', height);
+        }
+        
+        function setHeights() {
+            var tabsHeight = $('.slds-tabs--default').height();
+            var filtersHeight = $('#filters').height();
+            var mainPanelHeight = window.innerHeight - pagePaddingConstant - tabsHeight - filtersHeight;
+            $('#mainPanel').css('height', mainPanelHeight);
+            
+            var searchWrapperHeight = $('#searchWrapper').outerHeight();
+            var addCountryButtonWrapperHeight = $('#addCountryButtonWrapper').outerHeight();
+            var countriesListHeight = mainPanelHeight - searchWrapperHeight - addCountryButtonWrapperHeight;
+            $('#countriesList').css('height', countriesListHeight);
+        }
+        
+        function setMapWidth() {
+            var mainPanelWidth = $('#mainPanel').width();
+            var sidePanelWidth = $('#sidePanel').width();
+            var mapWidth = mainPanelWidth - sidePanelWidth - 16;
+            $('#vectorMap').css('width', mapWidth);
+        }
+        
+        function prepareFiltersOnChange() {
+            $('#filters input').change( function() {
+                queryCountries();
+            });
+        }
+        
+        function prepareColors() {
+            var colorsJson = $('.engagedPanel').html();
+            colors = JSON.parse(colorsJson);
+            colors = colors.pickList;
+        }
+        
+        function prepareCheckboxUnderlines() {
+            $('.filterLabelUnderline').each( function(i) {
+                $(this).css('background-color', colors[i].code);
+            });
+        }
+        
+        function queryCountries() {
+            var primary = $('#primaryBankCheckbox').is(':checked');
+            var notPrimary = $('#notPrimaryBankCheckbox').is(':checked');
+            var present = $('#presentCheckbox').is(':checked');
+            var notPresent = $('#notPresentCheckbox').is(':checked');
+            
+            if (!primary && !notPrimary && !present && !notPresent) {
+                clearMapData();
+                renderVectorMap();
+            } else {
+                var query = ' AND (';
+                if (primary) {
+                    query = addEngagedToQuery(query, 'Primary Bank');
+                }
+                if (notPrimary) {
+                    query = addEngagedToQuery(query, 'Not Primary Bank');
+                }
+                if (present) {
+                    query = addEngagedToQuery(query, 'Present But Not Banking');
+                }
+                if (notPresent) {
+                    query = addEngagedToQuery(query, 'Absa Not Present');
+                }
+                query += ')';
+                
+                startLoading('{!$Label.lbl_Loading}');
+                ClientPresenceController.queryCountries(planId, query, onCountriesQueried, { escape: false });
+            }
+        }
+        
+        function addEngagedToQuery(query, value) {
+            if (query.indexOf(engaged) != -1) {
+                query += ' OR ' + engaged + ' = \'' + value + '\'';
+            } else {
+                query += engaged + ' = \'' + value + '\'';
+            }
+            return query;
+        }
+        
+        function onCountriesQueried(result, event) {
+            if (result == null || result == false) {
+                showAlert('{!$Label.errMsg_ErrorLoadingData}');
+                endLoading();
+            } else {
+                mapDataJson = JSON.parse(result);
+                processCountriesData(mapDataJson);
+                endLoading();
+            }
+        }
+        
+        function processCountriesData(data) {
+            clearMapData();
+            renderVectorMap();
+        
+            mapDataList = {};
+            for (var i = 0; i < data.length; i++) {
+                mapDataList[data[i].countryCode] = data[i].color;
+                primaryBankMap[data[i].countryCode] = data[i].primaryBank;
+            }
+            $('#vectorMap').vectorMap('set', 'colors', mapDataList);
+            
+            rerenderSidePanel(data);
+        }
+        
+        function renderVectorMap() {
+            $('#vectorMap').vectorMap({ 
+                map: 'world_en',
+                borderColor: '#818181',
+                borderOpacity: 0.2,
+                borderWidth: 1,
+                enableZoom: true,
+                onLabelShow: function(event, label, code) {
+                    //label[0].innerHTML = '<div style="height:5em;widht:7em;background-color:white;color:black;">' + label[0].innerHTML + ' -  ' + primaryBank + '</div>';
+                    
+                    //CREI: Bug in JQVMAP library does not show DRC label correctly. 
+                    if(code == 'cd') {
+                        label.text('Democratic Republic of the Congo');
+                    }
+
+                    label[0].innerHTML = prepareCountryHover(code, label[0].innerHTML);
+                },
+                onRegionOut: function(event, code, region) {
+                    var clearingDataList = {};
+                    
+                    if (mapDataList[code] != undefined) {
+                        clearingDataList[code] = mapDataList[code];
+                    } else {
+                        clearingDataList[code] = '#F4F3F0';
+                    }
+                    $('#vectorMap').vectorMap('set', 'colors', clearingDataList);
+                }
+            });
+        }
+        
+        var countryNamesMap = {};
+        function prepareCountryHover(code, oldContent) {
+            var primaryBank;
+            var country;
+            var engaged;
+            
+            for (var i = 0; i < mapDataJson.length; i++) {
+                if (mapDataJson[i].countryCode == code) {
+                    var item = mapDataJson[i];
+                    primaryBank = item.primaryBank;
+                    country = item.country;
+                    engaged = item.engaged;
+                    break;
+                }
+            }
+            
+            if (country == undefined) {
+                if (countryNamesMap[code] == undefined) {
+                    country = oldContent;
+                    countryNamesMap[code] = oldContent;
+                } else {
+                    country = countryNamesMap[code];
+                }
+            }
+            
+            var content = 
+                '<div id="countryHoverWrapper">' +
+                    '<div style="margin-bottom:1em;font-weight:bold;font-size:14px;">' + country + '</div>' +
+                    '<div><div class="countryHoverLabel">Engaged:' + '</div><div class="countryHoverValue">' + engaged + '</div></div>' +
+                    '<div><div class="countryHoverLabel">Primary Bank:' + '</div><div class="countryHoverValue">' + primaryBank + '</div></div>' +
+                '</div>';
+            return content;
+        }
+        
+        function clearMapData() {
+            $('#vectorMap').html('');
+        }
+        
+        
+        //side panel functions
+        
+        function rerenderSidePanel(data) {
+            $('#countriesList').html('');
+            for (var i = 0; i < data.length; i++) {
+                $('#countriesList').append(getHtmlForCountry(data[i]));
+            }
+            
+        }
+        
+        function getHtmlForCountry(c) {
+            var content = jQuery(
+                '<div id="' + c.id + '" class="countryItem">'
+              + '<div class="alignLeft">'
+              + '<span class="country bold">' + c.country + '</span>'
+              + '<div class="slds-dropdown-trigger">'
+              +    '<button class="slds-button" onclick="return false;">'
+              +        '<svg aria-hidden="true" class="slds-button__icon">'
+              +            '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>'
+              +        '</svg>'
+              +    '</button>'
+              +    '<div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">'
+              +        '<ul class="slds-dropdown__list" role="menu">'
+              +            '<li id="menu-27-0" href="#" class="slds-dropdown__item">'
+              +                '<a onclick="showCountryModal(\'' + c.id + '\');return false;" class="slds-truncate" role="menuitem">{!$Label.lbl_Edit}</a>'
+              +            '</li>'
+              +            '<li id="menu-27-1" href="#" class="slds-dropdown__item">'
+              +                '<a onclick="onBeforeRemoveCountry(\'' + c.id + '\');return false;" class="slds-truncate" role="menuitem">{!$Label.lbl_Remove}</a>'
+              +            '</li>'
+              +        '</ul>'
+              +    '</div>'
+              + '</div>'
+              +'</div>'
+              + '<div class="slds-form--horizontal">'
+              + '<div class="slds-form-element">'
+              +     '<label class="slds-form-element__label">{!$Label.lbl_Engaged}:</label>'
+              +     '<div class="slds-form-element__control">'
+              +          '<span class="engaged">' + c.engaged + '</span>'
+              +          '<div class="countryColor" style="background-color: ' + c.color + ';"/>'
+              +      '</div>'
+              + '</div>'
+              + '<div class="slds-form-element">'
+              +     '<label class="slds-form-element__label">{!$Label.lbl_PrimaryBank}:</label>'
+              +     '<div class="slds-form-element__control primaryBank">'
+              +          c.primaryBank
+              +      '</div>'
+              + '</div></div></div>');
+            return content;
+        }
+        
+        function onBeforeRemoveCountry(id) {
+            var proceed = confirm('{!$Label.msg_DeleteCountryPresenceConfirm}');
+            if (proceed) {
+                startLoading('{!$Label.lbl_Removing}');
+                ClientPresenceController.removeCountry(id, onCountryRemoved);
+            }
+        }
+        
+        function onCountryRemoved(result, event) {
+            if (result == null || result == false) {
+                showAlert('{!$Label.errMsg_ErrorRemovingCountryPresence}');
+            } else {
+                queryCountries();
+            }
+        }
+        
+        var timeout;
+        function prepareSearch() {
+            $('#searchInput').keyup(function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    var text = $('#searchInput').val().trim().toLowerCase();
+                    if (text == '') {
+                        processCountriesData(mapDataJson);
+                    } else {
+                        filterData(text);
+                    }
+                }, 10);
+            });
+        }
+        
+        function filterData(text) {
+            var newData = new Array();
+            for (var i = 0; i < mapDataJson.length; i++) {
+                if (mapDataJson[i].country.toLowerCase().indexOf(text) != -1) {
+                    newData.push(mapDataJson[i]);
+                }
+            }
+            processCountriesData(newData);
+        }
+        
+        
+        //country modal functions
+        
+        var countryId;
+        
+        function showCountryModal(id) {
+            countryId = id;
+            
+            if (id == '') {
+                $('#countryModalHeaderLabel').text('{!$Label.lbl_AddCountryOfPresence}');
+            } else {
+                $('#countryModalHeaderLabel').text('{!$Label.lbl_EditCountryOfPresence}');
+                fillCountryModal(id);
+            }
+            $('#countryModal').show();
+        }
+        
+        function fillCountryModal(id) {
+            //country
+            var country = $('#' + id + ' .country').text();
+            $('#bankingCountryTypeahead').val(country);
+            
+            //engaged
+            var engaged = $('#' + id + ' .engaged').text();
+            $('#engagedSelect').val(engaged);
+            
+            //primary bank
+            var primaryBank = $('#' + id + ' .primaryBank').text();
+            var isStandard = false;
+            $('#primaryBankSelect option').each( function() {
+                var content = $(this).text();
+                if (content == primaryBank) {
+                    isStandard = true;
+                }
+            });
+            
+            if (isStandard) {
+                $('#primaryBankSelect').val(primaryBank);
+            } else {
+                $('#primaryBankSelect').hide();
+                $('#primaryBankTextWrapper').show();
+                $('#primaryBankText').val(primaryBank);
+            }
+            triggerCountryModalRules();
+        }
+        
+        function closeCountryModal() {
+            closeToast();
+            $('#countryModal').hide();
+        }
+        
+        function onBeforeModifyCountry() {
+            var bankingCountry = $('#bankingCountryTypeahead').val();
+            var proceed = isCountryCorrect(bankingCountry);
+            
+            if (!proceed) {
+                showToast('{!$Label.errMsg_CountryNotCorrect}');
+                return;
+            }
+            var engaged = $('#engagedSelect').val();
+            var other = $('#primaryBankSelect option:last-child').text();
+            var primaryBank = $('#primaryBankSelect').val();
+            
+            if (primaryBank == other) {
+                primaryBank = $('#primaryBankText').val().trim();
+                
+                if (primaryBank.length == 0) {
+                    showToast('{!$Label.errMsg_PrimaryBankTooShort}');
+                    return;
+                }
+            }
+            
+            closeCountryModal();
+            startLoading('{!$Label.lbl_Saving}');
+            
+            if (countryId == '') {
+                ClientPresenceController.addCountry(planId, bankingCountry, engaged, primaryBank, onCountryModified, {escape: false});
+            } else {
+                ClientPresenceController.editCountry(countryId, bankingCountry, engaged, primaryBank, onCountryModified, {escape: false});
+            }
+        }
+        
+        function onCountryModified(result, event) {
+            if (result == null) {
+                endLoading();
+                showToast('{!$Label.errMsg_CommunicationError}');
+                $('#countryModal').show();
+                return;
+            }
+            
+            var parsedResult = JSON.parse(result);
+            if (parsedResult.message != undefined) {
+                showAlert(parsedResult.message); 
+            } else {
+                cleanCountryModal();
+                
+                if (countryId != '') {
+                    queryCountries();
+                    return;
+                }
+            
+                var wrapper = parsedResult.wrapper;
+            
+                //adding to side panel
+                $('#countriesList').append(getHtmlForCountry(wrapper));
+                
+                //adding to map
+                mapDataList = {};
+                mapDataList[wrapper.countryCode] = wrapper.color;
+                primaryBankMap[wrapper.countryCode] = wrapper.primaryBank;
+                $('#vectorMap').vectorMap('set', 'colors', mapDataList);
+            }
+            endLoading();
+        }
+        
+        function isCountryCorrect(bankingCountry) {
+            for (var i = 0; i < bankingCountries.length; i++) {
+                if (bankingCountries[i] == bankingCountry) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        var bankingCountryBloodhound;
+        var bankingCountries;
+        function prepareTypeaheadForBankingCountry() {
+            //default typeahead result
+            var barclaysPresenceString = $('.barclaysPresencePanel').html();
+            barclaysPresence = JSON.parse(barclaysPresenceString).pickList;
+        
+            var bankingCountriesString = $('.bankingCountriesPanel').html();
+            bankingCountries = JSON.parse(bankingCountriesString);
+            
+            bankingCountryBloodhound = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                local: bankingCountries
+            });
+            
+            $('#bankingCountryTypeahead').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 0
+            },{
+                name: 'bankingCountryBloodhound',
+                source: bankingCountriesWithDefaults
+            });
+        }
+        
+        function bankingCountriesWithDefaults(q, sync) {
+            bankingCountryBloodhound.search(q, sync);
+        }
+        
+        function setCountryModalRules() {
+            var primaryBank = $('#engagedSelect option:first-child').text();
+            var barclays = $('#primaryBankSelect option:first-child').text();
+        
+            $('#engagedSelect').change( function() {
+                var value = $('#engagedSelect option:selected').text();
+                
+                if (value == primaryBank) {
+                    hidePrimaryBankText();
+                    $('#primaryBankSelect').val(barclays);
+                    $('#primaryBankSelect').prop('disabled', true);
+                    $('#primaryBankSelect option:first-child').prop('disabled', false);
+                } else {
+                    $('#primaryBankSelect').prop('disabled', false);
+                    $('#primaryBankSelect option:first-child').prop('disabled', true);
+                    $('#primaryBankSelect option:nth-child(2)').prop('selected', true);
+                }
+            });
+        }
+        
+        function triggerCountryModalRules() {
+            $('#engagedSelect').change();
+        }
+        
+        function cleanCountryModal() {
+            $('#bankingCountryTypeahead').val('');
+            
+            $('#primaryBankText').val('');
+            $('#primaryBankTextWrapper').hide();
+            $('#primaryBankSelect').show();
+            
+            $('#engagedSelect option:first-child').prop('selected', true);
+        }
+        
+        function preparePrimaryBankModalFreeText() {
+        
+            $('#primaryBankSelect').change( function() {
+                var primaryBank = $('#primaryBankSelect').val();
+                var other = $('#primaryBankSelect option:last-child').text();
+                
+                if (primaryBank == other) {
+                    $('#primaryBankSelect').hide();
+                    $('#primaryBankTextWrapper').show();
+                }
+            });
+        }
+        
+        function hidePrimaryBankText() {
+            $('#primaryBankText').val('');
+            $('#primaryBankTextWrapper').hide();
+            $('#primaryBankSelect').show();
+            $('#primaryBankSelect option:nth-child(2)').prop('selected', true);
+        }
+
+    </script>
+    
+    <style>
+    
+        @media (max-height: 43em) {
+            #filters .slds-form-element {
+                margin: 0.5em;
+            }
+            
+            #addCountryButtonWrapper button {
+                line-height: 1.7em;
+            }
+        }
+    
+        @media (min-height: 43em) {
+            #filters .slds-form-element {
+                margin: 1.5em;
+            }
+        }
+    
+        @media (min-width: 48em) {
+            #filters {
+                text-align: right;
+            }
+            
+            #filters .slds-checkbox--faux {
+                margin-right: 0.5em;
+                height: 1.5em;
+                width: 1.5em;
+            }
+            
+            #mainPanel {
+                position: relative;
+            }
+            
+            #vectorMap {
+                border-top: 2px solid #ddd;
+                border-left: 2px solid #ddd;
+                border-bottom: 2px solid #ddd;
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+                height: 100%;
+                display: inline-block;
+            }
+            
+            #sidePanel {
+                width: 25em;
+                height: 100%;
+                border-top: 2px solid #ddd;
+                border-right: 2px solid #ddd;
+                border-bottom: 2px solid #ddd;
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                display: inline-block;
+                position: absolute;
+            }
+            
+            #searchWrapper {
+                padding: 0.5em;
+                padding-top: 0.3em;
+            }
+            
+            #countriesList {
+                width: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            
+            #addCountryButtonWrapper {
+                text-align: right;
+                padding: 1em;
+            }
+            
+            #addCountryButtonWrapper button {
+                padding-left: 3em;
+                padding-right: 3em;
+            }
+            
+            .countryItem {
+                padding: 1em;
+                border-top: 1px solid #DDD;
+                border-bottom: 1px solid #DDD;
+                background-color: white;
+            }
+            
+            .countryColor {
+                height: 1em;
+                width: 1em;
+                display: inline-block;
+                margin-left: 1em;
+                position: relative;
+                top: 0.1em;
+            }
+            
+            #countriesList .slds-dropdown-trigger {
+                float: right;
+                position: relative;
+                bottom: 0.75em;
+                right: 0.2em;
+            }
+            
+            #countriesList .slds-form-element {
+                text-align: left !important;
+                margin-top: 0px !important;
+            }
+            
+            #countriesList .slds-form-element__label {
+                position: relative;
+                top: 0.2em;
+                width: 7em;
+            }
+            
+            #countriesList .slds-form-element__control {
+                font-size: 12px;
+                font-weight: bold;
+            }
+            
+            #countryModal .slds-modal__container {
+                width: 30em;
+            }
+            
+            #countryModal .slds-modal__content {
+                overflow: visible;
+            }
+            
+            #countryModal .twitter-typeahead {
+                width: 100%;
+            }
+            
+            #countryModal .slds-form-element__label {
+                font-size: inherit !important;
+                font-weight: bold !important;
+            }
+            
+            .tt-menu {
+                width: 100%;
+                margin: 12px 0;
+                padding: 8px 0;
+                background-color: #fff;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+                box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                cursor: pointer;
+            }
+    
+            .tt-suggestion {
+                padding: 3px 5px;
+                font-size: 18px;
+                line-height: 24px;
+            }
+            
+            .tt-suggestion:hover {
+                background-color: #00AEEF;
+            }
+            
+            #bankingCountryTypeahead {
+                min-height: 34px;
+                height: 34px;
+            }
+            
+            #countryHoverWrapper {
+                width: 20em;
+                padding: 1em;
+                color: black;
+                background-color: white;
+                border: 1px solid #DDD;
+                font-size: 12px;
+                color: rgb(22, 50, 92);
+                font-family: 'Salesforce Sans', Arial, sans-serif;
+            }
+            
+            .countryHoverLabel {
+                width: 37%;
+                display: inline-block;
+                color: rgb(84, 105, 141);
+            }
+            
+            .countryHoverValue {
+                width: 62%;
+                display: inline-block;
+                font-weight: bold;
+            }
+        }
+        
+        #filters .slds-form-element {
+            display: inline-block;
+        }
+        
+        .slds {
+            background-color: #F4F6F9 !important;
+        }
+        
+        .slds-tabs--default {
+            background-color: white;
+        }
+        
+        #filters .slds-form-element__label {
+            margin-right: 0px;
+        }
+        
+        .alignLeft {
+            text-align: left;
+        }
+        
+        .jqvmap-zoomin,
+        .jqvmap-zoomout {
+            width: 1em;
+            height: 1em;
+            background-color: #ddd;
+            color: black;
+        }
+        
+        .inline {
+            display: inline-block;
+        }
+        
+        .filterLabelUnderline {
+            width: 100%;
+            height: 0.3em;
+        }
+        
+        .bold {
+            font-weight: bold;
+        }
+        
+        .marginTop1em {
+            margin-top: 1em !important;
+        }
+        .jloc-reference
+        {
+        border-style: ridge;
+        border-color: #960528;
+        border-width: 1px
+        }
+        
+    </style>
+    
+    <div class="slds"> 
+    
+    <c:ClientPlanHeader />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.jquery_vector_map, 'jqvmap.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_vector_map, 'jquery.vmap.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_vector_map, 'jquery.vmap.world.js')}"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.typeahead)}"/>
+    
+    <c:ProgressBarLightning />
+        
+    <c:LightningToast />
+    
+    <c:LightningAlert />
+    
+    <apex:outputPanel id="wholePage" layout="block" rendered="{!planLoaded}">
+   
+        <div id="filters">
+            <div class="slds-form-element">
+                <label class="slds-checkbox" for="primaryBankCheckbox">
+                    <input name="checkbox" checked="true" type="checkbox" id="primaryBankCheckbox" />
+                    <span class="slds-checkbox--faux"></span>
+                    <div class="inline">
+                        <span class="slds-form-element__label">{!$Label.lbl_PrimaryBank}</span>
+                        <div class="filterLabelUnderline"/>
+                    </div>
+                </label>
+            </div>
+            <div class="slds-form-element">
+                <label class="slds-checkbox" for="notPrimaryBankCheckbox">
+                    <input name="checkbox" checked="true" type="checkbox" id="notPrimaryBankCheckbox" />
+                    <span class="slds-checkbox--faux"></span>
+                    <div class="inline">
+                        <span class="slds-form-element__label">{!$Label.lbl_NotPrimaryBank}</span>
+                        <div class="filterLabelUnderline"/>
+                    </div>
+                </label>
+            </div>
+            <div class="slds-form-element">
+                <label class="slds-checkbox" for="presentCheckbox">
+                    <input name="checkbox" checked="true" type="checkbox" id="presentCheckbox" />
+                    <span class="slds-checkbox--faux"></span>
+                    <div class="inline">
+                        <span class="slds-form-element__label">{!$Label.lbl_PresentButNotBanking}</span>
+                        <div class="filterLabelUnderline"/>
+                    </div>
+                </label>
+            </div>
+            <div class="slds-form-element">
+                <label class="slds-checkbox" for="notPresentCheckbox">
+                    <input name="checkbox" checked="true" type="checkbox" id="notPresentCheckbox" />
+                    <span class="slds-checkbox--faux"></span>
+                    <div class="inline">
+                        <span class="slds-form-element__label">{!$Label.lbl_BarclaysNotPresent}</span>
+                        <div class="filterLabelUnderline"/>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <div id="mainPanel" class="jloc-reference">
+            <div id="vectorMap" />
+            <div id="sidePanel" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div id="searchWrapper" class="slds-form-element">
+                    <label class="slds-form-element__label" for="searchInput">{!$Label.lbl_Search}</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-input-has-icon slds-input-has-icon--right">
+                            <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                            </svg>
+                            <input id="searchInput" class="slds-input" type="text" />
+                        </div>
+                    </div>
+                </div>
+                <div id="countriesList" />
+                <div id="addCountryButtonWrapper">
+                    <button class="slds-button slds-button--brand" onclick="showCountryModal('');">{!$Label.lbl_Add}</button>
+                </div>
+            </div>
+        </div>
+    
+    </apex:outputPanel>
+    
+    <apex:outputPanel id="engagedPanel" styleClass="engagedPanel hidden">{!engagedJson}</apex:outputPanel>
+    <apex:outputPanel id="bankingCountriesPanel" styleClass="bankingCountriesPanel hidden">{!bankingCountriesJson}</apex:outputPanel>
+    <apex:outputPanel id="barclaysPresencePanel" styleClass="barclaysPresencePanel hidden">{!barclaysPresenceJson}</apex:outputPanel>
+    
+    <apex:outputPanel id="countryModalPanel">
+        <div class="inline">
+            <apex:form >
+               <apex:outputPanel rendered="{!isGlobalParent}">
+           <label   class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                {!$Label.lblUnderlyingClientPlans}</b>
+            </label><br/>
+            <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                <apex:selectOptions value="{!ChildClientPlans}" />
+            </apex:SelectList><br/>
+           </apex:outputPanel>
+                </apex:form>
+            </div>
+        <div id="countryModal" style="display:none;">
+          <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" 
+              xmlns:xlink="http://www.w3.org/1999/xlink">
+              
+            <div class="slds-modal__container">
+              <div class="slds-modal__header">
+              
+                <h2 id="countryModalHeaderLabel" class="slds-text-heading--medium" />
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeCountryModal();return false;">
+                  <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="slds-modal__content">
+                <div class="slds-form--stacked">
+                
+                  <div class="slds-form-element">
+                    <label class="slds-form-element__label">
+                      <apex:outputText value="{!$ObjectType.Country_Presence__c.fields.Banking_Country__c.Label}" />
+                    </label>
+                    <div class="slds-form-element__control">
+                      <input id="bankingCountryTypeahead" class="slds-input" type="text" />
+                    </div>
+                  </div>
+                  
+                  <div class="slds-form-element marginTop1em">
+                    <label class="slds-form-element__label" for="engagedSelect">{!$ObjectType.Country_Presence__c.fields.Engaged__c.Label}</label>
+                    <div class="slds-form-element__control">
+                      <select id="engagedSelect" class="slds-select">
+                        <apex:repeat value="{!EngagedOptions}" var="e">
+                          <option>{!e.value}</option>
+                        </apex:repeat>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div class="slds-form-element marginTop1em">
+                    <label class="slds-form-element__label" for="primaryBankSelect">{!$ObjectType.Country_Presence__c.fields.Primary_Bank__c.Label}</label>
+                    <div class="slds-form-element__control">
+                      <select id="primaryBankSelect" class="slds-select">
+                        <apex:repeat value="{!PrimaryBankOptions}" var="e">
+                          <option>{!e.value}</option>
+                        </apex:repeat>
+                      </select>
+                      <div id= "primaryBankTextWrapper" class="slds-input-has-icon slds-input-has-icon--right" style="display: none">
+                          <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default" onclick="hidePrimaryBankText();return false;">
+                              <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                          </svg>
+                          <input id="primaryBankText" type="text" class="slds-input"/>
+                        </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              
+              <div class="slds-modal__footer">
+                <button class="slds-button slds-button--neutral" onclick="closeCountryModal();return false;">Cancel</button>
+                <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyCountry();return false;">Save</button>
+              </div>
+            </div>
+          </div>
+          <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+    
+    </div>
+
+</apex:page>

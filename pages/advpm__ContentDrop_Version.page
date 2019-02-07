@@ -1,0 +1,173 @@
+<apex:page controller="advpm.ContentDrop_Upload" showHeader="false" sidebar="false">
+<html>
+<head>
+	<style type="text/css">
+		.normal {
+		    color: #444444;
+		    font-family: "lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
+		    font-size: 9pt;
+		    font-weight: normal;
+		}
+		.normalSmall {
+		    color: #444444;
+		    font-family: "lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
+		    font-size: 8pt;
+		    font-weight: normal;
+		}
+		.message {
+		    border-radius: 4px 4px 4px 4px;
+		}
+		.errorM6, .errorM4, .errorM3, .errorM2, .errorS1 {
+		    border-color: transparent;
+		}
+		.message {
+		    background-color: transparent;
+		    border-style: none;
+		    border-width: 0px;
+		    color: #000000;
+		    margin: 0px;
+		    padding: 0px;
+		}
+		.publish-dialog-titlebar {
+            padding: 0.5em 1em 0.5em;
+            position: relative;
+            background-color: #cccccc;
+            font-weight: bold;
+            color: black;
+            font-size: 12px;
+            -moz-border-radius:4px 4px 4px 4px;
+        }
+        .publish-dialog-titlebar {
+		    -moz-border-bottom-colors: none;
+		    -moz-border-image: none;
+		    -moz-border-left-colors: none;
+		    -moz-border-right-colors: none;
+		    -moz-border-top-colors: none;
+		    background: url("/img/alohaSkin/metaBar_sprite.png") repeat-x scroll left -104px transparent;
+		    border-color: #D1D1D1 #E1E0E0 #E1E0E0;
+		    border-radius: 5px 5px 5px 5px;
+		    border-right: 1px solid #E1E0E0;
+		    border-style: solid;
+		    border-width: 1px;
+		    line-height: 26px;
+		    margin: 5px;
+		    width: auto;
+		    font-size: 1.25em;
+		    padding:10px;
+		}
+		.publish-dialog-titlebar {
+		    background-color: #D6D6D6;
+		    border-bottom: 1px solid #C1C1C1;
+		    line-height: 22px;
+		    white-space: nowrap;
+		    width: 99%;
+		}
+		.requiredInput {
+		    height: 100%;
+		    position: relative;
+		}
+		.requiredInput .requiredBlock {
+		    background-color: #CC0000;
+		    bottom: 1px;
+		    left: -4px;
+		    position: absolute;
+		    top: 1px;
+		    width: 3px;
+		}
+	</style>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+	<script type="text/javascript">
+		$j = jQuery.noConflict();
+        
+		function showUploading() {
+			$j('.fileUpload').css("display", "none");
+			$j('.fileUploadProgress').css("display", "block");
+		}
+		function hideUploading() {
+			$j('.fileUpload').css("display", "block");
+			$j('.fileUploadProgress').css("display", "none");
+		}
+	</script>
+</head>
+<body>
+<div style="padding:3px 10px 3px 5px;">
+	<apex:form encType="multipart/form-data">
+		<div class="fileUpload" style="vertical-align: middle;">
+			<div style="padding:0px 14px 0px 0px;">
+				<div class="publish-dialog-titlebar">
+		            <span>Upload New {!IF(ContentDocId != '' && ContentDocId != null, 'Version', 'File')}</span>
+		        </div>
+			</div>
+			<table align="center" class="normal" width="100%" cellspacing="3" cellpadding="3">
+	    		<tr align="center">
+	    			<td align="center" nowrap="nowrap" colspan="2">
+	    				<apex:pageMessages />
+	    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td align="right" nowrap="nowrap">
+	    				<span class="normal" style="font-weight:bold;display:inline;">Select File:</span>
+	    			</td>
+	    			<td align="left" nowrap="nowrap">
+	    				<div class="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:inputfile styleClass="normal" id="file" value="{!body}" fileName="{!cv.PathOnClient}" />
+						</div>
+	    			</td>
+	    		</tr>
+	    		<apex:repeat value="{!1}" var="r" rendered="{!PortalEnabled == '1' && (ContentDocId == '' || ContentDocId == null)}">
+		    		<tr>
+		    			<td align="right" nowrap="nowrap">
+		    				<span class="normal" style="font-weight:bold;display:inline;">Select Library:</span>
+		    			</td>
+		    			<td align="left" nowrap="nowrap">
+		    				<div class="requiredInput">
+								<div class="requiredBlock"></div>
+								<apex:selectList size="1" value="{!selectedWorkspace}" style="width:140px;">
+									<apex:selectOptions value="{!WorkspacesDropdown}" />
+								</apex:selectList>
+							</div>
+		    			</td>
+		    		</tr>
+	    		</apex:repeat>
+	    		<apex:repeat value="{!1}" var="r" rendered="{!ContentDocId != '' && ContentDocId != null}">
+			    	<tr>
+		    			<td align="right">
+		    				<span class="normal" style="font-weight:bold;display:inline;">Reason For Change:</span>
+		    			</td>
+		    			<td align="left">
+		    				<div class="requiredInput">
+								<div class="requiredBlock"></div>
+								<apex:inputTextArea value="{!cv.ReasonForChange}" />
+							</div>
+		    			</td>
+		    		</tr>
+		    	</apex:repeat>
+	    		<tr>
+	    			<td align="right" nowrap="nowrap">&nbsp;</td>
+	    			<td align="left">
+						<apex:commandButton value="  Upload  " action="{!UploadFile}" onclick="showUploading();" styleClass="btnPrimary publishersharebutton btn" />
+						<apex:commandButton value="  Cancel  " onclick="parent.$j.modal.close(); return false;" style="margin-left: 3px;" />
+	    			</td>
+	    		</tr>
+	    	</table>
+    	</div>
+    	<div class="normal fileUploadProgress" style="font-weight:bold;text-align:center;display:none;">
+			<img src="{!URLFOR($Resource.ContentDrop, 'uploading.gif')}" alt="Uploading..." title="Uploading..." />
+			<br />Uploading...
+		</div>
+    	<script>
+    		if ({!FileUploaded}) {
+    			if('{!JSINHTMLENCODE(ContentDocId)}' != 'null' && '{!JSINHTMLENCODE(ContentDocId)}' != '') {
+    				parent.RefreshDisplay('','{!JSINHTMLENCODE($currentpage.parameters.cat)}','{!JSINHTMLENCODE(ContentId)}', true, '1', '1', '{!JSINHTMLENCODE($currentpage.parameters.contentdocid)}', '{!JSINHTMLENCODE($currentpage.parameters.contentdocparentid)}');
+    			} else {
+    				parent.RefreshDisplay('','{!JSINHTMLENCODE($currentpage.parameters.cat)}','{!JSINHTMLENCODE(ContentId)}', true, '0', '1', '{!JSINHTMLENCODE($currentpage.parameters.contentdocid)}', '{!JSINHTMLENCODE($currentpage.parameters.contentdocparentid)}');
+    			}
+    		}
+    		hideUploading();
+    	</script>
+	</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

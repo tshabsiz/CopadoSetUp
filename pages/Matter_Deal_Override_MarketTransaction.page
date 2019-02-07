@@ -1,0 +1,219 @@
+<!--
+ - Created by KyleAlexander on 2018/03/14.
+
+16/06/2018 - TdB - Add action Region for duplicateCheck()
+ -->
+
+<apex:page id="Matter_Deal_Override_MarketTransaction" StandardController="advpm__Matter__c" extensions="Matter_Deal_Override_MarketTrans_Cont">
+
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+    <script>
+        $(document).ready(function() {
+            $('[id$=PartyB]').prop('disabled', true);
+            $('[id$=PartyB]').prop('selected', true);
+        });
+    
+        function buttonDisable()
+        {
+            $("[id$='theSaveButton']").hide(); 
+        }
+    
+        function buttonEnable()
+        {
+            $("[id$='theSaveButton']").show(); 
+        }
+
+        function checkRelType()
+        {
+            if($('[id$=relationshipType]').val() != 'Counterparty'){
+               $('[id$=counterpartyType]').prop('disabled', true);
+            }
+            else{
+                $('[id$=counterpartyType]').prop('disabled', false);
+            }
+        }
+    
+    	function showActiveWarningMessage(element){
+            if(element.checked == false){
+                alert('By unchecking the active checkbox it will make this Market Transaction inactive and cannot be reveresed!');
+            }
+        }
+
+    </script>
+    
+    <apex:actionStatus id="processStatus" onstart="buttonDisable()" onstop="buttonEnable()" />
+
+    <apex:form id="MasterAgreementEditForm">
+       <apex:outputPanel rendered="{!isNewMatter}">
+            <apex:sectionHeader title="New Market Transaction"/>
+            <apex:pageBlock mode="edit" id="thePageBlock" title="Market Transaction Edit">
+                <apex:pageMessages escape="false" id="pageMsgId" />
+                <apex:pageBlockButtons >
+                    <apex:commandButton id="theSaveButton" value="Save" action="{!SaveMatter}"/>
+                    <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Market Transaction Detail" columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Name" for="name" />
+                        <apex:inputField value="{!matter.Name}" id="name" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Master Agreement Type" for="MasterAgreementType" />
+                        <apex:actionRegion >
+                            <apex:inputField value="{!matter.Master_Agreement_Type__c}" id="MasterAgreementType" required="true">
+                                <apex:actionSupport event="onchange" action="{!duplicateCheck}" rerender="pageMsgId" status="processStatus"/>
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem HelpText="{!$ObjectType.advpm__Matter__c.fields.Prime_Services_Client__c.inlineHelpText}">
+                        <apex:outputLabel value="Prime Services Client" for="PrimeServicesClient" />
+                        <apex:inputField value="{!matter.Prime_Services_Client__c}" id="PrimeServicesClient" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Bank" for="bank" />
+                        <apex:actionRegion >
+                            <apex:inputField value="{!matter.Bank__c}" id="bank" required="true">
+                                <apex:actionSupport event="onchange" action="{!duplicateCheck}" rerender="pageMsgId" status="processStatus"/>
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship" for="relationship" />
+                        <apex:actionRegion >
+                            <apex:inputField value="{!matter.Relationship__c}" id="relationship" required="true">
+                                <apex:actionSupport event="onchange" action="{!duplicateCheck}" rerender="pageMsgId" status="processStatus"/>
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship Type" for="relationshipType" />
+                        <apex:actionRegion >
+                            <apex:inputField value="{!matter.Relationship_Type_picklist__c}" id="relationshipType" required="true">
+                                <apex:actionSupport event="onchange" action="{!duplicateCheck}" rerender="pageMsgId" status="processStatus"/>
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Counterparty Type" for="counterpartyType" />
+                        <apex:inputField required="true" value="{!matter.Counterparty_Type__c}" id="counterpartyType"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Collective Investment Scheme Name" for="CollectiveInvestmentScheme" />
+                        <apex:inputField value="{!matter.Collective_Investment_Scheme_Name__c}" id="CollectiveInvestmentScheme" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Collective Investment Scheme Type" for="CollectiveInvestmentType" />
+                        <apex:inputField value="{!matter.Collective_Investment_Scheme_Type__c}" id="CollectiveInvestmentType" required="true"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Netting Details" columns="1">
+                    <apex:pageBlockSectionItem HelpText="{!$ObjectType.advpm__Matter__c.fields.Netting_Applicable__c.inlineHelpText}">
+                        <apex:outputLabel value="Netting Applicable" for="nettingApplicable" />
+                        <apex:inputField value="{!matter.Netting_Applicable__c}" id="nettingApplicable"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!isNewMatter == false}">
+            <apex:sectionHeader title="Edit Market Transaction"/>
+            <apex:pageBlock mode="edit" id="thePageBlockEdit" title="Market Transaction Edit">
+                <apex:pageMessages id="pageMsgIdEdit" />
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveMatter}"/>
+                    <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Market Transaction Detail" columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Name" for="nameEdit" />
+                        <apex:inputField value="{!matter.Name}" id="nameEdit" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Master Agreement Type" />
+                        <apex:outputField value="{!matter.Master_Agreement_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}">
+                        <apex:outputLabel value="Master Agreement Type"/>
+                        <apex:inputField value="{!matter.Master_Agreement_Type__c}" html-disabled="true"/>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Prime Services Client"/>
+                        <apex:outputField value="{!matter.Prime_Services_Client__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}" HelpText="{!$ObjectType.advpm__Matter__c.fields.Prime_Services_Client__c.inlineHelpText}" >
+                        <apex:outputLabel value="Prime Services Client"/>
+                        <apex:inputField value="{!matter.Prime_Services_Client__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Bank" for="bankEdit" />
+                        <apex:outputField value="{!matter.Bank__c}" id="bankEdit"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship" for="relationshipEdit" />
+                        <apex:actionRegion >
+                            <apex:inputField value="{!matter.Relationship__c}" id="relationshipEdit" required="true">
+                                <apex:actionSupport event="onchange" action="{!duplicateCheck}" rerender="pageMsgId" status="processStatus"/>
+                            </apex:inputField>
+                        </apex:actionRegion>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Relationship Type"  />
+                        <apex:outputField value="{!matter.Relationship_Type_picklist__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}">
+                        <apex:outputLabel value="Relationship Type" />
+                        <apex:inputField value="{!matter.Relationship_Type_picklist__c}" html-disabled="true"/>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Counterparty Type" />
+                        <apex:outputField value="{!matter.Counterparty_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}">
+                        <apex:outputLabel value="Counterparty Type" />
+                        <apex:inputField value="{!matter.Counterparty_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Collective Investment Scheme Name" />
+                        <apex:outputField value="{!matter.Collective_Investment_Scheme_Name__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}">
+                        <apex:outputLabel value="Collective Investment Scheme Name" />
+                        <apex:inputField value="{!matter.Collective_Investment_Scheme_Name__c}"/>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem rendered="{!isEditable == false}">
+                        <apex:outputLabel value="Collective Investment Scheme Type" for="CollectiveInvestmentTypeEdit" />
+                        <apex:outputField value="{!matter.Collective_Investment_Scheme_Type__c}" id="CollectiveInvestmentTypeEdit"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!isEditable}">
+                        <apex:outputLabel value="Collective Investment Scheme Type"/>
+                        <apex:inputField value="{!matter.Collective_Investment_Scheme_Type__c}"/>
+                    </apex:pageBlockSectionItem>                 
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Netting Details" columns="2">
+                    <apex:pageBlockSectionItem HelpText="{!$ObjectType.advpm__Matter__c.fields.Netting_Applicable__c.inlineHelpText}">
+                        <apex:outputLabel value="Netting Applicable" for="nettingApplicableEdit" />
+                        <apex:inputField value="{!matter.Netting_Applicable__c}" id="nettingApplicableEdit"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Active?" for="active" />
+                        <apex:inputField value="{!matter.Active__c}" id="active" onchange="showActiveWarningMessage(this);"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Netting Complete" for="nettingComplete" />
+                        <apex:inputField value="{!matter.Netting_Complete__c}" id="nettingComplete"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel> 
+    </apex:form>
+</apex:page>

@@ -1,0 +1,28 @@
+<apex:page standardController="advpm__Matter__c" extensions="ConvertCaseToMatter_Cont" standardStylesheets="true">
+    <apex:form id="LegalMatterId">
+        <apex:sectionHeader title="Matter/Deal Edit" subtitle="New Matter/Deal"/>
+        <apex:pageBlock mode="edit" id="thePageBlock" title="Matter/Deal Edit">
+            <apex:pagemessages />
+            <apex:pageBlockSection columns="2" title="General Matter Information" showHeader="true" >
+                <apex:inputField value="{!legalMatterRecord.name}" required="true"/>
+                <apex:inputField value="{!legalMatterRecord.Lead_Lawyer_Office__c}"/>
+                <apex:inputField value="{!legalMatterRecord.Business_Unit_Cluster_Segment__c}"/>
+                <apex:inputField value="{!legalMatterRecord.advpm__Status__c}"/>
+                <apex:inputField value="{!legalMatterRecord.Jurisdiction__c}"/>
+                <apex:inputField value="{!legalMatterRecord.Date_of_Closure__c}"/>
+                <apex:inputField value="{!legalMatterRecord.Ownerid}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Client Detail" showHeader="true" >
+                <apex:inputField value="{!legalMatterRecord.advpm__Primary_Account__c}"/>
+                <apex:inputField value="{!legalMatterRecord.advpm__Primary_Contact__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Additional Details" showHeader="true" >
+                <apex:inputField value="{!legalMatterRecord.advpm__Parent_Matter__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons id="pageButtons">    
+                <apex:commandButton id="saveButton" value="Convert" action="{!convertCaseToMatter}"  />
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

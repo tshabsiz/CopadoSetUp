@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>SUBJECT</field>
+    </columns>
+    <columns>
+        <field>STATUS</field>
+    </columns>
+    <columns>
+        <field>DESCRIPTION</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>ALIAS</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Knowledge Request Queue</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>STATUS</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Ready For Use</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Case.LegalDivision__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>CIB,COO,HOTH/SS,RBB,WIMI</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>RECORDTYPE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Case.Knowledge_Request</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Group Legal Knowledge Extended Report</name>
+    <params>
+        <name>units</name>
+        <value>h</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CaseList@Case.Matter__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATEONLY</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

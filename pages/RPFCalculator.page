@@ -1,0 +1,183 @@
+<apex:page controller="RPFCalculator" action="{!UpdateProductTotalsAndDrawdowns}" sidebar="false" doctype="html-5.0">
+    <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+    
+    <style>
+        #calculating-curtain-div {
+            height:0px;
+        	width:100%;
+        	position:absolute;
+        	top:45%;
+        	left:45%;
+        	z-index:1;
+        	-webkit-transition: all 0.30s ease-out;
+        	-moz-transition: all 0.30s ease-out;
+        	text-align:center;
+        	vertical-align: middle;
+		}
+        #calculating-curtain-div p{
+        	color: rgba(255,255,255,0);
+        	vertical-align: middle;
+       	}
+        /* hide up/down arrows ("spinners") on input fields marked type="number" */
+		.no-spinners {
+  			-moz-appearance:textfield;
+		}
+
+		.no-spinners::-webkit-outer-spin-button,
+		.no-spinners::-webkit-inner-spin-button {
+  			-webkit-appearance: none;
+  			margin: 0;
+		}
+    </style>
+    
+    <script type="text/javascript">
+    	function doReCalculate() {
+            var upfront = document.getElementById('ArrangingFeeUpfront').value;
+            var deferred = document.getElementById('ArrangingFeeDeferred').value;
+        	reCalculate(upfront, deferred);
+        }
+    
+    	function UA(month, inputfieldname) {
+            var amount = document.getElementById(inputfieldname).value;
+        	changeUA(month, amount);
+		}
+    
+    	function SplitArrangingFee(fieldchanged) {
+        	var upfront = document.getElementById('ArrangingFeeUpfront').value;
+            var deferred = document.getElementById('ArrangingFeeDeferred').value;
+            if (upfront == undefined || upfront == null || upfront == '') {
+                document.getElementById('ArrangingFeeDeferred').value = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount};
+                document.getElementById('ArrangingFeeUpfront').value = 0;
+            }
+            if (deferred == undefined || deferred == null || deferred == '') {
+                document.getElementById('ArrangingFeeUpfront').value = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount};
+                document.getElementById('ArrangingFeeDeferred').value = 0;
+            }
+            if (fieldchanged == 'Upfront') {
+                if (upfront > {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount}) {
+                    upfront = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount};
+                    document.getElementById('ArrangingFeeUpfront').value = upfront;
+                }
+                if (upfront < 0) {
+                    upfront = 0;
+                    document.getElementById('ArrangingFeeUpfront').value = 0;
+                }
+                document.getElementById('ArrangingFeeDeferred').value = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount} - upfront;
+            }
+            if (fieldchanged == 'Deferred') {
+                if (deferred > {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount}) {
+                    deferred = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount};
+                    document.getElementById('ArrangingFeeDeferred').value = deferred;
+                }
+                if (deferred < 0) {
+                    deferred = 0;
+                    document.getElementById('ArrangingFeeDeferred').value = 0;
+                }
+                document.getElementById('ArrangingFeeUpfront').value = {!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount} - deferred;
+            }
+            // call action to store these values
+            changeArrangingFee(document.getElementById('ArrangingFeeUpfront').value, document.getElementById('ArrangingFeeDeferred').value);
+        }
+    
+    	j$ = jQuery.noConflict();
+
+		function showLoadingDiv() {
+            j$("[id$=calculating-curtain-div]").css("background-color", "black").css("opacity", "0.75").css("height", "5%").css("width", "10%");
+            j$("#calculating-curtain-div p").css("color","rgba(255,255,255,1)");
+		}
+
+        function hideLoadingDiv() {
+        	j$("[id$=calculating-curtain-div]").css("background-color", "black").css("opacity", "1").css("height", "0px").css("width", "10%");
+            j$("#calculating-curtain-div p").css("color","rgba(255,255,255,0)");
+        }
+	</script>
+    
+	<apex:outputPanel layout="block" rendered="{!renderErrorMessage}">
+    	<apex:pageMessages id="pageMsg"/>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!!renderErrorMessage}">
+        <apex:form id="reCalcForm">
+            <apex:pageBlock tabStyle="Account">
+                <apex:pageBlockSection collapsible="false" title="RPF Pipeline Calculator" columns="1" showHeader="true" id="rpftable-section">
+                    <div id="calculating-curtain-div"><p>Processing...</p></div>
+                    <apex:pageBlockTable id="RPFTable" value="{!RPFRows}" var="RPFRow">
+                            <apex:column headerValue="Total Pipeline">
+                                <b>{!RPFRow}</b>
+                            </apex:column>
+                            <apex:repeat value="{!RPFFinancials}" var="RPF">
+                                <apex:column headerValue="{!RPF.Month}">
+                                    <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Net Margin'}">                   
+                                        <apex:param value="{!RPF.Margin}"/>               
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Committment Fees'}">                   
+                                        <apex:param value="{!RPF.CommitmentFee}"/>               
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Deferred Fees'}">                   
+                                        <apex:param value="{!RPF.ArrangingDeferredFee}"/>               
+                                    </apex:outputText>
+                                    <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Upfront Fees'}">                   
+                                        <apex:param value="{!RPF.ArrangingUpfrontFee}"/>               
+                                    </apex:outputText>
+                                    <b>
+                                        <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Total Pipeline Value'}">                   
+                                            <apex:param value="{!RPF.TotalPipelineValue}"/>
+                                        </apex:outputText>
+                                    </b>
+                                    <b>
+                                        <apex:outputText value="{0, number, ###,###,###,##0}" rendered="{!RPFRow=='Weighted Pipeline Value'}">                   
+                                            <apex:param value="{!RPF.WeightedTotalPipelineValue}"/>
+                                        </apex:outputText>
+                                    </b>
+                                </apex:column>
+                            </apex:repeat>
+                    </apex:pageBlockTable>
+                    <apex:pageBlockSectionItem >
+                    	<apex:outputPanel >
+                        	<div style="text-align:right">
+                            	<button id="rpfReCalculate" type="button" onclick="doReCalculate();">Recalculate</button>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection collapsible="false" title="Recalculation" columns="1" showHeader="true">
+                    <apex:pageBlockSection columns="2">
+                        <apex:pageBlockSectionItem >
+                            <label for="ArrangingFeeUpfront">Arranging Fee (Upfront)</label>
+                            <input type='number' min='0' max='{!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount}' step='1' style="width:100px;" id="ArrangingFeeUpfront" value="{!ArrangingFeeUpfrontAmount}" onchange="SplitArrangingFee('Upfront');" class="no-spinners" />
+                    	</apex:pageBlockSectionItem>
+                    	<apex:pageBlockSectionItem >
+                            <label for="ArrangingFeeDeferred">Arranging Fee (Deferred)</label>
+                            <input type='number' min='0' max='{!ArrangingFeeUpfrontAmount+ArrangingFeeDeferredAmount}' step='1' style="width:100px;" id="ArrangingFeeDeferred" value="{!ArrangingFeeDeferredAmount}" onchange="SplitArrangingFee('Deferred');" class="no-spinners" />
+                    	</apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:pageBlockTable id="UATable" value="{!RPFFinancials}" var="RPF">
+                                <apex:column headerValue="Utilisation Assumptions">
+                                    <b>{!RPF.Month}</b>
+                                </apex:column>
+                                <apex:column headerValue="Month">
+                                    <input type='number' min='0' step='1' id="{!SUBSTITUTE(RPF.Month,' ','')}" value="{!ROUND(RPF.BalanceSheetUtilisationAssumption,0)}" onchange="UA('{!RPF.Month}','{!SUBSTITUTE(RPF.Month,' ','')}');" class="no-spinners" />
+                                </apex:column>
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSectionItem>
+                	</apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            
+            <apex:actionFunction action="{!reCalculate}" name="reCalculate" reRender="RPFTable" status="process-status">
+            	<apex:param name="ArrangingFeeUpfront" assignTo="{!ArrangingFeeUpfront}" value=""/>
+                <apex:param name="ArrangingFeeDeferred" assignTo="{!ArrangingFeeDeferred}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!changeUA}" name="changeUA" reRender="RPFTable" status="process-status">
+            	<apex:param name="Month" assignTo="{!MonthChange}" value=""/>
+                <apex:param name="Amount" assignTo="{!AmountChange}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!changeArrangingFee}" name="changeArrangingFee" reRender="RPFTable" status="process-status">
+            	<apex:param name="Upfront" assignTo="{!ArrangingFeeUpfrontAmount}" value=""/>
+                <apex:param name="Deferred" assignTo="{!ArrangingFeeDeferredAmount}" value=""/>
+            </apex:actionFunction>
+            <apex:actionStatus id="process-status" onstart="showLoadingDiv();" onstop="hideLoadingDiv();"/>
+    	</apex:form>
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,93 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_CreateNewController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+
+	<style>
+		.label {
+			margin-right: 12px;
+			font-weight: bold;
+		}
+		.field {
+			padding-top: 16px;
+			padding-bottom: 16px;
+		}
+		[data-tooltip] {
+			position: relative;
+			cursor: pointer;
+		}
+
+		[data-tooltip]:before {
+			content: "";
+			position: absolute;
+			visibility: hidden;
+		}
+
+		[data-tooltip]:after {
+ 			content: attr(data-tooltip);
+ 			position: absolute;
+ 			background: #FEFDB9;
+ 			border: 1px solid #FFA603;
+ 			border-radius: 0px;
+ 			color: black;
+ 			font-weight: normal;
+ 			top: -30px;
+ 			left: 0px;
+ 			padding: 5px;
+ 			white-space: nowrap;
+ 			visibility: hidden;
+		}
+
+		[data-tooltip]:hover:before, [data-tooltip]:hover:after {
+			visibility: visible;
+		}
+	</style>
+
+	<apex:form >
+	<apex:pageBlock title="Create New JLOC" id="pb">
+		<apex:pageMessages id="pageMsg" />
+		<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } });" onstop="$.unblockUI();"/>
+		<apex:pageBlockButtons >
+			<apex:commandButton action="{!next}" value="Next" rendered="{!NOT(isOrganisationSelected)}" status="processing" reRender="pb"/>
+			<apex:commandButton action="{!save}" value="Save" rendered="{!AND(isOrganisationSelected, NOT(isOpportunityListEmpty))}" status="processing" reRender="pageMsg"/>
+			<apex:commandButton action="{!cancel}" value="Cancel"/>
+		</apex:pageBlockButtons>
+		<apex:pageBlockSection columns="1" rendered="{!NOT(isOrganisationSelected)}">
+			<apex:inputField value="{!JLOC__c.Organisation__c}" />
+		</apex:pageBlockSection>
+		<apex:outputPanel rendered="{!isOrganisationSelected}">
+			<div class="field">
+				<span class="label">{!$ObjectType.JLOC__c.fields.Organisation__c.Label}</span>
+				<apex:outputField value="{!JLOC__c.Organisation__c}" />
+			</div>
+			<div class="field">
+				<span class="label" data-tooltip="{!$ObjectType.JLOC__c.fields.Is_this_a_closed_JLOC__c.inlineHelpText}">{!$ObjectType.JLOC__c.fields.Is_this_a_closed_JLOC__c.Label}</span>
+				<apex:selectRadio value="{!isThisClosedJLOC}" >
+					<apex:selectOptions value="{!isThisClosedJLOCList}" />
+				</apex:selectRadio>
+			</div>
+			<apex:pageBlockTable value="{!opportunityItems}" var="item" rendered="{!NOT(isOpportunityListEmpty)}">
+				<apex:column >
+					<apex:inputCheckbox value="{!item.isSelected}" disabled="{!!item.isSelectable}" />
+				</apex:column>
+				<apex:column value="{!item.opportunity.Name}"/>
+                <apex:column headerValue="Related Group Client" value="{!item.opportunity.Related_Group_Client__r.name}"/>
+				<apex:column value="{!item.opportunity.StageName}"/>
+				<apex:column value="{!item.opportunity.CloseDate}"/>
+                <apex:column headerValue="JLOC" value="{!item.opportunity.JLOC__c}"/>
+				<apex:facet name="footer">
+					<i>{!$Label.lbl_OpportunitiesLvl3Eligible}</i>
+				</apex:facet>
+			</apex:pageBlockTable>
+
+		</apex:outputPanel>
+	</apex:pageBlock>
+	</apex:form>
+</apex:page>

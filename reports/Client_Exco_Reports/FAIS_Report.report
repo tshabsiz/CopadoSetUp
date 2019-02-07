@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <block>
+        <blockInfo>
+            <blockId>B1</blockId>
+            <joinTable>fka</joinTable>
+        </blockInfo>
+        <columns>
+            <field>CUST_NAME</field>
+        </columns>
+        <columns>
+            <field>Client_Plan__c.FAIS_Status__c</field>
+        </columns>
+        <columns>
+            <field>Client_Plan__c.FAIS_Status_Comment__c</field>
+        </columns>
+        <currency>ZAR</currency>
+        <format>Summary</format>
+        <name>Client Plans with Relationship block 1</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>CustomEntity$Client_Plan__c@Client_Plan__c.Relationship__c</reportType>
+        <scope>organization</scope>
+        <showGrandTotal>true</showGrandTotal>
+        <showSubTotals>true</showSubTotals>
+        <timeFrameFilter>
+            <dateColumn>Client_Plan__c.DG_Last_Pulled_From_SPEAR__c</dateColumn>
+            <interval>INTERVAL_CUSTOM</interval>
+        </timeFrameFilter>
+    </block>
+    <block>
+        <blockInfo>
+            <blockId>B0</blockId>
+            <joinTable>fka</joinTable>
+        </blockInfo>
+        <columns>
+            <field>CUST_NAME</field>
+        </columns>
+        <columns>
+            <field>Financial_Information__c.Year__c</field>
+        </columns>
+        <columns>
+            <field>Financial_Information__c.Net_Asset_Value__c</field>
+        </columns>
+        <currency>ZAR</currency>
+        <format>Summary</format>
+        <name>Client Plan Financial Informatio block 2</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>CustomEntity$Financial_Information__c@Financial_Information__c.Relationship__c</reportType>
+        <scope>organization</scope>
+        <showGrandTotal>true</showGrandTotal>
+        <showSubTotals>true</showSubTotals>
+        <sortColumn>Financial_Information__c.Year__c</sortColumn>
+        <sortOrder>Asc</sortOrder>
+        <timeFrameFilter>
+            <dateColumn>CUST_CREATED_DATE</dateColumn>
+            <interval>INTERVAL_CUSTOM</interval>
+        </timeFrameFilter>
+    </block>
+    <blockInfo>
+        <blockId xsi:nil="true"/>
+        <joinTable>fka</joinTable>
+    </blockInfo>
+    <format>MultiBlock</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>FK_NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>FAIS Report</name>
+    <reportType>CustomEntity$Client_Plan__c@Client_Plan__c.Relationship__c</reportType>
+    <showDetails>true</showDetails>
+</Report>

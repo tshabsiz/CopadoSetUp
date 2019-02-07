@@ -1,0 +1,78 @@
+<apex:page standardController="Case" extensions="Case_QuickAction_QA_Ext" sidebar="false" showHeader="false" standardStylesheets="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:includeScript value="/support/console/39.0/integration.js" />
+    </head>
+    <apex:form id="theForm">
+        <fieldset class="slds-form-element">
+            <legend class="slds-form-element__legend slds-form-element__label" style="font-weight: bold;font-size: large;">Available Checklists</legend>
+            <div class="slds-form-element__control">
+                <div class="slds-radio_button-group">
+                    <apex:repeat value="{!TemplateNames}" var="t">
+                     <span class="slds-button slds-radio_button">
+                        <input type="radio" name="radio" id="tempname" value="{!t.ChecklistName__c}" onclick="getValue(this);" title="chk" placeholder="{!t.Id}"/>
+                        <label class="slds-radio_button__label" for="tempname">
+                            <span class="slds-radio_faux">{!t.ChecklistName__c}</span>
+                        </label>
+                    </span>
+                    <br/>
+                    </apex:repeat>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="slds-form-element">
+            <legend class="slds-form-element__legend slds-form-element__label" style="font-weight: bold;font-size: large;">Available QA Forms</legend>
+            <div class="slds-form-element__control">
+                <div class="slds-radio_button-group">
+                    <apex:repeat value="{!QATemplateNames}" var="qt">  
+                     <span class="slds-button slds-radio_button">
+                        <input type="radio" name="radio" id="qtempname" value="{!qt.QAName__c}" onclick="getValue(this);" title="qa" placeholder="{!qt.Id}"/>
+                        <label class="slds-radio_button__label" for="tempname">
+                            <span class="slds-radio_faux">{!qt.QAName__c}</span>
+                        </label>
+                    </span>
+                    <br/>
+                    </apex:repeat>
+                </div>
+            </div>
+        </fieldset>
+        <div class="slds">
+            <div class="slds-form--stacked">
+                <div class="slds-form-element slds-float--right">
+                    <button id="btn" class="slds-button slds-button--brand" type="button" onclick="openFormSubTab();return false" >
+                        Generate Form
+                    </button>
+                </div>
+            </div>
+        </div>
+    </apex:form>
+    <script type="text/javascript">
+    
+    var caseId = '{!Case.Id}';
+    var selectedId = '';
+    var selectionValue = '';
+    var formType = '';
+    function getValue(radioBtn){
+        if (radioBtn.checked){
+            formType = radioBtn.title;
+            selectionValue = radioBtn.value;
+            selectedId = radioBtn.placeholder;
+        }
+    };
+    
+    function openFormSubTab(){
+        //sforce.console.getFocusedPrimaryTabId(openSubtab);
+        sforce.console.getEnclosingPrimaryTabObjectId(openSubtab);
+    };
+    
+    function openSubtab(result) {
+        
+        var primaryTabId = result.Id;
+        if(formType == 'chk'){
+            sforce.console.openPrimaryTab(null, '/apex/Case_Checklist_Form?id=' + caseId + '&templateId=' + selectedId + '&readOnly=0', true, selectionValue, null);
+        }else{
+           sforce.console.openPrimaryTab(null, '/apex/Case_QA_Form?id=' + caseId + '&templateId=' + selectedId + '&readOnly=0', true, selectionValue, null); 
+        }
+    };
+    </script>
+</apex:page>

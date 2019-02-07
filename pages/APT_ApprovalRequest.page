@@ -1,0 +1,52 @@
+<apex:page standardController="Annual_Pricing__c" extensions="APT_ApprovalRequestController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<apex:form >
+		<apex:inputHidden value="{!Annual_Pricing__c.Approval_Status__c}" />
+		<apex:detail title="true" showChatter="true" relatedList="false" relatedListHover="false"/>
+		<apex:pageBlock id="pb">
+			<apex:pageMessages />
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+				border: 'none', 
+				padding: '15px', 
+				backgroundColor: '#000', 
+				'-webkit-border-radius': '10px', 
+				'-moz-border-radius': '10px', 
+				opacity: .5, 
+				color: '#fff' 
+			} });" onstop="$.unblockUI();" />
+			<apex:pageBlockButtons >
+				<apex:commandButton action="{!submit}" value="Submit" status="processing" reRender="pb"/>
+				<apex:commandButton action="{!cancel}" value="Cancel" status="processing" reRender="pb"/>
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection columns="2" collapsible="false">
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="First Line Approver" />
+					<apex:selectList value="{!selectedApprover}" size="1" >
+                        <apex:actionSupport event="onchange" action="{!setSecondApprover}" reRender="pb"/>
+						<apex:selectOptions value="{!approvers}" />
+					</apex:selectList>
+				</apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Second Line Approver" />
+                    <apex:outputText value="{!secondApprover}"/>
+                </apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+			<apex:repeat value="{!pricingGroups}" var="pg">
+				<apex:pageBlockSection columns="1" title="{!pg.pricingGroup.Name}">
+					<apex:pageBlockTable value="{!pg.annualPricingItems}" var="api">
+						<apex:column width="15%" value="{!api.pricingDealProduct.Product_Category__c}"/>
+						<apex:column width="15%" value="{!api.pricingDealProduct.Product_Type__c}"/>
+						<apex:column width="15%" value="{!api.pricingDealProduct.Pricing_Deal_Product_Name__c}"/>
+						<apex:column width="10%" value="{!api.annualPricingItem.Standard_Price__c}"/>
+						<apex:column width="10%" value="{!api.annualPricingItem.Standard_VAT_Inclusive__c}"/>
+						<apex:column width="10%" value="{!api.annualPricingItem.Final_Price__c}"/>
+						<apex:column width="25%" headerValue="{!$ObjectType.Annual_Pricing_Item__c.fields.Request_Comments__c.Label}">
+							<apex:inputField value="{!api.annualPricingItem.Request_Comments__c}" />
+						</apex:column>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+			</apex:repeat>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

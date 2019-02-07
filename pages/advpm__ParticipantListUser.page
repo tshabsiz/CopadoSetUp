@@ -1,0 +1,4 @@
+<apex:page standardController="User" tabStyle="User" readOnly="true" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" sidebar="{!JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1'}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fpw)=='1','Related Participants: '+User.Name,'')}">
+    <apex:outputField value="{!User.Name}" rendered="false" />
+    <c:ParticipantList recordId="{!User.Id}" recordName="{!User.Name}" fieldName="advpm__Staff__c" />
+</apex:page>

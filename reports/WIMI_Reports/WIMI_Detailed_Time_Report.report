@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$Business_Unit_Cluster_Segment__c</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$Category__c</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$advpm__Matter__c</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$advpm__Entry_Date__c</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$advpm__Time_In_Hours__c</field>
+    </columns>
+    <columns>
+        <field>User.advpm__Time__c$CreatedById$advpm__Description__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>WIMI Detailed Time Report</description>
+    <filter>
+        <criteriaItems>
+            <column>User$UserRole</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>contains</operator>
+            <value>WIMI</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>User.advpm__Time__c$CreatedById$advpm__Timekeeper__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>User*User$BRID__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>WIMI Detailed Time Report</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>User_with_Time__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>User.advpm__Time__c$CreatedById$advpm__Entry_Date__c</dateColumn>
+        <interval>INTERVAL_THISWEEK</interval>
+    </timeFrameFilter>
+</Report>

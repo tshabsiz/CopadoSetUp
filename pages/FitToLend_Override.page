@@ -1,0 +1,82 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+                                                           
+                                                           
+-->  
+<apex:page standardController="Fit_To_Lend_Checklist__c" extensions="FitToLend_Override" tabStyle="Fit_To_Lend_Checklist__c">
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Fit To Lend Checklist Edit" subtitle="{! IF(fitToLendObject.Id == null,'New Fit To Lend Checklist', fitToLendObject.Name) }"/>
+    
+    <!-- FORM -->
+    <apex:form >
+        
+    <!-- PAGE BLOCK TABLE -->
+    <apex:pageBlock title="Fit To Lend Checklist Edit" mode="edit" id="thePage">
+        <apex:pageMessages ></apex:pageMessages>
+        
+        <!-- BUTTONS -->
+        <apex:PageBlockButtons >
+            <apex:CommandButton value="Save" action="{!saveRecord}" /> 
+            <apex:CommandButton value="Cancel" action="{!cancel}" />
+        </apex:PageBlockButtons>
+        <!-- / BUTTONS -->
+        
+        <!-- SECTION  - INFORMATION -->
+        <apex:pageBlockSection title="Information">
+            
+            <apex:outputField value="{!fitToLendObject.Deal__c}" />
+            <apex:outputField value="{!fitToLendObject.Status__c}" />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - INFORMATION -->
+        
+        <!-- SECTION  - PARTICIPANTS -->
+        <apex:pageBlockSection title="Notification Participants" columns="1">
+            
+            <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!participantWrapper.participant.Name}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - PARTICIPANTS -->
+        
+        <!-- SECTION  - GROUPS -->
+        <apex:pageBlockSection title="Notification Groups" columns="1">
+            
+            <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />
+                
+            </apex:pageBlockTable>
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION  - GROUPS -->
+        
+        
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK TABLE -->
+    
+    </apex:form>
+    <!-- / FORM -->
+    
+</apex:page>

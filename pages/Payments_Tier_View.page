@@ -1,0 +1,122 @@
+<apex:page standardController="Case" extensions="Payments_QA_Statements_Ext" showHeader="false" sidebar="false" action="{!searchTier}">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm" >
+         <div class="slds" width="60%">
+        <apex:messages ></apex:messages>  
+        <div class="slds-scrollable--x" id="tierdiv" >
+            <table width="60%" id="bicclients" class="slds-table slds-table--bordered ">
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">&nbsp;</td>
+                    <td class="slds-cell-shrink">THRESHOLD AND RATES</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">Customer</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!inputKeyTier}</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">Name</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_TIERS.d10CNAME}</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">Ledger balance</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_TIERS.d10LDBL}</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                     <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                 <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">DEBIT TIER</td>
+                    <td class="slds-cell-shrink">&nbsp;</td>
+                    <td class="slds-cell-shrink">CREDIT TIER</td>
+                    <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_TIERS.d10TIERDR}</td>
+                    <td class="slds-cell-shrink">&nbsp;</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_TIERS.d10TIERCR}</td>
+                    <td class="slds-cell-shrink">&nbsp;</td>
+                </tr>
+                 <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink">THRESHOLD</td>
+                    <td class="slds-cell-shrink">RATE</td>
+                    <td class="slds-cell-shrink">THRESHOLD</td>
+                    <td class="slds-cell-shrink">RATE</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT01}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR01}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT01}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR01}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT02}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR02}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT02}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR02}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT03}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR03}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT03}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR03}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT04}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR04}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT04}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR04}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT05}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR05}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT05}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR05}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT06}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR06}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT06}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR06}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT07}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR07}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT07}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR07}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT08}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR08}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT08}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR08}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT09}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR09}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT09}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR09}</td>
+                </tr>
+                <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT10}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR10}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT10}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR10}</td>
+                </tr>
+                 <tr class="slds-text-heading--label">
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERT11}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_DRTRESH.DRT_D01TIERR11}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERT11}</td>
+                    <td class="slds-cell-shrink" style="color: blue;">{!tierDetail.PO_CRTRESH.CRT_D01TIERR11}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+  </apex:form>
+</apex:page>

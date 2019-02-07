@@ -1,0 +1,55 @@
+<messaging:emailTemplate subject="{!relatedTo.Email_Setup_To_Use__r.Email_Subject__c}" recipientType="Contact" relatedToType="Delegate__c">
+    <messaging:htmlEmailBody >
+        <body style="background-color: #c7c8ca">
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFF" align="center" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c}; background-color: #FFF;">
+                <tr>
+                    <td>
+                        <a href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}">
+                            <img width="700" src="{!relatedTo.Email_Setup_To_Use__r.Banner_URL__c}"/>
+                        </a>
+                    </td>
+                </tr>   
+                <tr>
+                    <td style="padding: 25px">
+                    
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Heading__c}" escape="false" />
+                        
+                            Dear {!relatedTo.Contact__r.FirstName},<br/>
+                        
+                        <apex:outputText value="{!SUBSTITUTE(relatedTo.Email_Setup_To_Use__r.Body__c, '<p><br></p>', '')}" escape="false" />
+                        
+                        <table border="0" width="100%" cellspacing="0" cellpadding="0" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c};">
+                                                       
+                                                        
+                        
+                        </table>
+                        <br/><br/> 
+                        <apex:outputPanel rendered="{!relatedTo.Email_Setup_To_Use__r.Add_to_Outlook__c == true}" layout="none">
+                            <a href="http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]=2/21/2019 10:30 AM&e[0][date_end]=2/21/2019 01:30 PM&e[0][timezone]=Africa%2FJohannesburg&e[0][title]={!relatedTo.Event__r.Name}&e[0][description]=&e[0][location]={!relatedTo.Event__r.Venue__r.Name}&e[0][organizer]={!relatedTo.Event__r.Calendar_Organiser_Name__c}&e[0][organizer_email]={!relatedTo.Event__r.Calendar_Organiser_Email__c}&e[0][privacy]=public">
+                                <img src="https://absa1--c.eu15.content.force.com/servlet/servlet.ImageServer?id=0151p000006z0xU&oid=00D24000000JOMz&lastMod=1546854748000" style="margin-bottom:4px;"/>
+                            </a><br/>
+                        </apex:outputPanel>
+
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Footer__c}" escape="false" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px; font-size: 12px;">
+                        <img width="560px" src="{!relatedTo.Email_Setup_To_Use__r.Disclaimer_Banner_URL__c}" />
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Disclaimer__c}" escape="false" />
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+        </body>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

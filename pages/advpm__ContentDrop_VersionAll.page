@@ -1,0 +1,138 @@
+<apex:page controller="advpm.ContentDrop_Upload" showHeader="false" sidebar="false">
+<html>
+<head>
+	<style type="text/css">
+		.normal {
+		    color: #444444;
+		    font-family: "lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
+		    font-size: 9pt;
+		    font-weight: normal;
+		}
+		.normalSmall {
+		    color: #444444;
+		    font-family: "lucida grande","Segoe UI",arial,verdana,"lucida sans unicode",tahoma,sans-serif;
+		    font-size: 8pt;
+		    font-weight: normal;
+		}
+		.message {
+		    border-radius: 4px 4px 4px 4px;
+		}
+		.errorM6, .errorM4, .errorM3, .errorM2, .errorS1 {
+		    border-color: transparent;
+		}
+		.message {
+		    background-color: transparent;
+		    border-style: none;
+		    border-width: 0px;
+		    color: #000000;
+		    margin: 0px;
+		    padding: 0px;
+		}
+		.publish-dialog-titlebar {
+            padding: 0.5em 1em 0.5em;
+            position: relative;
+            background-color: #cccccc;
+            font-weight: bold;
+            color: black;
+            font-size: 12px;
+            -moz-border-radius:4px 4px 4px 4px;
+        }
+        .publish-dialog-titlebar {
+		    -moz-border-bottom-colors: none;
+		    -moz-border-image: none;
+		    -moz-border-left-colors: none;
+		    -moz-border-right-colors: none;
+		    -moz-border-top-colors: none;
+		    background: url("/img/alohaSkin/metaBar_sprite.png") repeat-x scroll left -104px transparent;
+		    border-color: #D1D1D1 #E1E0E0 #E1E0E0;
+		    border-radius: 5px 5px 5px 5px;
+		    border-right: 1px solid #E1E0E0;
+		    border-style: solid;
+		    border-width: 1px;
+		    line-height: 26px;
+		    margin: 5px;
+		    width: auto;
+		    font-size: 1.25em;
+		    padding:10px;
+		}
+		.publish-dialog-titlebar {
+		    background-color: #D6D6D6;
+		    border-bottom: 1px solid #C1C1C1;
+		    line-height: 22px;
+		    white-space: nowrap;
+		    /*width: 99%;*/
+		}
+		.requiredInput {
+		    height: 100%;
+		    position: relative;
+		}
+		.requiredInput .requiredBlock {
+		    background-color: #CC0000;
+		    bottom: 1px;
+		    left: -4px;
+		    position: absolute;
+		    top: 1px;
+		    width: 3px;
+		}
+		.comment {
+			border: 1px solid #a7a7a7;
+			background-color: #f3f3ec;
+			font-size: 11px;
+			padding: 5px;
+			overflow: hidden;
+			margin-bottom: 5px;
+		}
+	</style>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+	<script type="text/javascript">
+		$j = jQuery.noConflict();
+        
+	</script>
+</head>
+<body>
+<div style="margin-left:2px;">
+	<apex:form >
+		<div>
+			<div>
+				<div class="publish-dialog-titlebar">
+		            <span>Versions Info</span>
+		        </div>
+			</div>
+			<table align="center" class="normal" width="100%" cellspacing="0" cellpadding="0">
+	    		<tr align="center">
+	    			<td align="center" nowrap="nowrap" colspan="2">
+	    				<apex:pageMessages />
+	    			</td>
+	    		</tr>
+	    	</table>
+	    	<table class="normal" width="100%" cellspacing="3" cellpadding="3">
+	    		<tr>
+	    			<td nowrap="nowrap">
+	    				<div style="overflow-x:hidden;overflow-y:auto;min-height:205px;max-height:205px;">
+	    				<apex:repeat value="{!AllVersions}" var="cv">
+	    					<div class="comment">
+	    						<span class="normal" style="font-weight:bold;display:inline;">Version: </span>{!cv.VersionNumber}<br />
+	    						<span class="normal" style="font-weight:bold;display:inline;">Size: </span><apex:outputText value="{0, number,###,###,##0.00}"><apex:param value="{!ROUND((cv.ContentSize/1024),2)}" /></apex:outputText> KB<br />
+	    						<apex:outputPanel styleClass="normal" style="font-weight:bold;display:inline;" rendered="{!cv.ReasonForChange != null && cv.ReasonForChange != ''}">Comment: </apex:outputPanel> {!cv.ReasonForChange}<apex:outputPanel rendered="{!cv.ReasonForChange != null && cv.ReasonForChange != ''}"><br /></apex:outputPanel>
+	    						<span class="normal" style="font-weight:bold;display:inline;">Uploaded By: </span>{!cv.CreatedBy.Name},&nbsp;<apex:outputField value="{!cv.CreatedDate}" />
+	    					</div>
+	    				</apex:repeat>
+	    				</div>
+	    			</td>
+	    		</tr>
+	    	</table>
+	    	<table align="center" class="normal" width="100%" cellspacing="3" cellpadding="3">
+	    		<tr>
+	    			<td align="center" colspan="2">
+				        <span >
+							<apex:commandButton value="  Close  " onclick="parent.$j.modal.close(); return false;" styleClass="btnPrimary publishersharebutton btn" />
+				        </span>
+	    			</td>
+	    		</tr>
+	    	</table>
+    	</div>
+	</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

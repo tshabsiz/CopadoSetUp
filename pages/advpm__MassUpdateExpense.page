@@ -1,0 +1,40 @@
+<apex:page standardController="advpm__Expense__c" tabStyle="advpm__Expense__c" extensions="advpm.MassUpdateObjectController" recordSetVar="allrecords">
+    
+    <apex:slds rendered="{!isLightning && hasMessages}" />
+    
+    <apex:outputPanel layout="block" rendered="{!isLightning && hasMessages}">
+        <c:slds_pageheader pageHeaderType="RECORD"
+                            headerTitle="{!$ObjectType[sObjName].label}"
+                            headerSubTitle="Mass Update Wizard" />
+        <style type="text/css">
+            .message .messageTable tr td:first-child {width:40px;}
+        </style>
+    </apex:outputPanel>
+    <apex:sectionHeader title="{!$ObjectType[sObjName].label}" subtitle="Mass Update Wizard" rendered="{!!isLightning && hasMessages}" />
+    
+    <apex:pageMessages />
+    
+    <apex:outputPanel layout="inline" rendered="{!!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            window.onload = function() {
+                window.top.location = '{!URLFOR($Page.advpm__MassUpdateObject,null,[recIds=JSENCODE(recordIdsStr),retURL=JSENCODE($CurrentPage.parameters.retURL)])}';
+            };
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="inline" rendered="{!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                window.onload = function() {
+                    sforce.one.navigateToURL('{!URLFOR($Page.advpm__MassUpdateObject,null,[recIds=JSENCODE(recordIdsStr),gotoURL=JSENCODE($CurrentPage.parameters.retURL)])}', false);
+                };
+            }
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form rendered="{!hasMessages}">
+        <center>
+            <apex:commandButton action="{!cancel}" value="  Go Back  " immediate="true" styleClass="slds-button slds-button--neutral" />
+        </center>
+    </apex:form>
+    
+</apex:page>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify users when Matter status = Open/Closed</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Matter Status (Open/Closed) Notification</name>
+    <style>freeForm</style>
+    <subject>Matter Status</subject>
+    <textOnly>Dear {!User.Name}
+
+Please be aware that {!advpm__Matter__c.Name} has been updated.
+The Status of the Matter has changed.
+
+Matter ID: {!advpm__Matter__c.Matter_ID__c}
+Description: {!advpm__Matter__c.advpm__Description__c}
+
+Regards
+Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

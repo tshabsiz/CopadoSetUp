@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Collateral Valuation 30 Days before Due Date</name>
+    <style>freeForm</style>
+    <subject>Collateral Valuation {!Collateral_Valuation__c.Name} will be due for :  {!Collateral_Valuation__c.Deal__c} on {!Collateral_Valuation__c.Due_Date__c}</subject>
+    <textOnly>Good day  {!Collateral_Valuation__c.Reviewer_Name__c},
+
+
+Collateral Valuation {!Collateral_Valuation__c.Name} will be due for {!Collateral_Valuation__c.Deal__c} on {!Collateral_Valuation__c.Due_Date__c}:
+
+
+Collateral Name: {!Collateral_Valuation__c.Collateral__c}
+
+Collateral Group:
+
+Collateral Type:
+
+
+Deal Name : {!Collateral_Valuation__c.Deal__c}
+Agreement Name : {!Collateral_Valuation__c.Agreement__c}
+
+Collateral Valuation Name: {!Collateral_Valuation__c.Name}
+
+Valuation Type : {!Collateral_Valuation__c.Valuation_Type__c}
+
+Valuation Product: {!Collateral_Valuation__c.Valuation_Product__c}
+
+Collateral Valuation Status: {!Watcher__c.Watcher_Status__c}
+
+Collateral Valuation Due Date: {!Watcher__c.Due_Date__c}
+
+
+Click on the below link to view the collateral valuation:
+
+{!Collateral_Valuation__c.Link}
+
+
+Kind regards,
+
+Transaction Management Group</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

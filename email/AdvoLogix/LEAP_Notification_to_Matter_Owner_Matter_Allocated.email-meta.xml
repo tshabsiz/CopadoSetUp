@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Matter Owner to be notified when a matter is allocated to them.</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Notification to Matter Owner - Matter Allocated</name>
+    <style>freeForm</style>
+    <subject>Matter has been Allocated to you</subject>
+    <textOnly>Dear {!Case.OwnerFullName}
+
+
+
+Your matter has been allocated as follows:
+
+
+
+Matter Name: {!Case.Matter__c}
+
+Matter ID: {!Case.MatterId__c}
+
+Matter Status: {!advpm__Matter__c.advpm__Status__c}
+
+
+
+
+
+Auto generated email - Please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

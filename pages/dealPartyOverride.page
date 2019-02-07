@@ -1,0 +1,124 @@
+<apex:page id="dealPartyOverride" StandardController="Deal_Party__c" extensions="dealPartyOverride_Cont" doctype="html-5.0">
+    <!-- JQUERY -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <script>
+        $(document).ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+         });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+    
+    <apex:form id="dealPartyOverrideForm">
+        <apex:outputPanel rendered="{!dealPartyPanel}" id="dealPartyPanel">
+            <apex:sectionHeader title="Deal Party Edit" subTitle="New Deal Party"/>
+            <apex:pageBlock mode="edit" id="thePageBlock" title="Deal Party Edit">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!save}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Deal Party Information" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Deal" for="deal" />
+                        <apex:inputField value="{!dealParty.Deal__c}" id="deal" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship" for="relationship" />
+                        <apex:inputField value="{!dealParty.Relationship__c}" id="relationship" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value=""/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship Type" for="relationshipType" />
+                        <apex:inputField value="{!dealParty.Relationship_Type__c}" id="relationshipType" required="true"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!isLibraDeal == false}" id="tmgDealPartyPanel">
+            <apex:sectionHeader title="Deal Party Edit" subTitle="New Deal Party"/>
+            <apex:pageBlock mode="edit" id="tmgPageBlock" title="Deal Party Edit">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!saveTmgDealParty}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Deal Party Information" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Deal" for="deal" />
+                        <apex:inputField value="{!dealParty.Deal__c}" id="deal" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Relationship" for="relationship" />
+                        <apex:inputField value="{!dealParty.Relationship__c}" id="relationship" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value=""/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Party Type" for="partyType" />
+                        <apex:inputField value="{!dealParty.Party_Type__c}" id="partyType"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

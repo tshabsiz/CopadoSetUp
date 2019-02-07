@@ -1,0 +1,417 @@
+<apex:page standardController="advpm__Time__c" tabStyle="advpm__Time__c" cache="true" showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false" standardStyleSheets="true" extensions="advpm.CardWallTimeController" docType="html-5.0">
+<html>
+<head>
+	<title>Time</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'js/bootstrap.2.3.2.min.js')}" />
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jQuery_NiceScroll, 'jquery.nicescroll.min.js')}" /> -->
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap.2.3.2.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__Cal_Shared, 'CalFormsCSS.css')}" />
+    
+    <style type="text/css">
+    	body {overflow-x:hidden!important;}
+        html {overflow:auto!important;}
+    	.labelCol{width:14%!important;}
+    	.dataCol{width:36%!important;}
+        .hide{display:none!important;}
+    </style>
+    
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+</head>
+<body>
+	<div id="loading_cal_status" class="{!IF(JSINHTMLENCODE($currentPage.parameters.isdtp) == 'p1','','hide')}" style="text-align:center;"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Loading...</span></div>
+    <apex:form id="theForm">
+        <apex:outputPanel layout="none" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && !isSFMobile}">
+        <style type="text/css">
+            body {max-height:450px!important;}
+        </style>
+        </apex:outputPanel>
+        <script type="text/javascript">
+	        var $j = jQuery.noConflict();
+	        $j.getDocHeight = function(){
+			    return Math.max(
+			        $j(document).height(),
+			        $j(window).height(),
+			        /* For opera: */
+			        document.documentElement.clientHeight
+			    );
+			};
+            $j(document).ready(function(){
+            	if ( (typeof sforce != 'undefined') && (sforce != null) ) {$j('#loading_cal_status').toggleClass('hide', true);}
+               	else if('{!advpm__Time__c.Id}'!='') {$j('.opentime').css('display', 'block');}
+                $j('#save-button').click(function(e){
+                    e.preventDefault();
+                    saveTimeAction();
+                });
+                $j('#close-button').click(function(e){
+                    e.preventDefault();
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) 
+                	{
+                		if ('{!JSINHTMLENCODE($currentPage.parameters.src)}'=='TimeEdit') {
+                			if ('{!JSINHTMLENCODE($currentPage.parameters.matid)}'=='' && '{!advpm__Time__c.Id}'=='') {
+                				sforce.one.navigateToURL('#/sObject/advpm__Time__c/home', true);
+                			}
+                			else {
+	                			/*parent.goBackS1();*/
+	                			sforce.one.back();
+                			}
+                		}
+                		else
+                			sforce.one.navigateToURL("{!JSINHTMLENCODE($currentPage.parameters.gotoURL)}");
+			        }
+			        else
+			        {
+                    	parent.doClose('TIME', false);
+                    }
+                });
+                $j('#delete-button').click(function(e){
+                    e.preventDefault();
+                    var cf = confirm('Are you sure you want to delete?');
+                    if (cf)
+                    {
+                        deleteTimeAction();
+                    }
+                });
+                if ({!errMsgs.size} > 0)
+                {
+                	if ( (typeof sforce != 'undefined') && (sforce != null) && {!isSFMobile} == true ) { }
+                	else {
+                		$j('#modal-error-list').removeClass('hide').addClass('in');
+                		//$j('#modal-error-list').modal('show');
+					}
+                }
+                /*$j('.chatterShowHideFeed > .showFeedLink > .innerLink').click(function(e){
+                	setTimeout(function(){
+					    $j("html").getNiceScroll().resize();
+					}, 3000);
+                });*/
+                try {
+		            if (typeof parent.AdjustIframeHeight == 'function') {
+		                var ht = $j.getDocHeight() + 40;
+		                if (ht < 650)
+		                    ht = 650;
+		                parent.AdjustIframeHeight( ht );
+		            }
+		        } catch(err){}
+                toggleButtons('{!$Component.theForm}', false);
+                fixRatesForMatterAutoMatchLookup();
+                //initScroll();
+            });
+            function initScroll() {
+            	/*$j("html").niceScroll({
+                    bouncescroll: true,
+                    horizrailenabled: false
+                });*/
+            }
+            function fixRatesForMatterAutoMatchLookup() {
+                var el = $j('.lookupInput select[id$="_lkid"].field_lookupSelect');
+                if(el.length > 0) {
+                    if (el.val() != '') {
+                        fetchDefaultRate();
+                    }
+                }
+            }
+            /*
+             * Below fix is for 'apex:inputField' onchange handler firing twice from Recent Items list on the field
+             */
+            var ajaxRunning = null;
+            var ajaxDelay = 250;
+            function fetchDefaultRate() {
+                if (ajaxRunning) {
+                    clearTimeout(ajaxRunning);
+                }
+                ajaxRunning = setTimeout(function(){
+                                  doSetDefaultRate();
+                                  ajaxRunning = null;
+                              }, ajaxDelay);
+            }
+            function changeRate() {
+                if (ajaxRunning) {
+                    clearTimeout(ajaxRunning);
+                }
+                ajaxRunning = setTimeout(function(){
+                                  doChangeRate();
+                                  ajaxRunning = null;
+                              }, ajaxDelay);
+            }
+        </script>
+        <apex:outputPanel id="saveTime">
+        	<script type="text/javascript">
+        		if( '{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess)}' == '1' )
+                {
+                    if ( (typeof sforce != 'undefined') && (sforce != null) ) 
+                	{
+                		//sforce.one.back(true);
+                		if ('{!JSINHTMLENCODE($currentPage.parameters.src)}'=='TimeEdit' && '{!advpm__Time__c.Id}'!='') {
+                			//sforce.one.navigateToSObject('{!advpm__Time__c.Id}');
+                			sforce.one.navigateToURL('#/sObject/{!advpm__Time__c.Id}/view', true);
+                		}
+                		else
+                			sforce.one.navigateToURL("{!JSINHTMLENCODE($currentPage.parameters.gotoURL)}");
+			        }
+			        else
+			        {
+			        	if( '{!JSINHTMLENCODE($CurrentPage.parameters.src)}' == 'Timer' ) {
+	                        //sforce.one.navigateToSObject('{!advpm__Time__c.Id}');
+	                        sforce.one.navigateToURL('#/sObject/{!advpm__Time__c.Id}/view', true);
+	                   	}
+				        else if( '{!JSINHTMLENCODE($CurrentPage.parameters.src)}' == 'Calendar' )
+	                        parent.loadTime();
+	                    else if( '{!JSINHTMLENCODE($CurrentPage.parameters.src)}' == 'Gantt' )
+	                        parent.retrieveData();
+	                    else
+	                        if ( typeof parent.ReloadTasks == 'function' ) parent.ReloadTasks();
+	                    parent.doClose('TIME', false);
+	              	}
+                }
+        	</script>
+        </apex:outputPanel>
+        
+        <apex:actionFunction name="saveTimeAction" action="{!saveTime}" rerender="theForm,otherContent" status="loadingStatus" rendered="{!!isSFMobile}" />
+        <apex:actionFunction name="deleteTimeAction" action="{!deleteTime}" rerender="theForm,otherContent" status="loadingStatus" rendered="{!!isSFMobile}" />
+        <apex:actionFunction name="doSetDefaultRate" action="{!SetDefaultRate}" rerender="opRatesContainer_label,opRatesContainer_field" status="loadingStatus" rendered="{!!isSFMobile}" />
+        
+        <apex:actionFunction name="saveTimeAction" action="{!saveTime}" rerender="theForm,otherContent" status="loadingStatus_m" rendered="{!isSFMobile}" />
+        <apex:actionFunction name="deleteTimeAction" action="{!deleteTime}" rerender="theForm,otherContent" status="loadingStatus_m" rendered="{!isSFMobile}" />
+        <apex:actionFunction name="fetchDefaultRate" action="{!SetDefaultRate}" rerender="opMobileContainer_m" status="loadingStatus_m" rendered="{!isSFMobile}" />
+        
+        <apex:actionFunction name="doChangeRate" action="{!ChangeRate}" rerender="opMainContainer" status="loadingStatus" />
+        
+        <div style="display:none;" id="opFieldsContainer">
+            <apex:inputField value="{!advpm__Time__c.OwnerId}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.Owner.Name}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.Name}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.advpm__Rate__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.advpm__Rate_Amount__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.advpm__Total_Amount__c}" rendered="false" />
+            <apex:inputField value="{!advpm__Time__c.advpm__Account__c}" rendered="false" />
+        </div>
+        
+        <apex:pageMessages id="msgs1" />
+        <apex:outputPanel style="margin:10px;" styleClass="bPageBlock brandSecondaryBrd bDetailBlock secondaryPalette" layout="block" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && !isSFMobile}">
+        	<apex:outputPanel layout="block" styleClass="message errorM3" rendered="{!HasPageMessages}"><apex:messages /></apex:outputPanel>
+        	<div class="pbHeader">
+        		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+        			<tbody>
+        				<tr>
+        					<td class="pbTitle"><h5 class="mainTitle">{!$ObjectType.Time__c.label} Detail</h5></td>
+        					<td class="pbButton">
+        						<a id="save-button" class="showOnEditButton edit-button font-fix btn-adv btn-adv-info btn-adv-small {!IF(CurrentUserAccountName != null && CurrentUserAccountName != '','hide','')}"> <span class="edit-button-text">Save</span></a>
+			                    <a id="close-button" class="showOnEditButton edit-button font-fix btn-adv btn-adv-small"><span class="edit-button-text">Close</span></a>
+			                    <a id="delete-button" class="showOnEditButton edit-button font-fix btn-adv btn-adv-small {!IF(Time__c.Id==null || isClone,'hide','')}" style="margin-left:3px;"><span class="edit-button-text">Delete</span></a>
+			                    
+                                <a href="javascript:void(0);" class="hideOnEditButton btnDisabled edit-button font-fix btn-adv btn-adv-info btn-adv-small {!IF(CurrentUserAccountName != null && CurrentUserAccountName != '','hide','')}"> <span class="edit-button-text">{!$Label.Button_Processing}</span></a>
+                                <a href="javascript:void(0);" class="hideOnEditButton btnDisabled edit-button font-fix btn-adv btn-adv-small"><span class="edit-button-text">{!$Label.Button_Processing}</span></a>
+                                <a href="javascript:void(0);" class="hideOnEditButton btnDisabled edit-button font-fix btn-adv btn-adv-small {!IF(Time__c.Id==null || isClone,'hide','')}" style="margin-left:3px;"><span class="edit-button-text">{!$Label.Button_Processing}</span></a>
+                                
+                                <apex:actionStatus id="loadingStatus" onstart="toggleButtons('{!$Component.theForm}', true)" onstop="toggleButtons('{!$Component.theForm}', false)"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+			                    <apex:commandLink target="_top" styleClass="opentime pull-right" action="{!gotoStdTime}" value="Edit in Standard Interface" />
+                    		</td>
+                    	</tr>
+                    </tbody>
+				</table>
+            </div>
+			<div class="pbBody">
+            	<apex:outputPanel layout="block" styleClass="pbSubsection" id="opMainContainer">
+            		<table class="detailList" border="0" cellpadding="0" cellspacing="0" width="100%">
+	            		<tbody>
+	            		<tr class="{!IF(Time__c.Id != null && !isClone,'','hide')}">
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.Time__c.fields.Name.label}</label></th>
+	            			<td class="dataCol" colspan="3"><input style="width:70%;" id="disabledInput" type="text" placeholder="{!advpm__Time__c.Name}" disabled="disabled" /></td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.Time__c.fields.Matter__c.label}</label></th>
+	            			<td class="dataCol">
+	            				<apex:inputField value="{!advpm__Time__c.advpm__Matter__c}" required="false" styleClass="field_lookupSelect" onchange="fetchDefaultRate()" />
+	            			</td>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Timekeeper__c.label}</label></th>
+	            			<td class="dataCol">
+	            				<apex:inputField value="{!advpm__Time__c.advpm__Timekeeper__c}" required="false" styleClass="field_lookupSelect" onchange="fetchDefaultRate()" />
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Entry_Date__c.label}</label></th>
+	            			<td class="dataCol"><apex:inputField value="{!advpm__Time__c.advpm__Entry_Date__c}" required="false" style="width:80px;" /></td>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Task_Code__c.label}</label></th>
+	            			<td class="dataCol"><apex:inputField value="{!advpm__Time__c.advpm__Task_Code__c}" required="false" /></td>
+	            		</tr>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Time_In_Hours__c.label}</label></th>
+	            			<td class="dataCol">
+	            				<apex:inputField value="{!advpm__Time__c.advpm__Time_In_Hours__c}" required="false" id="timeInHours" style="width:80px;">
+	            					<apex:actionSupport event="onchange" action="{!processTimeRounding}" rerender="timeInHours" status="loadingStatus" 
+                                                        rendered="{!!isSFMobile && (advpm__Time__c.Id == null || isClone) && GlobalOptions.advpm__Enable_Time_Rounding__c==true && GlobalOptions.advpm__Incremental_Rounding_Value__c > 0}" />
+	            				</apex:inputField>
+	            			</td>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Billing_Disposition__c.label}</label></th>
+	            			<td class="dataCol"><apex:inputField value="{!advpm__Time__c.advpm__Billing_Disposition__c}" required="false" /></td>
+	            		</tr>
+                        <apex:outputPanel layout="none" id="opRatesContainer">
+    	            		<apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate}" var="f">
+    		                    <tr>
+    		            			<th class="labelCol vfLabelColTextWrap">
+                                        <apex:outputPanel layout="none" id="opRatesContainer_label">
+                                            <apex:outputLabel rendered="{!!((advpm__Time__c.Id == null || isClone) && f == 'advpm__Total_Amount__c')}" value="{!f.Label}" />
+                                        </apex:outputPanel>
+                                    </th>
+    		            			<td class="dataCol">
+                                        <apex:outputPanel layout="block" id="opRatesContainer_field">
+    			            				<apex:outputPanel layout="block" rendered="{!f != 'advpm__Total_Amount__c'}">
+    			            					<apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f != 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}" />
+    				            				<apex:inputField id="rateLookup" value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f == 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}" onchange="changeRate()" />
+    						                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:70%;height:60px;" />
+    					                    </apex:outputPanel>
+    					                    <apex:outputPanel layout="block" rendered="{!advpm__Time__c.Id != null && !isClone && f == 'advpm__Total_Amount__c'}"><input type="text" placeholder="{!advpm__Time__c[f]}" disabled="disabled" /></apex:outputPanel>
+                                        </apex:outputPanel>
+    		            			</td>
+    		            		</tr>
+    			            </apex:repeat>
+                            <apex:outputPanel layout="none" rendered="{!isMultiCurrencyOrg && $ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate.size > 0}">
+				            	<tr>
+			            			<th class="labelCol vfLabelColTextWrap"><label>Currency</label></th>
+			            			<td class="dataCol">
+				            			<apex:inputField value="{!advpm__Time__c['CurrencyIsoCode']}" required="false" rendered="{!isMultiCurrencyOrg}">
+				            				<apex:actionSupport event="onchange" action="{!ChangeCurrency}" rerender="opRatesContainer_label,opRatesContainer_field" status="loadingStatus" />
+				            			</apex:inputField>
+				            		</td>
+				            	</tr>
+				            </apex:outputPanel>
+			            </apex:outputPanel>
+	            		<tr>
+	            			<th class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}</label></th>
+	            			<td class="dataCol" colspan="3"><apex:inputField value="{!advpm__Time__c[TimeDescriptionField]}" label="{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}" style="width:70%;" required="false" /></td>
+	            		</tr>
+	            		<apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time}" var="f">
+	            			<apex:outputPanel layout="none" rendered="{!NOT(CONTAINS(f,'.'))}">
+	                        <tr><th class="labelCol vfLabelColTextWrap"><label>{!f.label}</label></th><td class="dataCol" colspan="3"><apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}" /><apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:70%;height:60px;" /></td></tr>
+	                        </apex:outputPanel>
+	                    </apex:repeat>
+	            		</tbody>
+	            	</table>
+	            </apex:outputPanel>
+	        </div>
+        </apex:outputPanel>
+        <apex:outputPanel style="margin:10px;" styleClass="bPageBlock brandSecondaryBrd bDetailBlock secondaryPalette mobile" layout="block" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && isSFMobile}">
+        	<apex:outputPanel layout="block" styleClass="message errorM3" rendered="{!HasPageMessages || errMsgs.size > 0}"><apex:messages />
+        		<apex:dataList value="{!errMsgs}" var="er" type="circle" styleClass="text-error">
+					<apex:outputPanel layout="inline"><strong>{!er.errHeading}</strong>&nbsp;{!er.errMessage}</apex:outputPanel>
+				</apex:dataList>
+        	</apex:outputPanel>
+        	<div class="pbHeader">
+        		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+        			<tbody>
+        				<tr>
+        					<td class="pbTitle" nowrap="nowrap"><h5 class="mainTitle">{!$ObjectType.Time__c.label} Detail</h5></td>
+        					<td class="pbButton">
+        						<a id="save-button" class="edit-button font-fix btn-adv btn-adv-info btn-adv-small"> <span class="edit-button-text">Save</span></a>
+			                    <a id="close-button" class="edit-button font-fix btn-adv btn-adv-small"><span class="edit-button-text">Close</span></a>
+			                    <a id="delete-button" class="edit-button font-fix btn-adv btn-adv-small {!IF(Time__c.Id==null || isClone,'hide','')}" style="margin-left:3px;"><span class="edit-button-text">Delete</span></a>
+			                    <apex:actionStatus id="loadingStatus_m" onstart="toggleButtons('{!$Component.theForm}', true)" onstop="toggleButtons('{!$Component.theForm}', false)"><apex:facet name="start"><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /></apex:facet></apex:actionStatus>
+			                    <apex:commandLink target="_top" styleClass="opentime pull-right" action="{!gotoStdTime}" value="Edit in Standard Interface" />
+                    		</td>
+                    	</tr>
+                    </tbody>
+				</table>
+            </div>
+			<div class="pbBody">
+            	<apex:outputPanel layout="block" styleClass="pbSubsection" id="opMobileContainer_m">
+            		<table class="detailList" border="0" cellpadding="0" cellspacing="0" width="100%">
+	            		<tbody>
+	            		<tr class="{!IF(Time__c.Id != null && !isClone,'','hide')}">
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.Time__c.fields.Name.label}</label>
+	            			<input style="width:70%;" id="disabledInput" type="text" placeholder="{!advpm__Time__c.Name}" disabled="disabled" /></td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.Time__c.fields.Matter__c.label}</label>
+	            			<apex:inputField value="{!advpm__Time__c.advpm__Matter__c}" required="false" styleClass="field_lookupSelect">
+	            				<apex:actionSupport event="onchange" action="{!SetDefaultRate}" rerender="opMobileContainer_m" status="loadingStatus_m" />
+				           	</apex:inputField></td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Timekeeper__c.label}</label>
+	            			<apex:inputField value="{!advpm__Time__c.advpm__Timekeeper__c}" required="false" styleClass="field_lookupSelect">
+	            				<apex:actionSupport event="onchange" action="{!SetDefaultRate}" rerender="opMobileContainer_m" status="loadingStatus_m" />
+				          	</apex:inputField></td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Entry_Date__c.label}</label>
+	            			<apex:inputField value="{!advpm__Time__c.advpm__Entry_Date__c}" required="false" style="width:80px;" /></td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Time_In_Hours__c.label}</label>
+	            				<apex:inputField value="{!advpm__Time__c.advpm__Time_In_Hours__c}" required="false" id="timeInHours_m" style="width:80px;">
+	            					<apex:actionSupport event="onblur" action="{!processTimeRounding}" rerender="opMobileContainer_m" status="loadingStatus_m" 
+                                                        rendered="{!isSFMobile && (advpm__Time__c.Id == null || isClone) && GlobalOptions.advpm__Enable_Time_Rounding__c==true && GlobalOptions.advpm__Incremental_Rounding_Value__c > 0}" />
+	            				</apex:inputField>
+	            			</td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Task_Code__c.label}</label>
+	            			<apex:inputField value="{!advpm__Time__c.advpm__Task_Code__c}" required="false" /></td>
+	            		</tr>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields.advpm__Billing_Disposition__c.label}</label>
+	            			<apex:inputField value="{!advpm__Time__c.advpm__Billing_Disposition__c}" required="false" /></td>
+	            		</tr>
+	            		<apex:outputPanel layout="none" id="opRatesContainer_m">
+		            		<apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate}" var="f">
+			                    <tr>
+			            			<td class="labelCol vfLabelColTextWrap"><apex:outputLabel rendered="{!!((advpm__Time__c.Id == null || isClone) && f == 'advpm__Total_Amount__c')}" value="{!f.Label}" />
+		            				<apex:outputPanel layout="inline" rendered="{!f != 'advpm__Total_Amount__c'}">
+			            				<apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f != 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}" />
+			            				<apex:inputField id="rateLookup_m" value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && f == 'advpm__Rate__c' && NOT(CONTAINS(f,'.'))}">
+					                        <apex:actionSupport event="onchange" action="{!ChangeRate}" rerender="opMobileContainer_m" status="loadingStatus_m" />
+					                    </apex:inputField>
+					                    <apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:70%;height:60px;" />
+				                    </apex:outputPanel>
+				                    <apex:outputPanel layout="inline" rendered="{!advpm__Time__c.Id != null && !isClone && f == 'advpm__Total_Amount__c'}"><input type="text" placeholder="{!advpm__Time__c[f]}" disabled="disabled" /></apex:outputPanel>
+			            			</td>
+			            		</tr>
+				            </apex:repeat>
+				            <apex:outputPanel layout="none" rendered="{!isMultiCurrencyOrg && $ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_TimeRate.size > 0}">
+				            	<tr>
+			            			<td class="labelCol vfLabelColTextWrap"><label>Currency</label>
+				            			<apex:inputField value="{!advpm__Time__c['CurrencyIsoCode']}" required="false" rendered="{!isMultiCurrencyOrg}">
+				            				<apex:actionSupport event="onchange" action="{!ChangeCurrency}" rerender="opMobileContainer_m" status="loadingStatus_m" />
+				            			</apex:inputField>
+				            		</td>
+				            	</tr>
+				            </apex:outputPanel>
+			            </apex:outputPanel>
+	            		<tr>
+	            			<td class="labelCol vfLabelColTextWrap"><label>{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}</label>
+	            			<apex:inputField value="{!advpm__Time__c[TimeDescriptionField]}" label="{!$ObjectType.advpm__Time__c.fields[TimeDescriptionField].label}" style="width:70%;" required="false" /></td>
+	            		</tr>
+	            		<apex:repeat value="{!$ObjectType.advpm__Time__c.FieldSets.advpm__fieldSet_Time}" var="f">
+	                        <apex:outputPanel layout="none" rendered="{!NOT(CONTAINS(f,'.'))}">
+	                        <tr><td class="labelCol vfLabelColTextWrap"><label>{!f.label}</label><apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}" /><apex:inputField value="{!advpm__Time__c[f]}" required="{!f.Required}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}" style="width:70%;height:60px;" /></td></tr>
+	                        </apex:outputPanel>
+	                    </apex:repeat>
+	            		</tbody>
+	            	</table>
+	            </apex:outputPanel>
+	        </div>
+        </apex:outputPanel>
+    </apex:form>
+    <apex:outputPanel id="otherContent">
+	    <chatter:feedWithFollowers entityId="{!advpm__Time__c.Id}" rendered="{!JSINHTMLENCODE($CurrentPage.parameters.saveSuccess) != '1' && !isClone}"></chatter:feedWithFollowers>
+	    <div class="modal hide fade" id="modal-error-list" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header text-error">
+	    		<h3 id="myModalLabel">Error</h3>
+	  		</div>
+	  		<div class="modal-body">
+	  			<apex:dataList value="{!errMsgs}" var="er" type="circle" styleClass="text-error">
+					<apex:outputPanel layout="inline"><strong>{!er.errHeading}</strong>&nbsp;{!er.errMessage}</apex:outputPanel>
+				</apex:dataList>
+	  		</div>
+	  		<div class="modal-footer">
+	    		<a href="#" onclick="$j('#modal-error-list').addClass('hide').removeClass('in');return false;" data-dismiss="modal" aria-hidden="true" class="btn-adv btn-adv-danger">Ok</a>
+	  		</div>
+		</div>
+	</apex:outputPanel>
+</body>
+</html>
+</apex:page>

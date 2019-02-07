@@ -1,0 +1,55 @@
+<apex:page controller="HotDocs_Interview" showHeader="true" sidebar="true" action="{!actionLaunchInterview}" tabStyle="Agreement__c">
+	
+	<!-- JAVASCRIPT -->
+	<script type="text/javascript">
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+    // Listen to message from child window
+    eventer(messageEvent, function (e) {
+
+        //alert('Origin: '+e.origin);
+        //alert('Message: '+e.message);
+        
+        var key = e.message ? "message" : "data";
+        var data = e[key];
+        var agreementId = '{!agreementId}';
+        var supportingAgreementId = '{!supportingAgreementId}';
+
+        //Exclude Salesforce Event.
+        if(!e.origin.includes('salesforce') && !e.origin.includes('force.com'))
+        {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.HotDocs_Interview.createRequest}', 
+                data,
+                agreementId,
+                supportingAgreementId,
+                function(result, event) 
+                {
+                    if(supportingAgreementId != null && supportingAgreementId != '')
+                    {
+                        window.location = '/'+supportingAgreementId; 
+                    }
+                    else
+                    {
+                        window.location = '/'+agreementId; 
+                    }
+                    
+                }
+            );
+        }
+
+    }, false);
+	</script>
+	<!-- / JAVASCRIPT -->
+
+    <apex:sectionHeader title="Documentation Generation" subtitle="HotDocs Interview" />
+
+	<apex:pageMessages />	 
+
+    <apex:pageBlock rendered="{!NOT(hasError)}" >
+	   <apex:iframe src="{!interviewUrl}" scrolling="true" id="theIframe" rendered="{!NOT(hasError)}" />
+    </apex:pageBlock>
+	
+</apex:page>

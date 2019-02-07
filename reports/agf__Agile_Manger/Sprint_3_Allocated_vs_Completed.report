@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_54150570</developerName>
+        <masterLabel>Allocated vs Completed</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>agf__ADM_Work__c$agf__Status__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>Closed</sourceValue>
+            </sourceValues>
+            <value>Completed</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>New</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Triaged</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>In Progress</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Ready for Review</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>QA In Progress</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Waiting</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Pending Release</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Duplicate</sourceValue>
+            </sourceValues>
+            <value>Allocated</value>
+        </values>
+    </buckets>
+    <buckets>
+        <bucketType>text</bucketType>
+        <developerName>BucketField_69368554</developerName>
+        <masterLabel>Not Yet Allocated vs Allocated</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>agf__ADM_Work__c$agf__Sprint__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>LEAP / VALPRE Sprint 1</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>LEAP / VALPRE Sprint 2</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>LEAP / VALPRE Sprint 3</sourceValue>
+            </sourceValues>
+            <value>Allocated</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumn</chartType>
+        <enableHoverLabels>true</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>agf__ADM_Work__c$agf__Sprint__c</groupingColumn>
+        <location>CHART_TOP</location>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>true</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>agf__ADM_Work__c$Name</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$agf__Epic__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$agf__Status__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>agf__ADM_Work__c$agf__Scrum_Team__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>LEAP-1</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Work__c$agf__Sprint__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>LEAP / VALPRE Sprint 3</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>agf__ADM_Work__c$agf__Sprint__c</field>
+        <sortOrder>Desc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_54150570</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Sprint 3 - Allocated vs Completed</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Work_with_Epics_Themes__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>agf__ADM_Work__c$agf__Assigned_On__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

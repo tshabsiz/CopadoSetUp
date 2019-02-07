@@ -1,0 +1,29 @@
+<apex:page standardController="advpm__ActionPlanTemplate__c" extensions="advpm.ActionPlanTemplateDetailController" action="{!exportTemplateToXMLDoc}" >
+
+    <apex:pageBlock title="Template XML Export Process">
+        <table>
+            <apex:outputPanel layout="none" rendered="{!ISNULL(actionPlanExportXMLDoc)}">
+                <tr>
+                    <td>Your template could not successfully be exported to an XML document.</td>
+                </tr>   
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!NOT(ISNULL(actionPlanExportXMLDoc))}">
+                <tr>
+                    <td>The XML file for your template has been successfully created, and can be found in your Salesforce documents folder.</td>
+                </tr>
+                <tr>
+                    <td><br/></td>
+                </tr>
+                <tr>
+                    <td><a href="/{!actionPlanExportXMLDoc.id}">Click here</a> to view the XML file in your Salesforce documents folder.</td>
+                </tr>
+            </apex:outputPanel>
+            <tr>
+                <td><br/></td>
+            </tr>
+            <tr>
+                <td><a href="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateDetail?Id={!actionPlanTemplate.Id}">Click here</a> to return to the template.</td>
+            </tr>
+        </table> 
+    </apex:pageBlock>
+</apex:page>

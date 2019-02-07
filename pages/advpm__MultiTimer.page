@@ -1,0 +1,63 @@
+<apex:page showHeader="false" sidebar="false" applyBodyTag="false" applyHtmlTag="false"><html>
+    <head>
+        <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+        <style type="text/css">
+            .hide {display:none;}
+            .hasMotif {margin: 0 0px!important;}
+            html, html .brandQuaternaryBgr {background: #ffffff!important;}
+            body .bPageBlock {margin-bottom: 0px!important;background-color: transparent!important;}
+            body .bPageBlock .pbHeader {background-color: #F8F8F8;}
+            body .secondaryPalette.bPageBlock {border-top: 3px solid #1797c0!important;}
+            .apexp .bPageBlock.apexDefaultPageBlock .pbBody {margin: 0px 0px 0px 12px;}
+            .pbBody {min-height: 340px;max-height: 340px;overflow-y: auto;}
+            .main_container {position:relative;}
+            .timers-container > div > div:nth-child(n+7) {display: none;}
+            .footerButtons {position: relative;top: 312px;text-align: right;width: 762px;}
+            .link-view-all {color: rgb(0, 112, 210)!important;text-decoration: none;}
+            .link-view-all:hover, .link-view-all:focus {color: rgb(0, 112, 210)!important;text-decoration: underline;}
+            .advpmAdvoLogixTimerForm {padding-bottom: 10px;}
+        </style>
+    </head>
+    <body>
+        <apex:pageBlock mode="detail" title="Multi Timer">
+            <div class="pbSubsection main_container">
+                <c:MultiTimer showingOnHomePage="true" />
+                <div class="footerButtons hide">
+                    <a href="{!URLFOR($Page.MultiTimerTab)}" class="link-view-all" target="_top">View All</a>
+                </div>
+            </div>
+        </apex:pageBlock>
+        
+        <script type="text/javascript">
+            $(function(){
+                poll();
+            });
+            
+            var poll = function () {
+                
+                setTimeout(function () {
+                    
+                    if ($('.advpmAdvoLogixMultiTimer .slds-spinner_container').hasClass('slds-hide')) {
+                        if ($('.advpmAdvoLogixMultiTimer .advpmAdvoLogixMultiTimerItem').length <= 6 || $('.advpmAdvoLogixMultiTimer .advpmAdvoLogixTimerForm').length > 0) {
+                            $('.footerButtons').addClass('hide');
+                        }
+                        else {
+                            $('.footerButtons').removeClass('hide');
+                        }
+                        if ($('.advpmAdvoLogixMultiTimer .advpmAdvoLogixTimerForm').length > 0) {
+                            $('.main_container').css('position','relative');
+                        }
+                        else {
+                            $('.main_container').css('position','absolute');
+                        }
+                    }
+                    
+                    poll();
+                    
+                }, 1500);
+                
+            };
+        </script>
+    </body>
+</html>
+</apex:page>

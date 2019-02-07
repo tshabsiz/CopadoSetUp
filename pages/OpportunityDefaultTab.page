@@ -1,0 +1,21 @@
+<apex:page >
+<apex:form >
+<script>
+    function hideForwardButton() {
+        var forwardButton = document.getElementsByName("forward");
+        forwardButton[0].style.display='none';
+    }
+</script>
+
+    <apex:outputPanel >
+        <div style="color:#FF0000">
+           <p style="font-size:16px">
+            To load an Opportunity, go to the Relationships tab and select either a Relationship Group or Prospect organisation
+           </p>
+           <br /><br />
+        </div>
+    </apex:outputPanel> 
+</apex:form>
+
+    <apex:enhancedList type="Opportunity" height="800" customizable="true" oncomplete="hideForwardButton();"/>
+</apex:page>

@@ -1,0 +1,29 @@
+<apex:page standardController="Matrix_Lead__c" extensions="MatrixLeadsWithinTheCompanyController" showHeader="false" sidebar="false">
+
+    <apex:form >
+        <apex:inputHidden value="{!Matrix_Lead__c.REF_NO_F__c}" />
+
+        <apex:pageBlock mode="maindetail">
+            <apex:pageBlockTable value="{!relatedMatrixLeads}" var="matrixLead">
+                <apex:column headerValue="{!$ObjectType.Matrix_Lead__c.fields.Name.Label}">
+                    <apex:outputLink value="/{!matrixLead.Id}" onclick="goToMatrixLeadView('{!matrixLead.Id}');return false;">{!matrixLead.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!matrixLead.First_Name__c}"/>
+                <apex:column value="{!matrixLead.Surname__c}"/>
+                <apex:column value="{!matrixLead.Job_Title__c}"/>
+                <apex:column value="{!matrixLead.Tel_Code__c}"/>
+                <apex:column value="{!matrixLead.Tel_No__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+
+    <script>
+        function goToMatrixLeadView(matrixLeadId) {
+            if((typeof sforce != 'undefined') && (sforce != null)) {
+                sforce.one.navigateToURL('/'+matrixLeadId);
+            } else{
+                window.top.location.href = '/'+matrixLeadId;
+            }
+        }
+    </script>
+</apex:page>

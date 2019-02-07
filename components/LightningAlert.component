@@ -1,0 +1,43 @@
+<apex:component >
+
+    <script>
+        
+        function showAlert(message) {
+            $('#alertMessageContent').text(message);
+            $('#lightningAlertPanel').show();
+        }
+        
+        function closeAlert() {
+            $('#lightningAlertPanel').hide();
+        }
+        
+    </script>
+
+    <style>
+    
+        #alertMessageWrapper {
+            display: inline-block;
+        }
+    
+    </style>
+    
+    <div id="lightningAlertPanel" class="slds-notify slds-notify--alert slds-theme--alert-texture slds-theme--error" role="alert" 
+        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none;">
+        
+      <button class="slds-button slds-button--icon-inverse slds-notify__close" onclick="closeAlert();return false;">
+        <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+          <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+        </svg>
+      </button>
+      
+      <svg aria-hidden="true" class="slds-icon icon-text-email slds-icon--small slds-m-right--x-small">
+        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}"></use>
+      </svg>
+      
+      <div id="alertMessageWrapper" class="slds-col slds-align-middle">
+        <h2 id="alertMessageContent" class="slds-text-heading--small" />
+      </div>
+      
+    </div>
+
+</apex:component>

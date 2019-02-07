@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Budget Approved notification template</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>advpm__Advologix</letterhead>
+    <name>Budget Approved Notification</name>
+    <style>freeForm</style>
+    <subject>Approved: Budget {!advpm__Budget__c.advpm__Matter__c} / {!advpm__Budget__c.Name}</subject>
+    <textOnly>Budget {!advpm__Budget__c.Name}
+
+
+Your budget has been approved!
+
+
+Here are the details:
+
+
+Budget Ref #: {!advpm__Budget__c.Name}
+Matter: {!advpm__Budget__c.advpm__Matter__c}
+Firm: {!advpm__Budget__c.advpm__Firm__c}
+Start Date: {!advpm__Budget__c.advpm__Start_Date__c}
+End Date: {!advpm__Budget__c.advpm__End_Date__c}
+Total Budget: {!advpm__Budget__c.advpm__Total_Budget__c}
+Created By: {!advpm__Budget__c.CreatedBy}
+
+
+
+
+
+
+Sincerely yours,
+{!User.Name}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,27 @@
+<apex:page sidebar="false" standardController="advpm__Matter__c" standardStylesheets="false" cache="false" readOnly="true" title="Matter Planner">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <style type="text/css">
+        .noSidebarCell, .sidebarCell .fixed {padding: 0px!important;}
+        html body.sfdcBody {padding: 0px;}
+    </style>
+    <iframe id="iframe_panel" frameborder="0" height="625px" scrolling="no" title="Card Wall" width="100%" src="about:blank"></iframe>
+    <script type="text/javascript">
+        function AdjustIframeHeight(i) { document.getElementById("iframe_panel").style.height = parseInt(i) + "px"; }
+    </script>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        $j(document).ready(function () {
+            var sf1m = '';
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                sf1m            = '&isdtp=p1';
+            }
+            if ( ({!$User.UIThemeDisplayed == 'Theme4t'}) && (typeof sforce != 'undefined') && (sforce != null) ) {
+                sforce.one.navigateToURL('{!$Site.Prefix}/apex/advpm__CardWall?id={!advpm__Matter__c.Id}&heading=1&nohead=1'+sf1m);
+            }
+            else {
+                $j("#iframe_panel").contents().empty();
+                $j("#iframe_panel").attr("src", "{!$Site.Prefix}/apex/advpm__CardWall?ltng={!IF($User.UIThemeDisplayed=='Theme4d','1','0')}&id={!advpm__Matter__c.Id}&heading=1&nohead=1"+sf1m);
+            }
+        });
+    </script>
+</apex:page>

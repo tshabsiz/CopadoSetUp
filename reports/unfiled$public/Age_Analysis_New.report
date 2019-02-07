@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>number</bucketType>
+        <developerName>BucketField_77151930</developerName>
+        <masterLabel>Age</masterLabel>
+        <nullTreatment>z</nullTreatment>
+        <sourceColumnName>advpm__Matter__c$MatterAgeDays__c</sourceColumnName>
+        <useOther>false</useOther>
+        <values>
+            <sourceValues>
+                <to>90</to>
+            </sourceValues>
+            <value>0-3 months</value>
+        </values>
+        <values>
+            <sourceValues>
+                <from>90</from>
+                <to>180</to>
+            </sourceValues>
+            <value>3-6 months</value>
+        </values>
+        <values>
+            <sourceValues>
+                <from>180</from>
+                <to>365</to>
+            </sourceValues>
+            <value>6-12 months</value>
+        </values>
+        <values>
+            <sourceValues>
+                <from>365</from>
+                <to>720</to>
+            </sourceValues>
+            <value>12-24 months</value>
+        </values>
+        <values>
+            <sourceValues>
+                <from>720</from>
+                <to>1,080</to>
+            </sourceValues>
+            <value>24-36 months</value>
+        </values>
+        <values>
+            <sourceValues>
+                <from>1,080</from>
+            </sourceValues>
+            <value>36 and above</value>
+        </values>
+    </buckets>
+    <columns>
+        <field>advpm__Matter__c$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Business_Unit_Claims__r$Business_Unit__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$Owner</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$Claim_By_Against_Barclays__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$Start_Date__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$MatterAgeDays__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Matter__c$RecordType</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>advpm__Matter__c.Litigation_Matter</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>advpm__Matter__c$advpm__Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Open</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_77151930</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Age Analysis New</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Litigation_Matters_with_Business_Units__c</reportType>
+    <scope>team</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>advpm__Matter__c$Start_Date__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

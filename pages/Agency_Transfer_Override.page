@@ -1,0 +1,155 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 08/08/2017 - PG    - Create VF page.  
+ 08/11/2017 - TdB   - Add Facility and Facility Tranche fields
+ 20/11/2017 - PG	- Added javascript to hide save while updating calcs.
+ 12/03/2018 - TdB   - Agreement Limit optional (prevent Users from creating Drawdown and Agency with no Agreement Limit) 
+                                                           
+-->
+<apex:page standardController="Agency_Transfer__c" extensions="Agency_Transfer_Override" showHeader="true" sidebar="true">   
+	
+	<!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+	<script>
+	function buttonDisable()
+	{
+		$("[id$='theSaveButton']").hide(); 
+	}
+
+	function buttonEnable()
+	{
+		$("[id$='theSaveButton']").show(); 
+	}
+	</script>
+
+	<apex:actionStatus id="processStatus" onstart="buttonDisable()" onstop="buttonEnable()" />
+
+	<!-- SECTION HEADER -->
+	<apex:sectionHeader title="Agency Transfer Edit" subtitle="New Agency Transfer" /> 
+
+	<!-- FORM -->
+	<apex:form id="theForm" > 
+
+	<!-- PAGE BLOCK -->
+	<apex:pageBlock title="Agency Transfer Edit " mode="edit" id="thePageBlock">
+
+		<!-- MESSAGES -->
+		<apex:pageMessages id="pageMsg"/> 
+
+		<!-- BUTTONS -->
+		<apex:pageBlockButtons >
+			<apex:commandButton value="Save" action="{!actionSave}" id="theSaveButton" rendered="{!IF(showPageContent == False,FALSE, TRUE)}"/>
+			<apex:commandButton value="Cancel" action="{!cancel}" /> 
+		</apex:pageBlockButtons>
+		<!-- / BUTTONS -->
+
+		<!-- PAGE BLOCK SECTION -->
+		<apex:pageBlockSection title="Transfer Information" rendered="{!IF(showPageContent == False,FALSE, TRUE)}">
+
+			<!-- transferor -->
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="transferor" value="Transferor (From)" />
+				<apex:actionRegion >					
+					<apex:selectList value="{!selectedTransferor}" size="1" id="transferor">
+						<apex:selectOptions value="{!TransferorOptions}" />
+						<apex:actionSupport event="onchange" action="{!actionUpdateTransferee}" immediate="false" status="processStatus" reRender="transferee, transferDetails" />
+					</apex:selectList>
+				</apex:actionRegion>
+			</apex:pageBlockSectionItem>
+			<!-- / transferor -->
+
+
+			<!--<apex:InputField value="{!agencyTransfer.Agreement__c}" /> -->
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Agreement" for="agreement_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField style="" label="Agreement" value="{!agencyTransfer.Agreement__c}" id="agreement_field" required="true">
+                            <apex:actionSupport event="onchange" action="{!actionResetLenderParties}" status="processStatus" immediate="false" reRender="transferDetails,transferee,transferor, pageMsg" />
+                        </apex:inputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+
+			<!-- transferee -->
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="transferee" value="Transferee (To)" />
+				<apex:actionRegion >					
+					<apex:selectList value="{!selectedTransferee}" size="1" id="transferee" disabled="{!Disabled}">
+						<apex:selectOptions value="{!TransfereeOptions}" />
+						<apex:actionSupport event="onchange" action="{!actionUpdateTransferDetails}" status="processStatus" immediate="false" reRender="transferDetails,pageMsg" />
+					</apex:selectList>
+				</apex:actionRegion>
+			</apex:pageBlockSectionItem> 
+			<!-- / transferee -->
+			
+            <!--<apex:InputField value="{!agencyTransfer.Facility__c}" />-->
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Facility" for="Facility_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField style="" label="Facility" value="{!agencyTransfer.Facility__c}" id="Facility_field" required="{!facilityRequired}">
+                           <apex:actionSupport event="onchange" action="{!actionResetLenderParties}" status="processStatus" immediate="false" reRender="transferDetails,transferee,transferor,pageMsg" />
+                        </apex:inputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+			
+
+			<!-- amount -->			
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="transferAmount" value="Transfer Amount" />
+				<apex:actionRegion >					
+					<apex:inputText value="{!transferAmount}" label="Transfer Amount" id="transferAmount" required="true">
+						<apex:actionSupport event="onblur" action="{!actionUpdateTransferDetails}" status="processStatus" immediate="false" reRender="transferDetails" />
+					</apex:inputText>
+				</apex:actionRegion>
+			</apex:pageBlockSectionItem> 
+			<!-- / amount -->
+            
+          <!--  <apex:inputField value="{!agencyTransfer.Facility_Tranche__c}" />  -->
+            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Facility Tranche" for="FacilityTranche_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField style="" label="Facility Tranche" value="{!agencyTransfer.Facility_Tranche__c}" id="FacilityTranche_field" required="{!facilityTrancheRequired}">
+                            <apex:actionSupport event="onchange" action="{!actionResetLenderParties}" status="processStatus" immediate="false" reRender="transferDetails,transferee,transferor,pageMsg" />
+                        </apex:inputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+            
+            
+            <apex:inputField value="{!agencyTransfer.Transfer_Fee__c}" />
+
+		</apex:pageBlockSection>
+		<!-- / PAGE BLOCK SECTION -->
+
+		<br />
+
+		<!-- PAGE BLOCK SECTION -->
+		<apex:pageBlockSection title="Transfer Details" id="transferDetails" columns="1" collapsible="false" rendered="{!IF(showPageContent == False,FALSE, TRUE)}">
+			
+			<apex:pageBlockTable value="{!transferDetails}" var="transfer">
+				<apex:column value="{!transfer.Tranche_Party__c}" rendered="{!IF(agencyTransfer.Facility_Tranche__c != null,True, False)}" />
+                <apex:column value="{!transfer.Facility_Party__c}" rendered="{!IF(agencyTransfer.Facility__c != null && agencyTransfer.Facility_Tranche__c == null,True, False)}" />
+                <apex:column value="{!transfer.Agreement_Party__c}" rendered="{!IF(agencyTransfer.Agreement__c != null && agencyTransfer.Facility__c == null,True, False)}" />
+				<apex:column value="{!transfer.Facility_Amount_Original__c}" />
+				<apex:column value="{!transfer.Facility_Percentage_Original__c}" />
+				<apex:column value="{!transfer.Facility_Amount_New__c}" /> 
+				<apex:column value="{!transfer.Facility_Percentage_New__c}" />   
+			</apex:pageBlockTable>
+
+		</apex:pageBlockSection> 
+		<!-- / PAGE BLOCK SECTION -->
+
+	</apex:pageBlock>
+	<!-- / PAGE BLOCK --> 
+
+	</apex:form>
+	<!-- / FORM -->
+	
+</apex:page>

@@ -1,0 +1,30 @@
+<apex:page standardController="Collateral_Facility__c" extensions="CollateralFacilityDeleteExtension" tabStyle="Collateral_Relationship__c" >
+        <apex:sectionHeader title="Delete Collateral Facility" subtitle="Confirm Delete" help="https://help.salesforce.com" />
+    <apex:form >
+        <apex:pageBlock title="Collateral Facility Delete" mode="detail">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!deleteAction}" value="Confirm Delete" oncomplete="CallWebService_JS()" />
+                 <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS"/>
+                <apex:commandButton action="{!cancel}" value="Cancel" />
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection collapsible="false" title="Information" columns="2">
+                <apex:outputField value="{!Collateral_Facility__c.Collateral__c}"/>
+                
+                <apex:outputField value="{!Collateral_Facility__c.OwnerId}"/>
+                
+                <apex:outputField value="{!Collateral_Facility__c.Facility_Client__c}" >
+                </apex:outputField>
+                
+                <apex:outputField value="{!Collateral_Facility__c.CurrencyIsoCode}" >
+                </apex:outputField>
+                
+                
+                <apex:outputField value="{!Collateral_Facility__c.ACMFacility__c}"/>
+                <apex:outputField value="{!Collateral_Facility__c.Active__c}"/>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

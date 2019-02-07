@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>false</active>
+    <allowRecall>true</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>Name</field>
+        <field>Owner</field>
+    </approvalPageFields>
+    <approvalStep>
+        <allowDelegate>false</allowDelegate>
+        <approvalActions>
+            <action>
+                <name>Approval_Status</name>
+                <type>FieldUpdate</type>
+            </action>
+        </approvalActions>
+        <assignedApprover>
+            <approver>
+                <name>Accountable_Banker__c</name>
+                <type>relatedUserField</type>
+            </approver>
+            <whenMultipleApprovers>FirstResponse</whenMultipleApprovers>
+        </assignedApprover>
+        <label>Step 1</label>
+        <name>Step_1</name>
+        <rejectionActions>
+            <action>
+                <name>Rejection_notification_email_to_Opp_Owner</name>
+                <type>Alert</type>
+            </action>
+            <action>
+                <name>Status_Pending_Approval</name>
+                <type>FieldUpdate</type>
+            </action>
+        </rejectionActions>
+    </approvalStep>
+    <emailTemplate>Worklfow_Email_Templates/Accountable_Banker_Approval_Rejection</emailTemplate>
+    <enableMobileDeviceAccess>true</enableMobileDeviceAccess>
+    <entryCriteria>
+        <formula>RecordType.Id = &quot;01224000000Kx2m&quot;
+
+&amp;&amp;
+ Accountable_Banker__r.Id  &lt;&gt;  Owner.Id
+&amp;&amp;
+ISPICKVAL(Status__c, &quot;Pending Approval&quot;)</formula>
+    </entryCriteria>
+    <finalApprovalRecordLock>false</finalApprovalRecordLock>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Status_Pending_Approval</name>
+            <type>FieldUpdate</type>
+        </action>
+    </initialSubmissionActions>
+    <label>Accountable Banker Approval</label>
+    <postTemplate>Accountable_Banker_Approval_Notification</postTemplate>
+    <recallActions>
+        <action>
+            <name>Recall_Actions_Notification_for_Accountable_Banker</name>
+            <type>Alert</type>
+        </action>
+        <action>
+            <name>Status_Pending_Approval</name>
+            <type>FieldUpdate</type>
+        </action>
+    </recallActions>
+    <recordEditability>AdminOrCurrentApprover</recordEditability>
+    <showApprovalHistory>true</showApprovalHistory>
+</ApprovalProcess>

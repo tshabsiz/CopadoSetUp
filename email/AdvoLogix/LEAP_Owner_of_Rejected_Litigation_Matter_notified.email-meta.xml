@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify owner of Matter that probable against claim rejected</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Owner of Rejected Litigation Matter notified</name>
+    <style>freeForm</style>
+    <subject>Notification: Amount probable against claim has been Rejected</subject>
+    <textOnly>Dear {!advpm__Matter__c.OwnerFullName}
+
+Please be aware that {!advpm__Matter__c.Name} that Probable for Approval amount {!advpm__Matter__c.Probable_For_Approval__c} has been Rejected.
+
+Claim By/Against Barclays: {!advpm__Matter__c.Claim_By_Against_Barclays__c}
+Approval Name: {!Approval__c.Name}
+Matter Name: {!Approval__c.Matter_Deal__c}
+Litigation Matter Approved: {!Approval__c.Litigation_Matter_Approved__c}
+
+Regards
+Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

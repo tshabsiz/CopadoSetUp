@@ -1,0 +1,442 @@
+<!--
+ - Created by Kyle Alexander on 2018/02/20.
+ -->
+
+<apex:page id="MasterAgreementEdit" StandardController="Agreement__c" extensions="MasterAgreementEdit_Cont" sidebar="true" doctype="html-5.0">
+
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+    <script>
+        $(document).ready(function() {
+           if($('[id$=masterAgreementRequired]').is(':checked')){
+               $('[id$=breakClauseDays]').prop('disabled', true);
+           }
+           else{
+               $('[id$=breakClauseDays]').prop('disabled', false);
+           }
+
+           if($('[id$=MarginMaintenanceAmountAbsa]').val() != 'Own Amount'){
+               $('[id$=MarginMaintenanceOwnAmountAbsa]').prop('disabled', true);
+           }
+
+           if($('[id$=MarginMaintenanceAmountCounterparty]').val() != 'Own Amount'){
+               $('[id$=MarginMaintenanceOwnAmountCounterparty]').prop('disabled', true);
+           }
+
+           $('[id$=masterAgreementType]').prop('disabled', true);
+        });
+
+        function disableField(element)
+        {
+            if(element.checked){
+                $('[id$=breakClauseDays]').prop('disabled', true);
+            }
+            else{
+                $('[id$=breakClauseDays]').prop('disabled', false);
+            }
+        }
+
+        function checkAmountAbsa(element){
+            if(element.value == 'Own Amount'){
+                $('[id$=MarginMaintenanceOwnAmountAbsa]').prop('disabled', false);
+            }
+            else{
+                $('[id$=MarginMaintenanceOwnAmountAbsa]').prop('disabled', true);
+            }
+        }
+
+        function checkAmountCounterparty(element){
+            if(element.value == 'Own Amount'){
+                $('[id$=MarginMaintenanceOwnAmountCounterparty]').prop('disabled', false);
+            }
+            else{
+                $('[id$=MarginMaintenanceOwnAmountCounterparty]').prop('disabled', true);
+            }
+        }
+
+        function checkIfMustShowErrorMessage(element){
+            if('{!agreement.Agreement_Status__c}' == 'Confirmed/Completed' || '{!agreement.Agreement_Status__c}' == 'Amended'){
+                if(element.value == 'Not Started' || element.value == 'In Process'){
+                    alert('Setting the Status of this Agreement to "' + element.value + '" after it has been saved as "{!agreement.Agreement_Status__c}" will cause the executed agreement to be set to non-executed');
+                }
+            }
+            if(element.value == 'Confirmed/Completed'){
+                if({!mustShowStatusWarningMessage} == true){
+                    alert('Warning! Please note that netting has not yet been completed.');
+                }
+            }
+        }
+
+    </script>
+
+    <script>
+        $('document').ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+           }
+           else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+           }
+        });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+
+    <body>
+    <apex:form id="MasterAgreementEditForm">
+
+        <apex:sectionHeader title="Master Agreement Edit"/>
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel rendered="{!agreementPanel}" id="agreementPanel">
+            <apex:pageBlock mode="edit" id="thePageBlock" title="Master Agreement Detail">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAgreement}"/>
+                    <apex:commandButton value="Cancel" action="{!CancelPage}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Master Agreement Type" for="masterAgreementType" />
+
+                            <apex:inputField value="{!agreement.Master_Agreement_Type__c}" id="masterAgreementType" required="true">
+                                <apex:actionSupport event="onchange" rerender="thePageBlock"/>
+                            </apex:inputField>
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == true}">
+                            <apex:outputLabel value="Bank" for="bank" />
+                            <apex:inputField value="{!agreement.Bank__c}" id="bank"/>
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == true}">
+                            <apex:outputLabel value="Relationship" for="relationship" />
+                            <apex:inputField value="{!agreement.Relationship__c}" id="relationship"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Master Agreement Start Date" for="masterAgreementStartDate" />
+                            <apex:inputField value="{!agreement.Master_Agreement_Start_Date__c}" id="masterAgreementStartDate"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Master Agreement Required Prior to First" for="masterAgreementRequired" />
+                            <apex:inputField value="{!agreement.Master_Agreement_Required_Prior_to_First__c}" id="masterAgreementRequired" onchange="disableField(this);"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem id="theField" rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Break Clause (days)" for="breakClauseDays" />
+                            <apex:inputField value="{!agreement.Break_Clause_days__c}" id="breakClauseDays"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Market Agreement Version" for="version" />
+                            <apex:inputField value="{!agreement.Master_Agreement_Version__c}" id="version"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Agreement ID" for="agreementId" />
+                            <apex:outputField value="{!agreement.Agreement_ID__c}" id="agreementId"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Business Unit" for="BusinessUnit" />
+                            <apex:inputField value="{!agreement.Business_Unit__c}" id="BusinessUnit" required="true"/>
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Termination Currency" for="terminationCurrency" />
+                            <apex:inputField value="{!agreement.Termination_Currency__c}" id="terminationCurrency" />
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Calculation Agent" for="calAgent" />
+                            <apex:inputField value="{!agreement.Calculation_Agent__c}" id="calAgent" />
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Loan-Linked" for="loanLinked" />
+                            <apex:inputField value="{!agreement.Loan_Linked__c}" id="loanLinked" />
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Loan Name" for="loanName" />
+                            <apex:inputField value="{!agreement.Loan_Name__c}" id="loanName" />
+                        </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem rendered="{!isdaPanel}">
+                            <apex:outputLabel value="Facility Loan Name" for="facilityLoanName" />
+                            <apex:inputField value="{!agreement.Facility_Loan_Name__c}" id="facilityLoanName" />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Agreement Status" for="status" />
+                            <apex:inputField value="{!agreement.Agreement_Status__c}" onChange="checkIfMustShowErrorMessage(this);" id="status"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Agreement Name" for="masterAgreementName" />
+                            <apex:inputField value="{!agreement.Name}" id="masterAgreementName" required="true"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Matter/Deal" for="matterDeal" />
+                            <apex:outputField value="{!agreement.Matter_Deal__c}" id="matterDeal"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Governing Law" for="govLaw" />
+                            <apex:inputField value="{!agreement.Governing_Law__c}" id="govLaw"/>
+                        </apex:pageBlockSectionItem>
+
+                        <apex:pageBlockSectionItem rendered="{!primeServPanel == false}">
+                            <apex:outputLabel value="Country of Issue" for="contIssue" />
+                            <apex:inputField value="{!agreement.Country_of_Issue__c}" id="contIssue"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!isdaPanel}" id="isdaPanel">
+            <apex:pageBlock mode="edit" id="pageBlockIsda" title="ISDA Information">
+                <apex:pageBlockSection columns="2" title="Cross Default Threshold Re Absa">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Cash Amount" for="CashAmount" />
+                        <apex:inputField value="{!agreement.Cash_Amount__c}" id="CashAmount"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Cash Amount Currency" for="CashAmountCurrency" />
+                        <apex:inputField value="{!agreement.Currency_Re_Absa__c}" id="CashAmountCurrency"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Equity Percentage" for="EquityPercentage" />
+                        <apex:inputField value="{!agreement.Equity_Percentage__c}" id="EquityPercentage"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection columns="2" title="Cross Default Threshold Re Counterparty">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Cash Amount" for="CashAmountCounterparty" />
+                        <apex:inputField value="{!agreement.Cash_Amount_counterparty__c}" id="CashAmountCounterparty"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Cash Amount Currency" for="CashAmountCurrencyCounterparty" />
+                        <apex:inputField value="{!agreement.Currency_Re_Counterparty__c}" id="CashAmountCurrencyCounterparty"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Equity Percentage" for="EquityPercentageCounterparty" />
+                        <apex:inputField value="{!agreement.Equity_Percentage_Counterparty__c}" id="EquityPercentageCounterparty"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!gmraPanel}" id="gmraPanel">
+            <apex:pageBlock mode="edit" id="pageBlockGmra" title="GMRA Information">
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Margin Maintenance Amount Absa" for="MarginMaintenanceAmountAbsa" />
+                            <apex:inputField value="{!agreement.Margin_Maintenance_Amount_Absa__c}" id="MarginMaintenanceAmountAbsa" required="true" onChange="checkAmountAbsa(this);"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Margin Maintenance Own Amount" for="MarginMaintenanceOwnAmountAbsa" />
+                            <apex:inputField value="{!agreement.Margin_Maintenance_Own_Amount_Absa__c}" id="MarginMaintenanceOwnAmountAbsa"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Bank Minimum Transfer Amount" for="BankMinimumTransferAmount" />
+                            <apex:inputField value="{!agreement.Bank_Minimum_Transfer_Amount__c}" id="BankMinimumTransferAmount"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Margin Maintenance Amount Counterparty" for="MarginMaintenanceAmountCounterparty" />
+                            <apex:inputField value="{!agreement.Margin_Maintenance_Amount_Counterparty__c}" id="MarginMaintenanceAmountCounterparty" required="true" onChange="checkAmountCounterparty(this);"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Margin Maintenance Own Amount" for="MarginMaintenanceOwnAmountCounterparty" />
+                            <apex:inputField value="{!agreement.Margin_Maintenance_Own_Amount_Counter__c}" id="MarginMaintenanceOwnAmountCounterparty"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Counterparty Minimum Transfer Amount" for="CounterpartyMinimumTransferAmount" />
+                            <apex:inputField value="{!agreement.Counterparty_Minimum_Transfer_Amount__c}" id="CounterpartyMinimumTransferAmount"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Buy Sell Back Applies" for="buySellBackApplies" />
+                            <apex:inputField value="{!agreement.Buy_Sell_Back_Applies__c}" id="buySellBackApplies"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Bilateral / Unilateral" for="BilateralUnilateral" />
+                            <apex:inputField value="{!agreement.Bilateral_Unilateral__c}" id="BilateralUnilateral"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Base Currency" for="BaseCurrency" />
+                            <apex:inputField value="{!agreement.Base_Currency__c}" id="BaseCurrency"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Triparty Agent" for="TripartyAgent" />
+                            <apex:inputField value="{!agreement.Triparty_Agent__c}" id="TripartyAgent"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Transaction Exposure Calculation Method" for="transactionExposureCalculationMethod" />
+                            <apex:inputField value="{!agreement.Transaction_Exposure_Calculation_Method__c}" id="transactionExposureCalculationMethod"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!gmslaPanel}" id="gmslaPanel">
+            <apex:pageBlock mode="edit" id="pageBlockGmsla" title="GMSLA Information">
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Absa as Borrow/Lender" for=" AbsaAsBorrowLender" />
+                            <apex:inputField value="{!agreement.Absa_as_Borrower_Lender__c}" id="AbsaAsBorrowLender"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Absa as Agent/Principal" for="AbsaAsAgentPrincipal" />
+                            <apex:inputField value="{!agreement.Absa_as_Agent_Principal__c}" id="AbsaAsAgentPrincipal"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Counterparty as Borrow/Lender" for=" CounterpartyAsBorrowLender" />
+                            <apex:inputField value="{!agreement.Counterparty_as_Borrower_Lender__c}" id="CounterpartyAsBorrowLender"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Counterparty as Agent/Principal" for="CounterpartyAsAgentPrincipal" />
+                            <apex:inputField value="{!agreement.Counterparty_as_Agent_Principal__c}" id="CounterpartyAsAgentPrincipal"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Disclosed/Undisclosed" for="DisclosedUndisclosed" />
+                            <apex:inputField value="{!agreement.Principal_Type__c}" id="DisclosedUndisclosed"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Bilateral / Unilateral" for="BilateralUnilateral" />
+                            <apex:inputField value="{!agreement.Bilateral_Unilateral__c}" id="BilateralUnilateral"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:40%">
+                            <apex:outputLabel value="Base Currency" for="BaseCurrency" />
+                            <apex:inputField value="{!agreement.Base_Currency__c}" id="BaseCurrency"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Triparty Agent" for="TripartyAgent" />
+                            <apex:inputField value="{!agreement.Triparty_Agent__c}" id="TripartyAgent"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!(amendmentPanel == false && closurePanel == false && changePanel == false)}" id="BespokeProvisionsPanel">
+            <apex:pageBlock mode="edit" id="pageBlockProvisions" title="Agreement Bespoke Provisions">
+                <apex:pageBlockSection columns="1">
+                    <apex:inputField value="{!agreement.Agreement_Comments__c}" id="AgreementComments"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                    <apex:commandButton value="Cancel" action="{!CancelAmendment}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!closurePanel}" id="closurePanel">
+            <apex:pageBlock mode="edit" id="pageBlockClosure" title="Closure Information">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveClosure}" />
+                    <apex:commandButton value="Cancel" action="{!CancelClosure}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Closure Reason" for="closureReason" />
+                        <apex:inputText value="{!agreement.Closure_Reason__c}" id="closureReason"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!changePanel}" id="changePanel">
+            <apex:pageBlock mode="edit" id="pageBlockChange" title="Change Information">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveChange}" />
+                    <apex:commandButton value="Cancel" action="{!CancelChange}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Change Reason" for="changeReason" />
+                        <apex:inputText value="{!agreement.Change_Reason__c}" id="changeReason"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+    </body>
+</apex:page>

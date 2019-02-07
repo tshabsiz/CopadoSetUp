@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Agreement Reviewed</name>
+    <style>freeForm</style>
+    <subject>Agreement document(s) review complete</subject>
+    <textOnly>Dear {!Approval__c.OwnerFullName},
+
+Agreement document(s) review complete,
+
+Deal Name : {!Approval__c.Matter_Deal__c}
+Relationship Name: {!Approval__c.Relationship__c}
+Agreement Name : {!Approval__c.Agreement__c}
+Agreement Type : {!Approval__c.Agreement_Type__c}
+Requester Name : {!Approval__c.OwnerFullName}
+Reviewer Name : {!Approval__c.Participant__c}
+Due Date : {!Approval__c.Due_Date__c}
+
+Comments: {!ApprovalRequest.Comments}
+
+Link: {!Approval__c.Link}
+
+Kind regards,
+Transaction Administration Group
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

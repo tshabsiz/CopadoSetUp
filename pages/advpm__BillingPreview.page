@@ -1,0 +1,206 @@
+<apex:page readOnly="true" tabStyle="Billing_Preview__tab" title="Billing Preview">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/js/bootstrap.min.js')}" />
+    <apex:styleSheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/css/bootstrap.min.css')}" />
+	
+	<apex:includeScript value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/js/bootstrap-checkbox-custom-varun.js')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/css/bootstrap-checkbox-custom-varun.css')}" />
+    
+    <style type="text/css">
+        .dataLabel { font-weight:bold !important;margin-bottom:0px !important;font-size: 12px !important;line-height: 14px !important; }
+        .loadingImage {margin-bottom:10px;margin-left:5px;min-width:16px;min-height:16px;}
+        .showList {background:transparent url('/img/arrowRight.gif');width:14px;height:14px;margin-top:-3px;}
+        .hideList {background:transparent url('/img/arrowDown.gif');width:14px;height:14px;margin-top:-3px;}
+        .hide { display: none; }
+        .chart-slide.chart-showing {width: 340px;}
+        .prebill_options .dateFormat { display:none; }
+        .prebill_options .btn-group-dropdown .dropdown-toggle { font-weight:normal;font-size:12px;padding:2px 12px;text-align:justify;width:70px; }
+        .prebill_options .action-btn-menu .dropdown-toggle {padding-bottom: 10px;margin-top: -1px;padding-top: 2px;}
+        .prebill_options td { vertical-align:bottom;}
+        .prebill_options td.cellLoading { vertical-align:middle;min-width:30px}
+        .prebill_options td.cell3,.prebill_options td.cell4,.prebill_options td.cell5 {min-width:174px}
+        /*.prebill_options td.cell5 select {display:none!important}*/
+        .prebill tr.headerRow th { padding: 5px 5px 4px 5px; }
+        .prebill th.tkCol,.prebill td.tkCol {padding-left:15px!important;}
+        .advwrap .apexp .bPageBlock.apexDefaultPageBlock .pbBody {margin: 0px;}
+        .selectorBar {float: right;margin-bottom: 4px;margin-right: 2px;}
+        .advwrap input, .advwrap textarea, .advwrap .uneditable-input {width: 146px;}
+        .advwrap select, .advwrap textarea, .advwrap input[type="text"], .advwrap input[type="password"], .advwrap input[type="datetime"], .advwrap input[type="datetime-local"], .advwrap input[type="date"], .advwrap input[type="month"], .advwrap input[type="time"], .advwrap input[type="week"], .advwrap input[type="number"], .advwrap input[type="email"], .advwrap input[type="url"], .advwrap input[type="search"], .advwrap input[type="tel"], .advwrap input[type="color"], .advwrap .uneditable-input {
+			height: 18px;padding: 3px 4px;margin-bottom: 10px;font-size: 12px;line-height: 18px;
+		}
+        .advwrap select {width:120px;height:26px!important;}
+        .advwrap .btn {margin-bottom: 10px;}
+        .pbButton .btn {margin-top:5px!important;margin-bottom:5px!important;}
+        body .bPageBlock .pbTitle {padding: 0px 0px!important;}
+        .pbHeader>table>tbody>tr>td, .bLayoutBlock .pbHeader>table>tbody>tr>td, .bEditBlock .pbBottomButtons>table>tbody>tr>td, .bPageBlock .pbBottomButtons>table>tbody>tr>td, .bLayoutBlock .pbBottomButtons>table>tbody>tr>td {padding: 0px 0px!important;}
+        .dateInput input {width:70px;}
+        .advwrap .bPageBlock {border-top: 2px solid #1797c0 !important;}
+        .bPageTitle {padding: 0px 0 0 !important;}
+        .lookupIcon, .lookupIconOn {
+            display: inline-block !important;
+            width: 14px !important;
+            height: 14px !important;
+            line-height: 14px !important;
+            vertical-align: top !important;
+            background-image: url("{!URLFOR($Resource.advpm__adv_bootstrap, 'v2.3.2/img/glyphicons-halflings.png')}") !important;
+            background-repeat: no-repeat !important;
+            margin-top: 6px !important;
+            background-position: -48px 0 !important;
+            margin-left: -20px !important;
+        }
+        .lookupInput input {padding-right:22px !important;}
+        .advwrap a:hover, .advwrap a:visited, .advwrap a:active {text-decoration:none;}
+        .advwrap a {text-decoration:none !important;}
+        .textRight {text-align:right !important;}
+        .advwrap table.prebill {background-color: #ffffff;}
+        .advwrap table.prebill tr.headerRow th {background-color: #f2f3f3;}
+        .advwrap .table-condensed th, .advwrap .table-condensed td {padding: 3px 5px;}
+        .advwrap .table {margin-bottom: 0px;}
+        .advwrap .alert {margin-bottom: 0px;}
+        .message .messageText {color:#cc0000;margin-top:-10px;height:40px;}
+        .message .messageTable ul li {color:#cc0000;}
+        .chatter-user select {display: none !important;} 
+
+        ul li, ol li {margin-left: 0 !important;}
+	    ul li, ol li {margin-left:0;padding-left:0}
+	    .dropdown-menu label {display: inline !important;}
+	    .dropdown-menu {padding: 0px!important;margin: 0px!important;top:30px!important;}
+	    .dropdown-menu > li > div {margin: 0px 10px;}
+	    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {color: #000000;background-color: none;background-image: none;filter: none;}
+	    .dropdown-menu > li {margin-top: 6px;margin-bottom: 6px;}
+	    .dropdown-menu > li > div.item-bg-plain {margin:4px 8px;padding-right:10px;}
+	    [class^="cb-icon-"], [class*=" cb-icon-"] {
+	        margin-top: 3px;
+	        background-image: url("{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/img/icons-gray.png')}");
+	    }
+	    .bootstrap-checkbox button.btn > span.cb-icon-check-empty,
+	    .bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-empty,
+	    .bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-empty{
+	        background-position: -24px -25px !important;
+	    }
+	    .bootstrap-checkbox button.btn > span.cb-icon-check-indeterminate,
+	    .bootstrap-checkbox.disabled button.btn:hover > span.cb-icon-check-indeterminate,
+	    .bootstrap-checkbox.disabled button.btn:active > span.cb-icon-check-indeterminate{
+	        background-position: -48px -25px !important;
+	    }
+	    .bootstrap-checkbox > a.btn {padding: 7px 5px 4px 2px;}
+	    @media screen and (max-width: 991px){
+		    .columns{
+		        height: 140px;
+		        overflow:scroll;
+		    }
+		}
+		@media screen and (min-width: 992px){
+		    .columns{
+		        -moz-column-count:2; /* Firefox */
+		        -webkit-column-count:2; /* Safari and Chrome */
+		        column-count:2;
+		    }
+		}
+		.advwrap .dropdown-menu li {min-width: 100px!important;}
+		.advwrap * {
+		  -webkit-border-radius: 0 !important;
+		     -moz-border-radius: 0 !important;
+		          border-radius: 0 !important;
+		}
+		.i-gray {color: gray;}
+    </style>
+	<style type="text/css">
+		/*
+        label.slds-checkbox {display:inline;}
+		input[type="checkbox"]{box-sizing: border-box;padding: 0}
+		.slds-checkbox {display: inline-block}
+		.slds-checkbox .slds-checkbox--faux {width: 10px;height: 10px;display: inline-block;position: relative;vertical-align: middle;border: 1px solid #d8dde6;border-radius: 0.125rem;background: #fff;-webkit-transition: border 0.1s linear, background-color 0.1s linear;transition: border 0.1s linear, background-color 0.1s linear}
+		.slds-checkbox[type="checkbox"] {width: 1px;height: 1px;border: 0;clip: rect(0 0 0 0);margin: -1px;overflow: hidden;padding: 0;position: absolute}
+		.slds-checkbox[type="checkbox"]:checked ~ .slds-checkbox--faux:after {display: block;content: '';height: 2px;width: 5px;position: absolute;top: 42%;left: 50%;-webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);transform: translate3d(-50%, -50%, 0) rotate(-45deg);border-bottom: 2px solid #1589ee;border-left: 2px solid #1589ee}
+		.slds-checkbox[type="checkbox"]:focus ~ .slds-checkbox--faux {content: '';border-color: #1589ee;box-shadow: 0 0 3px #0070D2}
+		.slds-checkbox[type="checkbox"]:focus:checked ~ .slds-checkbox--faux {border-color: #1589ee;background-color: #fff}
+        */
+        .slds .slds-checkbox .slds-checkbox--faux {width:14px;height:14px;}
+        .select-time,.select-expense {margin-right:42px;}
+        .my-list-view label {color: #16325c!important;padding-left:0px;}
+        .my-list-view table {margin-left: 29px;}
+        .pageTitleIcon {background-image: none!important;}
+        
+        .my-list-view.disabled, .my-list-view.disabled label, .my-list-view.disabled td {cursor:default!important;color:darkgrey!important;}
+        
+        /**** Visualforce Charts in Lightning Experience Bug (without below css charts won't render) ****/
+        .slds [hidden], .slds template {display: block;}
+        
+        .chart-container {display:none;margin:0 auto;}
+        .chart-container div {/*float:left;*/display: inline;}
+        .chart-container .chartTitle {margin:0 auto;}
+        .chart-container table.chart-table { margin:0 auto;text-align:center; }
+        .chart-container table.chart-table td { padding-left:10px;padding-right:10px; }
+	</style>
+	<apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <style type="text/css">
+    	.slds:not(html), .slds body {font-size: 12px;background: transparent!important;}
+    	.slds .slds-button, .advwrap .btn {color: #16325c!important;}
+    	.input-prepend .btn-adv {margin-right: 0px;}
+        .input-prepend.input-append .btn-adv:first-child {margin-right: 0px;}
+        .btn-adv:hover, .btn-adv:focus, .btn-adv:active, .btn-adv.active, .btn-adv.disabled, .btn-adv[disabled] {background-color: #f4f6f9!important;}
+        .btn-adv-group.open .btn-adv.dropdown-toggle {background-color: #f4f6f9;}
+        .slds-button.btn-adv {border-bottom-color: #ccc;}
+        .selectorBar .slds-button {width:20px;height:20px;}
+        .selectorBar .slds-button svg {width:12px;height:12px;}
+        .selectorBar .slds-button + .slds-button {margin-left:0px;}
+        .prebill_options {width:100%;}
+        .prebill_options .cellLoading {width:100%;}
+        .cell9, .cell10, .cell11, .cell12, .cell13 {vertical-align:top!important;}
+        .cell10 .slds-button, .cell13 .slds-button {width:28px;height:28px;}
+        .cell11 .slds-dropdown-trigger .slds-button, .cell12 .slds-dropdown-trigger .slds-button {width:50px;height:28px;line-height:16px;}
+        .cell9 .slds-button {height:28px;line-height:16px;}
+        .cell9 .slds-button img {margin-top:4px;}
+        .cell9 .slds-button svg, .cell10 .slds-button svg, .cell11 .slds-button svg:first-child, .cell12 .slds-button svg:first-child, .cell13 .slds-button svg {width:16px;height:16px;}
+        .chart-panel-header {border-bottom: 1px solid #d8dde6;border-top:2px solid #1797c0!important;background-color:#f2f3f3;}
+        .chart-table {padding:2rem;}
+        .chart-picklist {margin-bottom:2rem;}
+        .vf-surface {/*display: inline-block!important;*/position: relative!important;width: 90%!important;padding-bottom: 100%!important;vertical-align: top!important;overflow: hidden!important;}
+        .vf-surface svg {display: inline-block;position: absolute;top: 0;left: 0;}
+        .vf-reset .vf-tip {position: absolute;overflow: visible;border-radius: 2px;border-color: rgba(8,7,6,0.85);background-color: rgba(8,7,6,0.85);padding: 3px;white-space: nowrap;opacity:.8;}
+        .vf-tip {z-index:111; border-radius:2px; background-color:rgba(8,7,6,0.85); padding:10px; white-space:nowrap}
+        .vf-tip .line {font-size:12px; color:#fff}
+        .vf-tip .line label {color:rgba(255,255,255,0.75)}
+        .vf-tip .line.percent {color:rgb(200,200,100)}
+        .vf-tip .line label:after {content:": "; display:inline-block; margin-right:3px}
+        .vf-tip .line b {font-size:14px}
+        .vf-tip .arrow {position:absolute; border-color:rgba(8,7,6,0.85)}
+        .vf-tip .arrow.bottomRight {border-left:18px solid transparent; border-right:18px solid transparent; border-top-width:9px; border-top-style:solid; bottom:-9px; right:2px}
+        .vf-tip .arrow.bottomLeft {border-left:18px solid transparent; border-right:18px solid transparent; border-top-width:9px; border-top-style:solid; bottom:-9px; left:2px}
+        .vf-tip .arrow.topRight {border-left:18px solid transparent; border-right:18px solid transparent; border-bottom-width:9px; border-bottom-style:solid; top:-9px; right:2px}
+        .vf-tip .arrow.topLeft {border-left:18px solid transparent; border-right:18px solid transparent; border-bottom-width:9px; border-bottom-style:solid; top:-9px; left:2px}
+        .vf-tip .arrow.leftTop {border-top:18px solid transparent; border-bottom:18px solid transparent; border-right-width:9px; border-right-style:solid; top:2px; left:-9px}
+        .vf-tip .arrow.leftBottom {border-top:18px solid transparent; border-bottom:18px solid transparent; border-right-width:9px; border-right-style:solid; bottom:2px; left:-9px}
+        .vf-tip .arrow.rightTop {border-top:18px solid transparent; border-bottom:18px solid transparent; border-left-width:9px; border-left-style:solid; top:2px; right:-9px}
+        .vf-tip .arrow.rightBottom {border-top:18px solid transparent; border-bottom:18px solid transparent; border-left-width:9px; border-left-style:solid; bottom:2px; right:-9px}
+        .vf-tip span, .vf-tip a, .vf-tip label {display:inline-block; text-shadow:0 0 0 transparent,0 -1px 1px rgba(0,0,0,0.95)}
+        .vf-tip.truncation {border-radius:0; border:1px solid #808080; background-color:rgba(255, 255, 194, 1); padding:0 5px; -webkit-transform-origin:0% 0%; -ms-transform-origin:0% 0%; transform-origin:0% 0%}
+        .vf-tip.truncation .truncation-text {font-family:'Salesforce Sans',Helvetica,Arial,sans-serif}
+    </style>
+    <!-- Lightning Experience Environment -->
+    <apex:outputPanel layout="none" rendered="{!$User.UIThemeDisplayed == 'Theme4d'}">
+        <style type="text/css">
+            .slds body, .advwrap body, .advwrap input[type="text"] { font: 100%/1.5 "Salesforce Sans", Arial, sans-serif!important; }
+            label.label-checkbox{font-size:12px!important;font-family: "Salesforce Sans", Arial, sans-serif!important;}
+            .slds .slds-checkbox .slds-checkbox--faux {width: 14px;height: 14px;}
+            label.slds-checkbox {display:inline!important;}
+            label.select-time,label.select-expense { margin-right: 41px; }
+            .slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 12px;}
+            .slds .slds-table tr > th:last-child, .slds .slds-table tr > td:last-child {padding-right: 12px;}
+            .chart-panel-header {border-bottom: 1px solid #d8dde6;padding:6.5px 8px!important;border-top:2px solid #1797c0!important;background-color:#f2f3f3;}
+        </style>
+    </apex:outputPanel>
+    <!-- Aloha (Classic) Environment -->
+    <apex:outputPanel layout="none" rendered="{!$User.UIThemeDisplayed != 'Theme4d'}">
+        <style type="text/css">
+            .slds, .slds h1, .slds h2, .slds h3, .slds h4, .slds h5, .slds h6, .slds th, .slds td {font-family: Arial,Helvetica,sans-serif!important;}
+            .chart-panel-header {border-bottom: 1px solid #d8dde6;padding:5.5px 8px!important;border-top:2px solid #1797c0!important;background-color:#f2f3f3;}
+            .chart-panel-header {font-weight:bold;}
+            .advwrap .table th {font-weight: bold!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <c:BillingPreview formatForXLS="false" />
+</apex:page>

@@ -1,0 +1,92 @@
+<apex:page standardController="Pricing_Template__c" extensions="APT_ClonePricingTemplateController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<style>
+		.text {
+			width: 25%;
+		}
+		.text-area {
+			width: 50%;
+			height: 4em;
+		}
+		.long-text-area {
+			width: 50%;
+		}
+	</style>
+	<apex:form >
+		<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } });" onstop="$.unblockUI();"/>
+
+		<apex:sectionHeader title="Pricing Template Edit" subtitle="{!$Label.lbl_NewPricingTemplate}"/>
+		<apex:pageBlock id="pb" mode="edit" title="{!$Label.lbl_PricingTemplateEdit}">
+			<apex:pageMessages id="pageMsg"/>
+			<apex:pageBlockButtons >
+				<apex:commandButton id="btn-save" action="{!save}" value="Save" status="processing" reRender="pageMsg"/>
+				<apex:commandButton id="btn-cancel" action="{!cancel}" value="Cancel" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection columns="2" title="{!$Label.lbl_Information}">
+				<apex:inputField value="{!Pricing_Template__c.Name}" required="true"/>
+				<apex:outputField value="{!Pricing_Template__c.OwnerId}" />
+				<apex:inputField value="{!Pricing_Template__c.Type__c}" required="true"/>
+				<apex:outputText />
+				<apex:inputField value="{!Pricing_Template__c.Year__c}" required="true"/>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" title="{!$Label.lbl_PricingLetterHeader}">
+				<apex:inputField styleClass="text-area" value="{!Pricing_Template__c.Address__c}" />
+				<apex:inputField styleClass="text-area" value="{!Pricing_Template__c.Phone_Fax__c}" />
+				<apex:inputField styleClass="text" value="{!Pricing_Template__c.Website__c}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" title="{!$Label.lbl_PricingLetterDetails}">
+				<apex:inputField styleClass="text" value="{!Pricing_Template__c.Title__c}" />
+				<apex:inputField styleClass="long-text-area" value="{!Pricing_Template__c.Section_1__c}" />
+				<apex:inputField styleClass="long-text-area" value="{!Pricing_Template__c.Section_2__c}" />
+				<apex:inputField styleClass="text" value="{!Pricing_Template__c.On_Behalf__c}" />
+				<apex:inputField styleClass="text-area" value="{!Pricing_Template__c.Title_for_Group_Entities__c}" />
+				<apex:inputField styleClass="text-area" value="{!Pricing_Template__c.Title_for_Pricing_Groups__c}" />
+				<apex:inputField styleClass="long-text-area" value="{!Pricing_Template__c.Section_3__c}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" title="{!$Label.lbl_PricingLetterFooter}">
+				<apex:inputField styleClass="text-area" value="{!Pricing_Template__c.Legal_Info__c}" />
+			</apex:pageBlockSection>
+			<apex:repeat value="{!pricingGroups}" var="pg">
+			<apex:pageBlockSection columns="1" title="{!pg.name}">
+				<apex:pageBlockTable value="{!pg.standardPricings}" var="sp">
+					<apex:column width="15%">
+						<apex:facet name="header">
+							<apex:inputCheckbox styleClass="all-selected" value="{!pg.isSelected}"/>
+						</apex:facet>
+						<apex:inputCheckbox styleClass="selected" value="{!sp.isSelected}" />
+					</apex:column>
+					<apex:column width="15%" value="{!sp.standardPricing.Pricing_Group__c}" />
+					<apex:column width="15%" value="{!sp.standardPricing.Product_Category__c}" />
+					<apex:column width="15%" value="{!sp.standardPricing.Product_Type__c}" />
+					<apex:column width="15%" value="{!sp.standardPricing.Pricing_Deal_Product_Name__c}" />
+					<apex:column width="15%" headerValue="{!$ObjectType.Standard_Pricing__c.fields.Price__c.Label}">
+						<apex:inputField styleClass="editable" value="{!sp.newStandardPricing.Price__c}" />
+					</apex:column>
+					<apex:column width="10%" value="{!sp.standardPricing.VAT_Inclusive__c}" />
+				</apex:pageBlockTable>
+			</apex:pageBlockSection>
+			</apex:repeat>
+		</apex:pageBlock>
+	</apex:form>
+
+	<script type="text/javascript"> 
+		$('th input:checkbox').click(function(e) {
+			$(this).closest('table').find('td input.selected').prop('checked', this.checked);
+			$(this).closest('table').find('td input.editable').prop('disabled', !this.checked);
+		});
+
+		$('td input.selected').click(function(e) {
+			$(this).closest('tr').find('td input.editable').prop('disabled', !this.checked);
+		});
+	</script>
+
+</apex:page>

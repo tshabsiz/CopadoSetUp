@@ -1,0 +1,155 @@
+<apex:page controller="ProductInfoFilesController" sidebar="false" standardStylesheets="false" docType="html-5.0" id="ProductInfoFiles">
+<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <style type="text/css">
+        @media (min-width: 48em) {
+            .slds-form-element {
+                text-align: left !important;
+            }
+            
+            #leftPanelWrapper label {
+                width: 10em;
+            }
+            
+            .slds-form-element__label {
+                font-size: inherit !important;
+                font-weight: bold;
+            }
+        }
+        
+        .slds {
+            background-color: #F4F6F9 !important;
+        }
+        
+        .FilesPanel {
+            margin-top: 15px;
+        }
+        
+        .bold {
+            font-weight: bold !important;
+        }
+    </style>
+    <script>
+        function getFiles(dropdown) {
+            var cat = document.getElementById('categories').selectedOptions[0].value;
+            var subcat = document.getElementById('subcategories').selectedOptions[0].value;
+            if (dropdown == 'SubCat') getFilesSubCat(cat, subcat);
+            else 
+            {
+                subcat = '--SELECT--'
+                getFilesCat(cat, subcat);
+            }
+        }
+        
+        function RemoveHover(files) {
+        	//Remove hover from files
+        	var ids = files.replace("[","").replace("]","").split(",");
+        	for(i = 0; i < ids.length; i++)
+  			{
+  				var id = ids[i].trim();
+  				try 
+  				{
+    				document.getElementById('lookup' + id.slice(0, -3) + 'ContentDocument').onmouseover=null;
+    				document.getElementById('lookup' + id.slice(0, -3) + 'ContentDocument').onfocus=null;
+				} finally {
+				}
+  			}
+        }
+    </script>
+    <apex:form >
+    <div class="slds">
+        <h1 class="bold"><apex:outputText value="Product Info Files" /></h1>
+        <apex:outputPanel id="selectCatPanel" layout="block">
+                <div class="slds-form-element">
+                    <table style="margin-top: 15px">
+                        <tbody>
+                            <tr>
+                                <td style="width:40%">
+                                    <label class="slds-form-element__label" for="categories">Category</label>
+                                </td>
+                                <td style="width:60%">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select id="categories" class="slds-select" onchange="getFiles('Cat');">
+                                                <option>--SELECT--</option>
+                                                <apex:repeat value="{!TopLevelCategories}" var="cat">
+                                                    <option value="{!cat.value}">{!cat.Label}</option>
+                                                </apex:repeat>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </apex:outputPanel>
+        <apex:outputPanel id="selectSubCatPanel" layout="block">
+                <div class="slds-form-element">
+                    <table style="margin-top: 15px">
+                        <tbody>
+                            <tr>
+                                <td style="width:40%">
+                                    <label class="slds-form-element__label" for="categories">Sub Category</label>
+                                </td>
+                                <td style="width:60%">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select id="subcategories" class="slds-select" onchange="getFiles('SubCat');">
+                                                <option>--SELECT--</option>
+                                                <apex:repeat value="{!SubCategories}" var="subcat">
+                                                    <option value="{!subcat.value}">{!subcat.Label}</option>
+                                                </apex:repeat>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </apex:outputPanel>
+        <apex:outputPanel id="DocumentPanel" styleClass="FilesPanel" layout="block">
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-max-medium-table--stacked-horizontal">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th class="slds-cell-shrink">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="File Name" rendered="{!Files!=null && Files.size > 0}"/>
+                                </span>
+                            </th>
+                            <th class="slds-cell-shrink">
+                                <span class="slds-truncate">
+                                    <apex:outputText value="Modified Date" rendered="{!Files!=null && Files.size > 0}"/>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!Files}" var="file">
+                            <tr class="slds-hint-parent">
+                                <td class="slds-cell-shrink">
+                                    <span class="slds-truncate" style="float:left">
+                                        <apex:outputField value="{!file.ContentDocumentID}" />
+                                    </span>
+                                </td>
+                                <td class="slds-cell-shrink">
+                                    <span class="slds-truncate" style="float:left">
+                                        <apex:outputField value="{!file.ContentDocument.ContentModifiedDate}" />
+                                    </span>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+        </apex:outputPanel>
+    </div>
+    <apex:actionFunction action="{!getFiles}" name="getFilesCat" reRender="DocumentPanel,selectSubCatPanel" oncomplete="RemoveHover('{!DocumentIDs}');">
+        <apex:param name="category" assignTo="{!SelectedTopLevelCategory}" value=""/>
+        <apex:param name="subcategory" assignTo="{!SelectedSubCategory}" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction action="{!getFiles}" name="getFilesSubCat" reRender="DocumentPanel" oncomplete="RemoveHover('{!DocumentIDs}');">
+        <apex:param name="category" assignTo="{!SelectedTopLevelCategory}" value=""/>
+        <apex:param name="subcategory" assignTo="{!SelectedSubCategory}" value=""/>
+    </apex:actionFunction>
+    </apex:form>
+</apex:page>

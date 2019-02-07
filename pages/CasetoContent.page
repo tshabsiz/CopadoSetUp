@@ -1,0 +1,67 @@
+<apex:page controller="CaseConvertHandler" tabStyle="ContentVersion" >
+   <apex:form >
+     
+  
+  <apex:pageBlock title="Content" mode="edit" >
+   <apex:pageBlockButtons >
+  <!-- action="{!Cancel}"  -->
+  
+  <apex:commandButton value="Save" action="{!ConvertContent}" /> <apex:commandButton value="Cancel"  action="{!Cancel}"  />
+ 
+  
+  </apex:pageBlockButtons>
+  
+      <apex:pageMessages id="errors" />
+      <apex:sectionHeader subtitle="Content Edit" title="New Content Library"/>
+      <apex:pageBlockSection title="Content Information" columns="1"> </apex:pageBlockSection> 
+             <table width="50%">
+          <!--   
+             <tr><td><b><apex:outputText > Knowledge piece Title</apex:outputText></b></td><td>
+             <apex:inputField label="Suggested Tags"  value="{!KnowledgeContent.Title}" style="width:200px; height:20px" /> <br/>    
+             </td></tr>
+             <tr><td><b><apex:outputText > Description of intended use</apex:outputText></b></td><td>
+             <apex:inputField label="Suggested Tags" id="SuggTags" value="{!KnowledgeContent.Description}" style="width:200px; height:20px" /> <br/>    
+             </td></tr>
+             <tr><td><b><apex:outputText > Tags</apex:outputText></b></td><td>
+             <apex:inputField label="Suggested Library"  value="{!KnowledgeContent.TagCsv}" style="width:200px; height:20px"/>  
+             </td></tr>
+         -->
+         
+         <tr><td>
+             <b><apex:outputText > Choose Library</apex:outputText></b>
+             </td> 
+            <td> 
+             <apex:selectList value="{!LibrarySelect}" size="1"  title="Choose Library"  >
+                <apex:selectOptions value="{!LibraryOptions}" />
+            </apex:selectList>
+            </td></tr>  
+            
+            <tr><td></td><td></td></tr>  
+             </table> 
+            <br/><br/>
+            
+             <table width="80%" border="1" style="border-collapse: collapse;">
+          <tr style="background-color:#99ccff;"><td>File Name</td><td>Description</td><td>Tags</td><td>Url</td><td>Select for Knowledge</td></tr>
+          <apex:repeat value="{!LstBoxFiles}" var="t" >
+          <tr>
+           <td><apex:outputText value="{!t.fileName}" /> </td>
+           <td><apex:inputText value="{!t.fileDescription}" /></td>
+           <td><apex:inputText value="{!t.fileTags}" /></td>
+           <td><apex:outputText value="{!t.fileUrl}" /></td>
+           <td><apex:inputCheckbox value="{!t.Selectfile}" /></td>
+           </tr>
+          
+           
+           </apex:repeat>
+          </table>   
+            
+         </apex:pageBlock> 
+ 
+       
+       
+  </apex:form>
+  
+  
+  
+  
+</apex:page>

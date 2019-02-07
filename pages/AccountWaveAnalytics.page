@@ -1,0 +1,8 @@
+<apex:page standardController="Account">
+    <apex:outputText rendered="{!NOT($Permission.WaveAnalyticsUser)}">Request a Salesforce Wave Analytics license to view additional insights on this relationship</apex:outputText>
+    <apex:outputPanel rendered="{!$Permission.WaveAnalyticsUser}">
+    <wave:dashboard dashboardId="0FK24000000L1aeGAC" showTitle="true" height="475px" openLinksInNewWindow="true" rendered="{!Account.Sub_segment__c = 'NBFI – Asset Manager' }"
+        filter="{ 'Asset_Management_Data':{'Salesforce_ID':['{!Account.Id}']}}" />
+        <apex:outputText rendered="{!Account.Sub_Segment__c <> 'NBFI – Asset Manager'}">Coming Soon. Wave Analytics Dashboard.</apex:outputText>
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,6 @@
+<apex:page standardController="advpm__Matter__c" showHeader="{!JSINHTMLENCODE($CurrentPage.parameters.mode) == 'full'}" sidebar="true" standardStylesheets="true" >
+    <c:ContentDocumentsComponent matterName="{!advpm__Matter__c.Name}" rendered="{!NOT(ISBLANK(advpm__Matter__c.Id))}" />
+    <apex:outputPanel layout="block" style="display:none;width:0px;height:0px;">
+        <chatter:feed entityId="{!advpm__Matter__c.Id}" />
+    </apex:outputPanel>
+</apex:page>

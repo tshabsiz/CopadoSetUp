@@ -1,0 +1,51 @@
+<messaging:emailTemplate subject="New CERT Issued" recipientType="Contact" relatedToType="Case">
+ <messaging:htmlEmailBody >
+     <body>   
+        <table width="640" style="font-family: Arial" align="center">      
+           <tr>
+             <td width="640"><img src="https://absa1--dev2--c.cs107.content.force.com/servlet/servlet.ImageServer?id=0151q000000A9qh&oid=00D1q0000008aSu"/></td>
+          </tr>
+          <tr style="padding-bottom: 50px">
+             <td>
+                <h4 style="color:#dc0032; font-size: 15px;">
+                   Your request Case #{!relatedTo.CaseNumber} was proudly processed by {!relatedTo.Capturer__r.Name} and {!relatedTo.Approver__r.Name} 
+                   from the Absa Electronic Banking Support Team
+                </h4>
+            </td>
+          </tr>
+            <br></br>
+            <br></br>
+           <tr width="640"> 
+               <td align="left">
+             
+                   <img width="200" height="200" src="{!relatedTo.Capturer_Photo__c}"/>&nbsp;&nbsp;&nbsp;
+                   <img width="200" height="200" src="{!relatedTo.Approver_Photo__c}"/>
+              
+              </td>
+           </tr>
+        
+        <br></br>
+        <br></br>
+       <tr style="padding-bottom: 50px">
+         <td width="640" style="font-size: 12px">
+           <br>Kindly use the following link to download your certificate:</br> 
+           https://pki.symauth.com/certificate-service/didc-info.xhtml?transactionId=8d4fb471d42b8508
+           <br></br>
+        <br></br>
+          Please contact the Electronic Banking Helpdesk on 0860 227 232 should you require any further assistance.
+        <br></br>
+           
+          <p style="color:#dc0032"> Please take a minute to rate our service </p>
+          Survey link for our clients:
+         <br>https://www.surveymonkey.com/r/V293VYH</br>
+         <br>Survey link for our internal colleagues:</br>
+         <br>https://www.surveymonkey.com/r/VLPHBSF</br>
+      </td> 
+    </tr>
+     <br></br>
+      <tr><td witdth="640"> <img src="https://absa1--dev2--c.cs107.content.force.com/servlet/servlet.ImageServer?id=0151q000000AA1Q&oid=00D1q0000008aSu"/></td></tr>    
+   
+   </table>
+  </body>   
+ </messaging:htmlEmailBody>
+</messaging:emailTemplate>

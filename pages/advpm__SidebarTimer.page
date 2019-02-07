@@ -1,0 +1,479 @@
+<apex:page showheader="false" sidebar="false" cache="false" applyHtmlTag="false" applyBodyTag="false"><html>
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/elements.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/common.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/dStandard.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/extended.css')}"/>
+
+        <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DateFormat, 'js/jquery.dateFormat-1.0.js')}" />
+        <script type="text/javascript">
+            function getCookie(c_name)
+            {
+            if (advinIE) {
+	            if (document.cookie.length>0)
+	            {
+	            c_start=document.cookie.indexOf(c_name + "=");
+	            if (c_start!=-1)
+	            {
+	            c_start=c_start + c_name.length+1;    
+	            c_end=document.cookie.indexOf(";",c_start);
+	            if (c_end==-1) 
+	            c_end=document.cookie.length;
+	            return unescape(document.cookie.substring(c_start,c_end));
+	            }
+	            }
+	            return "0";
+            }
+            else {
+            	return getStorage(c_name);
+            }
+            }
+            function setCookie(c_name,value,expiredays)
+            {
+            if (advinIE) {
+	            var exdate=new Date();
+	            exdate.setDate(exdate.getDate()+expiredays);
+	            document.cookie=c_name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
+            }
+            else {
+            	setStorage(c_name, value);
+            }
+            }
+            function getStorage(c_name)
+            {
+            	var v = localStorage.getItem(c_name);
+            	//console.log('['+c_name+']: '+v);
+            	if (v == null)
+            		return "0";
+            	return v;
+            }
+            function setStorage(c_name,value)
+            {
+            	localStorage.setItem(c_name,value);
+            }
+            function msieversion() {
+		        var ua = window.navigator.userAgent;
+		        var msie = ua.indexOf("MSIE ");
+		
+		        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./) || (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Mac') != -1 && navigator.userAgent.indexOf('Chrome') == -1)) {      // If Internet Explorer, return version number
+		            return true;
+		            //alert(parseInt(ua.substring(msie + 5, ua.indexOf(".", msie))));
+		       	}
+		        else {                 // If another browser, return 0
+		            return false;
+		            //alert('otherbrowser');
+				}
+				
+			   	return false;
+			}
+        </script>
+        <style>
+            .sidebarModuleHeader h2 { display:none; }
+        </style>
+            <script type="text/javascript">
+                $j = jQuery.noConflict();
+                var advinIE = false;
+                $j.fn.center = function () {
+                    this.css("position","absolute");
+                    this.css("top", Math.max(0, (($j(window).height() - $j(this).outerHeight()) / 2) + $j(window).scrollTop()-4) + "px");
+                    this.css("left", Math.max(0, (($j(window).width() - $j(this).outerWidth()) / 2) + $j(window).scrollLeft()) + "px");
+                    return this;
+                }
+                
+                $j(function() {
+                	advinIE = msieversion();
+                    $j('.timer-container').center();
+                    
+                    $j("#stopwatchContainer").removeClass("stopwatchContainerOrange").addClass("stopwatchContainerBlue");
+                    $j('#timerResetOrange').hide();
+                    $j('#timerResetBlue').show();
+                    
+                    setCookie('advammtimercreatetime',0,1);
+                    if (getCookie('advammtimerstart') == 'Invalid Date')
+                    	setCookie('advammtimerstart','',1);
+                    
+                    $j('#startStopwatch').click(function (event) {
+                        event.preventDefault();
+                        
+                        $j("#stopwatchContainer").removeClass("stopwatchContainerBlue").addClass("stopwatchContainerOrange");
+	                    $j('#timerResetOrange').show();
+	                    $j('#timerResetBlue').hide();
+	                    
+                        if (getCookie('advammtimerrunning') == 1) {
+                        	setCookie('advammtimerrunning',1,1);
+                        	start();
+                        }
+                        if (getCookie('advammtimerrunning') == 0) {
+                        	setCookie('advammtimerrunning',1,1);
+                            logStartTime();
+                            start();
+                        }
+	                    updateDisplay();                    
+                    });
+                    $j('#stopStopwatch').click(function (event) {
+                        event.preventDefault();
+                        if (getCookie('advammtimerrunning') == 1) {
+                            setCookie('advammtimerrunning',0,1);
+                            stop();
+    	                    updateDisplay();
+                        }
+                    });
+                    $j('#resetStopwatch').click(function (event) {
+                        event.preventDefault();
+                        reset();
+	                    updateDisplay();
+                    });
+                    $j(document).click(function(e) {
+					   handleFocusChange();
+					});
+					if (typeof document.addEventListener === "undefined" || typeof document.hidden === "undefined") {
+					  	//do nothing here.
+					}
+					else {
+	                	document.addEventListener("visibilitychange", handleVisibilityChange, false);
+	                }
+	                
+                    var sec = getCookie('advammtimersec');
+                    var min = getCookie('advammtimermin');
+                    var hr = getCookie('advammtimerhr');
+                    
+                    hr = "" + ((hr < 10) ? "0" : "") + hr;
+                    min = "" + ((min < 10) ? "0" : "") + min;
+                    sec = "" + ((sec < 10) ? "0" : "") + sec;
+                    
+                    $j("#stopwatch").text(hr + ":" + min + ":" + sec);
+                    
+                    if (getCookie('advammtimerrunning') == 1) 
+                    {
+                        var sec1 = getCookie('advammtimersec_oldpage');
+                        var min1 = getCookie('advammtimermin_oldpage');
+                        var hr1 = getCookie('advammtimerhr_oldpage');
+                        
+                        var curdate = new Date();
+                        
+                        sec = parseInt(parseInt(sec, 10) + parseInt((-parseInt(sec1, 10) + parseInt(curdate.getSeconds(), 10)), 10), 10);
+                        min = parseInt(parseInt(min, 10) + parseInt((-parseInt(min1, 10) + parseInt(curdate.getMinutes(), 10)), 10), 10);
+                        hr = parseInt(parseInt(hr, 10) + parseInt((-parseInt(hr1, 10) + parseInt(curdate.getHours(), 10)), 10), 10);
+                        if (sec < 0)
+                            sec = 0;
+                        if (min < 0)
+                            min = 0;
+                        if (hr < 0)
+                            hr = 0;
+                        
+                        $j("#stopwatchContainer").removeClass("stopwatchContainerBlue").addClass("stopwatchContainerOrange");
+	                    $j('#timerResetOrange').show();
+	                    $j('#timerResetBlue').hide();
+	                    
+                        start();
+                    }
+                });
+            </script>
+            <script type="text/javascript">
+                var go;
+                var totalUnits = 0;
+           		
+           		function updateDisplay() {
+           			var sec = parseInt(getCookie('advammtimersec'), 10);
+                    var min = parseInt(getCookie('advammtimermin'), 10);
+                    var hr = parseInt(getCookie('advammtimerhr'), 10);
+                    
+                    hr = "" + ((hr < 10) ? "0" : "") + hr;
+                    min = "" + ((min < 10) ? "0" : "") + min;
+                    sec = "" + ((sec < 10) ? "0" : "") + sec;
+                    
+                    $j("#stopwatch").text(hr + ":" + min + ":" + sec);
+           		}
+                function start() {
+                	
+                	if (getCookie('advammtimerrunning') == 0) {
+                		stop();
+                		if (getCookie('advammtimercreatetime') == 1)
+                		{
+                			reset();
+                		}
+                		return;
+                	}
+               		
+                    if (getCookie('advammtimerstart') == '' || getCookie('advammtimerstart') == '0' || getCookie('advammtimerstart') == null)
+                    {
+                        var s_dt = new Date();
+                        setCookie('advammtimerstart',s_dt,1);
+                    }
+                    
+                    var currentdatetime = new Date();
+                    var stime = getCookie('advammtimerstart');
+                    
+					var difference_ms = (currentdatetime - (new Date(stime)));
+					
+                    difference_ms = difference_ms/1000;
+                    var d_seconds = Math.floor(difference_ms % 60);
+					
+                    difference_ms = difference_ms/60; 
+                    var d_minutes = Math.floor(difference_ms % 60);
+					
+                    difference_ms = difference_ms/60; 
+                    var d_hours = Math.floor(difference_ms % 24);  
+                    
+                    var hr = "" + ((d_hours < 10) ? "0" : "") + d_hours;
+                    var min = "" + ((d_minutes < 10) ? "0" : "") + d_minutes;
+                    var sec = "" + ((d_seconds < 10) ? "0" : "") + d_seconds;
+                    
+                    setCookie('advammtimersec',parseInt(sec, 10),1);
+                    setCookie('advammtimermin',parseInt(min, 10),1);
+                    setCookie('advammtimerhr',parseInt(hr, 10),1);
+                    setCookie('advammtimerend','',1);
+                    setCookie('advammtimerrunning',1,1);
+                    
+                    updateDisplay();
+                    
+                    /*if (getCookie('advammtimerrunning') == 1) {
+                        var curdate = new Date();
+                        setCookie('advammtimersec_oldpage',curdate.getSeconds(),1);
+                        setCookie('advammtimermin_oldpage',curdate.getMinutes(),1);
+                        setCookie('advammtimerhr_oldpage',curdate.getHours(),1);
+                    }*/
+                    
+                    go = setTimeout(start,1000);
+                }
+                function stop() {
+                    var now = new Date();
+                    setCookie('advammtimerend',now,1);
+                    getTotalUnits();
+                    
+                    setCookie('advammtimerrunning',0,1);
+                    
+                    $j("#stopwatchContainer").removeClass("stopwatchContainerOrange").addClass("stopwatchContainerBlue");
+                    $j('#timerResetOrange').hide();
+                    $j('#timerResetBlue').show();
+                    
+                    updateDisplay();
+                    
+                    clearTimeout(go);
+                }
+                function reset() {
+                    $j("#stopwatch").text("00:00:00");
+                    
+                    setCookie('advammtimercreatetime',0,1);
+                    setCookie('advammtimerstart','',1);
+                    setCookie('advammtimerend','',1);
+                    setCookie('advammtimersec',0,1);
+                    setCookie('advammtimermin',0,1);
+                    setCookie('advammtimerhr',0,1);
+                    setCookie('advammtimersec_oldpage',0,1);
+                    setCookie('advammtimermin_oldpage',0,1);
+                    setCookie('advammtimerhr_oldpage',0,1);
+                    setCookie('advammtimerrunning',getCookie('advammtimerrunning'),1);
+                }
+                
+                function logStartTime()
+                {
+                    if (getCookie('advammtimerstart') == '' || getCookie('advammtimerstart') == '0' || getCookie('advammtimerstart') == null) {
+                        var s_dt = new Date();
+                        setCookie('advammtimerstart',s_dt,1);
+                    }
+                    else{
+                        var now = new Date();               
+                        var previousendtime = getCookie('advammtimerend');
+                        var stime = getCookie('advammtimerstart');
+                        
+                        var difference_ms1 = ((new Date(now)) - (new Date(previousendtime)));
+                        
+                        var da = new Date(stime);
+                        var newstime = new Date(da.getTime() + difference_ms1);
+                        var d = new Date(newstime);
+                        
+                        setCookie('advammtimerstart',d);
+                    }
+                }
+                
+                function loadTime() {
+                	var stime = getCookie('advammtimerstart');
+                    var etime = getCookie('advammtimerend');
+                    
+                    var dt = new Date();
+                    if (stime == 0 || stime == '' || stime == null){
+                        stime = $j.format.date(dt, "yyyy-MM-dd HH:mm:ss");
+                    }
+                    if (etime == 0)
+                        etime = $j.format.date(dt, "yyyy-MM-dd HH:mm:ss");
+                    
+                    stime   = $j.format.date(stime, "yyyy-MM-dd HH:mm:ss");
+                    etime   = $j.format.date(etime, "yyyy-MM-dd HH:mm:ss");
+                    
+                    //console.log('... stime: '+$j.format.date(stime, "yyyy-MM-dd HH:mm:ss")+' ... '+stime);
+                    //console.log('... etime: '+$j.format.date(etime, "yyyy-MM-dd HH:mm:ss")+' ... '+etime);
+                    //window.top.location = '/apex/advpm__TimeEdit?qsid={!JSENCODE($CurrentPage.parameters.id)}&src=Timer&retURL={!IF(JSENCODE($CurrentPage.parameters.id) == '', '/home/home.jsp', JSENCODE($CurrentPage.parameters.id))}&saveURL={!JSENCODE($CurrentPage.parameters.id)}&gotoURL={!URLENCODE($Page.SidebarTimer)}&totalunits='+totalUnits;
+                    window.top.location = '{!URLFOR($Action.Time__c.New,null,[qsid=JSENCODE($CurrentPage.parameters.id),src=URLENCODE('Timer'),retURL=IF(JSENCODE($CurrentPage.parameters.id)=='',URLFOR('/home/home.jsp'),JSENCODE($CurrentPage.parameters.id)),saveURL=JSENCODE($CurrentPage.parameters.id)],false)}&totalunits='+totalUnits;
+                }
+                function getTotalUnits() {
+                    totalUnits = 0;
+                    updateDisplay();
+                    
+                    var sec = $j("#stopwatch").text().split(":")[2];
+                    var min = $j("#stopwatch").text().split(":")[1];
+                    var hr = $j("#stopwatch").text().split(":")[0];
+                	
+                    var totaltime = (parseInt(sec,10)/3600 + parseInt(min,10)/60 + parseInt(hr,10));
+                    
+                    totalUnits = totaltime;
+                    //totalUnits = limitDecimalPlaces(parseFloat(totaltime),2);
+                }
+                function limitDecimalPlaces(originalNumber, placesToLimitTo){
+                    originalNumber = originalNumber.toString();
+                    var decimalIndex = originalNumber.search(/\./);
+                	
+                    //if there was a decimal point, then go from the start of the string to one more after the decimal index (because we want the decimal) plus the placesToLimitTo that was passed in
+                    if (decimalIndex >= -1) {
+                        var limitedToTwoDecimal = originalNumber.substring(0, decimalIndex + 1+ placesToLimitTo);
+                    }
+                    else{
+                        var limitedToTwoDecimal = originalNumber;
+                    }
+                
+                    return(limitedToTwoDecimal);
+                }
+                function CreateTime() {
+                	setCookie('advammtimercreatetime',1,1);
+                	setCookie('advammtimerrunning',0,1);
+                    stop();
+                   	updateDisplay();
+                    
+                    setTimeout(function() {
+                    	reset();
+	                    loadTime();
+                    },500);
+                }
+            </script>
+            <script type="text/javascript">
+                function unloadPage(){
+                    if (getCookie('advammtimerrunning') == 1) {
+                        var curdate = new Date();
+                        setCookie('advammtimersec_oldpage',curdate.getSeconds(),1);
+                        setCookie('advammtimermin_oldpage',curdate.getMinutes(),1);
+                        setCookie('advammtimerhr_oldpage',curdate.getHours(),1);
+                    }
+                }
+                
+                function setBunload(on){
+                    window.onbeforeunload = (on) ? unloadPage : null;
+                }
+                
+                setBunload(true);
+				/*
+                var hidden, visibilityChange; 
+				if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+				  hidden = "hidden";
+				  visibilityChange = "visibilitychange";
+				} else if (typeof document.mozHidden !== "undefined") {
+				  hidden = "mozHidden";
+				  visibilityChange = "mozvisibilitychange";
+				} else if (typeof document.msHidden !== "undefined") {
+				  hidden = "msHidden";
+				  visibilityChange = "msvisibilitychange";
+				} else if (typeof document.webkitHidden !== "undefined") {
+				  hidden = "webkitHidden";
+				  visibilityChange = "webkitvisibilitychange";
+				}
+				*/
+				
+                function handleVisibilityChange() {
+                	if (!document.hidden) {
+	                	if ($j("#stopwatchContainer").hasClass("stopwatchContainerBlue")) {
+	                		if (getCookie('advammtimerrunning') == 1) {
+		                		$j("#stopwatchContainer").removeClass("stopwatchContainerBlue").addClass("stopwatchContainerOrange");
+			                    $j('#timerResetOrange').show();
+			                    $j('#timerResetBlue').hide();
+			                    
+			                    start();
+		                    }
+				    	}
+				    	else if ($j("#stopwatchContainer").hasClass("stopwatchContainerOrange")) {
+				    		if (getCookie('advammtimerrunning') == 0 && getCookie('advammtimerend') == '') {
+				    			stop();
+				    		}
+				    	}
+				    	updateDisplay();
+				    }
+				}
+				function handleFocusChange() {
+                  	if ($j("#stopwatchContainer").hasClass("stopwatchContainerBlue")) {
+                		if (getCookie('advammtimerrunning') == 1) {
+	                		$j("#stopwatchContainer").removeClass("stopwatchContainerBlue").addClass("stopwatchContainerOrange");
+		                    $j('#timerResetOrange').show();
+		                    $j('#timerResetBlue').hide();
+		                    
+		                    start();
+	                    }
+			    	}
+			    	else if ($j("#stopwatchContainer").hasClass("stopwatchContainerOrange")) {
+			    		if (getCookie('advammtimerrunning') == 0 && getCookie('advammtimerend') == '') {
+			    			stop();
+			    		}
+			    	}
+			    	updateDisplay();
+				}
+				
+            </script>
+            <style>
+                body{
+                width:100%;
+                margin:0px 0px 0px 0px !important;
+                font-family:Verdana,Geneva,sans-serif;
+                /*background-color: transparent !important;*/
+                background-color:#CFEEF8;
+                }
+                .timer-container {
+                width: 182px;
+                height: 92px;
+                background-color: #CFEEF8;
+                }
+                #stopwatch {
+                padding-top: 8px;
+                padding-left: 10px;
+                width: 140px;
+                float: left;
+                font-size: 24px;
+                color: #FFF;
+                font-weight: bold;
+                vertical-align: middle;
+                }
+                .stopwatchContainerOrange {
+                background:url("{!URLFOR($Resource.SidebarTimer, 'img/StopwatchOrange.png')}") no-repeat;
+                width: 180px;
+                height: 45px;
+                }
+                .stopwatchContainerBlue {
+                background:url("{!URLFOR($Resource.SidebarTimer, 'img/StopwatchBlue.png')}") no-repeat;
+                width: 180px;
+                height: 45px;
+                }
+            </style>
+    </head>
+    <body>
+        <div class="timer-container">
+        <apex:form >
+            <div id="stopwatchContainer" class="stopwatchContainerBlue">
+                <div id="stopwatch"></div>
+                <div style="float: left;padding-top:13px;cursor:pointer;">
+                    <a href="#" id="resetStopwatch" title="Reset Timer">
+                        <img id="timerResetOrange" width="20" height="21" alt="Reset Timer" src="{!URLFOR($Resource.SidebarTimer, 'img/ResetOrange.png')}" />
+                        <img id="timerResetBlue" width="20" height="21" alt="Reset Timer" src="{!URLFOR($Resource.SidebarTimer, 'img/ResetBlue.png')}" />
+                    </a>
+                </div>
+            </div>
+            <br />
+            <div style="width:100%;vertical-align: middle;">
+                <div style="float:left;">
+                    <a href="#" id="startStopwatch" title="Start Timer"><img id="timerStart" alt="Start Timer" src="{!URLFOR($Resource.SidebarTimer, 'img/play_28.png')}" /></a>&nbsp;&nbsp;&nbsp;<a href="#" id="stopStopwatch" title="Pause Timer"><img id="timerPause" alt="Pause Timer" src="{!URLFOR($Resource.SidebarTimer, 'img/pause_28.png')}" /></a>
+                </div>
+                <div style="float: right; padding-top: 4px;">
+                    <apex:commandButton styleClass="stopwatchCreateTimeBtn btn" value="Create Time" onclick="CreateTime(); return false;" />
+                </div>
+            </div>
+        </apex:form>
+        </div>
+    </body>
+</html>
+</apex:page>

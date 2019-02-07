@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>SFA-286 to record client drawdowns as they occur</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>CommitmentFees__c</fullName>
+        <description>Commitment Fees from the RPF Calculator (reporting purposes)</description>
+        <externalId>false</externalId>
+        <label>Commitment Fees</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>DeferredFees__c</fullName>
+        <description>Deferred Fees as found in the RPF Calculator (for reporting purposes only)</description>
+        <externalId>false</externalId>
+        <label>Deferred Fees</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Drawdown_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Drawdown Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Drawdown_date__c</fullName>
+        <externalId>false</externalId>
+        <label>Drawdown date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>NetMargin__c</fullName>
+        <description>Net Margin value that comes out of the RPF Calculator</description>
+        <externalId>false</externalId>
+        <label>Net Margin</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Opportunity__c</fullName>
+        <externalId>false</externalId>
+        <label>Opportunity</label>
+        <referenceTo>Opportunity</referenceTo>
+        <relationshipName>Drawdown_Schedules</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>ProductLevel2List__c</fullName>
+        <description>Gives the ProductLevel2 of the related opportunity</description>
+        <externalId>false</externalId>
+        <formula>Opportunity__r.ProductLevel2List__c</formula>
+        <inlineHelpText>Gives the ProductLevel2 of the related opportunity</inlineHelpText>
+        <label>ProductLevel2List</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>UpfrontFees__c</fullName>
+        <description>Upfront Fees as found in RPF Calculator (for reporting purposes only)</description>
+        <externalId>false</externalId>
+        <label>Upfront Fees</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>isExternal__c</fullName>
+        <description>Field to determine if this Opportunity was pushed to Salesforce via API from external system (eg. Oberon)</description>
+        <externalId>false</externalId>
+        <formula>Opportunity__r.isExternal__c</formula>
+        <inlineHelpText>Field to determine if this Opportunity was pushed to Salesforce via API from external system (eg. Oberon)</inlineHelpText>
+        <label>isExternal</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Drawdown</label>
+    <nameField>
+        <displayFormat>{000000}</displayFormat>
+        <label>Drawdown Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Drawdowns</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>DrawDown_on_an_External_Opportunity</fullName>
+        <active>true</active>
+        <description>Disallow the edit or create of a Drawdown should it come from an External Opportunity</description>
+        <errorConditionFormula>AND
+(
+$Profile.Name &lt;&gt; &apos;System Administrator&apos;,
+$Profile.Name &lt;&gt; &apos;Barclays Administrator&apos;, 
+isExternal__c
+)</errorConditionFormula>
+        <errorMessage>Cannot add or edit drawdowns on an opportunity created from an external system</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

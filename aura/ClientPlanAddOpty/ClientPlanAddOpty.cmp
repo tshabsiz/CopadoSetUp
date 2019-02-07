@@ -1,0 +1,50 @@
+<aura:component controller="ClientPlanStrategyControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="strategyId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">Add opportunity</div>
+                
+                <div id="wholePage">
+                    <ui:inputText aura:id="name" label="Name" class="marginBottom1em"/>
+                    <span aura:id="nameError" class="toggle red">Name is required</span>
+                    
+                    <ui:inputDate aura:id="closeDate" label="Close date" class="marginBottom1em"/>
+                    <span aura:id="closeDateError" class="toggle red">Close date is required</span>
+                    
+                    <ui:inputSelect aura:id="stage" label="Stage" class="dynamic marginBottom1em" change="{!c.onStageChanged}">
+                        <aura:iteration items="{!v.stageOptions}" var="o">
+                            <ui:inputSelectOption text="{!o}" label="{!o}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                    <ui:inputText aura:id="probability" label="Probability" class="marginBottom1em" disabled="true" value="10"/>
+                    
+                    <ui:inputSelect aura:id="type" label="Type" class="dynamic">
+                        <aura:iteration items="{!v.typeOptions}" var="o">
+                            <ui:inputSelectOption text="{!o}" label="{!o}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeAddOpty}">Save</button>
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

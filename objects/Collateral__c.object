@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <content>Collateral_Clone</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>CollateralEdit</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>CollateralEdit</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>Collateral_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ACMFacility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>ACMFacility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>ACMFacility__c.Relationship__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Facility_Client__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>ACMFacility__c</referenceTo>
+        <relationshipLabel>Collateral</relationshipLabel>
+        <relationshipName>Collateral</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Account__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Provider</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Collateral</relationshipLabel>
+        <relationshipName>Collateral</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Acm_External_Id__c</fullName>
+        <externalId>true</externalId>
+        <label>Acm External Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Acm_Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Acm_Facility__c.Relationship__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Facility_Client__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Acm_Facility__c</referenceTo>
+        <relationshipLabel>Collateral</relationshipLabel>
+        <relationshipName>Collateral</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Active_Status_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Active Status Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Aircraft_Model_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Aircraft Model No</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Aircraft_Registration_Mark__c</fullName>
+        <externalId>false</externalId>
+        <label>Aircraft Registration Mark</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Aircraft_Serial_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Aircraft Serial No</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Asset_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Asset Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Asset_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Asset Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Asset__c</fullName>
+        <externalId>false</externalId>
+        <label>Asset</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>True</fullName>
+                    <default>false</default>
+                    <label>True</label>
+                </value>
+                <value>
+                    <fullName>False</fullName>
+                    <default>false</default>
+                    <label>False</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Beneficiary_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Beneficiary Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Beneficiary__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>set beneficiary</description>
+        <externalId>false</externalId>
+        <inlineHelpText>set beneficiary</inlineHelpText>
+        <label>Beneficiary/Borrower</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Collateral (Account)</relationshipLabel>
+        <relationshipName>Collateral1</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Bond_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Bond Number</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Ceded_Rights__c</fullName>
+        <externalId>false</externalId>
+        <label>Ceded Rights</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Cession_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Cession Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Collateral_Allocation_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Allocation Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_Condition__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Condition</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_Group__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Collateral Group</label>
+        <referenceTo>Collateral_Group__c</referenceTo>
+        <relationshipLabel>Collateral</relationshipLabel>
+        <relationshipName>Collateral</relationshipName>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_Inspection_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Inspection Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_No__c</fullName>
+        <displayFormat>C-{000000}</displayFormat>
+        <externalId>false</externalId>
+        <label>Collateral No</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>AutoNumber</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_Of__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Of</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Collateral_Priority__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Priority</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Collateral_Sort_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Sort No</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Collateral_Type1__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Collateral Type</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Collateral_Type__c.Collateral_Group__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Collateral_Group__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Collateral_Type__c</referenceTo>
+        <relationshipLabel>Collateral</relationshipLabel>
+        <relationshipName>Collateral</relationshipName>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Collateral_Type_Script_Memo_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Collateral Type Script Memo No</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Collateral_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Collateral Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Call Option</fullName>
+                    <default>false</default>
+                    <label>Call Option</label>
+                </value>
+                <value>
+                    <fullName>Cession</fullName>
+                    <default>false</default>
+                    <label>Cession</label>
+                </value>
+                <value>
+                    <fullName>Debenture</fullName>
+                    <default>false</default>
+                    <label>Debenture</label>
+                </value>
+                <value>
+                    <fullName>Deposit</fullName>
+                    <default>false</default>
+                    <label>Deposit</label>
+                </value>
+                <value>
+                    <fullName>Guarantee</fullName>
+                    <default>false</default>
+                    <label>Guarantee</label>
+                </value>
+                <value>
+                    <fullName>Guarantee &amp; Cession</fullName>
+                    <default>false</default>
+                    <label>Guarantee &amp; Cession</label>
+                </value>
+                <value>
+                    <fullName>Letter of Undertaking</fullName>
+                    <default>false</default>
+                    <label>Letter of Undertaking</label>
+                </value>
+                <value>
+                    <fullName>Mortgage Bond</fullName>
+                    <default>false</default>
+                    <label>Mortgage Bond</label>
+                </value>
+                <value>
+                    <fullName>Negative Pledge</fullName>
+                    <default>false</default>
+                    <label>Negative Pledge</label>
+                </value>
+                <value>
+                    <fullName>Notarial Bond</fullName>
+                    <default>false</default>
+                    <label>Notarial Bond</label>
+                </value>
+                <value>
+                    <fullName>Performance Gtee</fullName>
+                    <default>false</default>
+                    <label>Performance Gtee</label>
+                </value>
+                <value>
+                    <fullName>Pledge &amp; Cession</fullName>
+                    <default>false</default>
+                    <label>Pledge &amp; Cession</label>
+                </value>
+                <value>
+                    <fullName>Promissory Notes</fullName>
+                    <default>false</default>
+                    <label>Promissory Notes</label>
+                </value>
+                <value>
+                    <fullName>Put Option</fullName>
+                    <default>false</default>
+                    <label>Put Option</label>
+                </value>
+                <value>
+                    <fullName>Reversionary Cession</fullName>
+                    <default>false</default>
+                    <label>Reversionary Cession</label>
+                </value>
+                <value>
+                    <fullName>Suretyship</fullName>
+                    <default>false</default>
+                    <label>Suretyship</label>
+                </value>
+                <value>
+                    <fullName>Undertaking</fullName>
+                    <default>false</default>
+                    <label>Undertaking</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Comments__c</fullName>
+        <externalId>false</externalId>
+        <label>Comments</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Contract_Client_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Contract Client Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Country__c</fullName>
+        <description>Collateral Country</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Collateral Country</inlineHelpText>
+        <label>Country</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Country</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Currency__c</fullName>
+        <externalId>false</externalId>
+        <formula>TEXT(CurrencyIsoCode )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Currency</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Current_Outstanding_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(ISPICKVAL( Status__c , &quot;Outstanding&quot;), TODAY() -  DATEVALUE(CreatedDate), 
+IF(ISPICKVAL( Status__c , &quot;Active&quot;), TODAY() -  (Active_Status_Date__c ) ,
+IF(ISPICKVAL( Status__c , &quot;Released&quot;),TODAY() - (Released_Status_Date__c ),NULL
+)))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Current Outstanding Date</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Days_in_Status__c</fullName>
+        <externalId>false</externalId>
+        <formula>TODAY() - DATEVALUE( Status_Change_Stamp__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Days in Status</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Document_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Document Description</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Document_Expiry_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Document Expiry Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Document_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Document Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Document_Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Document Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Document verified</fullName>
+                    <default>false</default>
+                    <label>Document verified</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Document_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Document Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Expiry_Date__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Specifies the Collateral Expiry date</inlineHelpText>
+        <label>Expiry Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Client__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facillity Beneficiary</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Collateral (Account)</relationshipLabel>
+        <relationshipName>Collateral_Facility_Client</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Foreign_Domicile__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Foreign Domicile</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Foreign_or_Local__c</fullName>
+        <externalId>false</externalId>
+        <label>Foreign or Local</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Has_Underlying_Assets__c</fullName>
+        <externalId>false</externalId>
+        <label>Has Underlying Asset(s)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Yes</fullName>
+                    <default>false</default>
+                    <label>Yes</label>
+                </value>
+                <value>
+                    <fullName>No</fullName>
+                    <default>false</default>
+                    <label>No</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>In_Mentis_Feed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Source In Mentis Feed</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>In_favour_of__c</fullName>
+        <externalId>false</externalId>
+        <label>Source In favour of</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Issuer_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Issuer Name</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Listed_Shares__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Listed Shares</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Manager__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Manager</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Collaterals</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Outstanding_Status_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Outstanding Status Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Outstanding_Status_Difference__c</fullName>
+        <externalId>false</externalId>
+        <formula>Active_Status_Date__c- DATEVALUE (CreatedDate)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Outstanding Status Difference</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Physical_Location__c</fullName>
+        <description>Physical Location where collateral is stored.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Physical Location where collateral is stored.</inlineHelpText>
+        <label>Physical Location of Documentation</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Project_Client_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Project Client Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Project_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Project Code</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Project_Tag__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Project Tag</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Property_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Property Description</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Provider_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Provider Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Rank__c</fullName>
+        <externalId>false</externalId>
+        <label>Rank</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Relationship_Tag__c</fullName>
+        <externalId>false</externalId>
+        <label>Relationship Tag</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Released_Status_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Released Status Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Released_Status_Difference__c</fullName>
+        <externalId>false</externalId>
+        <formula>Released_Status_Date__c -( Active_Status_Date__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Released Status Difference</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Remediation_Reason__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Remediation Reason</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Remediation_Required__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Source Remediation Required</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>SMSQ_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Source SMSQ No</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Saved_To_Acm__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Variable used to indicate whether collateral was saved to ACM</description>
+        <externalId>false</externalId>
+        <inlineHelpText>check box used to indicate whether collateral was saved to ACM</inlineHelpText>
+        <label>Saved To Acm</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Scope__c</fullName>
+        <externalId>false</externalId>
+        <label>Scope</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Beneficiary</fullName>
+                    <default>false</default>
+                    <label>Beneficiary/Borrower</label>
+                </value>
+                <value>
+                    <fullName>Facility</fullName>
+                    <default>false</default>
+                    <label>Facility</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Signature_Date__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Signature date of the Collateral</inlineHelpText>
+        <label>Signature Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Source_Contract_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Contract Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_Security_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Security Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_Security_Type_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Security Type Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_Staff_Responsible__c</fullName>
+        <externalId>false</externalId>
+        <label>Source Staff Responsible</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_System__c</fullName>
+        <externalId>false</externalId>
+        <label>Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status_Change_Stamp__c</fullName>
+        <defaultValue>NOW()</defaultValue>
+        <externalId>false</externalId>
+        <label>Status Change Stamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Active</fullName>
+                    <default>false</default>
+                    <label>Active</label>
+                </value>
+                <value>
+                    <fullName>Outstanding</fullName>
+                    <default>true</default>
+                    <label>Outstanding</label>
+                </value>
+                <value>
+                    <fullName>Released</fullName>
+                    <default>false</default>
+                    <label>Released</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Supporting_Documentation_Uploaded__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Supporting Documentation Uploaded</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Title_Deed_No__c</fullName>
+        <externalId>false</externalId>
+        <label>Title Deed No</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Valuation_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Valuation Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Valuation_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Valuation Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Value_Limit__c</fullName>
+        <externalId>false</externalId>
+        <label>Value Limit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Value_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Value Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Limited</fullName>
+                    <default>false</default>
+                    <label>Limited</label>
+                </value>
+                <value>
+                    <fullName>Unlimited</fullName>
+                    <default>false</default>
+                    <label>Unlimited</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Value__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Collateral Value</inlineHelpText>
+        <label>Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <label>Collateral</label>
+    <listViews>
+        <fullName>All_Collateral</fullName>
+        <columns>NAME</columns>
+        <columns>Collateral_Group__c</columns>
+        <columns>Collateral_Type__c</columns>
+        <columns>Account__c</columns>
+        <columns>Beneficiary__c</columns>
+        <columns>Facility_Client__c</columns>
+        <columns>Status__c</columns>
+        <columns>Value__c</columns>
+        <columns>CURRENCY_ISO_CODE</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Collateral</label>
+    </listViews>
+    <nameField>
+        <label>Collateral Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Collateral</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Collateral_No__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Expiry_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status__c</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>Expiry_Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Manager__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Status__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>CREATEDBY_USER</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Expiry_Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Manager__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Value_Type__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CREATEDBY_USER</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Collateral_No__c</searchFilterFields>
+        <searchFilterFields>Manager__c</searchFilterFields>
+        <searchFilterFields>Status__c</searchFilterFields>
+        <searchFilterFields>CREATEDBY_USER</searchFilterFields>
+        <searchResultsAdditionalFields>Manager__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Expiry_Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Status__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>CREATEDBY_USER</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <validationRules>
+        <fullName>Asset_Description</fullName>
+        <active>true</active>
+        <description>If a Collateral Item has any underlying assets the user must put in a description of that/those assets</description>
+        <errorConditionFormula>AND(
+    ISPICKVAL(Has_Underlying_Assets__c, &quot;True&quot;),
+  ISBLANK( Asset_Description__c )
+)</errorConditionFormula>
+        <errorDisplayField>Asset_Description__c</errorDisplayField>
+        <errorMessage>Please ensure that you specify the description of the Asset when asset is set to &quot;True&quot;</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Supporting_Documentation_Active_Status</fullName>
+        <active>true</active>
+        <description>Prompts agent to confirm whether support documentation has been uploaded when the status is changed to Active.</description>
+        <errorConditionFormula>IF(AND(TEXT(Status__c) = &quot;Active&quot; ,AND((ISBLANK(Comments__c )),  Supporting_Documentation_Uploaded__c =True)),True, False)</errorConditionFormula>
+        <errorDisplayField>Comments__c</errorDisplayField>
+        <errorMessage>Please enter the remark detail for the collateral item</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Documents_Are_Verified</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(
+   OR
+   (
+      ISPICKVAL(Status__c, &quot;Active&quot;),
+      ISPICKVAL(Status__c , &quot;Released&quot;) 
+   ), 
+   NOT(Supporting_Documentation_Uploaded__c)
+ )</errorConditionFormula>
+        <errorDisplayField>Supporting_Documentation_Uploaded__c</errorDisplayField>
+        <errorMessage>Please upload the relevant documentation.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Value_Field_validation</fullName>
+        <active>true</active>
+        <description>Validates that a custom field called  Value contains a value if a Value type has a type of “Limited.”</description>
+        <errorConditionFormula>AND(
+  ISPICKVAL( Value_Type__c , &quot;Limited&quot;) ,
+ ISNULL( Value__c )
+)</errorConditionFormula>
+        <errorDisplayField>Value__c</errorDisplayField>
+        <errorMessage>Ensure that the Value is specified when the type is set to Limited.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

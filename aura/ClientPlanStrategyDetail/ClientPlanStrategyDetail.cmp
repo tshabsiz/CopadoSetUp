@@ -1,0 +1,199 @@
+<aura:component controller="ClientPlanStrategyControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="strategyId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="strategyPanel" class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-heading--small slds-truncate">{!v.strategy.Name}</h2>
+                            </div>
+                        </div>
+                        <div class="slds-dropdown-trigger">
+                            <button class="slds-button slds-button--icon-border-filled">
+                                <c:SVG class="slds-button__icon" 
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                        <a class="slds-truncate" role="menuitem" onclick="{!c.onEditStrategyClicked}">Edit</a>
+                                    </li>
+                                    <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                        <a class="slds-truncate" role="menuitem" onclick="{!c.onRemoveStrategyClicked}">Remove</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-card__body">
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element strategySection">
+                                <label class="slds-form-element__label" for="inputSample2">Client strategy</label>
+                                <div class="slds-dropdown-trigger slds-float--right">
+                                    <button class="slds-button slds-button--icon-bare" aria-haspopup="true">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li class="slds-dropdown__item" onclick="{!c.onEditClientRTClicked}">
+                                                <a href="javascript:void(0)" role="menuitem">
+                                                    <p class="slds-truncate">Edit</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control richtextWrapper richtextEditorWrapper">
+                                    <ui:outputRichText value="{!v.strategy.Client_Strategy__c}"/> 
+                                </div>
+                            </div>
+                            <div class="slds-form-element strategySection">
+                                <label class="slds-form-element__label" for="inputSample2">Bank strategy</label>
+                                <div class="slds-dropdown-trigger slds-float--right">
+                                    <button class="slds-button slds-button--icon-bare" aria-haspopup="true">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li class="slds-dropdown__item" onclick="{!c.onEditBankRTClicked}">
+                                                <a href="javascript:void(0)" role="menuitem">
+                                                    <p class="slds-truncate">Edit</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__control richtextWrapper richtextEditorWrapper">
+                                    <ui:outputRichText value="{!v.strategy.Bank_Strategy__c}"/> 
+                                </div>
+                            </div>
+                            <div class="slds-form-element strategySection">
+                                <label class="slds-form-element__label" for="inputSample2">Opportunities</label>
+                                <div class="slds-form-element__control">
+                                    
+                                    <aura:iteration items="{!v.strategy.Opportunities__r}" var="opty">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <div class="opty" id="{!'opty-' + opty.Id}">
+                                                <span>{!opty.Name}</span>
+                                                <span class="slds-float--right">
+                                                    <span>{!opty.Probability}%</span>
+                                                    <div class="slds-dropdown-trigger">
+                                                        <button class="slds-button slds-button--icon-border-filled optyButton">
+                                                            <c:SVG class="slds-button__icon" 
+                                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                                                        </button>
+                                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                                            <ul class="slds-dropdown__list" role="menu">
+                                                                <li class="slds-dropdown__item" onclick="{!c.onUnlinkOptyButtonClicked}">
+                                                                    <a class="slds-truncate" role="menuitem">Unlink</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                                    
+                                    <div class="optySectionButtonWrapper">
+                                        <div class="slds-dropdown-trigger slds-float--right">
+                                            <button class="slds-button slds-button--icon-border-filled optyButton optySectionButton">
+                                                <c:SVG class="slds-button__icon" 
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                        <a class="slds-truncate" role="menuitem" onclick="{!c.onLinkOptyClicked}">Link existing opportunity</a>
+                                                    </li>
+                                                    <li id="menu-27-0" href="#" class="slds-dropdown__item" onclick="{!c.onAddOptyClicked}">
+                                                        <a class="slds-truncate" role="menuitem">Add opportunity</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element strategySection">
+                                <label class="slds-form-element__label" for="inputSample2">Potential opportunities</label>
+                                <div class="slds-form-element__control">
+                                    
+                                    <aura:iteration items="{!v.strategy.Unqualified_Opportunities__r}" var="opty">
+                                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                            <div class="opty" id="{!'opty-' + opty.Id}">
+                                                <span>{!opty.Name}</span>
+                                                <span class="slds-float--right">
+                                                    <span>{!opty.Probability__c}</span>
+                                                    <div class="slds-dropdown-trigger">
+                                                        <button class="slds-button slds-button--icon-border-filled optyButton">
+                                                            <c:SVG class="slds-button__icon" 
+                                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                                                        </button>
+                                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                                            <ul class="slds-dropdown__list" role="menu">
+                                                                <li class="slds-dropdown__item" onclick="{!c.onEditPotOptyButtonClicked}">
+                                                                    <a class="slds-truncate" role="menuitem">Edit</a>
+                                                                </li>
+                                                                <li class="slds-dropdown__item" onclick="{!c.onRemovePotOptyButtonClicked}">
+                                                                    <a class="slds-truncate" role="menuitem">Remove</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                                    
+                                    <div class="optySectionButtonWrapper">
+                                        <div class="slds-dropdown-trigger slds-float--right">
+                                            <button class="slds-button slds-button--icon-border-filled optyButton optySectionButton">
+                                                <c:SVG class="slds-button__icon" 
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#add" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                        <a class="slds-truncate" role="menuitem" onclick="{!c.onLinkPotOptyClicked}">
+                                                            Link existing potential opportunity
+                                                        </a>
+                                                    </li>
+                                                    <li id="menu-27-1" href="#" class="slds-dropdown__item" onclick="{!c.onAddPotOptyClicked}">
+                                                        <a class="slds-truncate" role="menuitem">Add potential opportunity</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button id="moveBackButton" class="slds-button slds-button--neutral" onclick="{!c.onMoveBackClicked}">
+                        Back to list
+                    </button>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

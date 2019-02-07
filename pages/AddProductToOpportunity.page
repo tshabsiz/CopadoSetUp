@@ -1,0 +1,1091 @@
+<apex:page standardController="OpportunityLineItem" extensions="AddProductToOpportunityController" docType="html-5.0" lightningStylesheets="true">
+    <apex:form id="theForm" html-novalidate="novalidate">  
+        <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+        
+        <apex:outputPanel layout="block" rendered="{!renderErrorMessage}">
+            <apex:pageMessages id="pageMsg"/>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!!renderErrorMessage}">
+            <apex:outputPanel id="hiddenFields">
+                <apex:inputHidden value="{!OpportunityLineItem.OpportunityId}"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Annualised_Income__c}" id="annualisedIncomeHiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Income_this_Year__c}" id="incomeThisYearHiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.New_Facility_Balance__c}" id="newFacilityBalanceHiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Net_Facility_Balance__c}" id="netFacilityBalanceHiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.New_Facility__c}" id="newFalcilityHiddenF"/>
+                <apex:inputHidden value="{!ExcludeProductPartner}" id="ExcludeProductPartnerHiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Term_Interval__c}" id="TermIntervalHiddenF"/>
+                <apex:inputHidden value="{!product}" id="ProductLevel1HiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Product_Level_2__c}" id="ProductLevel2HiddenF"/>
+                <apex:inputHidden value="{!OpportunityLineItem.Product_Level_3__c}" id="ProductLevel3HiddenF"/>
+                <apex:outputPanel id="isCPFPanel" styleClass="isCPFPanel hidden">{!isCPF}</apex:outputPanel>
+                <apex:outputPanel id="isGlobalFinancePanel" styleClass="isGlobalFinancePanel hidden">{!isGlobalFinance}</apex:outputPanel>
+            </apex:outputPanel>
+             
+            <apex:actionStatus id="processing">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                         
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                            <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                        </div>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+
+            <apex:pageBlock id="addProductToOpportunity"> 
+                <apex:pageMessages id="pageMsg"/>
+                <apex:pageBlockButtons style="float:centre">
+                    <apex:commandButton id="save_btn" value="{!$Label.btn_Save}" action="{!save}" status="processing" onclick="disableAllButtons()" oncomplete="enableAllButtons()" reRender="pageMsg"/>
+                    <!--apex:commandButton id="save_new_btn" value="{!$Label.btn_SaveAndNew}" action="{!saveAndNew}" onclick="disableAllButtons()" oncomplete="enableAllButtons()" reRender="pageMsg"/-->
+                    <apex:commandButton id="cancel_btn" value="{!$Label.btn_Cancel}" action="{!cancel}" immediate="true"/>
+                </apex:pageBlockButtons>
+                <apex:outputPanel >
+                    <table cellspacing="15px">
+                        <tr>
+                            <td><apex:outputText value="{!$Label.lbl_AddProductToOpportunityHelpText}" style="color:red;font-size:16px;"/></td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel id="selectProduct">
+                    <table width="100%">
+                        <tr>
+                            <td><apex:outputLabel style="font-weight:bold;margin-left: 1em;" value="Product"/></td>
+                            <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.ProductPartner__c.Label}"/></td>
+                        </tr>
+                        <tr>
+                            <td><c:ClientPlanProductSearch identificator="oliProductSearch"/></td>
+                            <td>
+                                <apex:inputField id="ProductPartnerInputF" styleClass="hideDropdown" value="{!OpportunityLineItem.ProductPartner__c}"/>
+                            </td>
+                        </tr>
+                        
+                        <apex:actionFunction action="{!onProductChanged}" onComplete="setInitialValues();" status="processing" name="productChanged" reRender="hiddenFields,productFamilyPanel,inputs,balanceAndIncome,debtFinanceInformation,transactionalInformation,ProductPartnerInputF">
+                            <apex:param name="selectedProductLevel" assignTo="{!selectedProductLevel}" value=""/>
+                            <apex:param name="selectedProductId" assignTo="{!selectedProductId}" value=""/>
+                            <apex:param name="selectedProductName" assignTo="{!selectedProductName}" value=""/>
+                        </apex:actionFunction>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel id="inputs">
+                     <table width="100%" cellspacing="15px">
+                     <tr>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Annualised_Income__c.Label}"/></td> 
+                        <td></td>
+                        <td ></td>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Balance__c.Label}"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}" />
+                            </apex:outputPanel>
+                        </td>
+                        <td style="width: 50px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                         <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Gross_Margin__c.Label}"/></td>
+                         <td></td>
+                         <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Ftp__c.Label}"/></td>
+                    
+                         <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Margin__c.Label}"/></td>
+                        <td></td>
+                         <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Estimated_Utilisation__c.Label}"/></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><apex:inputText disabled="true" id="annualisedIncomeOutputF" /></td>
+                        <td width="20%" style="text-align:center; font-size:18px;">=</td>
+                        <td width="1%" style="text-align:left; font-size:18px;">(</td>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                                <apex:inputField id="balanceInputF" value="{!OpportunityLineItem.Balance__c}" style="min-width:20px;max-width:200px" onchange="setNewFacilityBalance();updateAnnualValue();" />
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                                <apex:inputField id="holdSizeInputF" value="{!OpportunityLineItem.Hold_Size__c}" style="min-width:20px;max-width:120px" onchange="onHoldSizeChanged();" />
+                            </apex:outputPanel>
+                        </td>
+                         <td style="font-size:18px;width:50px">x (</td>
+                        
+                        <td><apex:inputField id="grossMargin" value="{!OpportunityLineItem.Gross_Margin__c}" onchange="updateNetMargin();" style="min-width:20px;max-width:100px"/></td>
+                        <td style="text-align:center; font-size:18px;">-</td>
+                        <td><apex:inputField id="ftp" value="{!OpportunityLineItem.Ftp__c}" onchange="updateNetMargin();" style="min-width:20px;max-width:120px" /></td>
+                        <td width="20%" style="text-align:center; font-size:18px;">=</td>
+                        <td><apex:inputField id="marginInputF" value="{!OpportunityLineItem.Margin__c}" style="min-width:20px;max-width:60px" onchange="updateAnnualValue();" /></td>
+                             <td style="text-align:center; font-size:18px;">)</td>
+                         <td width="20%" style="text-align:center; font-size:18px;">x</td>
+                        <td><apex:inputField id="estimatedUtilisationInputF" value="{!OpportunityLineItem.Estimated_Utilisation__c}" style="min-width:20px;max-width:60px" onchange="updateAnnualValue();" /></td>
+                        <td width="1%" style="text-align:left; font-size:18px;">)</td>
+                        
+                     </tr>
+                     <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Fees__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees_Period__c.Label}"/></td>
+                        <td></td>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Recurring_Fees__c.Label}"/></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td>
+                         
+                         </td>
+                        <td width="2%" style="text-align:center; font-size:18px;">+</td>
+                        <td></td>
+                        
+                        <apex:outputPanel layout="none" rendered="{!productFamily != Debt}">
+                            <td><apex:inputField id="feesInputF" value="{!OpportunityLineItem.Fees__c}" style="min-width:20px;max-width:120px" onchange="updateAnnualValue();" /></td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!productFamily == Debt}">
+                             <td><apex:inputField id="feesReadOnlyInputF" value="{!OpportunityLineItem.Fees__c}" style="min-width:20px;max-width:120px" styleClass="feesReadOnlyInputF" />
+                             </td>
+                        </apex:outputPanel>
+                        
+                        <td width="2%" style="text-align:center; font-size:18px;">+</td>
+                        <td><apex:inputField id="RecurringFeesPeriod" value="{!OpportunityLineItem.Recurring_Fees_Period__c}" style="min-width:20px;max-width:120px" onchange="updateAnnualValue();" /></td>
+                        <td></td>
+                        <td><apex:inputField id="RecurringFees" value="{!OpportunityLineItem.Recurring_Fees__c}" style="min-width:20px;max-width:120px" onchange="updateAnnualValue();" /></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td><apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Income_this_Year__c.Label}"/></td> 
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+                     
+
+                     </table>
+                    <table>
+                        <tr>
+                        <td></td> 
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+                     <tr>  
+                        <td><apex:inputText disabled="true" id="incomeThisYearOutputF" /></td>
+                        
+                     </tr>
+                    </table>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="transactionalInformation">
+                    <apex:pageblockSection title="{!$Label.lbl_TransactionalInformation}" columns="2" id="ti" rendered="{!productFamily != Debt}">
+                        <apex:inputField id="Volume" value="{!OpportunityLineItem.Volume__c}" onchange="UpdateRecurringFees();updateAnnualValue();"/>
+                        <apex:inputField id="FeePerTransaction" value="{!OpportunityLineItem.Transaction_Value__c}" onchange="UpdateRecurringFees();updateAnnualValue();"/>
+                        <apex:inputField value="{!OpportunityLineItem.Primary_Banking_Target__c}" id="PrimaryBanking" />
+                        <apex:inputField id="MonthlyValue" value="{!OpportunityLineItem.MonthlyValue__c}" />
+                        <apex:inputField id="FXSalesComment" value="{!OpportunityLineItem.FX_Sales_Comment__c}" rendered="{!isForeignExchange}"/>
+                    </apex:pageblockSection>
+                </apex:outputPanel>
+                <apex:outputPanel id="debtFinanceInformation" styleClass="debtFinanceInformation">
+                    <apex:pageBlock title="{!$Label.lbl_DebtFinanceInformation}" rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                        <apex:pageblockSection id="bondsSection" columns="2" rendered="{!ProductLevel3Name == 'Bonds - Local Currency'}">
+                        	<apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}" />
+                                <apex:inputField id="holdSizeInputF" value="{!OpportunityLineItem.Hold_Size__c}"/>
+                        	</apex:pageBlockSectionItem>    
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection id="grossMarginSection" columns="2" rendered="{!productFamily == Debt || isTrade || isWorkingCapital}">
+                            <apex:pageBlockSectionItem rendered="{!!isTrade &&!isWorkingCapital}">
+                                <span style="font-weight:bold">Term</span>
+                                <apex:outputpanel >
+                                    <table>
+                                        <tr>
+                                            <td><input type="radio" id="periodYear" name="period" value="Years" checked="checked" onclick="PeriodChanged(this);"/></td>
+                                            <td><apex:inputField id="termsYears" value="{!OpportunityLineItem.Terms_Years__c}" onchange="CalculatePeriods(true);updateOnceoffFees();" style="min-width:20px;max-width:60px" /></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Years "/></td>
+                                            <td><input type="radio" id="periodMonth" name="period" value="Months" onclick="PeriodChanged(this);"/></td>
+                                            <td><input id="MonthsDebt" name="MonthsDebt" onchange="CalculatePeriods(true);updateOnceoffFees();" style="width:50px" type="number" min="0" step="0.01" class="no-spinners"/></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Months "/></td>
+                                            <td><input type="radio" id="periodDay" name="period" value="Days" onclick="PeriodChanged(this);"/></td>
+                                            <td><input id="DaysDebt" name="DaysDebt" onchange="CalculatePeriods(true);updateOnceoffFees();" style="width:50px" type="number" min="0" step="1" class="no-spinners"/></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Days"/></td>
+                                        </tr>
+                                    </table>
+                                    
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Balance__c.Label}"/>
+                                <apex:inputField id="balanceInputF" styleClass="balanceInputF" value="{!OpportunityLineItem.Balance__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Rate_Type__c.Label}" />
+                                <apex:inputField id="ratetypeInputF" value="{!OpportunityLineItem.Rate_Type__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FundingRateType__c.Label}" />
+                                <apex:inputField id="fundingratetypeInputF" value="{!OpportunityLineItem.FundingRateType__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Base_Rate__c.Label}" />
+                                <apex:inputField id="baserateInputF" value="{!OpportunityLineItem.Base_Rate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FundingBaseRate__c.Label}" />
+                                <apex:inputField id="fundingbaserateInputF" value="{!OpportunityLineItem.FundingBaseRate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Loan_Profile__c.Label}" />
+                                <apex:inputField id="loanprofileInputF" value="{!OpportunityLineItem.Loan_Profile__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Facility_Type__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Facility_Type__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Compounding_Frequency__c.Label}"/>
+                                <apex:inputField id="compoundingFrequencyInputF" value="{!OpportunityLineItem.Compounding_Frequency__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RefinanceAmount__c.Label}"/>
+                                <apex:inputField id="refinanceAmountInputF" onchange="updateNewCapital();" value="{!OpportunityLineItem.RefinanceAmount__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Loan_Profile__c.Label}" />
+                                <apex:inputField value="{!OpportunityLineItem.Loan_Profile__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Facilities_Off_Balance__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Facilities_Off_Balance__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Role_League__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Role_League__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.NewCapital__c.Label}"/>
+                                <apex:inputField id="newcapitalInputF" value="{!OpportunityLineItem.NewCapital__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.BulletPaymentDue__c.Label}"/>
+                                <apex:inputField id="BulletPaymentDueInputF" onchange="toggleBulletPayDue();" value="{!OpportunityLineItem.BulletPaymentDue__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LoanType__c.Label}" />
+                                <apex:inputField value="{!OpportunityLineItem.LoanType__c}">
+                                    <apex:actionsupport event="onchange" rerender="debtFinanceInformation" />
+                                </apex:inputField>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}"/>
+                            <apex:pageBlockSectionItem rendered="{!OpportunityLineItem.LoanType__c != NULL && OpportunityLineItem.LoanType__c == 'Refinance' && productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RefinanceIncreaseDecrease__c.Label}" />
+                                <apex:inputField value="{!OpportunityLineItem.RefinanceIncreaseDecrease__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Flexi__c.Label}"/>
+                                <apex:inputField id="FlexiInputF" onchange="updateFlexiFee();" value="{!OpportunityLineItem.Flexi__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.BulletAmount__c.Label}"/>
+                                <apex:inputField id="BulletAmountInputF" value="{!OpportunityLineItem.BulletAmount__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.SecondaryLoan__c.Label}"/>
+                                <apex:inputField id="SecondaryLoanInputF" value="{!OpportunityLineItem.SecondaryLoan__c}" />
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_UpfrontFees}" columns="2" id="pbs4" rendered="{!productFamily == Debt  || isWorkingCapital || isTrade}">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:inputField id="arrangingFee" value="{!OpportunityLineItem.Arranging_Fee__c}" onchange="updateAmortized();updateOnceoffFees();"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:inputField id="arrangingFeeDeferred" value="{!OpportunityLineItem.Arranging_Fee_Deferred__c}" onchange="updateOnceoffFees();"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Syndicated__c.Label}" />
+                                <apex:inputField value="{!OpportunityLineItem.Syndicated__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <span style="font-weight:bold" data-tooltip="{!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.inlineHelpText}">
+                                        {!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.Label}<span class="helpOrb"></span>
+                                </span>
+                                <apex:outputpanel >
+                                    <apex:inputField id="otherFees" value="{!OpportunityLineItem.Other_Fees__c}" onchange="updateOnceoffFees();"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Other_Fees_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:inputField id="otherFeesDeferred" value="{!OpportunityLineItem.Other_Fees_Deferred__c}" onchange="updateOnceoffFees();"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Underwrite__c.Label}" />
+                                <apex:inputField value="{!OpportunityLineItem.Underwrite__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Committment_Fee__c.Label}" />
+                                <apex:inputField id="committmentFee" value="{!OpportunityLineItem.Committment_Fee__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Participation_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:inputField id="participationFee" value="{!OpportunityLineItem.Participation_Fee__c}" onchange="updateOnceoffFees();"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Participation_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:inputField id="participationFeeDeferred" value="{!OpportunityLineItem.Participation_Fee_Deferred__c}" onchange="updateOnceoffFees();"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isCPF && !isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Fee_Recovery_Description__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Fee_Recovery_Description__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.FlexiFee__c.Label}"/>
+                                <apex:inputField id="flexifeeInputF" value="{!OpportunityLineItem.FlexiFee__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Agency_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:inputField id="agencyFee" value="{!OpportunityLineItem.Agency_Fee__c}" onchange="updateOnceoffFees();"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Agency_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:inputField id="agencyFeeDeferred" value="{!OpportunityLineItem.Agency_Fee_Deferred__c}" onchange="updateOnceoffFees();"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Annual_Facility_Fee__c.Label}" />
+                                <apex:inputField id="facilityFee" value="{!OpportunityLineItem.Annual_Facility_Fee__c}" onchange="updateFacilityFees();"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isWorkingCapital}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Unutilised_Facility_Fee__c.Label}" />
+                                <apex:inputField id="unutilisedfacilityFee" value="{!OpportunityLineItem.Unutilised_Facility_Fee__c}"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!!isWorkingCapital && !isTrade}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Co_ordination_Fee__c.Label}" />
+                                <apex:outputpanel >
+                                    <apex:inputField id="coordinationFee" value="{!OpportunityLineItem.Co_ordination_Fee__c}" onchange="updateOnceoffFees();"/>
+                                    <apex:outputLabel value="{!$ObjectType.OpportunityLineItem.fields.Coordination_Fee_Deferred__c.Label}" style="font-size:10px;"/>
+                                    <apex:inputField id="coordinationFeeDeferred" value="{!OpportunityLineItem.Coordination_Fee_Deferred__c}" onchange="updateOnceoffFees();"/>
+                                </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_RiskAndReturn}" columns="2" id="pbs5" rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}">
+                                <span style="font-weight:bold">Term</span>
+                                <apex:outputpanel >
+                                    <table>
+                                        <tr>
+                                            <td><input type="radio" id="periodYear" name="period" value="Years" checked="checked" onclick="PeriodChanged(this);"/></td>
+                                            <td><apex:inputField id="termsYears" value="{!OpportunityLineItem.Terms_Years__c}" onchange="CalculatePeriods(true);updateOnceoffFees();" style="min-width:20px;max-width:60px"/></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Years "/></td>
+                                            <td><input type="radio" id="periodMonth" name="period" value="Months" onclick="PeriodChanged(this);"/></td>
+                                            <td><input id="MonthsDebt" name="MonthsDebt" onchange="CalculatePeriods(true);updateOnceoffFees();" style="width:50px" type="number" min="0" step="0.01" class="no-spinners"/></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Months "/></td>
+                                            <td><input type="radio" id="periodDay" name="period" value="Days" onclick="PeriodChanged(this);"/></td>
+                                            <td><input id="DaysDebt" name="DaysDebt" onchange="CalculatePeriods(true);updateOnceoffFees();" style="width:50px" type="number" min="0" step="1" class="no-spinners"/></td>
+                                            <td><apex:outputLabel style="font-weight:bold;font-size:11px;" value=" Days"/></td>
+                                        </tr>
+                                    </table>   
+                                </apex:outputpanel>   
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RoRWA__c.Label}"/>
+                                <apex:inputField id="rorwaInputF" value="{!OpportunityLineItem.RoRWA__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RoRWA1stYear__c.Label}"/>
+                                <apex:inputField id="rorwa1styearInputF" value="{!OpportunityLineItem.RoRWA1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!(productFamily == Debt && !isCPF) || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RWA__c.Label}"/>
+                                <apex:inputField id="rwaInputF" value="{!OpportunityLineItem.RWA__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!(productFamily == Debt && !isCPF) || isBond}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RWA1stYear__c.Label}"/>
+                                <apex:inputField id="rwa1styearInputF" value="{!OpportunityLineItem.RWA1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt || isTrade || isWorkingCapital || isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LGD__c.Label}"/>
+                                <apex:inputField id="lgdInputF" value="{!OpportunityLineItem.LGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || (isCPF && productFamily != Debt)}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DTLGD__c.Label}"/>
+                                <apex:inputField id="dtlgdInputF" value="{!OpportunityLineItem.DTLGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DG_TTC__c.Label}"/>
+                                <apex:inputField id="dgttcInputF" value="{!OpportunityLineItem.DG_TTC__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.GLGD__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.GLGD__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Threshold__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Threshold__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!isTrade || isWorkingCapital || isCPF}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.LTV__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.LTV__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && isCPF}"></apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RORC__c.Label}"/>
+                                <apex:inputField id="rorcInputF" value="{!OpportunityLineItem.RORC__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.RORC1stYear__c.Label}"/>
+                                <apex:inputField id="rorc1styearInputF" value="{!OpportunityLineItem.RORC1stYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem rendered="{!productFamily == Debt && !isCPF}">
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Threshold__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.Threshold__c}" />
+                            </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        
+                        <apex:pageblockSection title="{!$Label.lbl_RPF_Pipeline_Calculator}" columns="2" id="pbs6" rendered="{!isRPF}">
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DrawPercentageCurrentYear__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.DrawPercentageCurrentYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.StartDate__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.StartDate__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.DrawPercentageNextYear__c.Label}"/>
+                                <apex:inputField value="{!OpportunityLineItem.DrawPercentageNextYear__c}" />
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                  <apex:outputPanel rendered="{!isEdit}">
+                                      <div style="text-align: right">
+                                          <apex:commandButton action="{!Calculate}" id="rpfCalculate" value="Calculate" onclick="disableAllButtons()" oncomplete="enableAllButtons()" reRender="pageMsg"/>
+                                      </div>
+                                  </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                      </apex:pageblockSection>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="balanceAndIncome">
+                    <apex:pageblockSection title="{!$Label.lbl_BalanceAndIncome}" columns="1" id="pbs1" rendered="{!productFamily != Debt}">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.New_Facility_Balance__c.Label}" />
+                            <apex:inputText disabled="true" id="newFacilityBalanceOutputF" />
+                        </apex:pageBlockSectionItem>
+                        <apex:inputField id="existingFacilityBalance" value="{!OpportunityLineItem.Existing_Facility_Balance__c}" onchange="setNetFacilityBalance();" rendered="{!isExisting}"/>
+                        <apex:pageBlockSectionItem rendered="{!isExisting}">
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.Net_Facility_Balance__c.Label}" />
+                            <apex:inputText disabled="true" id="netFacilityBalanceOutputF" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel style="font-weight:bold" value="{!$ObjectType.OpportunityLineItem.fields.New_Facility__c.Label}" />
+                            <apex:inputText disabled="true" id="newFalcilityOutputF" />
+                        </apex:pageBlockSectionItem>
+                    </apex:pageblockSection>
+                </apex:outputPanel>
+                
+            </apex:pageBlock>
+            
+            <apex:outputPanel id="productFamilyPanel" styleClass="productFamilyPanel hidden">{!productFamily}</apex:outputPanel>
+            
+        </apex:outputPanel>
+        
+        <style>
+            
+            .debtFinanceInformation .detailList:nth-child(1),
+            .debtFinanceInformation .detailList:nth-child(3) {
+                margin-bottom: 2em;
+            }
+        
+            [data-tooltip] {
+                position: relative;
+                cursor: pointer;
+            }
+
+            [data-tooltip]:before {
+                content: "";
+                position: absolute;
+                visibility: hidden;
+            }
+
+            [data-tooltip]:after {
+                content: attr(data-tooltip);
+                position: absolute;
+                width: 15em;
+                background: #FEFDB9;
+                border: 1px solid #FFA603;
+                border-radius: 0px;
+                color: black;
+                font-weight: normal;
+                font-size: 12px;
+                text-align: left;
+                bottom: 20px;
+                //left: 0px;
+                right: 0px;
+                padding: 5px;
+                //white-space: nowrap;
+                visibility: hidden;
+            }
+
+            [data-tooltip]:hover:before, [data-tooltip]:hover:after {
+                visibility: visible;
+            }
+            
+            .oliProductSearch {
+                margin-top: 1em;
+                margin-bottom: 1em;
+            }
+            
+            .oliProductSearch input {
+                width: 39em;
+                border-color: darkgrey;
+                border-radius: 0px;
+            }
+            
+            .oliProductSearch .acontainer {
+                margin-left: 1em;
+            }
+              
+            .hideDropdown select{
+                visibility: hidden !important;
+                display: block !important;
+            }
+            
+            /* hide up/down arrows ("spinners") on input fields marked type="number" */
+            .no-spinners {
+                -moz-appearance:textfield;
+            }
+
+            .no-spinners::-webkit-outer-spin-button,
+            .no-spinners::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+            var debt = '{!Debt}';
+            var skipProductSearchEvent = true;
+
+            var fixDecimal = function(num) {  
+                return +(Math.round(num + "e+0")  + "e-0");
+            }
+
+            window.onload = setInitialValues();
+
+            $('document').ready(function() {
+
+                //setting input with old value
+                var productName = '{!existingProduct}';                
+                $('.oliProductSearch').on( "productSelectorCreated", function( event ) {
+                    console.log('populating search box with: ' + productName);
+                    $('.oliProductSearch input').val(productName);
+                });
+                
+                //listening to components event
+                $('.oliProductSearch').on( "productChanged", function( event, selectedProductLevelAndId, selectedProductName) {
+                    //Split Level and ID
+                    var selectedProductLevel = selectedProductLevelAndId.substring(0, selectedProductLevelAndId.indexOf('||'));
+                    var selectedProductId = selectedProductLevelAndId.substring(selectedProductLevelAndId.indexOf('||') + 2);
+
+                    console.log('Calling APEX function with [Level: ' + selectedProductLevel + ', ID: ' + selectedProductId + ', Name: ' + selectedProductName + ']');
+                    productChanged(selectedProductLevel, selectedProductId, selectedProductName);
+                });
+               
+                CalculatePeriods(false);
+                LoadPeriod();
+                
+                onIsExternalShown();
+            });
+
+            function setInitialValues() {
+                $("[id$='annualisedIncomeOutputF']").val($("[id$='annualisedIncomeHiddenF']").val());
+                $("[id$='incomeThisYearOutputF']").val($("[id$='incomeThisYearHiddenF']").val());
+                $("[id$='newFacilityBalanceOutputF']").val($("[id$='newFacilityBalanceHiddenF']").val());
+                
+                //Check if field is rendered on page
+                if($("[id$='netFacilityBalanceOutputF']").length > 0){
+                    $("[id$='netFacilityBalanceOutputF']").val($("[id$='netFacilityBalanceHiddenF']").val());
+                }
+                $("[id$='newFalcilityOutputF']").val($("[id$='newFalcilityHiddenF']").val());
+                
+                var estUtilVal = $("[id$='estimatedUtilisationInputF']").val();
+                if (estUtilVal == '') {
+                    $("[id$='estimatedUtilisationInputF']").val(100);
+                }
+                
+                var family = $('.productFamilyPanel').text();
+                if (family == debt) {
+                    onDebtShown();
+                } else {
+                    setNewFacilityBalance();
+                    
+                }
+                
+                RemoveNoneFromDropDowns();
+                CalculatePeriods(false);
+                LoadPeriod();
+                
+                updateAnnualValue();
+            }
+            
+            function onDebtShown() {
+                updateOnceoffFees();
+                setDebtSelectsWidth();
+                
+                $('.feesReadOnlyInputF').prop('disabled', 'true');
+                $('[id$=RecurringFees]').prop('disabled', 'true');
+                $('[id$=RecurringFeesPeriod]').prop('disabled', 'true');
+                $('[id$=RecurringFeesPeriod]')[0].selectedIndex = 1; // Select Monthly as default for Debt
+                $('[id$=marginInputF]').prop('disabled', 'true'); //Disable Net Margin
+                disableCPFFields();
+                toggleBulletPayDue();
+                updateFlexiFee();
+            }
+            
+        	function onIsExternalShown() {
+                var isExternal = '{!isExternal}';
+				if (isExternal == 'true') {
+                    document.getElementById('j_id0:theForm:addProductToOpportunity').style.pointerEvents = 'none';
+                    if ($("[id$='termsYears']") != undefined) $('[id$=termsYears]').prop('disabled', 'true');
+                    if ($("[id$='MonthsDebt']") != undefined) $('[id$=MonthsDebt]').prop('disabled', 'true');
+                    if ($("[id$='DaysDebt']") != undefined) $('[id$=DaysDebt]').prop('disabled', 'true');
+                    if ($("input[name=period]") != undefined) $("input[name=period]").attr('disabled', true);
+                    if ($("[id$='feesInputF']").val() != undefined) $('[id$=feesInputF]').prop('disabled', 'true');
+                    if ($("[id$='RecurringFees']").val() != undefined) $('[id$=RecurringFees]').prop('disabled', 'true');
+                    if ($("[id$='RecurringFeesPeriod']").val() != undefined) $('[id$=RecurringFeesPeriod]').prop('disabled', 'true');
+                    if ($("[id$='marginInputF']").val() != undefined) $('[id$=marginInputF]').prop('disabled', 'true');
+                    if ($("[id$='holdSizeInputF']").val() != undefined) $('[id$=holdSizeInputF]').prop('disabled', 'true');
+                    if ($("[id$='balanceInputF']").val() != undefined) $('[id$=balanceInputF]').prop('disabled', 'true');
+                    if ($("[id$='estimatedUtilisationInputF']").val() != undefined) $('[id$=estimatedUtilisationInputF]').prop('disabled', 'true');
+                    if ($("[id$='ftp']").val() != undefined) $('[id$=ftp]').prop('disabled', 'true');
+                    if ($("[id$='grossMargin']").val() != undefined) $('[id$=grossMargin]').prop('disabled', 'true');
+                	if ($("[id$='arrangingFee']").val() != undefined) $('[id$=arrangingFee]').prop('disabled', 'true');
+                    if ($("[id$='arrangingFeeDeferred']")[0] != undefined) $("[id$='arrangingFeeDeferred']").prop('disabled', 'true');
+                    if ($("[id$='otherFees']").val() != undefined) $('[id$=otherFees]').prop('disabled', 'true');
+                    if ($("[id$='otherFeesDeferred']")[0] != undefined) $("[id$='otherFeesDeferred']").prop('disabled', 'true');
+                    if ($("[id$='participationFee']").val() != undefined) $('[id$=participationFee]').prop('disabled', 'true');
+                    if ($("[id$='participationFeeDeferred']")[0] != undefined) $("[id$='participationFeeDeferred']").prop('disabled', 'true');
+                    if ($("[id$='agencyFee']").val() != undefined) $('[id$=agencyFee]').prop('disabled', 'true');
+                    if ($("[id$='agencyFeeDeferred']")[0] != undefined) $("[id$='agencyFeeDeferred']").prop('disabled', 'true');
+                    if ($("[id$='coordinationFee']").val() != undefined) $('[id$=coordinationFee]').prop('disabled', 'true');
+                    if ($("[id$='coordinationFeeDeferred']")[0] != undefined) $("[id$='coordinationFeeDeferred']").prop('disabled', 'true');
+                    if ($("[id$='baserateInputF']").val() != undefined) $('[id$=baserateInputF]').prop('disabled', 'true');
+                    if ($("[id$='ratetypeInputF']").val() != undefined) $('[id$=ratetypeInputF]').prop('disabled', 'true');
+                    if ($("[id$='fundingbaserateInputF']").val() != undefined) $('[id$=fundingbaserateInputF]').prop('disabled', 'true');
+                    if ($("[id$='fundingratetypeInputF']").val() != undefined) $('[id$=fundingratetypeInputF]').prop('disabled', 'true');
+                    if ($("[id$='loanprofileInputF']").val() != undefined) $('[id$=loanprofileInputF]').prop('disabled', 'true');
+                    if ($("[id$='compoundingFrequencyInputF']").val() != undefined) $('[id$=compoundingFrequencyInputF]').prop('disabled', 'true');
+                    if ($("[id$='committmentFee']").val() != undefined) $('[id$=committmentFee]').prop('disabled', 'true');
+                    if ($("[id$='rorwaInputF']").val() != undefined) $('[id$=rorwaInputF]').prop('disabled', 'true');
+                    if ($("[id$='rorwa1styearInputF']").val() != undefined) $('[id$=rorwa1styearInputF]').prop('disabled', 'true');
+                    if ($("[id$='rwaInputF']").val() != undefined) $('[id$=rwaInputF]').prop('disabled', 'true');
+                    if ($("[id$='rwa1styearInputF']").val() != undefined) $('[id$=rwa1styearInputF]').prop('disabled', 'true');
+                    if ($("[id$='dgttcInputF']").val() != undefined) $('[id$=dgttcInputF]').prop('disabled', 'true');
+                    if ($("[id$='dtlgdInputF']").val() != undefined) $('[id$=dtlgdInputF]').prop('disabled', 'true');
+                    if ($("[id$='lgdInputF']").val() != undefined) $('[id$=lgdInputF]').prop('disabled', 'true');
+                    if ($("[id$='rorcInputF']").val() != undefined) $('[id$=rorcInputF]').prop('disabled', 'true');
+                    if ($("[id$='rorc1styearInputF']").val() != undefined) $('[id$=rorc1styearInputF]').prop('disabled', 'true');
+                }
+            }
+        
+            function onHoldSizeChanged() {
+                var holdSize = $("[id$='holdSizeInputF']").val();
+                $("[id$='balanceInputF']").val(holdSize);
+                
+                setNewFacilityBalance();
+                updateAmortized();
+                updateAnnualValue();
+                updateOnceoffFees();
+                updateNewCapital();
+            }
+
+            function setNewFacilityBalance() {
+                var family = $('.productFamilyPanel').text();
+                var balance;
+                if (family == debt) {
+                    balance = $("[id$='holdSizeInputF']").val().replace(/\,/g,'');
+                } else {
+                    balance = $("[id$='balanceInputF']").val().replace(/\,/g,'');
+                    /* Tonga MM : Commented this out this sets the value to None everytime even if the page loads, it will incorrectly populate the field when they users clicks saves
+                    $('[id$=RecurringFeesPeriod]')[0].selectedIndex = 0; //Set back to none*/
+                }
+                
+                $("[id$='newFacilityBalanceOutputF']").val(balance);
+                $("[id$='newFacilityBalanceHiddenF']").val(balance);
+                setNetFacilityBalance();
+            }
+
+            function updateAnnualValue() {
+                var balance = $("[id$='balanceInputF']").val().replace(/\,/g,'');
+                var margin = $("[id$='marginInputF']").val();
+                var estimatedUtilisation = $("[id$='estimatedUtilisationInputF']").val();
+                var recurringFeesPeriod = $("[id$='RecurringFeesPeriod']").val();
+                var recurringFees = $("[id$='RecurringFees']").val().replace(/\,/g,'');
+                
+                var family = $('.productFamilyPanel').text();
+                var upfrontFees;
+                if (family == debt) {
+                    upfrontFees = $("[id$='feesReadOnlyInputF']").val().replace(/\,/g,'');
+                } else {
+                    upfrontFees = $("[id$='feesInputF']").val().replace(/\,/g,'');
+                }
+
+                // Unify decimal point precision
+                balance = fixDecimal(balance);
+                margin = margin / 100; 
+                estimatedUtilisation = estimatedUtilisation / 100;
+                upfrontFees = fixDecimal(upfrontFees);
+                
+                //Calculate Recurring Fees
+                var annualisedFees = 0;
+                var firstYearFees = 0;
+                if (recurringFeesPeriod == "Monthly") {
+                    annualisedFees = parseFloat(recurringFees) * 12;
+                    firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear};
+                    
+                } else if (recurringFeesPeriod == "Quarterly") {
+                    annualisedFees = parseFloat(recurringFees) * 4;
+                    firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear} / 3;
+                    
+                } else if (recurringFeesPeriod == "Semi-Annually") {
+                    annualisedFees = parseFloat(recurringFees) * 2;
+                    firstYearFees = parseFloat(recurringFees) * {!monthsFromCloseDateToEndOfYear} / 6;
+                    
+                } else if (recurringFeesPeriod == "Annually") {
+                    annualisedFees = parseFloat(recurringFees);
+                } 
+                annualisedFees = fixDecimal(annualisedFees);
+                firstYearFees = fixDecimal(firstYearFees);
+
+                var nii = parseFloat(balance) * parseFloat(margin) * parseFloat(estimatedUtilisation);
+                var annualisedIncome = nii + annualisedFees + parseFloat(upfrontFees);
+
+                if (!isNaN(annualisedIncome)) {
+                    var firstYearIncome = nii * {!daysFromCloseDateToEndOfYear} / 365;
+                    firstYearIncome += firstYearFees + parseFloat(upfrontFees);
+                    console.log(firstYearIncome);
+                    $("[id$='annualisedIncomeOutputF']").val(fixDecimal(annualisedIncome));
+                    $("[id$='incomeThisYearOutputF']").val(fixDecimal(firstYearIncome));
+                    $("[id$='newFalcilityOutputF']").val(fixDecimal(annualisedIncome));
+                    $("[id$='annualisedIncomeHiddenF']").val(fixDecimal(annualisedIncome));
+                    $("[id$='incomeThisYearHiddenF']").val(fixDecimal(firstYearIncome));
+                    $("[id$='newFalcilityHiddenF']").val(fixDecimal(annualisedIncome));
+                }
+            }
+
+            function setNetFacilityBalance() {
+
+                if($("[id$='netFacilityBalanceOutputF']").length > 0){
+
+                    var newFacilityBalance = $("[id$='newFacilityBalanceOutputF']").val().replace(/\,/g,'');
+                    var existingFacilityBalance = $("[id$='existingFacilityBalance']").val().replace(/\,/g,'');
+                
+                    newFacilityBalance = fixDecimal(newFacilityBalance);
+                    existingFacilityBalance = fixDecimal(existingFacilityBalance);
+
+                    var finalVal = parseFloat(newFacilityBalance) - parseFloat(existingFacilityBalance);
+                    if(!isNaN(finalVal)) {
+                        $("[id$='netFacilityBalanceOutputF']").val(fixDecimal(finalVal));
+                        $("[id$='netFacilityBalanceHiddenF']").val(fixDecimal(finalVal));
+                    }
+                }
+            }
+            
+            function updateOnceoffFees() {
+                var family = $('.productFamilyPanel').text();
+                var isExternal = '{!isExternal}';
+                
+                if (family == debt && isExternal != 'true') {
+                    var termmonths = $("[id$='termsYears']").val().replace(/\,/g,'');
+                    termmonths = parseFloat(changeNaNToZero(termmonths)) * 12;
+                
+                    var holdSize = $("[id$='holdSizeInputF']").val().replace(/\,/g,'');
+                    holdSize = parseFloat(changeNaNToZero(holdSize)); 
+                    
+                    var arrangingFee = ($("[id$='arrangingFee']").val() == undefined) ? 0 : $("[id$='arrangingFee']").val().replace(/\,/g,'');
+                    var arrangingFeePercent = parseFloat(changeNaNToZero(arrangingFee));
+                    arrangingFee = ($("[id$='arrangingFeeDeferred']")[0] == undefined) ? 0 : CalculateOnceOffFee($("[id$='arrangingFeeDeferred']")[0].checked, arrangingFeePercent, termmonths, holdSize);
+                    
+                    var otherFees = ($("[id$='otherFees']").val() == undefined) ? 0 : $("[id$='otherFees']").val().replace(/\,/g,'');
+                    var otherFeesPercent = parseFloat(changeNaNToZero(otherFees));
+                    otherFees = ($("[id$='otherFeesDeferred']")[0] == undefined) ? 0 : CalculateOnceOffFee($("[id$='otherFeesDeferred']")[0].checked, otherFeesPercent, termmonths, holdSize);
+                    
+                    var participationFee = ($("[id$='participationFee']").val() == undefined) ? 0 : $("[id$='participationFee']").val().replace(/\,/g,'');
+                    var participationFeePercent = parseFloat(changeNaNToZero(participationFee));
+                    participationFee = ($("[id$='participationFeeDeferred']")[0] == undefined) ? 0 : CalculateOnceOffFee($("[id$='participationFeeDeferred']")[0].checked, participationFeePercent, termmonths, holdSize);
+                    
+                    var agencyFee = ($("[id$='agencyFee']").val() == undefined) ? 0 : $("[id$='agencyFee']").val().replace(/\,/g,'');
+                    var agencyFeePercent = parseFloat(changeNaNToZero(agencyFee));
+                    agencyFee = ($("[id$='agencyFeeDeferred']")[0] == undefined) ? 0 : CalculateOnceOffFee($("[id$='agencyFeeDeferred']")[0].checked, agencyFeePercent, termmonths, holdSize);
+                    
+                    var coordinationFee = ($("[id$='coordinationFee']").val() == undefined) ? 0 : $("[id$='coordinationFee']").val().replace(/\,/g,'');
+                    var coordinationFeePercent = parseFloat(changeNaNToZero(coordinationFee));
+                    coordinationFee = ($("[id$='coordinationFeeDeferred']")[0] == undefined) ? 0 : CalculateOnceOffFee($("[id$='coordinationFeeDeferred']")[0].checked, coordinationFeePercent, termmonths, holdSize);
+                    
+                    var result = arrangingFee + otherFees + participationFee + agencyFee + coordinationFee;
+                    $("[id$='feesReadOnlyInputF']").val(result);
+                    
+                    var recurringfees = 0;
+                    if ($("[id$='arrangingFeeDeferred']")[0] != undefined && $("[id$='arrangingFeeDeferred']")[0].checked) recurringfees += parseFloat(changeNaNToZero((parseFloat(changeNaNToZero(arrangingFeePercent)) / 100 * holdSize) / termmonths));
+                    if ($("[id$='otherFeesDeferred']")[0] != undefined && $("[id$='otherFeesDeferred']")[0].checked) recurringfees += parseFloat(changeNaNToZero((parseFloat(changeNaNToZero(otherFeesPercent)) / 100 * holdSize) / termmonths));
+                    if ($("[id$='participationFeeDeferred']")[0] != undefined && $("[id$='participationFeeDeferred']")[0].checked) recurringfees += parseFloat(changeNaNToZero((parseFloat(changeNaNToZero(participationFeePercent)) / 100 * holdSize) / termmonths));
+                    if ($("[id$='agencyFeeDeferred']")[0] != undefined && $("[id$='agencyFeeDeferred']")[0].checked) recurringfees += parseFloat(changeNaNToZero((parseFloat(changeNaNToZero(agencyFeePercent)) / 100 * holdSize) / termmonths));
+                    if ($("[id$='coordinationFeeDeferred']")[0] != undefined && $("[id$='coordinationFeeDeferred']")[0].checked) recurringfees += parseFloat(changeNaNToZero((parseFloat(changeNaNToZero(coordinationFeePercent)) / 100 * holdSize) / termmonths));
+                    $("[id$='RecurringFees']").val(recurringfees);
+                    
+                    updateAnnualValue();
+                }
+            }
+            
+            function CalculateOnceOffFee(deferred,feepercentage, termmonths, holdSize) {
+                var feeamount=0;
+                if (!deferred) feeamount = parseFloat(changeNaNToZero(feepercentage)) / 100 * holdSize;
+                return feeamount;
+            }
+            
+            function updateNetMargin() {
+                var family = $('.productFamilyPanel').text();
+                if (family == debt) {
+                    var grossmargin = parseFloat(changeNaNToZero($("[id$='grossMargin']").val()));
+                    var ftp = parseFloat(changeNaNToZero($("[id$='ftp']").val()));
+                    var netmargin = grossmargin - ftp;
+                    if ($('.oliProductSearch input')[1].value == 'Preference Shares') netmargin = netmargin + ((grossmargin / (1 - {!$Label.PreferenceSharesTaxRate})) * {!$Label.PreferenceSharesTaxRate}); //reflect the pre corporate tax nature
+                    $("[id$='marginInputF']").val(Math.round(netmargin * 100) / 100);
+                    updateAnnualValue();
+                }
+            }
+            
+            function changeNaNToZero(value) {
+                if (isNaN(parseInt(value))) {
+                    return 0;
+                } else {
+                    return value;
+                }
+            }
+            
+            function setDebtSelectsWidth() {
+                var width = $("[id$='arrangingFee']").outerWidth();
+                $("[id$='grossMarginSection'] select").width(width);
+                
+            }
+
+            function disableAllButtons() {
+                $("[id$='save_btn']").prop("disabled","true");
+                $("[id$='save_new_btn']").prop("disabled","true");
+            }
+
+            function enableAllButtons() {
+                $("[id$='save_btn']").removeProp( "disabled");
+                $("[id$='save_new_btn']").removeProp( "disabled");
+            }
+        
+            function openLookup(baseURL, width, modified, searchParam) {
+                var originalbaseURL = baseURL;
+                var originalwidth = width;
+                var originalmodified = modified;
+                var originalsearchParam = searchParam;
+    
+                var lookupType = baseURL.substr(baseURL.length-18, 18);
+                if (modified == '1') baseURL = baseURL + searchParam;
+    
+                var isCustomLookup = false;
+    
+                // Following "StandardUserLookup" is the lookup type for User
+                if(lookupType == "StandardUserLookup"){
+        
+                    var urlArr = baseURL.split("&");
+                    var txtId = '';
+                    if(urlArr.length > 2) {
+                        urlArr = urlArr[1].split('=');
+                        txtId = urlArr[1];
+                    }   
+        
+                    // Following is the url of Custom Lookup page. You need to change that accordingly
+                    baseURL = "/apex/ProductPartnerLookup?txt=" + txtId;
+        
+                    // Following is the id of apex:form control
+                    baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.theForm}");
+                    if (modified == '1') {
+                        baseURL = baseURL + "&lksearch=" + searchParam;
+                    }
+        
+                    // Following is the ID of inputField that is the lookup to be customized as custom lookup
+                    if(txtId.indexOf('ProductPartnerInputF') > -1 ){
+                        isCustomLookup = true;
+                        baseURL = baseURL + "&ExcludeProductPartner=" + $("[id$='ExcludeProductPartnerHiddenF']").val();
+                        baseURL = baseURL + "&OpportunityId={!OpportunityLineItem.OpportunityId}";
+                        baseURL = baseURL + "&ProductLevel1=" + $("[id$='ProductLevel1HiddenF']").val();
+                        baseURL = baseURL + "&ProductLevel2=" + $("[id$='ProductLevel2HiddenF']").val();
+                        baseURL = baseURL + "&ProductLevel3=" + $("[id$='ProductLevel3HiddenF']").val();
+                    }
+                }
+    
+    
+                if(isCustomLookup == true){
+                    openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+                } else {
+                    if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+                    openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+                } 
+            }
+        
+            function PeriodChanged(myRadio) {
+                if (myRadio.value == undefined || myRadio.value == 'Years') {
+                    $("[id$='termsYears']").removeAttr('disabled');
+                    $("[id$='MonthsDebt']").prop("disabled","true");
+                    $("[id$='DaysDebt']").prop("disabled","true");
+                    $("[id$='TermIntervalHiddenF']").val('Years');
+                } else if (myRadio.value == 'Months') {
+                    $("[id$='termsYears']").prop("disabled","true");
+                    $("[id$='MonthsDebt']").removeAttr('disabled');
+                    $("[id$='DaysDebt']").prop("disabled","true");
+                    $("[id$='TermIntervalHiddenF']").val('Months');
+                } else if (myRadio.value == 'Days') {
+                    $("[id$='termsYears']").prop("disabled","true");
+                    $("[id$='MonthsDebt']").prop("disabled","true");
+                    $("[id$='DaysDebt']").removeAttr('disabled');
+                    $("[id$='TermIntervalHiddenF']").val('Days');
+                }
+            }
+        
+            function CalculatePeriods(fromTextChange) {
+                if ($("[id$='termsYears']")[0] != undefined) {
+                    var myRadio = $('input[name="period"]:checked').val();
+                    if (myRadio == undefined || myRadio == 'Years' || !(fromTextChange)) {
+                        if (!isNaN($("[id$='termsYears']")[0].value)) {
+                            $("[id$='MonthsDebt']")[0].value = ($("[id$='termsYears']")[0].value * 12).toFixed(2);
+                            $("[id$='DaysDebt']")[0].value = Math.round($("[id$='termsYears']")[0].value * 12 * 30.43687500000008);
+                        }
+                    } else if (myRadio == 'Months') {
+                        if (!isNaN($("[id$='MonthsDebt']")[0].value)) {
+                            $("[id$='MonthsDebt']")[0].value = ($("[id$='MonthsDebt']")[0].value * 1).toFixed(2);
+                            $("[id$='termsYears']")[0].value = ($("[id$='MonthsDebt']")[0].value / 12).toFixed(5);
+                            $("[id$='DaysDebt']")[0].value = Math.round($("[id$='termsYears']")[0].value * 12 * 30.43687500000008);
+                        }
+                    } else if (myRadio == 'Days') {
+                        if (!isNaN($("[id$='DaysDebt']")[0].value)) {
+                            $("[id$='DaysDebt']")[0].value = Math.round($("[id$='DaysDebt']")[0].value);
+                            $("[id$='termsYears']")[0].value = ($("[id$='DaysDebt']")[0].value / 12 / 30.43687500000008).toFixed(5);
+                            $("[id$='MonthsDebt']")[0].value = ($("[id$='termsYears']")[0].value * 12).toFixed(2);
+                        }
+                    }
+                }     
+            }
+        
+            function LoadPeriod() {
+                var period = $("[id$='TermIntervalHiddenF']").val();
+                
+                if ($("[id$='termsYears']")[0] != undefined) {
+                    if (period == undefined || period === null || period == '' || period == 'Years') {
+                        $("[id$='termsYears']").removeAttr('disabled');
+                        $("[id$='MonthsDebt']").prop("disabled","true");
+                        $("[id$='DaysDebt']").prop("disabled","true");
+                        document.getElementById('periodYear').checked = true;
+                        document.getElementById('periodMonth').checked = false;
+                        document.getElementById('periodDay').checked = false;
+                    } else if (period == 'Months') {
+                        $("[id$='termsYears']").prop("disabled","true");
+                        $("[id$='MonthsDebt']").removeAttr('disabled');
+                        $("[id$='DaysDebt']").prop("disabled","true");
+                        document.getElementById('periodYear').checked = false;
+                        document.getElementById('periodMonth').checked = true;
+                        document.getElementById('periodDay').checked = false;
+                    } else if (period == 'Days') {
+                        $("[id$='termsYears']").prop("disabled","true");
+                        $("[id$='MonthsDebt']").prop("disabled","true");
+                        $("[id$='DaysDebt']").removeAttr('disabled');
+                        document.getElementById('periodYear').checked = false;
+                        document.getElementById('periodMonth').checked = false;
+                        document.getElementById('periodDay').checked = true;
+                    }
+                }
+            }
+
+            function UpdateRecurringFees() {
+                var feePerTransaction = $("[id$='FeePerTransaction']").val().replace(/\,/g,'');
+                var volume = $("[id$='Volume']").val().replace(/\,/g,'');
+                
+                if (!isNaN(volume) && !isNaN(feePerTransaction)) {
+                    $('[id$=RecurringFeesPeriod]')[0].selectedIndex = 1;
+                    $("[id$='RecurringFees']").val((volume * feePerTransaction).toFixed(2));
+                }
+            }
+
+        	function RemoveNoneFromDropDowns() {
+            	if ($('[id$=BulletPaymentDueInputF]')[0] != undefined && $('[id$=BulletPaymentDueInputF]')[0].selectedIndex == 0) $('[id$=BulletPaymentDueInputF]')[0].selectedIndex = 2;
+                if ($('[id$=SecondaryLoanInputF]')[0] != undefined && $('[id$=SecondaryLoanInputF]')[0].selectedIndex == 0) $('[id$=SecondaryLoanInputF]')[0].selectedIndex = 2;
+                if ($('[id$=FlexiInputF]')[0] != undefined && $('[id$=FlexiInputF]')[0].selectedIndex == 0) $('[id$=FlexiInputF]')[0].selectedIndex = 2;
+            }
+        
+        	function updateNewCapital() {
+                if ($('[id$=refinanceAmountInputF]')[0] != undefined && $('[id$=newcapitalInputF]')[0] != undefined && $('[id$=balanceInputF]')[0] != undefined) {
+                    var balance = parseFloat(changeNaNToZero($("[id$='balanceInputF']").val().replace(/\,/g,'')));
+                	var refinance = parseFloat(changeNaNToZero($("[id$='refinanceAmountInputF']").val().replace(/\,/g,'')));
+                	var newcapital = balance - refinance;
+                	$("[id$='newcapitalInputF']").val(newcapital);
+                }
+            }
+        	
+        	function updateAmortized() {
+                //If Hold Size & Arranging Fee & Deferred Exists on page and it's unchecked
+            	if ($("[id$='holdSizeInputF']").val() != undefined && $("[id$='arrangingFee']").val() != undefined && $("[id$='arrangingFeeDeferred']")[0] != undefined && !$("[id$='arrangingFeeDeferred']")[0].checked) {
+                    var family = $('.productFamilyPanel').text();
+                    var country = '{!opportunityCountry}';
+                    var holdsize = parseFloat(changeNaNToZero($("[id$='holdSizeInputF']").val().replace(/\,/g,'')));
+                    var arrfeepercent = parseFloat(changeNaNToZero($("[id$='arrangingFee']").val().replace(/\,/g,'')));
+                    var arrFee = holdsize * arrfeepercent / 100;
+					if (country != null && country == 'South Africa' && $('.isGlobalFinancePanel').text() == 'true' && family == debt && arrFee >= 250000) { 
+						$("[id$='arrangingFeeDeferred']")[0].checked = true;
+                    }
+                }
+            }
+        
+        	function updateFlexiFee() {
+            	if ($('[id$=FlexiInputF]')[0] != undefined && $('[id$=flexifeeInputF ]')[0] != undefined) {
+                	if ($('[id$=FlexiInputF]')[0].value == 'Yes') {
+                        $('[id$=flexifeeInputF]').val(1.5);
+                        $("[id$='flexifeeInputF']").removeAttr('disabled');
+                    }
+                    else 
+                    {
+                        $('[id$=flexifeeInputF]').val(0);
+                        $("[id$='flexifeeInputF']").prop("disabled","true");
+                    }
+                }
+            }
+        
+        	function toggleBulletPayDue() {
+                if ($('[id$=BulletPaymentDueInputF]')[0] != undefined && $('[id$=BulletAmountInputF]')[0] != undefined) {
+                	if ($('[id$=BulletPaymentDueInputF]')[0].value == 'Yes') {
+                        $("[id$='BulletAmountInputF']").removeAttr('disabled');
+                    } else {
+                        $('[id$=BulletAmountInputF]').val(0);
+                        $("[id$='BulletAmountInputF']").prop("disabled","true");
+                    }
+                }
+            }
+        
+        	function disableCPFFields() {
+                if ($('.isCPFPanel').text()=='true') {
+                    $('[id$=balanceInputF]').prop('disabled', 'true'); //Disable Balance / Facility Size
+                    if ($('[id$=newcapitalInputF]')[0] != undefined) $('[id$=newcapitalInputF]').prop('disabled', 'true'); //Disable New Capital
+                }
+            }
+        </script>
+    </apex:form>
+</apex:page>

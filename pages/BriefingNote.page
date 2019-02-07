@@ -1,0 +1,636 @@
+<apex:page renderAs="PDF" standardController="Call_Report__c" applyBodyTag="false" extensions="BriefingNoteController" >
+    <head>
+        <style type="text/css" media="print">
+                       @page {
+                                 @top-center {
+                                       content: element(header);
+                               }
+                               @bottom-left {
+                                     content: element(footer);
+                               }
+                            }
+                                     div.header {
+                                      padding: 10px;
+                                      position: running(header);
+                           }
+            div{
+            font-family:arial,helvetica,sans-serif;
+            }
+                       div.footer {
+                                display: block;
+                             padding: 5px;
+                               position: running(footer);
+                      }
+                                     .pagenumber:before {
+                                        content: counter(page);
+                       }
+                                   .pagecount:before {
+                             content: counter(pages);
+                        }
+             #rich1.sfdc_richtext img {
+                     width: 50px;
+            			height: 50px;
+               }
+            sfdc_richtext img {
+       width:100px !important; 
+            height:100px !important;
+}
+            .sfdc_richtext img {
+       width:100px !important; 
+            height:100px !important;
+}
+            table.finTable {
+            padding: 2px;
+            margin: 0 0;
+            }
+            table.finTable th {
+            background-color: #666666;
+            color: #FFFFFF;
+            text-align: center;
+            }
+            table.finTable td {
+            margin: 0;
+            padding: 2px;
+            padding-left: 3px;
+            border-collapse: collapse;
+            border: 1px solid #A4A4A4;
+            }
+            table.finTable td.labdel {
+            background-color: #666666;
+            color: #FFFFFF;
+            text-align: left;
+            font-weight: bold;
+            }
+            table.finTable td.fiseld {
+            background-color: #FBFBFB; 
+            min-width: 115px;
+            text-align: right;
+            }
+            table.grid td.field {
+            padding: 4px;
+            word-break: break-all;
+            background-color: #F7F7F7; 
+            border-collapse: collapse;
+            border: 1px solid #D4D4D4;
+            }
+            .pagebreak { page-break-before: always; }
+                    </style>
+    </head>
+   <div class="footer">
+        <div><span style="font-family:arial,helvetica,sans-serif;">Page</span> <span  class="pagenumber"/> <span style="font-family:arial,helvetica,sans-serif;">of </span> <span class="pagecount"/>&nbsp;&nbsp;<span style="font-family:arial,helvetica,sans-serif;">{!callReport.Relationship__r.Name}</span></div>
+          </div>
+    <div class="content">
+        <h1 ><strong>{!callReport.Relationship__r.Name}</strong></h1>
+        <h4 ><strong>Client Briefing Note</strong></h4>
+        
+        <table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="width:18.0cm;margin-left:0pt;border-collapse:collapse;border:none" width="680">
+            <tbody>
+                <tr>
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Date of Meeting</span></span></h4>
+                    </td>
+                    <td style="width:120.45pt;border:solid gray 1.0pt;
+                               border-left:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="161">
+                        <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+                                                                   margin-bottom:2.4pt;margin-left:0cm"><span ><span lang="EN-GB"> 
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+    <apex:param value="{!CallReport.Meeting_Date__c}" /> 
+</apex:outputText></span></span></p>
+                    </td>
+                    <td style="width:92.15pt;border:solid gray 1.0pt;
+                               border-left:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="12">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Time of meeting</span></span></h4>
+                    </td>
+                    <td style="width:191.35pt;border:solid gray 1.0pt;
+                               border-left:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="255">
+                        <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+                                                                   margin-bottom:2.4pt;margin-left:0cm"><span ><span style="color:#A9A9A9;"><span lang="EN-GB">[Time of meeting, include time zone]</span></span></span></p>
+                    </td>
+                </tr>
+                <tr style="page-break-inside:avoid">
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Venue</span></span></h4>
+                    </td>
+                    <td colspan="3" style="width:403.95pt;border-top:none;
+                                           border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+                                           padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="539">
+                        <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+                                                                   margin-bottom:2.4pt;margin-left:0cm"><span >{!CallReport.location__c}</span></p>
+                    </td>
+                </tr>
+                <tr style="page-break-inside:avoid;height:19.35pt">
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:19.35pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Client/s</span></span></h4>
+                    </td>
+                    <td colspan="3" style="width:403.95pt;border-top:none;
+                                           border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+                                           padding:0cm 5.4pt 0cm 5.4pt;height:19.35pt" valign="top" width="539">
+                        <apex:repeat value="{!ClientAttendee}" var="attendee">
+                            <span >{!attendee.Attendee_Name__c}&nbsp;&nbsp;{!attendee.Attendee_Email__c}
+                            <br/>
+                                {!attendee.Attendee_Mobile__c}</span>
+                        </apex:repeat>
+                        
+                    </td>
+                </tr>
+                <tr style="page-break-inside:avoid;height:15.1pt">
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Staff in attendance</span></span></h4>
+                    </td>
+                    <td colspan="3" style="width:403.95pt;border-top:none;
+                                           border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+                                           padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="539">
+                         <apex:repeat value="{!StuffAttendee}" var="attendee">
+                            <span >{!attendee.Attendee_Name__c}&nbsp;&nbsp;{!attendee.Attendee_Email__c}</span>
+                        </apex:repeat>
+                    </td>
+                </tr>
+                <tr style="page-break-inside:avoid;height:15.1pt">
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Relationship lead</span></span></h4>
+                    </td>
+                    <td colspan="3" style="width:403.95pt;border-top:none;
+                                           border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+                                           padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="539">
+                        <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+                                                                   margin-bottom:2.4pt;margin-left:0cm"><span >{!CallReport.Relationship__r.Owner.name}</span></p>
+                    </td>
+                </tr>
+                <tr style="page-break-inside:avoid;height:15.1pt">
+                    <td style="width:106.35pt;border:solid gray 1.0pt;
+                               border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="142">
+                        <h4 class="MsoNormal" style="margin: 2.4pt 0cm;"><span ><span lang="EN-GB">Sector Header Name</span></span></h4>
+                    </td>
+                    <td colspan="3" style="width:403.95pt;border-top:none;
+                                           border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;
+                                           padding:0cm 5.4pt 0cm 5.4pt;height:15.1pt" valign="top" width="539">
+                        <p class="AbsaBriefingNoteBodyText" style="margin-top:2.4pt;margin-right:0cm;
+                                                                   margin-bottom:2.4pt;margin-left:0cm"><span >{!CallReport.Relationship__r.Owner.Manager.Name}</span></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br/>
+        <br/>
+<table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="border-collapse: collapse; border: none; margin-left: 0pt; width: 18cm;" width="680">
+	<tbody>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span lang="EN-GB">Executive Summary</span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+                                                               0cm;margin-bottom:4.8pt;margin-left:15.6pt"><apex:outputField value="{!clientPlan.Executive_Summary__c}" /></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Background to Meeting &amp; Objectives of Meeting</span></span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><apex:outputField value="{!callReport.Description__c}" /></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Key Messages for Discussion</span></span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span >{!callReport.key_messages_to_discussion__c}</span></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Topics Client Would Like to Cover </span></span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span >{!callReport.topics_client_would_like_to_cover__c}</span></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lag="EN-GB">Top Deals</span></span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			
+                <div class="AbsaBriefingNoteFirstLevelBullet" style="margin: 4.8pt 0cm 4.8pt 15.6pt;"><span ><span lang="EN-GB" style="line-height: 20.7999992370605px;">&middot;<span style="font-stretch: normal; font-size: 7pt; line-height: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><strong style="line-height: 20.7999992370605px;"><span lang="EN-GB">Opportunities :</span></strong></span></div>
+               
+			<table align="left" border="1" class="MsoNormalTable" style="border-collapse: collapse; border: none; margin-left: 0pt; width: 17.5cm;">
+				<thead>
+					<tr>
+						<th scope="col">
+						<div><strong><span >Opportunity Name</span></strong></div>
+						</th>
+						
+						<th scope="col">
+						<div><strong><span >Annualised Income</span></strong></div>
+						</th>
+						
+					</tr>
+				</thead>
+				<tbody>
+                    <apex:repeat value="{!Opportunities}" var="opportunity">
+                        <tr>
+                            <td> <span >{!opportunity.Name}</span></td>
+                            <td><span >{!opportunity.Annualised_Income__c}</span></td>
+                            
+                        </tr>
+                    </apex:repeat>
+                    
+				</tbody>
+			</table>
+                <br/>
+                <br/>
+			
+			</td>
+		</tr>
+	</tbody>
+</table>
+        
+        <table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="border-collapse: collapse; border: none; margin-left: 0pt; width: 18cm;" width="680">
+	<tbody>
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<p class="AbsaBriefingNoteFirstLevelBullet" style="margin-top:4.8pt;margin-right:
+  0cm;margin-bottom:4.8pt;margin-left:15.6pt"><span ><!-- ******************** END RELATED LIST SECTION UNIQUEID:242********************--></span></p>
+			</td>
+		</tr>
+		
+		
+		<tr>
+			<td colspan="2" style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;background:#F1F1F1;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680">
+			<h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Client Bios</span></span></h4>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"  style="width:18.0cm;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt" valign="top" width="680"><br />
+			<!-- ******************** START RELATED LIST SECTION UNIQUEID:943********************-->
+			
+                <apex:repeat value="{!ClientAttendee}" var="client">
+                   		
+                    <table>
+                        <tr>
+                            <td  width="50px" class="myOwn">
+                                <apex:outputField value="{!client.Client_Attendee__r.Image__c}" />
+                            </td>
+                            <td>
+                                <apex:outputField value="{!client.Attendee_Name__c}"/>
+                                <br/>
+                                <apex:outputField value="{!client.Client_Attendee__r.Job_Role__c}"/>
+                                
+                                
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <apex:outputField value="{!client.Client_Attendee__r.Biography__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                    
+                     
+                    <br/>
+                    
+                </apex:repeat>
+			<table cellpadding="10" class="table943">
+			</table>
+			<!-- ******************** END RELATED LIST SECTION UNIQUEID:943********************--><br />
+			&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;
+        <div class="pagebreak">
+        <h4 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Appendix</span></span></h4>
+        <br/>
+        <h3 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Financials</span></span></h3>
+        <br/>
+        <apex:outputPanel rendered="{!clientPlanFinancials.size>0}">
+                        <table id="finTable" class="finTable">
+                            <thead>
+                                <tr>
+                                    <td style="border-collapse: collapse; border-width: 0px">&nbsp;</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <th>
+                                            <apex:outputText value="{!f.Month__c} " rendered="{!f.Month__c != null && (f.Financial_Results__c == null || f.Financial_Results__c != 'Audited Full Year')}"/>
+                                            <apex:outputField value="{!f.Year__c}"/>
+                                        </th>
+                                    </apex:repeat>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Financial_Results__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Financial_Results__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_IncomeStatement}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_Turnover}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Turnover__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA_Margin__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA_Margin__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_Income__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetInterestExpenseIncomeBAGLFacilitiesOnly}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_BAGL_facilities__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.PAT__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.PAT__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_BalanceSheet}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_TotalAssets}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Assets__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_TotalTangibleAssets}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Tangible_Assets__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Gross_Debt__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Subordinated_Shareholder_Loans__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_and_cash_equivalents__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetDebt}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Debt__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_CashFlows}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetWorth}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Worth__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Tangible_Net_Worth__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Liabilities__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_CashGeneratedByOperations}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_Generated_by_Operations__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_flow_from_operating_activities_Adj__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Capex__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Capex__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_FreeCashFlow}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Free_Cash_Flow__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_cash_generation_utilization__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_Ratios}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA_Net_Interest_cover__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA_Net_Interest_cover__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetDebtEbitda}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Debt_Cash_Ebitda__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_GrossDebtEbitda}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Gross_Debt_Cash_Ebitda__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Tangible_Gearing_Net_Debt_TNW__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Tangible_Gearing_Net_Debt_TNW__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_Others}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Asset_Value__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EPS__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EPS__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBIT__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBIT__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Market_Cap__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.ROE__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.ROE__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.ROA__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.ROA__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                               
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Debt_Equity__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Debt_Equity__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Current_Ratio__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Current_Ratio__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Interest_Cover_Ratio__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Interest_Cover_Ratio__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                
+                            </tbody>
+                        </table>
+                    </apex:outputPanel>
+            <br/>
+        <h3 style="margin: 4.8pt 0cm 4.8pt 15.85pt; text-indent: -15.85pt; page-break-after: auto;"><span ><span lang="EN-GB">Stakeholders</span></span></h3>
+        <br/>
+            <apex:outputPanel rendered="{!!clientPlanStakeholders.empty}">
+                    <table class="finTable">
+                        <tr>
+                            <th>Client Contact</th>
+                            <th>Client Role</th>
+                            <th>Primary Barclays Contact</th>
+                            <th>Relationship Strength</th>
+                            <th>Reports To</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanStakeholders}" var="stakeholder">
+                            <tr>
+                                <td class="">
+                                    <apex:outputField value="{!stakeholder.Contact__r.Name}" />
+                                </td>
+                                <td class="">
+                                    <apex:outputField value="{!stakeholder.Contact__r.Job_Role__c}" />
+                                </td>
+                                <td class="">
+                                    <apex:outputPanel rendered="{!!stakeholder.Client_Plan_Relationship_Items__r.empty}">
+                                        <apex:outputField value="{!stakeholder.Client_Plan_Relationship_Items__r[0].Barclays_Contact_User__r.Name}" />
+                                    </apex:outputPanel>
+                                </td>    
+                                <td class="">
+                                    <apex:outputPanel rendered="{!!stakeholder.Client_Plan_Relationship_Items__r.empty}">
+                                        <apex:outputField value="{!stakeholder.Client_Plan_Relationship_Items__r[0].Strength_of_Relationship__c}" />
+                                    </apex:outputPanel>
+                                </td> 
+                                <td class="">
+                                    <apex:outputPanel rendered="{!stakeholder.Reports_to__c!=null}">
+                                        <apex:outputText value="{!stakeholder.Reports_to__r.Name}" />
+                                    </apex:outputPanel>
+                                </td> 
+                            </tr>
+                        </apex:repeat>
+                    </table>                
+            </apex:outputPanel>
+       <!-- <table class="grid" style="width: 700px">
+            <tr>    
+                <td class="field">
+                    <div class="standaloneImgWrapper">
+                        <apex:image styleClass="standaloneImgGroup" width="700" url="/servlet/servlet.FileDownload?file={!clientPlan.Org_Structure_Image_ID__c}" rendered="{!clientPlan.Org_Structure_Image_ID__c != null}"/>
+                        <apex:image styleClass="standaloneImgGroup" width="700" url="/servlet/servlet.FileDownload?file={!clientPlan.Group_Structure_Image_ID__c}" rendered="{!clientPlan.Org_Structure_Image_ID__c == null && clientPlan.Group_Structure_Image_ID__c != null}"/>
+                    </div>
+                </td>
+            </tr>
+        </table>-->
+        </div>
+    </div>
+    
+</apex:page>

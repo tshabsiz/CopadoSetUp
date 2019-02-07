@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>picklist</bucketType>
+        <developerName>BucketField_31228309</developerName>
+        <masterLabel>Coverage Hub</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <otherBucketLabel>Other</otherBucketLabel>
+        <sourceColumnName>Contact$Owner.Hub__c</sourceColumnName>
+        <useOther>true</useOther>
+        <values>
+            <value>SA Inland LLC / Midcorp</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Public Sector South Africa</sourceValue>
+            </sourceValues>
+            <value>SA Public Sector</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>Global Clients Banks</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Global Clients GDO</sourceValue>
+            </sourceValues>
+            <value>Global Clients</value>
+        </values>
+        <values>
+            <value>SA Financial Services</value>
+        </values>
+        <values>
+            <value>SA Coastal</value>
+        </values>
+    </buckets>
+    <columns>
+        <field>Contact$Account</field>
+    </columns>
+    <columns>
+        <field>Contact$Owner.CountryCode</field>
+    </columns>
+    <columns>
+        <field>Contact$Owner.Hub__c</field>
+    </columns>
+    <columns>
+        <field>Contact$CreatedDate</field>
+    </columns>
+    <columns>
+        <field>Contact$LastModifiedDate</field>
+    </columns>
+    <columns>
+        <field>Contact$LastModifiedBy</field>
+    </columns>
+    <columns>
+        <field>Contact$CreatedBy</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Contact$Owner.Hub__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>Coverage South Africa Inland LLC/Midcorp,Coverage South Africa - Inland LLC Midcorp</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Contact$Owner</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>LLC Contacts owned by SA Bankers</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Contacts_with_Owner__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Contact$LastModifiedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

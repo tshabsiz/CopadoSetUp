@@ -1,0 +1,180 @@
+<aura:component controller="ClientPlanDetailsControllerMobile">
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require scripts="/resource/jquery_1_11" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <c:ClientPlanHeader tabId="1" planId="{!v.planId}"/>
+                
+                <div id="wholePage">
+                    <div id="clientPlanInformationLabel" class="sectionLabel" onclick="{!c.onClientPlanInformationLabelClicked}">
+                        <span class="slds-align-middle">Client plan information</span>
+                        <div aura:id="clientplanInfoMenu" class="slds-dropdown-trigger slds-float--right toggle">
+                            <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li class="slds-dropdown__item" onclick="{!c.onEditClientPlanInfoClicked}">
+                                        <a href="javascript:void(0)" role="menuitem">
+                                            <p class="slds-truncate">Edit</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clientPlanInformation" aura:id="clientPlanInformation" class="section toggle">
+                        <ul class="slds-list--vertical slds-has-dividers--bottom-space slds-has-selection">
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Client plan completion</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="completion" class="slds-truncate slds-list__item">
+                                                <progress value="{!v.planProgress}" max="100"></progress>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Stage</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="stage" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.Status__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Expansion policy</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="expansionPolicy" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.Expansion_Policy__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">DG</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="dg" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.DG__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">LGD (%)</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="dg" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.LGD__c}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Coverage banker</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="coverageBanker" class="slds-truncate slds-list__item">
+                                                {!v.clientPlan.Relationship__r.Owner.Name}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="slds-list__item item">
+                                <div class="slds-media slds-tile">
+                                    <div class="slds-media__body">
+                                        <p class="slds-tile__title slds-truncate">Last modified date</p>
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li id="lastModifiedDate" class="slds-truncate slds-list__item">
+                                                <ui:outputDate aura:id="dateField" value="{!v.clientPlan.LastModifiedDate}"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div id="clientTeamLabel" class="sectionLabel" onclick="{!c.onClientTeamLabelClicked}">
+                        <span class="slds-align-middle">Client plan team</span>
+                        <div aura:id="clientTeamMenu" class="slds-dropdown-trigger slds-float--right toggle">
+                            <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li class="slds-dropdown__item" onclick="{!c.onAddTeamMemberClicked}">
+                                        <a href="javascript:void(0)" role="menuitem">
+                                            <p class="slds-truncate">Add</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clientTeam" aura:id="clientTeam" class="section toggle">
+                        
+                        <aura:iteration items="{!v.teamMembers}" var="member">
+                            <div id="{!member.Id}" class="slds-tile slds-hint-parent item teamMember">
+                                <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                    <p class="slds-tile__title slds-truncate">{!member.Team_Member__r.Name}</p>
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button slds-button--icon-container memberSettings" onclick="return false;">
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li class="slds-dropdown__item" onclick="{!c.onRemoveTeamMemberClicked}">
+                                                    <a href="javascript:void(0)" role="menuitem">
+                                                        <p class="slds-truncate">Remove</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-tile__detail slds-text-body--small">
+                                    <p class="slds-truncate">{!member.Team_Role__c}</p>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+
+</aura:component>

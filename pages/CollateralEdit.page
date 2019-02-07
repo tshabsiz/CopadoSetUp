@@ -1,0 +1,129 @@
+<apex:page standardStylesheets="true" showHeader="true" sidebar="true" standardController="Collateral__c" extensions="CollateralControllerExtension" tabStyle="Collateral__c">   
+    <apex:sectionHeader title="Collateral Edit" subtitle="New Collateral" rendered="{!Collateral__c.Collateral_No__c == null }" help="https://help.salesforce.com" />
+    <apex:sectionHeader title="Collateral Edit" subtitle="{!Collateral__c.name}" rendered="{!Collateral__c.Collateral_No__c != null }" help="https://help.salesforce.com" />
+    <apex:form >
+        <style>
+            .requiredDropBox {
+            margin-left:-3.5px;
+            display:inline;
+            width:0px;
+            height: 12px;
+            border: 1.5px solid #cc0000;
+            }
+            .collateralGroupType {
+            margin-left:1px;
+            }
+        </style>
+        <apex:pageBlock title="Collateral Edit" mode="edit">
+            <apex:outputpanel id="t5">
+                <apex:pageMessages />
+            </apex:outputpanel>
+            <apex:pageBlockButtons location="top">
+                <apex:outputpanel id="CommandButton">
+                    <apex:commandButton action="{!save}" disabled="{!ButtonDisable}" value="{!SaveStatus}" oncomplete="CallWebService_JS()" />
+                    <apex:actionSupport event="onclick" action="{!disableButton}" immediate="true" reRender="CommandButton"  />  
+                    <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS" status="acmSaveStatus"/>
+                    <apex:commandButton action="{!saveNew}" disabled="{!ButtonDisable}" value="{!SaveStatusNew}" oncomplete="CallWebService_JS()" />
+                    <apex:commandButton action="{!cancel}" disabled="{!ButtonDisable}" value="Cancel" />
+                    <apex:commandButton rendered="false" action="{!cancel}" value="Queue" />
+                </apex:outputpanel>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Information" columns="2">
+                <apex:outputField rendered="{!Collateral__c.Collateral_No__c != null }" value="{!Collateral__c.Collateral_No__c}"/>
+                <apex:outputField rendered="{!Collateral__c.OwnerId != null }" value="{!Collateral__c.OwnerId}"/>
+                <apex:inputField required="true" value="{!Collateral__c.name}"/>
+                <apex:inputField value="{!Collateral__c.CurrencyIsoCode}"/>
+                <apex:pageBlockSectionItem id="CollateralGroupSection"> 
+                    <apex:outputLabel value="Collateral Group"/> 
+                    <apex:actionRegion >
+                        <div class="requiredDropBox"></div>
+                        <apex:selectList styleClass="collateralGroupType" size="1" value="{!SelectedCollateralGroup}" >
+                            <apex:actionSupport event="onchange" reRender="CollateralTypeListSection"  />  
+                            <apex:selectOptions value="{!CollateralGroups}" /> 
+                        </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!Collateral__c.Status__c}"/>
+                <apex:pageBlockSectionItem id="CollateralTypeSection"> 
+                    <apex:outputLabel id="CollateralTypeSectionOutput" value="Collateral Type"/>
+                    <apex:actionRegion >
+                        <div class="requiredDropBox"></div>
+                        <apex:selectList styleClass="collateralGroupType" id="CollateralTypeListSection" size="1"  value="{!SelectedCollateralType}" >
+                            <apex:actionSupport event="onchange" action="{!OnCollateralTypeChange}" reRender="t11"  />  
+                            <apex:selectOptions value="{!CollateralTypes}" /> 
+                        </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!Collateral__c.Country__c}"/>
+                <apex:inputField value="{!Collateral__c.Value_Type__c}"/>
+                <apex:inputField value="{!Collateral__c.Supporting_Documentation_Uploaded__c}"/>
+                <apex:inputField value="{!Collateral__c.Value__c}"/>  
+                <apex:inputField required="true"  value="{!Collateral__c.Account__c}"/>
+                <apex:inputField value="{!Collateral__c.Comments__c}"/>   
+                <apex:inputField value="{!Collateral__c.Physical_Location__c}"/>  
+                <span></span>
+                <apex:inputField value="{!Collateral__c.Status_Change_Stamp__c}"/>  
+            </apex:pageBlockSection>
+            
+            <apex:outputpanel id="t1">
+                <apex:actionRegion >
+                    <apex:pageBlockSection collapsible="false" title="Scope" columns="1">
+                        
+                        <apex:inputField required="true" value="{!Collateral__c.Scope__c}">
+                            <apex:actionSupport event="onchange" rerender="t1" />
+                        </apex:inputField>
+                        
+                        <apex:inputField label="Beneficiary/Borrower"  rendered="{!IF(Collateral__c.Scope__c == 'Beneficiary', true, false )}"   value="{!Collateral__c.Beneficiary__c}" >
+                        </apex:inputField>
+                        
+                        <apex:inputField label="Facility Beneficiary" rendered="{!IF(Collateral__c.Scope__c == 'Facility', true, false )}" value="{!Collateral__c.Facility_Client__c}" >
+                            <apex:actionSupport event="onchange" action="{!GetAndCreateFacilities}" rerender="t5" status="counterStatus" />
+                        </apex:inputField>
+                        
+                        <apex:inputField label="Facility" rendered="{!IF(Collateral__c.Scope__c == 'Facility', true, false )}" value="{!Collateral__c.ACMFacility__c}" >
+                        </apex:inputField>
+                        
+                        <apex:actionStatus id="counterStatus" startText=" (Looking up facilities for Clients...)"/>
+                    </apex:pageBlockSection>
+                </apex:actionRegion>
+            </apex:outputpanel>
+            
+            <apex:pageBlockSection title="Asset Information" columns="1">
+                <apex:inputField value="{!Collateral__c.Has_Underlying_Assets__c}"/>
+                <apex:inputField value="{!Collateral__c.Asset_Description__c}"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection id="t11" title="Other Fields" columns="2">
+
+                <apex:inputField rendered="{!hasCededRights}" value="{!Collateral__c.Ceded_Rights__c}"/>
+                <apex:inputField rendered="{!hasBondNumber}" value="{!Collateral__c.Bond_Number__c}"/>
+                <apex:inputField rendered="{!hasRank}" value="{!Collateral__c.Rank__c}"/>
+                <apex:inputField rendered="{!hasPropertyDescription}" value="{!Collateral__c.Property_Description__c}"/>
+                <apex:inputField rendered="{!hasListedShares}" value="{!Collateral__c.Listed_Shares__c}"/>
+                <apex:inputField rendered="{!hasTitleDeedNo}" value="{!Collateral__c.Title_Deed_No__c}"/>
+                
+                <apex:inputField rendered="{!hasAircraftModelNo}" value="{!Collateral__c.Aircraft_Model_No__c}"/>
+                <apex:inputField rendered="{!hasAircraftRegistrationMark}" value="{!Collateral__c.Aircraft_Registration_Mark__c}"/>
+                <apex:inputField rendered="{!hasAircraftSerialNo}" value="{!Collateral__c.Aircraft_Serial_No__c}"/>
+
+            </apex:pageBlockSection>
+            
+            
+            
+            <apex:pageBlockSection title="Dates" columns="2">
+                <apex:inputField value="{!Collateral__c.Expiry_Date__c}"/>
+                <apex:inputField value="{!Collateral__c.Signature_Date__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:outputpanel id="CommandButton">
+                    <apex:commandButton action="{!save}" disabled="{!ButtonDisable}" value="{!SaveStatus}" oncomplete="CallWebService_JS()" />
+                    <apex:actionSupport event="onclick" action="{!disableButton}" immediate="true" reRender="CommandButton"  />  
+                    <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS" status="acmSaveStatus"/>
+                    <apex:commandButton action="{!saveNew}" disabled="{!ButtonDisable}" value="{!SaveStatusNew}" oncomplete="CallWebService_JS()" />
+                    <apex:commandButton action="{!cancel}" disabled="{!ButtonDisable}" value="Cancel" />
+                    <apex:commandButton rendered="false" action="{!cancel}" value="Queue" />
+                </apex:outputpanel>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

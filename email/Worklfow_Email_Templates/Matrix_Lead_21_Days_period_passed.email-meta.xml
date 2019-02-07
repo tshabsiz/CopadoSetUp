@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Banker receives a notification when lead status is on &quot;Contacted&quot; for 21 days</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Matrix Lead 21 Days period passed</name>
+    <style>freeForm</style>
+    <subject>Convert or Unqualify the Lead within the next 39 days</subject>
+    <textOnly>Dear  {!Matrix_Lead__c.OwnerFullName}
+
+Lead : {!Matrix_Lead__c.Company_Name__c} has been on the status {!Matrix_Lead__c.Lead_Status__c} for 21 days now.
+
+If you are still working on this Lead, please update status or request for an extension if you require extra days to work on it, else {!Matrix_Lead__c.Company_Name__c} will be moved to the unassigned queue once the 60 day period passes.
+
+Paste this link into your Chrome Browser to view the lead: {!Matrix_Lead__c.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

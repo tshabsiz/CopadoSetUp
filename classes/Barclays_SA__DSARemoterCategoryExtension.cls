@@ -1,0 +1,36 @@
+/*
+This file is generated and isn't the actual source code for this
+managed global class.
+This read-only file shows the class's global constructors,
+methods, variables, and properties.
+To enable code to compile, all methods return null.
+*/
+global class DSARemoterCategoryExtension {
+    global DSARemoterCategoryExtension(Barclays_SA.DSARemoter controller) {
+
+    }
+    @RemoteAction
+    global static Barclays_SA.DSACategory getCategory(Id categoryId) {
+        return null;
+    }
+    @RemoteAction
+    global static Barclays_SA.DSACategoryDetail getCategoryDetail(Id categoryId) {
+        return null;
+    }
+    @RemoteAction
+    global static Barclays_SA.DSACategory getParentCategory(Id childCategoryId) {
+        return null;
+    }
+    @RemoteAction
+    global static List<Barclays_SA.DSAContentItem> getRelatedContent(Id categoryId) {
+        return null;
+    }
+    @RemoteAction
+    global static List<Barclays_SA.DSACategory> getSubCategories(Id categoryId) {
+        return null;
+    }
+    @RemoteAction
+    global static List<Barclays_SA.DSACategory> getTopLevelCategories(Id mobileConfigId) {
+        return null;
+    }
+}

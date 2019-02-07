@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>OWNER</field>
+    </columns>
+    <columns>
+        <field>ACCOUNT.NAME</field>
+    </columns>
+    <columns>
+        <field>SUBJECT</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
+    <columns>
+        <field>AGE</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>OPEN</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>CLOSED</field>
+    </columns>
+    <columns>
+        <field>STATUS</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATEONLY</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Case.Queue__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Internal Support Queue</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>SUBJECT</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notContain</operator>
+            <value>Undeliverable</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>SUBJECT</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notContain</operator>
+            <value>Automatic reply</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>SUBJECT</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notContain</operator>
+            <value>Email Delivery Failure</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>SUBJECT</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notContain</operator>
+            <value>Out of Office</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Case Rport - 01/11/2018 to 14/11/2018</name>
+    <params>
+        <name>units</name>
+        <value>h</value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CaseList</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATE</dateColumn>
+        <endDate>2018-11-14</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2018-11-01</startDate>
+    </timeFrameFilter>
+</Report>

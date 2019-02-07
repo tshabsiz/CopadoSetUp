@@ -1,0 +1,30 @@
+<apex:page >
+    
+    <apex:outputPanel layout="none" rendered="{!$User.UIThemeDisplayed == 'Theme4d'}">
+        <c:includeSLDS />
+        <style type="text/css">
+            #lightningMultiTimer {padding-left: 24px;padding-top: 4px;}
+        </style>
+    </apex:outputPanel>
+    <style type="text/css">
+        body .bPageTitle {padding: 2px 0 0;}
+        #lightningMultiTimer {position:relative!important;}
+    </style>
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!$User.UIThemeDisplayed == 'Theme4d'}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                           headerTitle="Multi Timer" 
+                           parentEntity="Home" 
+                           parentEntityLink="#/home">
+        </c:slds_pageheader>
+        
+        <c:slds_prompt heading="Feature Not Available"
+                       content="This feature is not available in Lightning Experience."
+                       retURL="#/home" />
+    </apex:outputPanel>
+        
+    <apex:sectionHeader title="Multi Timer" rendered="{!$User.UIThemeDisplayed != 'Theme4d' && $User.UIThemeDisplayed != 'Theme4t'}" />
+    
+    <c:MultiTimer rendered="{!$User.UIThemeDisplayed != 'Theme4d'}" showingOnHomePage="false" />
+    
+</apex:page>

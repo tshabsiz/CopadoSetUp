@@ -1,0 +1,62 @@
+<aura:component controller="ClientPlanPlanControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="brId" type="Id" required="true" />
+    <aura:attribute name="timestamp" type="String" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="ProductSearchEvent" event="c:ProductSearchEvent" action="{!c.onProductSelected}"/>
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    {!if(v.brId == null, 'Add product', 'Edit product')} 
+                </div>
+                
+                <div id="wholePage">
+                    
+                    <c:ClientPlanProductSearch timestamp="{!v.timestamp}" value="{!v.br.Product_Level_3__r.Name}" />
+                    <span aura:id="productError" class="toggle">Product is required</span>
+                    
+                    <ui:inputCurrency aura:id="previousYtdRevenues" class="marginBottom1em" label="Previous YTD revenues" 
+                                      value="{!v.br.Previous_YTD_Revenues__c}"/>
+                    
+                    <ui:inputCurrency aura:id="ytdAnnualizedRevenues" class="marginBottom1em" label="Actual YTD revenues" 
+                                      value="{!v.br.Actual_YTD_Revenues__c}"/>
+                    
+                    <ui:inputCurrency aura:id="budgetYtd" class="marginBottom1em" label="Budget YTD" 
+                                      value="{!v.br.Budget_YTD__c}"/>
+                    
+                    <ui:inputCurrency aura:id="actYearAnnRev" class="marginBottom1em" label="YTD annualized revenues" 
+                                      value="{!v.br.Actual_Year_Annualised_Revenues__c}"/>
+                    
+                    <ui:inputCurrency aura:id="annBudget" class="marginBottom1em" label="Annual budget" 
+                                      value="{!v.br.Budget_Annualised__c}"/>
+                    
+                    <ui:inputCurrency aura:id="nextYearBudget" class="marginBottom1em" label="Next year budget" 
+                                      value="{!v.br.Next_year_budget__c}"/>
+                    
+                    <ui:inputCurrency aura:id="actRwa" class="marginBottom1em" label="Actual RWA" 
+                                      value="{!v.br.Actual_RWA__c}"/>
+                    
+                    <ui:inputNumber aura:id="actRorwa" class="marginBottom1em" label="Actual RoRWA" 
+                                      value="{!v.br.Actual_RoRWA__c}"/>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModifyBudgetRevenue}">Save</button>
+                    </div>
+                    
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

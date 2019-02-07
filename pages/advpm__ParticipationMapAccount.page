@@ -1,0 +1,4 @@
+<apex:page standardController="Account" tabStyle="Account" cache="false" readOnly="true" sidebar="false" showHeader="{!NOT(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1')}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1','','Participation Map: '+Account.Name)}">
+    <apex:outputField value="{!Account.Name}" rendered="false" />
+    <c:ParticipationMap recordId="{!Account.Id}" recordName="{!Account.Name}" fieldName="advpm__Account__c" />
+</apex:page>

@@ -1,0 +1,360 @@
+<!-- Rudolf Niehaus - 2017-08-05 - Page for custom contact list view button-->
+<apex:page standardController="Contact" extensions="evDelegateCreation_Controller" recordSetVar="contacts" standardStylesheets="true">
+    <head>
+        <apex:slds />
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" /> 
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" />
+        
+        <script type="text/javascript">
+        var j$ = $.noConflict();
+        
+        function checkIt(){
+            if (j$('.message').length > 0){
+                // Error exists
+                j$('#promptPanel').css('display','block');
+            }
+            else{
+                j$('#promptPanel').css('display','none');
+            }
+        }
+        
+        </script>  
+        <style>
+            #wrapper {
+            width: 100%;
+            margin: 0 auto;
+            }
+            #leftcolumn, #rightcolumn {
+            border: 1px solid white;
+            float: left;
+            min-height: 450px;
+            color: white;
+            }
+            #leftcolumn {
+            width:50%;
+            }
+            #rightcolumn {
+            width:50%;
+            }
+        </style>
+    </head>
+    <apex:messages ></apex:messages>
+    <div class="slds-page-header" style="">
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Prioritise Delegates">
+                    <svg class="slds-icon" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/standard-sprite/svg/symbols.svg#orders')}"></use>
+                    </svg>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Prioritise Delegates">Add Delegates</h1>
+            </div>
+        </div>
+    </div>
+    <div id="wrapper">
+        <div id="leftcolumn">
+            <apex:form id="frmA" >
+                <div class="slds">
+                    <div class="slds-form--stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Event</label>
+                            <div class="slds-form-element__control">
+                                <apex:selectList size="1" value="{!selectedEvent}" id="selectLst" styleclass="slds-select"  onchange="refresh(); javascript:  j$('[id$=hidNumberOfInvites]').val('0'); if (j$(this).val() == ''){j$('input[id$=chkImport]').each(function(){j$(this).prop('checked',false); j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)'); })} j$('[id$=pdTable]').find('select').each(function(){ j$(this).val('Select');});j$('[id$=selTeamMembers]').val('');"> 
+                                    <apex:selectOptions value="{!eventOptions}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <apex:outputPanel id="pnlPageBlockSection2" >
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label">Event Member</label> 
+                                <div class="slds-form-element__control">
+                                    <apex:selectList size="1" value="{!selectedTeamMember}" id="selTeamMembers" styleclass="slds-select" onchange="refreshHostList(); javascript:j$('input[id=chkImport]').each(function(){j$(this).prop('checked',false);j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)'); });">                                                         
+                                    <apex:selectOptions value="{!hostOptions}"/>
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel id="pnlPageBlockSection3" >
+                        <apex:outputPanel id="pnlNumInvitesUsed" style="width:100%;" >
+                            <div class="slds-m-top_medium">
+                                <span style="{!if (numberOfInvitesUsed >= VALUE(numberOfInvites),'color:red;','color:#099AD6;')}width:100%;">
+                                    <apex:outputLabel id="lblNumberOfInvitesUsed" value="{!if (numberOfInvitesUsed >= VALUE(numberOfInvites), 'This host has used ALL (' + TEXT(numberOfInvitesUsed) + ') of their proposed invites.', 'This host has used ' + TEXT(numberOfInvitesUsed) + ' of ' + numberOfInvites + ' proposed invites.')}">
+                                    </apex:outputLabel>
+                                </span>                        
+                                <apex:inputHidden id="hidNumberOfInvitesUsed" value="{!numberOfInvitesUsed}"/>
+                                <apex:inputHidden id="hidNumberOfInvites" value="{!numberOfInvites}"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                    <style>
+                        @keyframes border-red-fade {
+                        0%  { border-left: 1px solid rgb(237, 237, 237);}
+                        0.1%   { border-left: 4px solid rgba(255, 0, 0, 1); }                                        
+                        99.99%  { border-left: 4px solid rgba(255, 0, 0, 0);}
+                        100%  { border-left: 1px solid rgb(237, 237, 237);}
+                        }
+                        
+                        .invalidborder {                                        
+                        animation: border-red-fade 1s;
+                        animation-iteration-count: 1;
+                        }
+                    </style>
+                    <script type="text/javascript">
+                    
+                    </script>
+                    <br/>
+                    <div class="slds-form-element slds-float--left">
+                        <button id="btnconfirm" class="slds-button slds-button--brand" type="button" onclick="confirm();" >
+                            Confirm
+                        </button>
+                        <button id="btncancel" class="slds-button slds-button--brand" type="button" onclick="cancel();" >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <apex:actionFunction action="{!addToEvent}" name="addContacts" />
+                <apex:actionFunction action="{!cancel}" name="cancelTask" />
+                <br/>
+                <br/>
+                <br/>
+                <apex:outputPanel id="yrender">
+                    <div class="slds">
+                        
+                        <div class="slds-scrollable--x" id="contactlist">
+                            
+                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                                <span class="slds-assistive-text">info</span>
+                                <span class="slds-icon_container slds-icon-utility-user slds-m-right_x-small" title="Description of icon when needed">
+                                    <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#user"></use>
+                                    </svg>
+                                </span>
+                                <h2>Selected Contacts</h2> 
+                            </div>
+                            <table width="100%" id="contlist" class="slds-table slds-table--bordered ">
+                                <tr class="slds-text-heading--label">
+                                    <th class="slds-cell-shrink">Add To Event?</th>
+                                    <th class="slds-cell-shrink">First Name</th>
+                                    <th class="slds-cell-shrink">Last Name</th>
+                                </tr>
+                                <apex:repeat value="{!lstAWrapper}" var="rc" >
+                                    <tr class="slds-hint-parent">
+                                        <td class="slds-cell-shrink" data-label="Select Row">
+                                            <label class="slds-checkbox">
+                                                <apex:inputCheckbox value="{!rc.IsChecked}" onclick="javascript: AddSelectedInvitees(this);" id="chkImport" />
+                                                <span class="slds-checkbox--faux"></span>
+                                            </label>
+                                        </td>
+                                        <td class="slds-cell-shrink"><apex:outputField value="{!rc.ContactRec.FirstName}" /></td>
+                                        <td class="slds-cell-shrink"><apex:outputField value="{!rc.ContactRec.LastName}" /></td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <br/>
+                <div class="slds-form--stacked">
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                        <span class="slds-assistive-text">info</span>
+                        <span class="slds-icon_container slds-icon-utility-user slds-m-right_x-small" title="Description of icon when needed">
+                            <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#user"></use>
+                            </svg>
+                        </span>
+                        <h2>Existing Delegates for selected Event and Host</h2>
+                    </div>
+                </div>
+                <apex:outputPanel id="xrender">
+                    <div class="slds">
+                        <div class="slds-scrollable--x" id="dellist">
+                            <table width="100%" id="existdel" class="slds-table slds-table--bordered ">
+                                <tr class="slds-text-heading--label">
+                                    <th class="slds-cell-shrink">Invitation Status</th>
+                                    <th class="slds-cell-shrink">First Name</th>
+                                    <th class="slds-cell-shrink">Last Name</th>
+                                </tr>
+                                <apex:repeat value="{!existingDelegates}" var="ex" id="exdel">
+                                    <tr class="slds-hint-parent">
+                                        <td class="slds-cell-shrink"><apex:outputField value="{!ex.Invitation_Status__c}"/></td>
+                                        <td class="slds-cell-shrink"><apex:outputField value="{!ex.Contact__r.FirstName}"/></td>
+                                        <td class="slds-cell-shrink"><apex:outputField value="{!ex.Contact__r.LastName}" /></td>
+                                    </tr>
+                                </apex:repeat> 
+                            </table>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <apex:actionFunction action="{!refreshLists}" name="refreshLists" reRender="xrender,yrender,pnlPageBlockSection2,pnlPageBlockSection3,pnlButtons" onComplete="enableButtons();"/>
+                <apex:actionFunction action="{!newHostList}" name="hostLists" reRender="yrender,xrender,pnlPageBlockSection3,pnlButtons" onComplete="enableButtons();"/> 
+            </apex:form>
+        </div>
+    </div>
+    <script>
+    var numOfInvitesUsed = j$('[id$=hidNumberOfInvitesUsed]').val();
+    var numOfInvites = 0;
+   
+    function AddSelectedInvitees(obj){
+        
+        console.log('-------------- AddSelectedInvitees starts -----------------');
+        
+        if (j$('[id$=btnconfirm]').is(':visible')){
+            
+            numOfInvites = j$('[id$=hidNumberOfInvites]').val();
+            
+            console.log('numOfInvites = ' + numOfInvites);            
+            
+            if (j$(obj).prop('checked') == true){ 
+                
+                console.log('Checked = TRUE');
+                
+                j$(obj).parent().parent().find('select').prop('required',true);
+                
+                 console.log('numOfInvitesUsed = ' + numOfInvitesUsed + ' numOfInvites = ' + numOfInvites);
+                
+                if ((parseInt(numOfInvitesUsed) < parseInt(numOfInvites)) && numOfInvitesUsed > -1){ 
+                    
+                    console.log('numOfInvitesUsed = ' + numOfInvitesUsed);
+                    console.log('Increase numOfInvitesUsed now...');
+                    
+                    numOfInvitesUsed++;
+                    
+                    console.log('numOfInvitesUsed = ' + numOfInvitesUsed);
+                    
+                    j$(obj).parent().parent().parent().css('border-left','4px solid green');
+                    j$('[id$=pnlNumInvitesUsed]').css('color','green');                                           
+                    j$(obj).attr('checked','checked');
+                    
+                }else{
+                    
+                    j$(obj).parent().parent().parent().removeClass('invalidborder');
+                    setTimeout(function(){j$(obj).parent().parent().parent().addClass('invalidborder');}, 100);                                          
+                    
+                    j$(obj).prop('checked', false);
+                    j$(obj).attr('checked','');
+                    j$(obj).val('');                                           
+                }
+            }else{
+                
+                console.log('Checked = FALSE');
+                
+                j$(obj).parent().parent().find('select').prop('required',false);
+                
+                console.log('numOfInvitesUsed = ' + numOfInvitesUsed);
+                console.log('Decrease numOfInvitesUsed now....');
+                
+                if (numOfInvitesUsed > 0){
+                  numOfInvitesUsed--;
+                }
+                console.log('numOfInvitesUsed = ' + numOfInvitesUsed);
+                
+                j$('[id$=pnlNumInvitesUsed]').css('color','#099AD6');
+                j$(obj).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');                                        
+            }
+            
+            j$('[id$=pnlNumInvitesUsed]').show();
+            
+            if (numOfInvitesUsed >= numOfInvites){
+                
+                j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used ALL of their proposed invites.");
+                
+            }else{
+                
+                j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used " + numOfInvitesUsed + " of " + numOfInvites + " proposed invites.");
+            }   
+        }else{
+            if (j$(obj).prop('checked') == true){
+                j$(obj).parent().parent().parent().css('border-left','4px solid green');
+            }else{                               
+                j$(obj).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');   
+            }
+        }
+        
+        console.log('--------------AddSelectedInvitees end-----------------');
+    };
+    
+    function confirm(){
+        addContacts();
+    };
+    function cancel(){
+        cancelTask();
+    };
+    function refresh(){
+       
+        document.getElementById('btnconfirm').disabled = true;
+        document.getElementById('btncancel').disabled = true;
+        refreshLists();        
+    };
+    function refreshHostList(){
+        
+        document.getElementById('btnconfirm').disabled = true;
+        document.getElementById('btncancel').disabled = true;
+        
+        hostLists();
+        
+    };
+    function enableButtons(){
+        //checkNumbers();
+        document.getElementById('btnconfirm').disabled = false;
+        document.getElementById('btncancel').disabled = false;
+        numOfInvitesUsed = j$('[id$=hidNumberOfInvitesUsed]').val();
+        numOfInvites = j$('[id$=hidNumberOfInvites]').val();
+    };
+    /**
+    function checkAll(cb){
+        console.log('Check all function called.');
+        var c = 0;
+        var ch = false;
+        numOfInvites = j$('[id$=hidNumberOfInvites]').val();                                    
+        var inputElem = j$('input[id$=chkImport]');
+        ch = j$(cb).prop('checked');
+        inputElem.each(function(){
+            
+            j$(this).prop('checked', j$(cb).prop('checked'));
+            if (j$(this).prop('checked') == true)
+            {
+                j$(this).parent().parent().parent().css('border-left','4px solid green');
+            }
+            else
+            {                               
+                j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');   
+            }
+            
+            if (j$(cb).prop('checked') == true)
+            {                                            
+                numOfInvitesUsed++;                                            
+            }
+            else 
+            {
+                
+                numOfInvitesUsed--;                                           
+            }
+        });
+        
+        if ((numOfInvitesUsed>=parseInt(numOfInvites)) && ch == true)
+        {                                        
+            j$('[id$=btnCreate]').prop('disabled',true);
+        }
+        else
+        {                                       
+            j$('[id$=btnCreate]').prop('disabled',false);
+        }  
+        j$('[id$=pnlNumInvitesUsed]').show();
+        if (numOfInvitesUsed>=parseInt(numOfInvites))
+        {
+            j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used ALL of their proposed invites.");
+        }
+        else
+        {
+            j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used " + numOfInvitesUsed + " of " + numOfInvites + " proposed invites.");
+        } 
+    };
+    **/
+    </script>
+</apex:page>

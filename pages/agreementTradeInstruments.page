@@ -1,0 +1,137 @@
+<apex:page standardController="Agreement_Trade_Instrument__c" extensions="agreementTradeInstrumentsExtension" doctype="html-5.0">
+    
+    <!-- JQUERY -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <!-- Multi Select jQuery Select plugin -->
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.0.2/jquery.sumoselect.min.js" />
+    <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.0.2/sumoselect.min.css" />
+    
+    <style>
+        .table-header {
+        font-weight: bold;
+        }
+        
+        .SumoSelect {
+            display: block;
+            width: unset;
+            border-left: 3px solid #c00;
+        	left: -4px;
+        }
+        
+        .SumoSelect.open>.optWrapper {
+        	top: 22px;
+        }
+        
+        .SelectBox {
+        	padding: 2px 3px;
+        }
+    </style>
+    
+    <apex:form id="pageContent">
+        <apex:outputPanel rendered="{!tradeInstrumentPanel}" id="tradeInstrumentPanel">
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:sectionHeader title="{!$ObjectType.Agreement_Trade_Instrument__c.Label} Edit" subtitle="{!IF(isNewRecord, 'New', '')} {!IF(isAgreement, $ObjectType.Agreement_Trade_Instrument__c.Label, 'Trade Instruments to be Excluded from Exposure Calculations')}" />
+
+            <apex:pageBlock title="{!IF(isAgreement, $ObjectType.Agreement_Trade_Instrument__c.Label, 'Trade Instruments to be Excluded')} {!IF(isNewRecord, 'New', 'Edit')}" mode="edit">
+
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!save}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" html-formnovalidate="formnovalidate"  />
+                </apex:pageBlockButtons>
+
+                <apex:pageBlockSection title="Information" columns="1">
+                    <apex:outputField value="{!Agreement_Trade_Instrument__c.Agreement__c}" rendered="{!isAgreement}"/>
+                    <apex:outputField value="{!Agreement_Trade_Instrument__c.Supporting_Agreement__c}" rendered="{!isSuppAgreement}"/>
+                    <apex:pageBlockSectionItem id="crossBank">
+                        <apex:outputLabel value="Trade Instruments" />
+                        <apex:selectList value="{!selectedTradeInstruments}" required="true" multiselect="true" label="Trade Instruments" id="tiSelect" styleClass="tradeInstrument"  >
+                            <apex:selectOptions value="{!tradeInstruments}"/>
+                        </apex:selectList>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+    
+    <script>
+        $(document).ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+
+            //Initialize Sumo Select for trade instruments multiselect
+            $('.tradeInstrument').SumoSelect(
+                {
+                    search: true, 
+                    searchText: 'Search',
+                    placeholder: 'Select Trade Instruments',
+                    selectAll: true
+                }
+            );
+            
+            //Set Trade Instruments selected values on load
+            var existingTradeInstruments = {!tradeInstrumentIdSet};
+            var existingTradeInstrumentsLength = existingTradeInstruments.length;
+            for (var i = 0; i < existingTradeInstrumentsLength; i++) {
+                console.log('existingTradeInstruments[i]: ' + existingTradeInstruments[i])
+                $('select.tradeInstrument')[0].sumo.selectItem(existingTradeInstruments[i]);    
+            }
+         });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+    
+</apex:page>

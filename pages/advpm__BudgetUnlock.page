@@ -1,0 +1,28 @@
+<apex:page standardController="advpm__Budget__c" extensions="advpm.BudgetUnlockController" action="{!doUnlock}">
+	
+    <apex:sectionHeader title="{!$ObjectType.advpm__Budget__c.Label}" subtitle="{!$ObjectType.advpm__Budget__c.Label} {!$Label.advpm__budget_unlock_title}" rendered="{!$User.UITheme != 'Theme4d'}" />
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!$User.UITheme == 'Theme4d'}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="{!$ObjectType.advpm__Budget__c.Label} {!$Label.advpm__budget_unlock_title}" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Budget__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Budget__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Budget__c.Name}" 
+                            parentRecordID="{!advpm__Budget__c.ID}">
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    
+    <apex:form id="theForm" styleClass="{!IF($User.UITheme == 'Theme4d','slds','')}">
+        <apex:actionFunction name="doCancel" action="{!cancel}" />
+        
+    	<apex:pageMessages />
+		
+        <div style="width:100%;">
+			<div style="width:40%;display:inline-block;text-align:right;">
+				<button onclick="doCancel(); return false;" class="{!IF($User.UITheme == 'Theme4d','slds-button slds-button--neutral','btn')}">{!$Label.budget_button_back}</button>
+			</div>
+			<div style="width:60%;display:inline-block;text-align:right;">&nbsp;</div>
+		</div>
+        
+	</apex:form>
+</apex:page>
