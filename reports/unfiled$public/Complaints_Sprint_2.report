@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>FK_NAME</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c.agf__Subject__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c.agf__Details__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c.agf__Status__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>CUST_RECORDTYPE</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>agf__ADM_Work__c.agf__User_Story</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Work__c.agf__Product_Tag_Name__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Complaints</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>FK_NAME</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>2018.06 - Complaints Sprint 2</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Complaints Sprint 2</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$agf__ADM_Work__c@agf__ADM_Work__c.agf__Sprint__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>agf__ADM_Work__c.agf__Status__c</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>agf__ADM_Work__c.agf__Assigned_On__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

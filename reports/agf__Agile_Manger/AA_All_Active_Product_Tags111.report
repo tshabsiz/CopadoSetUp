@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>agf__ADM_Product_Tag__c$RAG_Status__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Product_Tag__c$agf__Description__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>agf__ADM_Product_Tag__c$Progress__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>agf__ADM_Product_Tag__c$agf__Active__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Product_Tag__c$Name</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Lightning Service Cloud</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>agf__ADM_Product_Tag__c$Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>agf__ADM_Product_Tag__c$RAG_Status_Indicator__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>ECB: Lightning Service Cloud</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Product_Tags__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>agf__ADM_Product_Tag__c$RAG_Status__c</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>agf__ADM_Product_Tag__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

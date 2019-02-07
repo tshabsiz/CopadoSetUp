@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>agf__ADM_Work__c$agf__Scrum_Team__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$agf__Subject__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$agf__Details__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$agf__Status__c</field>
+    </columns>
+    <columns>
+        <field>agf__ADM_Work__c$Name</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>agf__ADM_Work__c.agf__Theme_Assignments__r$agf__Theme__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>eGain</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Work__c$agf__Scrum_Team__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Knowledge</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Work__c$agf__Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>,Not Reproducible,Not a bug,Duplicate,Abandoned,Awaiting Feedback,Reopened,New,Ready for Analysis,Ready for Sprint,Ready for Build,Acknowledged,Triaged,In Progress,Waiting,Deferred,Build in progress,Investigating,Ready for Review,Fixed,QA In Progress,Closed,Closed - Defunct,Closed - Duplicate,Closed - Eng Internal,Closed - Known Bug Exists,Closed - New Bug Logged,Closed - LAP Request Approved,Closed - LAP Request Denied,Closed - Resolved With Internal Tools,Closed - Resolved Without Code Change,Closed - No Fix - Working as Designed,Closed - No Fix - Feature Request,Closed - No Fix - Will Not Fix,Integrate,Pending Release,Inactive,More Info Reqd from Support,Never,Rejected,Completed,Eng Internal</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>agf__ADM_Work__c$agf__Type__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>User Story</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>eGain User Stories</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Work_with_or_without_Themes__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>agf__ADM_Work__c$agf__Assigned_On__c</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>
