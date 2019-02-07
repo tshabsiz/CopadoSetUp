@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Other Business Roles that the Contact is associated with</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Account__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship Name</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Roles</relationshipLabel>
+        <relationshipName>Contact_Associations</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Is this contact currently active for this role</description>
+        <externalId>false</externalId>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Apex_Context__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Apex Context</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Company__c</fullName>
+        <externalId>false</externalId>
+        <label>Company</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact_Role__c</fullName>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&quot;/&quot;&amp;Id, TEXT(Role__c), &quot;_self&quot;)</formula>
+        <label>Role Link</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact__c</fullName>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipName>Contact_Associations</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>true</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Email__c</fullName>
+        <externalId>false</externalId>
+        <label>Email</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fax__c</fullName>
+        <externalId>false</externalId>
+        <label>Fax</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Firstname__c</fullName>
+        <externalId>false</externalId>
+        <formula>Contact__r.FirstName</formula>
+        <label>Firstname</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Lastname__c</fullName>
+        <externalId>false</externalId>
+        <formula>Contact__r.LastName</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Lastname</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Phone__c</fullName>
+        <externalId>false</externalId>
+        <label>Phone</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Primary_Role__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Sets this role as the primary Role which appears on the contact related record</description>
+        <externalId>false</externalId>
+        <label>Primary Role</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Role__c</fullName>
+        <externalId>false</externalId>
+        <label>Role</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Individual</fullName>
+                    <default>false</default>
+                    <label>Individual</label>
+                </value>
+                <value>
+                    <fullName>Asset Consultant</fullName>
+                    <default>false</default>
+                    <label>Asset Consultant</label>
+                </value>
+                <value>
+                    <fullName>Broker - Dealing</fullName>
+                    <default>false</default>
+                    <label>Broker - Dealing</label>
+                </value>
+                <value>
+                    <fullName>Business Executive / Business Unit Head / Partner</fullName>
+                    <default>false</default>
+                    <label>Business Executive / Business Unit Head / Partner</label>
+                </value>
+                <value>
+                    <fullName>CEO / Managing Director / President</fullName>
+                    <default>false</default>
+                    <label>CEO / Managing Director / President</label>
+                </value>
+                <value>
+                    <fullName>CFO / Financial Director / Finance Partner</fullName>
+                    <default>false</default>
+                    <label>CFO / Financial Director / Finance Partner</label>
+                </value>
+                <value>
+                    <fullName>Chairman / Board member</fullName>
+                    <default>false</default>
+                    <label>Chairman / Board member</label>
+                </value>
+                <value>
+                    <fullName>Chief Investment Officer COO / CIO / CTO / CMO</fullName>
+                    <default>false</default>
+                    <label>Chief Investment Officer COO / CIO / CTO / CMO</label>
+                </value>
+                <value>
+                    <fullName>Director</fullName>
+                    <default>false</default>
+                    <label>Director</label>
+                </value>
+                <value>
+                    <fullName>Finance Manager</fullName>
+                    <default>false</default>
+                    <label>Finance Manager</label>
+                </value>
+                <value>
+                    <fullName>Legal Representative</fullName>
+                    <default>false</default>
+                    <label>Legal Representative</label>
+                </value>
+                <value>
+                    <fullName>Markets - Administration</fullName>
+                    <default>false</default>
+                    <label>Markets - Administration</label>
+                </value>
+                <value>
+                    <fullName>Markets - Dealing</fullName>
+                    <default>false</default>
+                    <label>Markets - Dealing</label>
+                </value>
+                <value>
+                    <fullName>Markets - Sales</fullName>
+                    <default>false</default>
+                    <label>Markets - Sales</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Portfolio Manager</fullName>
+                    <default>false</default>
+                    <label>Portfolio Manager</label>
+                </value>
+                <value>
+                    <fullName>Project Manager / Consultant / Analyst / Engineer</fullName>
+                    <default>false</default>
+                    <label>Project Manager / Consultant / Analyst / Engineer</label>
+                </value>
+                <value>
+                    <fullName>Research</fullName>
+                    <default>false</default>
+                    <label>Research</label>
+                </value>
+                <value>
+                    <fullName>Treasurer</fullName>
+                    <default>false</default>
+                    <label>Treasurer</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Title__c</fullName>
+        <externalId>false</externalId>
+        <formula>Contact__r.Title</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Title</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Role</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Role Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Roles</pluralLabel>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Company__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Role__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Email__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Account__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Phone__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Company__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Role__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Email__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Account__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Phone__c</lookupPhoneDialogsAdditionalFields>
+        <searchResultsAdditionalFields>Contact__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Email__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Phone__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Role__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Account__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Prevent_Disable_Primary_Role</fullName>
+        <active>true</active>
+        <description>Prevents user from unchecking the Primary Role check box</description>
+        <errorConditionFormula>AND (
+ Apex_Context__c  = false,
+ ISCHANGED(Primary_Role__c),
+ Primary_Role__c = false
+)</errorConditionFormula>
+        <errorMessage>Error: You cannot uncheck Primary Role.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>New_Association</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>New Role</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/a4y/e?CF00N8E000000G8Ue={!Contact.Name}&amp;Name={!Contact.FirstName}%20{!Contact.LastName}&amp;CF00N2400000IFFo3_lkid={!Contact.Id}&amp;CF00N2400000IFFo3={!Contact.Name}&amp;retURL=%2F{!Contact.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>New_Contact</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>New Contact</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>var ownerName = &apos;{!Account.OwnerFullName}&apos;; 
+var businessSegment = &apos;{!Account.Segment__c}&apos;; 
+
+if(ownerName==&apos;Coverage Unmanaged&apos; &amp;&amp; businessSegment!=&apos;Business Banking&apos;) 
+{ 
+alert(&apos;Contacts have been disabled for Relationships owned by Coverage Unmanaged &apos;); 
+} 
+else 
+{ 
+location.href = &apos;/003/e?con4={!Account.Name}&amp;con4_lkid={!Account.Id}&apos;; 
+}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>New_Contact_From_Client</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>New Contact</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>var ownerName = &apos;{!Account.OwnerFullName}&apos;; 
+var businessSegment = &apos;{!Account.Segment__c}&apos;; 
+
+if(ownerName==&apos;Africa RD Holder&apos; &amp;&amp; businessSegment!=&apos;Business Banking&apos;) 
+{ 
+alert(&apos;Contacts have been disabled for Relationships owned by Africa RD Holder &apos;); 
+} 
+else 
+{ 
+location = &apos;/003/e?con4={!Account.Parent}&amp;con4_lkid={!Account.ParentId}&amp;CF00N2400000ISxBm_lkid={!Account.Id}&amp;CF00N2400000ISxBm={!Account.Name}&amp;retURL={!Account.Id}&apos;; 
+}</url>
+    </webLinks>
+</CustomObject>

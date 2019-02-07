@@ -1,0 +1,107 @@
+<!--
+ - Created by KyleAlexander on 2018/03/05.
+ -->
+
+<apex:page standardController="Supporting_Agreement__c" extensions="SupportingAgreementDealsRelatedList_Cont" doctype="html-5.0">
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <script>
+        $('document').ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+           }
+           else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+           }
+        });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+
+    <apex:form >
+        <apex:outputPanel rendered="{!dealsPanel}" id="dealsPanel">
+            <apex:pageBlock id="changesButton">
+                <apex:commandButton value="Submit Changes" action="{!submitChanges}" style="text-align:center" rendered="{!changesMade}"/>
+            </apex:pageBlock>
+
+            <apex:pageBlock id="allDealsBlock">
+                <apex:outputLabel value="There are no more relevant deal parties" rendered="{!dealParties.size == 0}"></apex:outputLabel>
+                <apex:pageBlockTable value="{!dealParties}" var="deals" id="allDeals">
+                    <apex:column value="{!deals.Relationship_SDS_ID__c}"/>
+                    <apex:column value="{!deals.name}"/>
+                    <apex:column value="{!deals.Relationship_Type__c}"/>
+                    <apex:column style="width:20%;text-align:center">
+                        <apex:commandButton value="Add Disclosed Principal" action="{!addDeal}" rerender="allDealsBlock, addedDealsBlock, changesButton">
+                            <apex:param name="dealId" value="{!deals.id}" assignTo="{!dealId}"/>
+                        </apex:commandButton>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+
+            <apex:pageBlock id="addedDealsBlock">
+                <apex:outputLabel value="No deals parties have been added to this supporting agreement" rendered="{!addedDealParties.size == 0}"></apex:outputLabel>
+                <apex:pageBlockTable value="{!addedDealParties}" var="addedDeals" id="addedDeal">
+                    <apex:column value="{!addedDeals.Relationship_SDS_ID__c}"/>
+                    <apex:column value="{!addedDeals.name}"/>
+                    <apex:column value="{!addedDeals.Relationship_Type__c}"/>
+                    <apex:column style="width:20%;;text-align:center">
+                        <apex:commandButton value="Remove Disclosed Principal" action="{!removeDeal}" rerender="allDealsBlock, addedDealsBlock, changesButton">
+                            <apex:param name="addedDealId" value="{!addedDeals.id}" assignTo="{!dealId}"/>
+                        </apex:commandButton>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                    <apex:commandButton value="Cancel" action="{!CancelAmendment}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                            <!--<apex:inputText id="amendmentType"/>-->
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

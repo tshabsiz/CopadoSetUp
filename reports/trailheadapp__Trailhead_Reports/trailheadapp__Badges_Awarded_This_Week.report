@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__User_Badge__c.trailheadapp__User__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__User_Badge__c.trailheadapp__First_Attempted_Date__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__User_Badge__c.trailheadapp__Last_Attempted_Date__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__User_Badge__c.trailheadapp__Finished_Date__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__Badge__c.trailheadapp__Level__c</field>
+    </columns>
+    <columns>
+        <field>trailheadapp__Badge__c.trailheadapp__Roles__c</field>
+    </columns>
+    <description>Report on badges earned by users this week.</description>
+    <format>Summary</format>
+    <name>Badges Awarded This Week</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$trailheadapp__Badge__c$trailheadapp__User_Badge__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>trailheadapp__User_Badge__c.trailheadapp__Finished_Date__c</dateColumn>
+        <interval>INTERVAL_THISWEEK</interval>
+    </timeFrameFilter>
+</Report>

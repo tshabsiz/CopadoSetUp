@@ -1,0 +1,27 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="lscTransferCaseExt">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="qname" type="String" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <center style="z-index:99">
+       <lightning:spinner aura:id="TheSpinner" class="slds-hide" variant="brand" size="large" />
+    </center>
+    <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Case" aura:id="recordViewForm" >
+        <table>
+            <tr>
+                <td colspan="2">
+                    <lightning:inputField fieldName="Queue__c" aura:id ="qnames"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="95%">
+                </td>
+                <td width="5%">
+                    <lightning:button label="Transfer" onclick="{!c.clickTransfer}" variant="brand" />
+                </td>
+            </tr>
+        </table>
+    </lightning:recordEditForm>
+</aura:component>

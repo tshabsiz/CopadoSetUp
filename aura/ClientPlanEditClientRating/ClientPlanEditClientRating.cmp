@@ -1,0 +1,54 @@
+<aura:component controller="ClientPlanFinancialsControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  	<aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    Edit client rating
+                </div>
+                
+                <div id="wholePage">
+                    <ui:inputText aura:id="tfl" label="TFL" value="{!v.plan.TFL__c}" required="false" class="marginBottom1em"/>
+                    
+                    <ui:inputSelect aura:id="fais" label="FAIS status" class="dynamic marginBottom1em">
+                        <aura:iteration items="{!v.faisOptions}" var="o">
+                            <ui:inputSelectOption text="{!o}" label="{!o}" value="{!if(v.plan.FAIS_Status__c == o, true, false)}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                    <ui:inputDate aura:id="lastReviewDate" label="Last review date" class="field marginBottom1em" 
+                                  value="{!v.plan.Last_Review_Date__c}" displayDatePicker="true"/>
+                    <span aura:id="lastReviewDateError" class="toggle red">Date can not be in future</span>
+                    
+                    <ui:inputSelect aura:id="financialYearEnd" label="Clients year end" class="dynamic marginBottom1em" value="{!v.plan.Financial_Year_End__c}">
+                        <aura:iteration items="{!v.financialYearEndOptions}" var="o">
+                            <ui:inputSelectOption text="{!o}" label="{!o}" value="{!if(v.plan.Financial_Year_End__c == o, true, false)}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                    <ui:inputDate aura:id="latestAudited" label="Date of latest Audited Financial Statements" class="field" 
+                                  value="{!v.plan.Latest_Audited_Financial_Statement__c}" displayDatePicker="true" />
+                    <span aura:id="latestAuditedError" class="toggle red">Date can not be in future</span>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModifyClientRating}">Save</button>
+                    </div>
+                    
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

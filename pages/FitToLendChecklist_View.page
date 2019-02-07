@@ -1,0 +1,217 @@
+<apex:page sidebar="false" controller="FitToLend_View" tabStyle="advpm__Matter__c" renderAs="{!renderAsPDF}" applyBodyTag="false" standardStylesheets="{!renderAsPDF == ''}" showHeader="{!renderAsPDF == ''}">
+    
+    <head>        
+            <style>
+                @page {
+                    size: A4;
+                    margin: 1.0mm;
+                    @top-center {
+                        content: "Page " counter(page) " of " counter(pages);
+                        font-family: Arial Unicode MS;
+                        font-size: 6pt;  
+                    }
+                    @bottom-center {
+                        content: "Page " counter(page) " of " counter(pages);
+                        font-family: Arial Unicode MS;
+                        font-size: 6pt;  
+                    }
+                }
+                .page-break {
+                    display:block;
+                    page-break-after:always;
+                }
+                .pbSubheader
+                {
+                    background-color: #0E99D7 !important; 
+                    border-color: none !important;
+                    font-size: 13pt;  
+                    color: white;
+                    font-weight: bold;
+                    padding: 0px;
+                } 
+                .bodyClass2 {
+                    font-family: Arial Unicode MS; 
+                    font-size: 10px;  
+                }
+            </style>
+    </head>
+    <body class="{!IF(renderAsPDF == 'pdf','bodyClass2','')}">
+
+    <apex:form title="checklist_form">
+           <apex:sectionHeader title="Fit To Lend Checklist for {!MatterRec.Name}" /> 
+          
+        <apex:pageBlock > 
+          
+            <apex:pageMessages escape="false"></apex:pageMessages>
+            
+            <!-- PAGE BLOCK BUTTONS -->
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!DoCancel}" value="Cancel" /> 
+                <apex:commandButton action="{!DoUpdate}" value="Save" />
+                <apex:commandButton action="{!DoUpdateAndGoToApprovalSubmitPage}" value="Save And Submit For Approval" />
+                <apex:commandButton action="{!DoUpdateAndNotifyOnly}" value="Save And Notify" />
+            </apex:pageBlockButtons>
+            <!-- / PAGE BLOCK BUTTONS -->
+            
+            <!-- CUSTOM MESSAGES -->
+            <apex:outputPanel rendered="{!renderAsPDF != 'pdf'}">
+                <apex:pageBlockSection title="Important note" rendered="{!isDisplayCreditMessage}" columns="1" > 
+                    Please provide your approval that credit approval still valid and sanctioning conditions have not changed.
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Important note" rendered="{!isDisplayLegalMessage}" columns="1" > 
+                    Please provide your approval that the agreement/s comply with the credit approval and conditions precedent has been fulfilled, deferred, condoned or waived.
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Important note" rendered="{!isDisplayProductMessage}" columns="1" > 
+                    Please provide your approval that the solution is correct and suits the client's needs.
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <!-- / CUSTOM MESSAGES -->
+            
+            <!-- AGREEMENTS --> 
+           <apex:variable value="{!0}" var="rowNumA"/>
+            <apex:repeat value="{!AgreementWrapperListToDisplay}" var="AgreementWrapperRec">
+                <apex:pageBlockSection title="{!AgreementWrapperRec.name}" columns="1" rendered="{!AgreementWrapperRec.name != 'Internal Deal Governance Checks'}"> 
+                    <apex:pageBlockTable value="{!AgreementWrapperRec.AgreementConditionOccurenceList}" var="CondtionOccRec">
+                        <apex:column width="5%">
+                            <apex:facet name="header">No</apex:facet>                    
+                             <apex:variable var="rowNumA" value="{!rowNumA + 1}"/>
+                             {!rowNumA}
+                        </apex:column>
+                        <apex:column width="15%">
+                            <apex:facet name="header">Name</apex:facet>                    
+                            
+                            <apex:outputLink value="/{!CondtionOccRec.Id}" target="_blank">
+                                <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}" value="{!CondtionOccRec.name}"/>
+                            
+                                <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.name}"/>
+                            </apex:outputLink>
+                            
+                        </apex:column>
+                        <apex:column width="35%">
+                            <apex:facet name="header">Clause</apex:facet>                    
+                            <apex:outputText escape="false"  style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Condition__r.Clause__c}"/>
+                            <apex:outputText escape="false" rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.Condition__r.Clause__c}"/>
+                        </apex:column>
+                        <apex:column width="15%">
+                            <apex:facet name="header">Type</apex:facet>          
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}" value="{!CondtionOccRec.RecordType.Name}"/>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.RecordType.Name}"/>
+                        </apex:column>
+                        
+                        <apex:column width="15%">
+                            <apex:facet name="header">Status</apex:facet> 
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Status__c}"/>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.Status__c}"/>
+                        </apex:column>
+                        
+                        <!-- BORROWERS -->
+                        <apex:column width="15%">
+                            <apex:facet name="header">Parties</apex:facet> 
+                            
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Relationship_Consolidated__c} <br />" escape="false" />
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}"  value="{!CondtionOccRec.Relationship_Consolidated__c} <br />" escape="false" />
+                            
+                        </apex:column>
+                        <!-- / BORROWERS -->
+                        
+                        <apex:column colspan="1" width="15%" >
+                            <apex:facet name="header">Modified Date</apex:facet> 
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{0,date, dd MMM yyyy}"><apex:param value="{!CondtionOccRec.lastModifiedDate}"/></apex:outputText>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}"  value="{0,date, dd MMM yyyy}"><apex:param value="{!CondtionOccRec.lastModifiedDate}"/></apex:outputText>
+                        </apex:column>
+                        <!--
+                        <apex:column colspan="5" width="15%">                             
+                            <apex:facet name="header">Comments/Remarks</apex:facet>
+                            <apex:inputTextArea value="{!CondtionOccRec.Comments__c}" cols="50" rows="5" />
+                        </apex:column>
+                         -->
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+                
+            </apex:repeat>
+            <br/>
+            <!--
+            <apex:outputPanel >
+            <apex:outputLabel value="Comments/Remarks"/>
+                <br/><br/>
+            <apex:inputTextArea value="{!fit2Lend.Comments__c}" cols="50" rows="5" title="Save Commets to the Fit to Lend Record"/>
+            </apex:outputPanel>
+           -->
+            <!-- / AGREEMENTS --> 
+            
+            <!-- SECTION TO MAKE SURE - Internal Deal Governance Checks ARE ALWAYS LAST --> 
+             <apex:variable value="{!0}" var="rowNumB"/>
+            <apex:repeat value="{!AgreementWrapperListToDisplay}" var="AgreementWrapperRec">
+                <apex:pageBlockSection title="{!AgreementWrapperRec.name}" columns="1" rendered="{!AgreementWrapperRec.name == 'Internal Deal Governance Checks'}"> 
+                    <apex:pageBlockTable value="{!AgreementWrapperRec.AgreementConditionOccurenceList}" var="CondtionOccRec">
+                         <apex:column width="5%">
+                            <apex:facet name="header">Row</apex:facet>                    
+                             <apex:variable var="rowNumB" value="{!rowNumB + 1}"/>
+                             {!rowNumB}
+                        </apex:column>
+                        <apex:column width="15%">
+                            <apex:facet name="header">Name</apex:facet>                    
+                            
+                            <apex:outputLink value="/{!CondtionOccRec.Id}" target="_blank">
+                                <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}" value="{!CondtionOccRec.name}"/>
+                            
+                                <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.name}"/>
+                            </apex:outputLink>
+                            
+                        </apex:column>
+                        <apex:column width="35%">
+                            <apex:facet name="header">Clause</apex:facet>                    
+                            <apex:outputText escape="false"  style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Condition__r.Clause__c}"/>
+                            <apex:outputText escape="false" rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.Condition__r.Clause__c}"/>
+                        </apex:column>
+                        <apex:column width="15%">
+                            <apex:facet name="header">Type</apex:facet>          
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}" value="{!CondtionOccRec.RecordType.Name}"/>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.RecordType.Name}"/>
+                        </apex:column>
+                        
+                        <apex:column width="15%">
+                            <apex:facet name="header">Status</apex:facet> 
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Status__c}"/>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}" value="{!CondtionOccRec.Status__c}"/>
+                        </apex:column>
+                        
+                        <!-- BORROWERS -->
+                        <apex:column width="15%">
+                            <apex:facet name="header">Parties</apex:facet> 
+                            
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{!CondtionOccRec.Relationship_Consolidated__c} <br />" escape="false" />
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}"  value="{!CondtionOccRec.Relationship_Consolidated__c} <br />" escape="false" />
+                            
+                        </apex:column>
+                        <!-- / BORROWERS -->
+                        
+                        <apex:column colspan="1" width="15%" >
+                            <apex:facet name="header">Modified Date</apex:facet> 
+                            <apex:outputText style="color:red;" rendered="{!CondtionOccRec.Status__c != 'Fulfilled'}"  value="{0,date, dd MMM yyyy}"><apex:param value="{!CondtionOccRec.lastModifiedDate}"/></apex:outputText>
+                            <apex:outputText rendered="{!CondtionOccRec.Status__c == 'Fulfilled'}"  value="{0,date, dd MMM yyyy}"><apex:param value="{!CondtionOccRec.lastModifiedDate}"/></apex:outputText>
+                        </apex:column>
+                        <!--
+                        <apex:column colspan="5" width="15%">                             
+                            <apex:facet name="header">Comments/Remarks</apex:facet>
+                            <apex:inputTextArea value="{!CondtionOccRec.Comments__c}" cols="50" rows="5" />
+                        </apex:column>
+                        -->
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:repeat>
+             <br/>
+            <apex:outputPanel >
+            <apex:outputLabel value="Comments/Remarks"/>
+                <br/><br/>
+            <apex:inputTextArea value="{!fit2Lend.Comments__c}" cols="200" rows="5" title="Save Commets to the Fit to Lend Record" />
+            </apex:outputPanel>
+            <br/>
+            <!-- / SECTION TO MAKE SURE - Internal Deal Governance Checks ARE ALWAYS LAST --> 
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+    </body>
+   
+</apex:page>

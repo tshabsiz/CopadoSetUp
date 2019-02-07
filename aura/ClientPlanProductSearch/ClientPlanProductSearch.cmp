@@ -1,0 +1,37 @@
+<aura:component controller="ClientPlanProductSearchController">
+    
+    <aura:attribute name="timestamp" type="String" required="true" />
+    <aura:attribute name="value" type="String" required="true" />
+    
+    <aura:registerEvent name="ProductSearchEvent" type="c:ProductSearchEvent"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div>
+        <div id="{!v.timestamp}" class="slds marginBottom1em">
+            
+            <ui:inputText value="{!v.value}" class="slds-input searchProductsInput" label="Product Level 3" keyup="{!c.searchProducts}"/>
+            
+            <aura:if isTrue="{!v.filteredData.length > 0}">
+                <table id="searchProductsTable" class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                    <thead>
+                        <tr class="slds-text-heading--label">
+                            <th>Product Level 1</th>
+                            <th>Product Level 2</th>
+                            <th>Product Level 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.filteredData}" var="prod">
+                            <tr id="{!prod.Id}" class="product" onclick="{!c.onProductClicked}">
+                                <td data-label="Product Level 1">{!prod.Product_Level_2__r.Product__r.Name}</td>
+                                <td data-label="Product Level 2">{!prod.Product_Level_2__r.Name}</td>
+                                <td data-label="Product Level 3" class="productLvl3Name">{!prod.Name}</td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </aura:if>
+        </div>
+    </div>
+    
+</aura:component>

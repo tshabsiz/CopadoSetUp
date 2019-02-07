@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>User$Name</field>
+    </columns>
+    <columns>
+        <field>User*User$Hub__c</field>
+    </columns>
+    <columns>
+        <field>User*User$Team__c</field>
+    </columns>
+    <columns>
+        <field>User.Call_Reports__r$Name</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>User*User$Hub__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>FIG,Financial Services,Global Clients,Global Clients Banks,Global Clients GDO,Global Clients Management,Mid-corporate,Natural Resources,Public Sector South Africa,SA Coastal Regions,SA Coverage,Sectors</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>User.Call_Reports__r$Type__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>All SA Client-owned call reports</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Users_with_Call_Reports_Research__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>User.Call_Reports__r$Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_CURFY</interval>
+    </timeFrameFilter>
+</Report>

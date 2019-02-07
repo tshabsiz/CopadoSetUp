@@ -1,0 +1,5 @@
+{
+    "message": "Authorized",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiJ9.eyJ1bmlxdWVfbmFtZSI6InN5c3NhbGVzZm9yY2VhZnJpY2FkIiwicm9sZSI6IlNlcnZpY2UgQWNjb3VudCIsImlzcyI6IkRlZ2l0YWwgU2VydmljZSBHYXRld2F5IiwiYXVkIjoiMTJkMWQ1ZDEtY2EyMS00MzUxLWE1NDYtN2Q3NmMyMjQ5MGY4IiwiZXhwIjoxNTA2NTE4MTUyLCJuYmYiOjE1MDY1MTQ1NTJ9.IBMbEdG3UGzyau3bhO2jdEro6bNzmfAkmJo_qAxLWbFRef9TcHDLbcDkrabgPdKCrPqPysisWFalkLdenSXtrQ",
+    "tokenType": "Bearer"
+}

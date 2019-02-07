@@ -1,0 +1,300 @@
+<apex:page standardController="advpm__Assignment_Rule__c" extensions="advpm.AssignmentRulesImportController">
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.css')}" />
+    
+    <style type="text/css">
+        ul li, ol li { margin-left: 0px !important; }
+        ul.select2-results > li > div.select2-result-label {/*font-weight: bold;*/}
+        .select2-container-multi .select2-choices .select2-search-field input {padding: 1px 4px;}
+        .select2-container .select2-choice abbr {top:7px;right:18px;}
+        .select2-container .select2-choice {background-image: none;}
+        .select2-container-active .select2-choice, .select2-container-active .select2-choices {border: 1px solid #aaa;outline: none;-webkit-box-shadow: none;box-shadow: none;}
+        .select2-drop-active {border: 1px solid #aaa;}
+        .select2-container .select2-choice .select2-arrow {border-left: 0px solid #aaa;background: none;background-image: none;}
+        table.destination-list tr td {border-bottom-width: 0px!important;}
+        .pageType, .pageDescription {margin-left: 0px!important;}
+        .pageTitleIcon {display:none!important;}
+        .pageType {font-size: 1em!important;color: rgb(84, 105, 141)!important;padding-bottom: 3px!important;}
+    </style>
+    
+    <!-- For SLDS Process: Wizard -->
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <style type="text/css">
+        .adv-slds .slds-wizard__progress {z-index: 0;}
+        .adv-slds .slds-wizard .slds-is-active .slds-wizard__marker {background: #2f8daf;}
+        .adv-slds .slds-wizard__progress-bar {background: #2f8daf;}
+        .adv-slds .header {border-bottom: 1px solid rgb(244, 246, 249);}
+        .adv-slds .step-content {/*height: 420px;max-height: 420px;*/min-height:400px;overflow-y: auto;margin-bottom: 20px;}
+        .adv-slds .footer {background: rgb(244, 246, 249);border-top: 1px solid rgb(216, 221, 230);box-shadow: 0 1px 2px 0 rgba(0,0,0,.16);height: 57px;margin-top: 0;padding: .75rem 1rem;}
+        .rule-button {width:100px!important;height:30px!important;font-size: 12px!important;}
+        .rule-button-brand {color:white!important; background:#2f8daf!important;}
+        .mapping-table th, .mapping-table td{padding:4px;}
+        .mapping-table {margin:0px auto;width:70%!important;}
+        .mapping-table td:nth-child(1) {width: 40%;}
+        .mapping-table td:nth-child(2) {width: 40%;}
+        .mapping-table td:nth-child(3) {width: 20%;}
+        table.destination-list {width:200px!important;}
+    </style>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+    <style type="text/css">
+        .adv-slds {font-family: Arial,Helvetica,sans-serif!important;}
+    </style>
+    </apex:outputPanel>
+    
+    <!-- Code To Toggle Submit State Buttons -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/utility-control-styles.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/utility-control-styles.css')}" />
+    
+    <!-- Custom File Upload Control Styling -->
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__CustomFileInput, 'component.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__CustomFileInput, 'jquery.custom-file-input.js')}" />
+    
+    <apex:outputPanel layout="block" rendered="{!!isLightning}" styleClass="bPageTitle">
+        <div class="ptBody">
+            <div class="content">
+                <h1 class="pageType">Import {!JSINHTMLENCODE($ObjectType.advpm__Assignment_Rule__c.label)}<span class="titleSeparatingColon">:</span></h1>
+                <h2 class="pageDescription">{!advpm__Assignment_Rule__c.Name}</h2>
+                <div class="blank">&nbsp;</div>
+            </div>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="adv-slds">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="Import {!JSINHTMLENCODE($ObjectType.advpm__Assignment_Rule__c.label)}" 
+                            parentEntity="{!$ObjectType.advpm__Assignment_Rule__c.labelPlural}" 
+                            parentEntityLink="{!$ObjectType.advpm__Assignment_Rule__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Assignment_Rule__c.Name}" 
+                            parentRecordID="{!advpm__Assignment_Rule__c.Id}">
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+    <style type="text/css">
+        html body.sfdcBody {padding:0px;}
+        .adv-slds .slds-page-header {padding: 24px 24px 12px;}
+    </style>
+    </apex:outputPanel>
+    
+    <script type="text/javascript">
+        fileUpload = {
+            verify : function(){
+                var file    = document.getElementById('{!$Component.theForm.fileInput}');
+                  
+                if( file.files.length == 0 ){
+                    alert("Please select a CSV file to import");
+                    toggleButtons('{!$Component.theForm}', false);
+                    return false;
+                }   
+                else{
+                    var fileName        = file.files[0].name;
+                    var filenameSplit   = fileName.split('.');
+                    
+                    if( filenameSplit.length == 1){
+                        alert("Please select a file with the correct extension - csv");
+                        toggleButtons('{!$Component.theForm}', false);
+                        return false;
+                    }
+                    else{
+                        if( filenameSplit[ filenameSplit.length -1 ] != 'csv' ){
+                            alert("Please select a file with the correct extension - csv");
+                            toggleButtons('{!$Component.theForm}', false);
+                            return false;
+                        }
+                        else{
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        $(document).ready(function(){
+            initSelect2();
+            toggleButtons('{!$Component.theForm}', false);
+            $.fn.initFileControlCss();
+        });
+        
+        function initSelect2() {
+            $('.select2FieldMapping').select2({placeholder: 'Select a field ...', allowClear: true});
+        }
+        
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+        function showPreview(titleText, contentVersionId) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(1000);
+                d.createDialog();
+            }
+            d.setTitle(titleText);
+            
+            var data = '';
+            data += '<embed id="priviewembed" src="{!$Site.Prefix}/_swf/190003/sfc/flex/DocViewer.swf"';
+            data += 'flashvars="shepherd_prefix={!$Site.Prefix}/sfc/servlet.shepherd&v='+contentVersionId+'&mode=chatterfilepreview&in_tests=false"';
+            data += 'width="100%" height="450px" align="middle" id="renditionLarge"'; 
+            data += 'quality="high" bgcolor="#f3f3f3" name="renditionLarge"'; 
+            data += 'allowscriptaccess="true" allowfullscreen="true" '; 
+            data += 'pluginspage="http://www.adobe.com/go/getflashplayer"'; 
+            data += 'wmode="opaque"'; 
+            data += 'type="application/x-shockwave-flash" />';
+              
+            $(d.dialog).find('#myCustomSFDCDialogInner').html( data );
+            $(d.dialog).find('#myCustomSFDCDialogInner iframe').on('load', function() {
+                $(this).contents().find('input[type="submit"]').on('click', function() {
+                    if ($(this).val() == 'Cancel') d.hide();
+                    return false;
+                });
+            });
+
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+    </script>
+    
+    <apex:form id="theForm">
+        
+        <apex:pageMessages />
+        
+        <apex:outputPanel layout="block" styleClass="adv-slds">
+            <div class="slds-p-vertical--medium slds-p-horizontal--large">
+                <div class="slds-wizard" role="navigation">
+                    <ol class="slds-wizard__list">
+                        <li class="slds-wizard__item {!IF(importRulesStep >= 1,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="Select File">Select File</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item {!IF(importRulesStep >= 2,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="Map Columns">Map Columns</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item {!IF(importRulesStep >= 3,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="Confirmation">Confirmation</span>
+                            </a>
+                        </li>
+                    </ol>
+                    <span class="slds-wizard__progress">
+                        <span class="slds-wizard__progress-bar" style="width:{!((importRulesStep-1)*100)/2}%;"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="slds-p-vertical--medium slds-p-horizontal--large header">
+                <div class="content">
+                    <h3 class="slds-text-heading--medium slds-text-align--center">{!IF(importRulesStep == 1,'Select File to Import',IF(importRulesStep == 2,'Map Columns to Fields','Confirmation'))}</h3>
+                    <apex:outputPanel layout="none" rendered="{!importRulesStep == 1}">
+                        <p class="slds-text-align--center slds-m-top--small">Select an appropriately formatted CSV file containing the rules for this rule set.</p>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!importRulesStep == 2}">
+                        <p class="slds-text-align--center slds-m-top--small">Match the Import file’s columns to the appropriate AdvoLogix fields and target mapping.</p>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!importRulesStep == 3}">
+                        <p class="slds-text-align--center slds-m-top--small">Review the column and field mapping for the rule set. Use the Back button to revise and edit.</p>
+                        <p class="slds-text-align--center slds-m-top--small"><b><i>Clicking the Finish button will import and replace your existing rule set.</i></b></p>
+                    </apex:outputPanel>
+                </div>
+            </div>
+            <div class="slds-p-horizontal--large step-content slds-scrollable--y">
+                <!-- Step 1: File Upload Step -->
+                <apex:outputPanel layout="block" styleClass="{!IF(importRulesStep == 1,'','slds-hide')}">
+                    <div class="new-rule-field-selection content slds-p-top--medium">
+                        <div class="slds-text-align--center slds-m-top--small">
+                            <apex:inputFile id="fileInput" value="{!contentBody}" filename="{!fileName}" styleClass="inputfile" />
+                            <label for="{!$Component.theForm.fileInput}">
+                                <img style="margin-bottom:4px;" alt="Choose a file" class="slds-button__icon slds-button__icon--left" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/upload_60.png')}" /><!--
+                                --><span>Choose a file&hellip;</span>
+                            </label>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <!-- Step 2: Column Mappings -->
+                <apex:outputPanel layout="block" styleClass="{!IF(importRulesStep == 2,'','slds-hide')}">
+                    <div class="slds-text-align--center slds-m-top--small">
+                        <apex:dataTable value="{!selectedHeaderColumns}" var="c" styleClass="mapping-table">
+                            <apex:column width="25%" headerValue="Import File Column" value="{!c.csvColumn}" />
+                            <apex:column width="30%" headerValue="AdvoLogix Field">
+                                <apex:selectList value="{!c.objField}" size="1" styleClass="select2FieldMapping" style="width:75%;">
+                                    <apex:selectOptions value="{!fieldsList}" />
+                                </apex:selectList>
+                            </apex:column>
+                            <apex:column width="45%" headerValue="Target Mapping">
+                                <apex:selectRadio value="{!c.colDestination}" border="0" layout="lineDirection" styleClass="destination-list">
+                                    <apex:selectOptions value="{!destinationList}" />
+                                </apex:selectRadio>
+                            </apex:column>
+                        </apex:dataTable>
+                    </div>
+                </apex:outputPanel>
+                <!-- Step 3: Confirmation -->
+                <apex:outputPanel layout="block" styleClass="{!IF(importRulesStep == 3,'','slds-hide')}">
+                    <div class="slds-text-align--center slds-m-top--small">
+                        <table class="mapping-table" border="0" cellpadding="0" cellspacing="0">
+                            <colgroup span="3"></colgroup>
+                            <thead class="">
+                                <tr>
+                                    <th class="slds-truncate"><div >Import File Column</div></th>
+                                    <th class="slds-truncate"><div >AdvoLogix Field</div></th>
+                                    <th class="slds-truncate"><div >Target Mapping</div></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!selectedHeaderColumns}" var="c">
+                                    <apex:outputPanel layout="none" rendered="{!(c.objField != null && c.objField != '') && (c.colDestination != null && c.colDestination != '')}">
+                                    <tr>
+                                        <td class="slds-truncate">{!c.csvColumn}</td>
+                                        <td class="slds-truncate">
+                                            <apex:repeat value="{!fieldsList}" var="fl">
+                                                <apex:outputText value="{!fl.label}" rendered="{!c.objField == fl.value}" />
+                                            </apex:repeat>
+                                        </td>
+                                        <td class="slds-truncate">{!c.colDestination}</td>
+                                    </tr>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </apex:outputPanel>
+            </div>
+            <div class="footer">
+                <div class="slds-float--left">
+                    <apex:commandButton value="Back" action="{!importRuleStepActionBack}" onclick="toggleButtons('{!$Component.theForm}', true);" styleClass="showOnEditButton rule-button" rendered="{!importRulesStep > 1}" />
+                    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" onclick="toggleButtons('{!$Component.theForm}', true);" styleClass="showOnEditButton rule-button" style="margin-left:0.4em;" />
+                    <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton rule-button" rendered="{!importRulesStep > 1}" />
+                    <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton rule-button" style="margin-left:0.4em;" />
+                </div>
+                <div class="slds-float--right">
+                    <apex:commandButton value="Next" action="{!uploadFile}" onclick="toggleButtons('{!$Component.theForm}', true);return fileUpload.verify();" styleClass="showOnEditButton rule-button rule-button-brand" rendered="{!importRulesStep = 1}" />
+                    <apex:commandButton value="Next" action="{!importRuleStepAction}" onclick="toggleButtons('{!$Component.theForm}', true);" styleClass="showOnEditButton rule-button rule-button-brand" rendered="{!importRulesStep == 2}" />
+                    <apex:commandButton value="Finish" action="{!importRuleStepAction}" onclick="toggleButtons('{!$Component.theForm}', true);" styleClass="showOnEditButton rule-button rule-button-brand" rendered="{!importRulesStep == 3}" />
+                    <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="hideOnEditButton rule-button"/>
+                </div>
+            </div>
+        </apex:outputPanel>
+        
+        <!-- Field placement to satisfy StandardController sObject field not fetch error condition -->
+        <apex:inputField value="{!advpm__Assignment_Rule__c.Name}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Base_Object__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Criteria_Body__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Assignment_Body__c}" rendered="false" />
+    </apex:form>
+    
+</apex:page>

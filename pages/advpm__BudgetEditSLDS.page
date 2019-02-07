@@ -1,0 +1,625 @@
+<apex:page standardController="advpm__Budget__c" extensions="advpm.BudgetController,advpm.BudgetSummaryController,advpm.BudgetDetailController" 
+            action="{!IF(!hasEditAccess,URLFOR($Page.InsufficientPrivileges,null,[recid=Budget__c.Id]),'')}"
+            applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStyleSheets="true">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <title>
+        <apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Budget__c.Id)}">Create {!$ObjectType.advpm__Budget__c.label}</apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Budget__c.Id))}">Edit {!advpm__Budget__c.Name}</apex:outputPanel>
+    </title>
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <c:includeSLDS sldsV2="true" />
+    <style type="text/css">
+        .slds .slds-modal--large .slds-modal__container{width:90%;min-width:640px;}
+        .slds #editModal .slds-pill{display:block;}
+        .slds #editModal .slds-pill:hover{background-color:#fff;}
+        .slds #editModal .slds-pill__label{max-width:15.5rem;}
+        .slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+        .slds .slds-form-element__static {line-height: 1.75;}
+        .slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+        .slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+        .modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+        .slds-modal__close {right: -.8rem;}
+        .frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+        .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+        .date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+        .datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+        input[type=checkbox]{clear: both;display: block;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+        .uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+    </style>
+    <style type="text/css">
+        .col1, .col2 { width: 170px; }
+        .btnW { /*width: 170px;*/ }
+        .textboxW { width: 80px; }
+    </style>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        $j(document).ready(function(){
+            fixControls();
+            $j('.btnSaveDisabled').attr('disabled','disabled');
+        });
+        function fixControls() {
+            $j('.slds-form-element .lookupInput a').removeClass('slds-input');
+            $j('.slds-form-element .multiSelectPicklistTable img').removeClass('slds-input');
+            $j('.slds-form-element .multiSelectPicklistTable').css('width','initial');
+            
+            $j('.slds-form-element .user-input select').addClass('slds-select');
+            $j('.slds-form-element .user-input .lookupInput input[type=text]').addClass('slds-input');
+            $j('.slds-form-element .user-input').removeClass('slds-input');
+        }
+        function doCancel() {
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                $j('#editModal form')[0].reset();
+                $j('#editModal .slds-modal').removeClass('slds-fade-in-open');
+                $j('#editModal .slds-modal-backdrop').removeClass('slds-modal-backdrop--open');
+                //sforce.one.back();
+                cancelBudget();
+            }
+        }
+    </script>
+</head>
+<body class="slds">
+<div id="editModal">
+<apex:form id="theForm">
+    <script type="text/javascript">
+        function showDateChangeWarning()
+        {
+            if ({!isNew} == false && {!isCloneAction} == false && ({!SummaryBudgetItems.size} > 0 || {!DetailBudgetItems.size} > 0))
+            {
+                document.getElementById('{!$Component.msgWarn}').style.visibility = "visible";
+                document.getElementById('{!$Component.msgWarn}').style.display = "block";
+            }
+        }
+    </script>
+    <apex:inputField value="{!advpm__Budget__c.advpm__Actual_Budget__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Budget_Approver__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Start_Date__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__End_Date__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Expense_Budget__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Fee_Budget__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Firm__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Hours_Estimate__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.advpm__Status__c}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.RecordTypeId}" rendered="false" />
+    <apex:inputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+    
+    <apex:actionFunction name="saveBudget" action="{!save}" />
+    <apex:actionFunction name="cancelBudget" action="{!cancel}" immediate="true" />
+    <apex:actionFunction name="doSaveSB" action="{!saveSB}" />
+    <apex:actionFunction name="doSaveDB" action="{!saveDB}" />
+    
+    <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">
+                    <apex:outputPanel layout="none" rendered="{!ISBLANK(advpm__Budget__c.Id)}">Create {!$ObjectType.advpm__Budget__c.label}</apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(advpm__Budget__c.Id))}">Edit {!advpm__Budget__c.Name}</apex:outputPanel>
+                </h2>
+                <span class="slds-hint-parent">
+                    <button class="slds-button slds-modal__close form-close-action" onClick="doCancel();return false">
+                        <svg aria-hidden="true" class="slds-button__icon slds-button__icon--inverse slds-button__icon--hint modal-icon-close">
+                            <use xlink:href="{!URLFOR($Resource.SLDS0112, 'assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                </span>
+            </div>
+            <div class="slds-modal__content">
+                <div class="pg-msgs">
+                    <apex:messages id="msgs" styleClass="slds-notify slds-notify--alert slds-theme--error" />
+                
+                    <apex:pageMessage summary="Warning: {!$ObjectType.advpm__Budget__c.Label} can not be edited, {!$ObjectType.advpm__Budget__c.Label} Approval process has been initiated on it already." severity="warning" strength="3" rendered="{!advpm__Budget__c.advpm__Lock__c}" />
+                    <apex:outputPanel layout="block" id="msgWarn" style="display: none;">
+                        <apex:pageMessage summary="Warning: Change in date value detected. Saving the {!$ObjectType.advpm__Budget__c.Label} will regenerate Summary/Detail {!$ObjectType.advpm__Budget__c.LabelPlural}." severity="warning" strength="3" />
+                    </apex:outputPanel>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <fieldset class="slds-form--compound">
+                        <h2 class="slds-form-element__label frm-sec-header">{!$ObjectType.advpm__Budget__c.Label} Information</h2>
+                        
+                        <apex:outputPanel layout="block" styleClass="form-element__group" rendered="{!!advpm__Budget__c.advpm__Lock__c && isNew}">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$Label.advpm__budget_field_recordtype}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_stm"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Month__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Start_Month__c}" id="fld_stm" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_mat"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Matter__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!advpm__Budget__c.advpm__Matter__c}" id="fld_mat" required="true" styleClass="slds-input" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_sty"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Year__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Start_Year__c}" id="fld_sty" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="{!IF(!isHoursBudgetRT,'fee','actual_budget')}">{!IF(!isHoursBudgetRT,$ObjectType.advpm__Budget__c.fields.advpm__Fee_Budget__c.label,$ObjectType.advpm__Budget__c.fields.advpm__Actual_Budget__c.label)}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField id="fee" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="fee-fld textboxW slds-input" rendered="{!!isHoursBudgetRT}" />
+                                        <apex:inputField id="actual_budget" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="actual_budget-fld textboxW slds-input" rendered="{!isHoursBudgetRT}" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_em"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__End_Month__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__End_Month__c}" id="fld_em" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="expense" rendered="{!!isHoursBudgetRT}">{!$ObjectType.advpm__Budget__c.fields.advpm__Expense_Budget__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField id="expense" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="expense-fld textboxW slds-input" rendered="{!!isHoursBudgetRT}" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_ey"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__End_Year__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__End_Year__c}" id="fld_ey" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <script type="text/javascript">
+                                        if ({!isCloneAction} == false)
+                                        {
+                                            $j('.fee-fld').attr('disabled', {!DisableFee});
+                                            $j('.expense-fld').attr('disabled', {!DisableExpense});
+                                            $j('.actual_budget-fld').attr('disabled', {!OR(SummaryBudgetItems.size > 0,DetailBudgetItems.size > 0)});
+                                        }
+                                    </script>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_lock">{!$ObjectType.advpm__Budget__c.fields.advpm__Lock__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Lock__c}" id="fld_lock" />
+                                </div>
+                            </div>
+                            
+                            <apex:outputPanel layout="block" styleClass="slds-form-element__row" rendered="{!isMultiCurrencyOrg}">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_curr">{!$ObjectType.advpm__Budget__c.fields['CurrencyIsoCode'].label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c['CurrencyIsoCode']}" id="fld_curr" styleClass="slds-select" rendered="{!isMultiCurrencyOrg}" />
+                                </div>
+                            </apex:outputPanel>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel layout="block" styleClass="form-element__group" rendered="{!!advpm__Budget__c.advpm__Lock__c && !isNew}">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.Name.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:inputField value="{!advpm__Budget__c.Name}" styleClass="slds-input" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_stm2"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Month__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Start_Month__c}" id="fld_stm2" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$Label.advpm__budget_field_recordtype}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_sty2"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Year__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Start_Year__c}" id="fld_sty2" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_mat2"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__Matter__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!advpm__Budget__c.advpm__Matter__c}" id="fld_mat2" required="true" styleClass="slds-input" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_em2"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__End_Month__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__End_Month__c}" id="fld_em2" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="{!IF(!isHoursBudgetRT,'fee2','actual_budget2')}">{!IF(!isHoursBudgetRT,$ObjectType.advpm__Budget__c.fields.advpm__Fee_Budget__c.label,$ObjectType.advpm__Budget__c.fields.advpm__Actual_Budget__c.label)}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField id="fee2" value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="fee-fld textboxW slds-input" rendered="{!!isHoursBudgetRT}" />
+                                        <apex:inputField id="actual_budget2" value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="actual_budget-fld textboxW slds-input" rendered="{!isHoursBudgetRT}" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_ey2"><abbr class="slds-required" title="required">*</abbr>{!$ObjectType.advpm__Budget__c.fields.advpm__End_Year__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__End_Year__c}" id="fld_ey2" styleClass="slds-select" required="true" onchange="showDateChangeWarning();" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="expense2" rendered="{!!isHoursBudgetRT}">{!$ObjectType.advpm__Budget__c.fields.advpm__Expense_Budget__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField id="expense2" value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="expense-fld textboxW slds-input" rendered="{!!isHoursBudgetRT}" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_lock2">{!$ObjectType.advpm__Budget__c.fields.advpm__Lock__c.label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c.advpm__Lock__c}" id="fld_lock2" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <script type="text/javascript">
+                                        if ({!isCloneAction} == false)
+                                        {
+                                            $j('.fee-fld').attr('disabled', {!DisableFee});
+                                            $j('.expense-fld').attr('disabled', {!DisableExpense});
+                                            $j('.actual_budget-fld').attr('disabled', {!OR(SummaryBudgetItems.size > 0,DetailBudgetItems.size > 0)});
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                            
+                            <apex:outputPanel layout="block" styleClass="slds-form-element__row" rendered="{!isMultiCurrencyOrg}">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_curr2">{!$ObjectType.advpm__Budget__c.fields['CurrencyIsoCode'].label}</apex:outputLabel>
+                                    <apex:inputField value="{!advpm__Budget__c['CurrencyIsoCode']}" id="fld_curr2" styleClass="slds-select" rendered="{!isMultiCurrencyOrg}" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                            </apex:outputPanel>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel layout="block" styleClass="form-element__group" rendered="{!advpm__Budget__c.advpm__Lock__c && isNew}">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$Label.advpm__budget_field_recordtype}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Month__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Month__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Matter__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Matter__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Year__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Year__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!IF(!isHoursBudgetRT,$ObjectType.advpm__Budget__c.fields.advpm__Fee_Budget__c.label,$ObjectType.advpm__Budget__c.fields.advpm__Actual_Budget__c.label)}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="textboxW" rendered="{!isHoursBudgetRT}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__End_Month__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__End_Month__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" rendered="{!!isHoursBudgetRT}">{!$ObjectType.advpm__Budget__c.fields.advpm__Expense_Budget__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Expense_Budget__c}" styleClass="textboxW" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__End_Year__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__End_Year__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Lock__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel layout="block" styleClass="form-element__group" rendered="{!advpm__Budget__c.advpm__Lock__c && !isNew}">
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.Name.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.Name}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Month__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Month__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <label class="slds-form-element__label">{!$Label.advpm__budget_field_recordtype}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" label="{!$Label.advpm__budget_field_recordtype}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Start_Year__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Start_Year__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Matter__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Matter__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__End_Month__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__End_Month__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!IF(!isHoursBudgetRT,$ObjectType.advpm__Budget__c.fields.advpm__Fee_Budget__c.label,$ObjectType.advpm__Budget__c.fields.advpm__Actual_Budget__c.label)}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Fee_Budget__c}" styleClass="textboxW" rendered="{!!isHoursBudgetRT}" />
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Actual_Budget__c}" styleClass="textboxW" rendered="{!isHoursBudgetRT}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__End_Year__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__End_Year__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" rendered="{!!isHoursBudgetRT}">{!$ObjectType.advpm__Budget__c.fields.advpm__Expense_Budget__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Expense_Budget__c}" rendered="{!!isHoursBudgetRT}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label">{!$ObjectType.advpm__Budget__c.fields.advpm__Lock__c.label}</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element__static">
+                                            <apex:outputField value="{!advpm__Budget__c.advpm__Lock__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </apex:outputPanel>
+                        
+                    </fieldset>
+                    
+                    <apex:outputPanel layout="none" rendered="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget.size > 0 && !isHoursBudgetRT}">
+                        <fieldset class="slds-form--compound">
+                            <h2 class="slds-form-element__label frm-sec-header">Other Information</h2>
+                            <div class="form-element__group">
+                                <apex:repeat value="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget}" var="f">
+                                    <div class="slds-form-element__row">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt1"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt1" value="{!advpm__Budget__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" style="height:60px;" />
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt2"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt2" value="{!advpm__Budget__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','',IF(f.type=='reference' && map_fields[f]==true,'user-input','slds-input'))}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:repeat>
+                            </div>
+                        </fieldset>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel layout="none" rendered="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget_Hours.size > 0 && isHoursBudgetRT}">
+                        <fieldset class="slds-form--compound">
+                            <h2 class="slds-form-element__label frm-sec-header">Other Information</h2>
+                            <div class="form-element__group">
+                                <apex:repeat value="{!$ObjectType.advpm__Budget__c.FieldSets.advpm__fieldSet_Budget_Hours}" var="f">
+                                    <div class="slds-form-element__row">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt1"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt1" value="{!advpm__Budget__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" style="height:60px;" />
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt2"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt2" value="{!advpm__Budget__c[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','',IF(f.type=='reference' && map_fields[f]==true,'user-input','slds-input'))}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:repeat>
+                            </div>
+                        </fieldset>
+                    </apex:outputPanel>
+                    
+                    <!-- Summary Budget Section -->
+                    <apex:outputPanel layout="none" rendered="{!isCloneAction == false}">
+                        <div class="list-card-container">
+                            <apex:outputPanel layout="block" styleClass="slds-card">
+                                <div class="slds-card__header slds-grid">
+                                    <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2 class="slds-text-heading--small slds-truncate">{!$ObjectType.advpm__Summary_Budget__c.Label}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="slds-no-flex">
+                                        <apex:outputPanel layout="none" rendered="{!advpm__Budget__c.advpm__Lock__c}">
+                                            <button onClick="return false;" class="btnW slds-button slds-button--neutral" disabled="disabled">Edit {!$ObjectType.Summary_Budget__c.Label}</button>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!!advpm__Budget__c.advpm__Lock__c}">
+                                            <button onClick="doSaveSB();return false;" class="btnW slds-button slds-button--neutral">Edit {!$ObjectType.Summary_Budget__c.Label}</button>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-card__body">
+                                    <c:BudgetSummary readOnly="true" detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false}" />
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </apex:outputPanel>
+                    
+                    <!-- Detail Budget Section -->
+                    <apex:outputPanel layout="none" rendered="{!isCloneAction == false}">
+                        <div class="list-card-container">
+                            <apex:outputPanel layout="block" styleClass="slds-card">
+                                <div class="slds-card__header slds-grid">
+                                    <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2 class="slds-text-heading--small slds-truncate">{!$ObjectType.advpm__Detail_Budget__c.Label}</h2>
+                                        </div>
+                                    </div>
+                                    <div class="slds-no-flex">
+                                        <apex:outputPanel layout="none" rendered="{!advpm__Budget__c.advpm__Lock__c}">
+                                            <button onClick="return false;" class="btnW slds-button slds-button--neutral" disabled="disabled">Edit {!$ObjectType.Detail_Budget__c.Label}</button>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="none" rendered="{!!advpm__Budget__c.advpm__Lock__c}">
+                                            <button onClick="doSaveDB();return false;" class="btnW slds-button slds-button--neutral">Edit {!$ObjectType.Detail_Budget__c.Label}</button>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <div class="slds-card__body">
+                                    <c:BudgetDetail readOnly="true" detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false}" />
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </apex:outputPanel>
+                    
+                    <!-- At A Glance Budget Section -->
+                    <apex:outputPanel layout="none" rendered="{!isCloneAction == false && !isNew}">
+                        <div class="list-card-container">
+                            <apex:outputPanel layout="block" styleClass="slds-card">
+                                <div class="slds-card__header slds-grid">
+                                    <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                                        <div class="slds-media__body">
+                                            <h2 class="slds-text-heading--small slds-truncate">{!$ObjectType.Budget__c.Label} At A Glance</h2>
+                                        </div>
+                                    </div>
+                                    <div class="slds-no-flex">&nbsp;</div>
+                                </div>
+                                <div class="slds-card__body">
+                                    <c:BudgetCharts detailViewPage="true" detailEditPage="true" rendered="{!isCloneAction == false && !isNew}" />
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </apex:outputPanel>
+                    
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <apex:actionStatus id="loadingStatus" onstop="fixControls()">
+                    <apex:facet name="start"><img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." width="32px" height="32px" /></apex:facet>
+                </apex:actionStatus>
+                <input type="button" value="  Cancel  " onclick="doCancel();return false;" class="slds-button slds-button--neutral" style="margin-left: 0.8em;" />
+                <input type="button" value="  Save  " onclick="saveBudget();return false;" class="slds-button slds-button--neutral slds-button--brand {!IF(Budget__c.Lock__c,'btnDisabled btnSaveDisabled','')}" id="btnSaveBudget" />
+            </div>
+        </div>
+    </div>
+    <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

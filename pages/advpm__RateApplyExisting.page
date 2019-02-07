@@ -1,0 +1,126 @@
+<apex:page controller="advpm.RateController" tabStyle="advpm__Rate__c" action="{!checkLightning}">
+    <!-- <apex:outputPanel rendered="{!isLightning}">
+        <script type="text/javascript">
+            var ur = '{!URLFOR('/apex/advpm__RateApplyExistingSLDS',null,[matid=URLENCODE($CurrentPage.parameters.matid),matname=URLENCODE($CurrentPage.parameters.matname),retURL=URLENCODE($CurrentPage.parameters.retURL)])}';
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                sforce.one.navigateToURL(ur, false);
+            }
+        </script>
+    </apex:outputPanel> -->
+    
+    <apex:sectionHeader title="Add Rates" subtitle="{!MatName}" rendered="{!!isLightning}" />
+    <apex:form rendered="{!!isLightning}" >
+        <c:BreadcrumbHistory />
+        <script type="text/javascript">
+	        function selectAllCheckboxes(obj,receivedInputID){
+	            var inputCheckBox = document.getElementsByTagName("input");                  
+	            for(var i=0; i<inputCheckBox.length; i++){          
+	                if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+	                    inputCheckBox[i].checked = obj.checked;
+	                    activateEvent(inputCheckBox[i], 'change');
+	                }
+	            }
+	        }
+	        function selectDefault(obj, defObjId) {
+	        	var defCheckbox = document.getElementById(defObjId);
+	        	defCheckbox.checked = obj.checked;
+	        }
+	        function activateEvent(item, actionShortName) {
+			    if (document.createEventObject){    // dispatch for IE
+			        item.fireEvent("on" + actionShortName); 
+			    }
+			    else {  // dispatch for firefox + others
+			        var evt = document.createEvent("HTMLEvents");
+			        evt.initEvent(actionShortName, true, true); // event type,bubbling,cancelable
+			        item.dispatchEvent(evt);
+			    }
+			}
+	    </script>
+        <apex:pageBlock title="Add Rates" mode="edit" id="thePage">
+            <apex:pagemessages />
+            <apex:pageBlockButtons >                
+                <apex:commandButton action="{!cancel}" value="   Done   " />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" showHeader="true" title="Filter Rates" collapsible="false">
+                <apex:panelGrid columns="5">
+                    <apex:outputLabel value="Rate Group" styleClass="labelCol" />
+                    <apex:selectList size="1" value="{!selectedRateGroup}">
+                        <apex:selectOptions value="{!RateGroups}" />
+                    </apex:selectList>
+                    
+                    <apex:outputLabel value="Matter" styleClass="labelCol" />
+                    <apex:inputField value="{!ProxyRate.advpm__Matter__c}" />
+                    
+                    <apex:outputPanel layout="block">
+                        <apex:commandButton value="  Search  " action="{!FetchRateRecords}" rerender="thePage" status="loadingItems" />
+                        <apex:actionstatus id="loadingItems">
+                            <apex:facet name="start">
+                                <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" />
+                                <apex:outputPanel styleclass="loading loadingText">&nbsp;&nbsp;Loading...</apex:outputPanel>
+                            </apex:facet>
+                        </apex:actionstatus>
+                    </apex:outputPanel>
+                </apex:panelGrid>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Select Rates to add to Matter" columns="1" collapsible="false" id="secSelect">
+                <apex:outputPanel layout="block" rendered="{!RateRecords.size > 0}" style="padding-left:20px;">
+                    <img class="checkArrow" src="/sfc/images/checkbox_arrow.png" alt="" />
+                    <apex:commandButton action="{!Add}" value="    Add    " styleClass="btnSharing" rerender="thePage" status="loadingAddItems" />
+                    <apex:actionstatus id="loadingAddItems">
+                        <apex:facet name="start">
+                            <img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" />
+                            <apex:outputPanel styleclass="loading loadingText">&nbsp;&nbsp;Loading...</apex:outputPanel>
+                        </apex:facet>
+                    </apex:actionstatus>
+                </apex:outputPanel>
+                <apex:pageBlockTable value="{!RateRecords}" var="r" id="theRateTable" rendered="{!RateRecords.size > 0}">
+                    <apex:column width="20">
+                        <apex:inputCheckbox id="checkedRate" value="{!r.selected}" onchange="selectDefault(this,'{!$Component.thePage.secSelect.theRateTable.checkedDefault}');" />
+                        <apex:facet name="header">
+                        	<apex:inputCheckbox onclick="selectAllCheckboxes(this,'checkedRate')" />
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column headerValue="Rate" width="80">
+                        <apex:inputField value="{!r.rate.advpm__Rate__c}" />
+                    </apex:column>
+                    <apex:column headerValue="Rate Name">
+                        <apex:inputField value="{!r.rate.Name}" />
+                    </apex:column>
+                    <apex:column headerValue="Charged Per">
+                        <apex:inputField value="{!r.rate.advpm__Charged_Per__c}" />
+                    </apex:column>
+                    <apex:column headerValue="Rate Type">
+                        <apex:inputField value="{!r.rate.advpm__Rate_Type__c}" />
+                    </apex:column>
+                    <apex:column headerValue="Default">
+                        <apex:inputField value="{!r.rate.advpm__Default__c}" id="checkedDefault" />
+                    </apex:column>
+                    <apex:column value="{!r.rate.advpm__Rate_Group__c}" />
+                    <apex:column value="{!r.rate.advpm__Matter__c}" />
+                    <apex:column value="{!r.rate.advpm__Timekeeper__c}" />
+                </apex:pageBlockTable>
+                <apex:outputLabel style="font-style: italic;" value="No records to display. Try filtering by selecting either Rate Group or Matter or Both to display records for selected Rate Group and Matter." rendered="{!(RateRecords.size == 0)}" styleClass="noRowsHeader" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Existing Matter Rates" columns="1" collapsible="false">
+                <apex:pageBlockTable value="{!ExistingMatterRates}" var="e" id="theRateApplyExistingTable" rendered="{!NOT(ISNULL(ExistingMatterRates))}">
+                    <apex:column headerValue="Action" styleClass="actionColumn">
+                        <apex:outputLink styleClass="actionLink" value="{!URLFOR($Action.advpm__Rate__c.Edit,e.Id,[retURL=URLFOR($Page.advpm__RateApplyExisting,e.Id,[matid=MatId,matname=MatName,retURL=MatId],false)],false)}">Edit</apex:outputLink>
+                        |&nbsp;                 
+                        <apex:outputLink styleClass="actionLink" value="{!URLFOR($Action.advpm__Rate__c.Delete,e.Id,[retURL=URLFOR($Page.advpm__RateApplyExisting,e.Id,[matid=MatId,matname=MatName,retURL=MatId],false)],false)}"
+                            onclick="return confirmDelete();">Del</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Rate Name">
+                        <apex:outputLink value="/{!e.Id}">{!e.Name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column value="{!e.advpm__Rate__c}" />
+                    <apex:column value="{!e.advpm__Charged_Per__c}" />
+                    <apex:column value="{!e.advpm__Rate_Type__c}" />
+                    <apex:column value="{!e.advpm__Default__c}" />
+                    <apex:column value="{!e.advpm__Rate_Group__c}" />
+                    <apex:column value="{!e.advpm__Timekeeper__c}" />
+                </apex:pageBlockTable>
+                <apex:outputLabel value="No records to display" rendered="{!(ISNULL(ExistingMatterRates))}" styleClass="noRowsHeader" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

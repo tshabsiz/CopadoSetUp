@@ -1,0 +1,53 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 02/10/2017 - PG    - Created VF page. 
+                                                           
+-->  
+<apex:page standardController="Document_Template__c" showHeader="true" sidebar="true">
+	
+	<!-- SECTION HEADER -->
+	<apex:sectionHeader title="Document Template" subtitle="Edit Document Template" />
+
+	<!-- FORM --> 
+	<apex:form >
+
+		<!-- PAGE BLOCK -->
+		<apex:pageBlock title="Document Template Edit">
+
+			<!-- BUTTONS -->
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!save}" />
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+
+			<!-- PAGE BLOCK SECTION -->
+			<apex:pageBlockSection >
+
+				<apex:inputField value="{!Document_Template__c.Name}" /> 
+				<apex:inputField value="{!Document_Template__c.Condition_Template__c}" />  
+
+				<!-- SELECT 2 COMPONENT -->
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel >Document Type</apex:outputLabel>
+					<c:DocumentTypeSelect allowClear="true" importJquery="true" syncManualEntry="false" labelField="DocumentType__c" SObject="BoxDocumentType__c" valueField="Name" targetField="{!Document_Template__c.Document_Type__c}" style="width:200px" /> 
+				</apex:pageBlockSectionItem>
+				<!-- / SELECT 2 COMPONENT -->
+
+			</apex:pageBlockSection>
+			<!-- / PAGE BLOCK SECTION -->			
+
+		</apex:pageBlock>
+		<!-- / PAGE BLOCK -->
+
+	</apex:form>
+	<!-- / FORM --> 
+	
+</apex:page>

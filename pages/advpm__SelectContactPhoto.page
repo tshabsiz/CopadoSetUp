@@ -1,0 +1,105 @@
+<apex:page standardController="Contact" extensions="advpm.SelectContactPhoto" action="{!validateClear}">
+    <style type="text/css">
+        a.btnWithoutLink, a:hover.btnWithoutLink, a:link.btnWithoutLink, a:visited.btnWithoutLink, a:focus.btnWithoutLink, a:active.btnWithoutLink { text-decoration: none; }
+    </style>
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.4.2.js')}" />
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        var max_height  = 200;
+        var max_width   = 185;
+        $j(document).ready(function(){
+            $j(esc(img_img)).load(function() {
+                if ($j(this).height() > $j(this).width()) {
+                    var h = max_height;
+                    var w = Math.ceil($j(this).width() / $j(this).height() * max_height);
+                } else {
+                    var w = max_width;
+                    var h = Math.ceil($j(this).height() / $j(this).width() * max_width);
+                }
+                $j(this).css({ height: h, width: w });
+                $j(esc(img_h)).val(h);
+                $j(esc(img_w)).val(w);
+            });
+        });
+        
+        function esc(myid) {
+            return '#' + myid.replace(/(:|\.)/g,'\\\\$1');
+        }
+        var img_img = '{!$Component.myForm.ThePageBlock.block2.pbImage1.photo_img}';
+        var img_h = '{!$Component.myForm.ThePageBlock.block2.img_h}';
+        var img_w = '{!$Component.myForm.ThePageBlock.block2.img_w}';
+    </script>
+    
+    <apex:sectionHeader title="Select Photo" subtitle="{!Contact.Name}" />
+    <apex:form enctype="multipart/form-data" id="myForm">
+        <apex:pageMessages />
+        <apex:pageBlock title="Change Contact Image" id="ThePageBlock">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Done" action="{!done}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection showHeader="false" columns="1" id="block1">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Image Options" />
+                    <apex:selectRadio layout="pageDirection" value="{!selectedRadioValue}">
+                        <apex:selectOption itemValue="UploadNew" itemLabel="Upload an image." />
+                        <apex:selectOption itemValue="SelectExisting" itemLabel="Select an existing image from the Contact." />
+                        <apex:actionSupport event="onclick" action="{!FetchImageList}" />
+                    </apex:selectRadio>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection showHeader="false" columns="1" id="block2" rendered="{!selectedRadioValue == 'UploadNew'}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Select Photo" for="file" />
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel layout="block">
+                            <apex:inputFile value="{!att.body}" contentType="{!att.ContentType}" filename="{!att.name}" size="30" accept="gif,png,jpeg,jpg" id="file" />
+                            <apex:commandButton value="  Upload  " action="{!Upload}" styleClass="btnPrimary publishersharebutton btn" />
+                            <br />
+                        </apex:outputPanel>
+                        <apex:outputLabel style="font-weight: normal; color:blue;" value="(Recommend size is 200 x 185 pixel and preferrably in JPG, GIF or PNG format. Image will be scaled automatically after upload.)" />
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!NOT(ISNULL(AttID))}" id="pbImage1">
+                    <apex:outputLabel value="Uploaded Photo" />
+                    <apex:image id="photo_img" value="/servlet/servlet.FileDownload?file={!AttID}" />
+                </apex:pageBlockSectionItem>
+                <apex:inputHidden id="img_h" value="{!Contact.advpm__Photo_Height__c}" />
+                <apex:inputHidden id="img_w" value="{!Contact.advpm__Photo_Width__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection showHeader="false" columns="1" id="block3" rendered="{!selectedRadioValue != 'UploadNew'}">
+                <apex:pageBlockTable id="theAttList" value="{!imageList}" var="a">
+                    <apex:column headerValue="Action" width="75">
+                        <apex:commandLink action="{!SelectImage}" value="  Select  " styleclass="btnPrimary publishersharebutton btn btnWithoutLink">
+                            <apex:param name="p_attIndex" value="{!a.index}" />
+                            <apex:param name="p_attId" value="{!a.att.Id}" />
+                            <apex:param name="p_attHeight" value="{!a.height}" />
+                            <apex:param name="p_attWidth" value="{!a.width}" />
+                        </apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="Image">
+                        <apex:image id="tb_img" value="/servlet/servlet.FileDownload?file={!a.att.Id}" />
+                        <apex:inputHidden id="tb_img_h" value="{!a.height}" />
+                        <apex:inputHidden id="tb_img_w" value="{!a.width}" />
+                        <script type="text/javascript">
+                            var tb_max_height   = 200;
+                            var tb_max_width    = 185;
+                            $j(esc('{!$Component.theAttList.tb_img}')).load(function() {
+                                if ($j(this).height() > $j(this).width()) {
+                                    var h = tb_max_height;
+                                    var w = Math.ceil($j(this).width() / $j(this).height() * tb_max_height);
+                                } else {
+                                    var w = tb_max_width;
+                                    var h = Math.ceil($j(this).height() / $j(this).width() * tb_max_width);
+                                }
+                                $j(this).css({ height: h, width: w });
+                                $j(esc('{!$Component.theAttList.tb_img_h}')).val(h);
+                                $j(esc('{!$Component.theAttList.tb_img_w}')).val(w);
+                            });
+                        </script>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

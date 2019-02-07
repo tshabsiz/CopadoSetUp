@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>AgreementFacilityEdit</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>AgreementFacilityEdit</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>General_Deal_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ACMFacility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>ACMFacility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>$Source.Agreement_Account__c</field>
+                <operation>equals</operation>
+                <valueField>ACMFacility__c.Relationship__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>ACMFacility__c</referenceTo>
+        <relationshipLabel>Facilities</relationshipLabel>
+        <relationshipName>Facilities</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Acm_Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>$Source.Agreement_Account__c</field>
+                <operation>equals</operation>
+                <valueField>Acm_Facility__c.Relationship__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Acm_Facility__c</referenceTo>
+        <relationshipLabel>Facilities</relationshipLabel>
+        <relationshipName>Facilities</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Agreement_Account__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Facilities</relationshipLabel>
+        <relationshipName>Facilities</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Facilities</relationshipLabel>
+        <relationshipName>Facilities</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Availability_End_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Availability_Start_Date__c != null &amp;&amp; ISPICKVAL(Availability__c,&apos;&apos;),DATE(0001, 1, 1), IF(
+	ISPICKVAL(Availability__c,&apos;Day(s)&apos;),Availability_Start_Date__c + Availability_Period__c, IF( ISPICKVAL(Availability__c,&apos;Month(s)&apos;),
+	 
+DATE(
+  YEAR( Availability_Start_Date__c) + FLOOR( ( MONTH ( Availability_Start_Date__c) + Availability_Period__c - 1 ) / 12 ),
+  MOD( MONTH ( Availability_Start_Date__c) + Availability_Period__c - 1 + 
+    IF( DAY ( Availability_Start_Date__c) &gt; CASE( MOD( MONTH( Availability_Start_Date__c) + Availability_Period__c - 1, 12 ) + 1, 
+      2, 28,
+      4, 30,
+      6, 30,
+      9, 30, 
+      11, 30,
+      31 ), 1, 0 ), 12 ) + 1,
+    IF( DAY( Availability_Start_Date__c) &gt; CASE( MOD( MONTH( Availability_Start_Date__c ) + Availability_Period__c - 1, 12 ) + 1,
+      2, 28, 
+      4, 30, 
+      6, 30, 
+      9, 30, 
+      11, 30, 
+      31 ), 
+    1, DAY( Availability_Start_Date__c)
+  )
+)
+
+
+
+
+
+
+, DATE(YEAR(Availability_Start_Date__c)+Availability_Period__c, MONTH(Availability_Start_Date__c), DAY(Availability_Start_Date__c))
+
+
+
+)))</formula>
+        <label>Availability End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Availability_Period__c</fullName>
+        <externalId>false</externalId>
+        <label>Availability Period</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Availability_Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Availability Start Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Availability__c</fullName>
+        <externalId>false</externalId>
+        <label>Availability</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Day(s)</fullName>
+                    <default>false</default>
+                    <label>Day(s)</label>
+                </value>
+                <value>
+                    <fullName>Month(s)</fullName>
+                    <default>false</default>
+                    <label>Month(s)</label>
+                </value>
+                <value>
+                    <fullName>Year(s)</fullName>
+                    <default>false</default>
+                    <label>Year(s)</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Expiry_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Expiry Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>ExternalFacilityId__c</fullName>
+        <externalId>true</externalId>
+        <label>ExternalFacilityId</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>External_ID__c</fullName>
+        <externalId>false</externalId>
+        <label>External ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FacilityLimitBalance__c</fullName>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Facility Limit Balance</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Limit__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Limit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Facility_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Facility_Types</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Financial_Year_End_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>Agreement__r.Financial_Year_End_Date__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Financial Year End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Lender_Portion_Total_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Lender Portion Total Amount</label>
+        <summarizedField>Facility_Party__c.Facility_Amount__c</summarizedField>
+        <summaryForeignKey>Facility_Party__c.Facility__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Repayment_Profile_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Repayment Profile Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Repayment_Profile_Type</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Signature_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Signature Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Source_System__c</fullName>
+        <externalId>false</externalId>
+        <label>Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_User__c</fullName>
+        <externalId>false</externalId>
+        <label>Source User</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Agreement_Status</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Tenure_Period__c</fullName>
+        <externalId>false</externalId>
+        <label>Tenure Period</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Tenure_Period</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Tranche_Limit__c</fullName>
+        <externalId>false</externalId>
+        <label>Tranche Limit</label>
+        <summarizedField>Facility_Tranche__c.Tranche_Limit__c</summarizedField>
+        <summaryForeignKey>Facility_Tranche__c.Facility__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <label>Facility</label>
+    <nameField>
+        <label>Facility Name</label>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Facilities</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Lender_Portion_Amount_Exceed_Limit</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(Lender_Portion_Total_Amount__c &gt; Facility_Limit__c, True, False)</errorConditionFormula>
+        <errorMessage>The Lender Portion Amount cannot exceed the Facility Limit</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Tranche_Limit</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF( ISBLANK(Facility_Limit__c ) == FALSE &amp;&amp; Tranche_Limit__c &gt;  Facility_Limit__c, TRUE, IF(ISBLANK(Facility_Limit__c ) == TRUE, TRUE, FALSE) )</errorConditionFormula>
+        <errorDisplayField>Facility_Limit__c</errorDisplayField>
+        <errorMessage>Please ensure that the Facility Limit is not exceeded.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

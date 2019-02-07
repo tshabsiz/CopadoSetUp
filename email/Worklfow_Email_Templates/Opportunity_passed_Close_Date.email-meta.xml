@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Notifies CIB owner of open Opportunity with Close date in the past</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Opportunity passed Close Date</name>
+    <style>freeForm</style>
+    <subject>Opportunity : {!Opportunity.Name} requires update</subject>
+    <textOnly>Dear {!Opportunity.OwnerFirstName}
+
+Your opportunity  {!Opportunity.Name} related to {!Opportunity.Account}, is {!Opportunity.Days_since_expected_Close_date__c} day/s past the Expected Close Date and the Stage remains: {!Opportunity.StageName}.
+
+Kindly update the record in Salesforce by pasting this link into your Chrome Browser:  {!Opportunity.Link}
+
+cc: {!User.Manager}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

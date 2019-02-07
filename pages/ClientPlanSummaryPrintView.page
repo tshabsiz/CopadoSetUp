@@ -1,0 +1,1711 @@
+<apex:page standardController="Client_Plan__c" extensions="ClientPlanSummaryPrintViewController,ClientPlanDetailsController" applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" renderAs="pdf">
+    <head>
+        <title>{!Client_Plan__c.Relationship__r.Name}</title>
+        <style type="text/css">
+            body {
+            font-family: sans-serif;
+            font-size: 90%;
+            }
+            @page {
+            size: A4 landscape; /* ISO/JIS A4 (210mmx297mm) */  
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-top: 20px;
+            margin-bottom: 50px;
+            }
+            @page {
+            @top-center {
+            content: '&nbsp;';
+            font-family: sans-serif;
+            font-size: 12px;
+            color: #FF0000;
+            }
+            @bottom-left {       
+            border-top: 1px solid #FF0000;
+            content: counter(page) '&nbsp;&nbsp;|&nbsp;&nbsp;{!Client_Plan__c.Relationship__r.Name}&nbsp;&nbsp;|&nbsp;&nbsp;Document generated at<apex:outputText value="{0,date,' ' dd-MM-yyyy HH:mm:ss z}"><apex:param value="{!NOW()}" /></apex:outputText> \A' 'Confidential';
+            white-space: pre-wrap;
+            font-family: sans-serif;
+            font-size: 11px;
+            }         
+            @bottom-center {
+            border-top: 1px solid #FF0000;
+            }      
+            }
+            .page-break {
+            display: block;
+            page-break-after: always;
+            }
+            table.header {
+            border-collapse: collapse;
+            width: 100%;                
+            }
+            table.header td {
+            width: 100%;
+            text-align: center;
+            }
+            div.title {
+            font-size: 28px;
+            font-weight: none;
+            color: #FF0000;
+            margin-bottom: 8px;
+            }
+            div.subtitle {
+            font-size: 18px;
+            padding-top: 0px;
+            padding-bottom: 6px;
+            }
+            div.section {
+            max-width: 1100px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+            }
+            div.sectionTitle {
+            font-size: 15px;
+            font-style: italic;
+            margin-bottom: 10px;
+            }
+            table.grid {
+            margin: 0 0;
+            width: 100%;
+            max-width: inherit;
+            page-break-inside: avoid;
+            word-break: break-all;
+            font-size: 14px;
+            border-collapse: collapse;
+            }
+            table.grid tr {
+            margin: 0;
+            }
+            table.grid th {
+            margin: 0;
+            background-color: #666666;
+            color: #FFFFFF;
+            font-weight: bold;
+            vertical-align: top;
+            padding: 2px;
+            border-collapse: collapse;
+            border: 1px solid #D4D4D4;
+            page-break-inside: avoid !important;
+            }
+            table.grid td {
+            margin: 0;
+            vertical-align: top;
+            padding: 2px;
+            padding-left: 3px;
+            }
+            table.grid td.header {
+            background-color: #444444;
+            color: #FFFFFF;
+            font-weight: bold;
+            }
+            table.grid td.label {
+            font-weight: bold;
+            color: #FFFFFF;
+            padding: 4px;
+            background-color: #666666;
+            border-collapse: collapse;
+            border: 1px solid #D4D4D4;
+            }
+            table.grid td.field {
+            padding: 4px;
+            word-break: break-all;
+            background-color: #F7F7F7; 
+            border-collapse: collapse;
+            border: 1px solid #D4D4D4;
+            }
+            table.grid td.securityDescription {
+            max-width: 400px;           
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            }
+            table.finTable {
+            width: 1000px;
+            padding: 2px;
+            margin: 0 0;
+            }
+            table.finTable th {
+            background-color: #666666;
+            color: #FFFFFF;
+            text-align: center;
+            }
+            table.finTable td {
+            margin: 0;
+            padding: 2px;
+            padding-left: 3px;
+            border-collapse: collapse;
+            border: 1px solid #A4A4A4;
+            }
+            table.finTable td.label {
+            background-color: #666666;
+            color: #FFFFFF;
+            text-align: left;
+            font-weight: bold;
+            }
+            table.finTable td.field {
+            background-color: #FBFBFB; 
+            min-width: 115px;
+            text-align: right;
+            }
+            table.revProduct {
+            background-color: #F9F9F9;
+            width: 100%;
+            padding: 2px;
+            margin: 0 0;
+            }
+            table.revProduct td {
+            margin: 0;
+            padding-left: 2px;
+            }
+            table.revProduct td.header {
+            background-color: #444444;
+            color: #FFFFFF;
+            font-weight: bold;
+            }
+            table.revProduct td.label {
+            font-weight: bold;
+            background-color: #F7F7F7;
+            border-collapse: collapse;
+            border: none;
+            }
+            table.revProduct td.prob {
+            width: 50px;
+            background-color: #FEFFE9;
+            text-align: right;
+            }            
+            table.revProduct td.included {
+            width: 40px;
+            text-align: center;
+            }
+            table.revProduct td.sum {
+            background-color: #E2E2E2;
+            color: black;
+            text-align: right;
+            }
+            table.revProduct td.rev {
+            text-align: right;
+            }
+            table.revProduct td.included img {
+            width: 12px;
+            }
+            
+            .sfdc_richtext {
+            border: 0px solid black;
+            }
+            
+            .sfdc_richtext p {
+            display: block !important;
+            margin: 0px !important;
+            border: 0px !important;
+            padding: 0px !important;
+            }
+            
+            .sfdc_richtext img {
+            max-width: 100% !important;
+            }
+            
+            .standaloneImgWrapper {
+            width: 100%;
+            text-align: center;
+            }
+            
+            .standaloneImgGroup {
+            width: 750px !important;
+            height: auto !important;
+            }
+            
+            .standaloneImgPresence {
+            width: 1000px !important;
+            height: auto !important;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageOverview}">
+            
+            <div class="title">{!Client_Plan__c.Relationship__r.Name}</div>
+            <div class="subtitle">Client Plan Summary – Last Modified Date: <apex:outputText value="{0,date,' ' MM/dd/yyyy}"><apex:param value="{!Client_Plan__c.LastModifiedDate}" /></apex:outputText></div>
+            
+            <apex:outputPanel >
+                <div class="section" style="text-align: left; float: left;">
+                    <div class="sectionTitle">Relationship Details</div>
+                    <table class="grid" style="width: 520px">
+                        <tr>
+                            <td class="label" width="175px">{!$ObjectType.Client_Plan__c.fields.Status__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.Status__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.Expansion_Policy__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.Expansion_Policy__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.DG__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.DG__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.Coverage_Banker__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.Coverage_Banker__c}"/></td>
+                        </tr>
+                        <tr style="font-style:italic;font-size:9px;display:{!IF(Client_Plan__c.SDS__c!='' && Client_Plan__c.Override_Pull_DG_From_SPEAR__c==false && getSelectedSDSClient!='','table-row','none')}">
+                            <td colspan="2">
+                                <apex:outputText value="*DG retrieved based on: {!getSelectedSDSClient}"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <br/>
+                    
+                    <table class="grid" style="width: 520px">
+                        <tr>
+                            <td class="label" width="175px">{!$ObjectType.Client_Plan__c.fields.TFL__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.TFL__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.RoRWA_Existing__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.RoRWA_Existing__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.Last_Review_Date__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.Last_Review_Date__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$ObjectType.Client_Plan__c.fields.Financial_Year_End__c.Label}</td>
+                            <td class="field"><apex:outputField value="{!Client_Plan__c.Financial_Year_End__c}"/></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="section" style="margin-left: 20px; text-align: left; float: left;">
+                    <div class="sectionTitle">Client Team</div>
+                    <table class="grid" style="width: 520px">
+                        <apex:repeat value="{!clientPlanDetailsController.members}" var="member">
+                            <tr>
+                                <td class="label" width="175px">
+                                    <apex:outputField value="{!member.Team_Member__r.Name}" />
+                                </td>
+                                <td class="field">
+                                    <apex:outputField value="{!member.Team_Role__c}" />
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!!clientPlanStakeholders.empty}">
+                <div class="section" style="float: left; width: 100%;">
+                    <div class="sectionTitle">Stakeholders’ relationships</div>
+                    <table class="grid">
+                        <tr>
+                            <th>Client Contact</th>
+                            <th>Client Role</th>
+                            <th>Primary Barclays Contact</th>
+                            <th>Relationship Strength</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanStakeholders}" var="stakeholder">
+                            <tr>
+                                <td class="field">
+                                    <apex:outputField value="{!stakeholder.Contact__r.Name}" />
+                                </td>
+                                <td class="field">
+                                    <apex:outputField value="{!stakeholder.Contact__r.Job_Role__c}" />
+                                </td>
+                                <td class="field">
+                                    <apex:outputPanel rendered="{!!stakeholder.Client_Plan_Relationship_Items__r.empty}">
+                                        <apex:outputField value="{!stakeholder.Client_Plan_Relationship_Items__r[0].Barclays_Contact_User__r.Name}" />
+                                    </apex:outputPanel>
+                                </td>    
+                                <td class="field">
+                                    <apex:outputPanel rendered="{!!stakeholder.Client_Plan_Relationship_Items__r.empty}">
+                                        <apex:outputField value="{!stakeholder.Client_Plan_Relationship_Items__r[0].Strength_of_Relationship__c}" />
+                                    </apex:outputPanel>
+                                </td>    
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </div>
+                
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageClientSector}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_ClientSectorOverview}</div>
+            
+            <apex:outputPanel >
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <th>{!$ObjectType.Client_Plan__c.fields.Executive_Summary__c.Label}</th>
+                        </tr>
+                        <tr>
+                            <td class="field">
+                                <apex:outputField value="{!Client_Plan__c.Executive_Summary__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <br/>
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <th>{!$ObjectType.Client_Plan__c.fields.Client_Overview__c.Label}</th>
+                        </tr>
+                        <tr>
+                            <td class="field">
+                                <apex:outputField value="{!Client_Plan__c.Client_Overview__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <br/>
+                
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <th>{!$ObjectType.Client_Plan__c.fields.Sector_Overview__c.Label}</th>
+                        </tr>
+                        <tr>
+                            <td class="field">
+                                <apex:outputField value="{!Client_Plan__c.Sector_Overview__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageOwnership}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_OwnershipStructure}</div>
+            
+            <apex:outputPanel rendered="{!(clientPlan.Org_Structure_Image_ID__c != null) || (clientPlan.Group_Structure_Image_ID__c != null)}">
+                <div class="section">
+                    <table class="grid" style="width: 1100px">
+                        <tr>    
+                            <td class="field">
+                                <div class="standaloneImgWrapper">
+                                    <apex:image styleClass="standaloneImgGroup" url="/servlet/servlet.FileDownload?file={!clientPlan.Org_Structure_Image_ID__c}" rendered="{!clientPlan.Org_Structure_Image_ID__c != null}"/>
+                                    <apex:image styleClass="standaloneImgGroup" url="/servlet/servlet.FileDownload?file={!clientPlan.Group_Structure_Image_ID__c}" rendered="{!clientPlan.Org_Structure_Image_ID__c == null && clientPlan.Group_Structure_Image_ID__c != null}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            
+            <br/>
+            
+            <div class="section" style="page-break-inside: avoid;">
+                <table>
+                    <tr>
+                        <td style="width: 45%; vertical-align: top;">
+                            <table class="grid" style="width: 520px">
+                                <tr>
+                                    <td class="header"><apex:outputText value="{!$Label.lbl_Borrowers}" /></td>
+                                </tr>
+                                
+                                <apex:repeat value="{!clientPlanOrgStructureController.borrowers}" var="borrower">
+                                    <tr>
+                                        <td class="field"><apex:outputField value="{!borrower.Value__c}"/></td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                            
+                        </td>
+                        <td style="width: 10%;">
+                            &nbsp;
+                        </td>
+                        <td style="width: 45%; vertical-align: top;">
+                            <table class="grid" style="width: 520px">
+                                <tr>
+                                    <td class="header"><apex:outputText value="{!$Label.lbl_Guarantors}" /></td>
+                                </tr>
+                                
+                                <apex:repeat value="{!clientPlanOrgStructureController.guarantors}" var="guarantor">
+                                    <tr>
+                                        <td class="field"><apex:outputField value="{!guarantor.Value__c}"/></td>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageSwot}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_SwotAnalysis}</div>
+            
+            <table>
+                <tr>
+                    <td style="width: 500px; text-align: top; vertical-align: top; padding: 15px;">
+                        <table class="grid">
+                            <tr>
+                                <td class="header"><apex:outputText value="{!$Label.lbl_StrengthsOfClient}" /></td>
+                            </tr>
+                            <apex:repeat value="{!clientPlanOverviewController.strengths}" var="strength">
+                                <tr>
+                                    <th>{!strength.Name}</th>
+                                </tr>
+                                <tr>
+                                    <td class="field"><apex:outputField value="{!strength.Description__c}"/></td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </td>
+                    <td style="width: 500px; text-align: top; vertical-align: top; padding: 15px;">
+                        <table class="grid">
+                            <tr>
+                                <td class="header"><apex:outputText value="{!$Label.lbl_WeaknessesOfClient}" /></td>
+                            </tr>
+                            <apex:repeat value="{!clientPlanOverviewController.weaknesses}" var="weakness">
+                                <tr>
+                                    <th>{!weakness.Name}</th>
+                                </tr>
+                                <tr>
+                                    <td class="field"><apex:outputField value="{!weakness.Description__c}"/></td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 500px; text-align: top; vertical-align: top; padding: 15px;">
+                        <table class="grid">
+                            <tr>
+                                <td class="header"><apex:outputText value="{!$Label.lbl_OpportunitiesOfClient}" /></td>
+                            </tr>
+                            <apex:repeat value="{!clientPlanOverviewController.opportunities}" var="opportunity">
+                                <tr>
+                                    <th>{!opportunity.Name}</th>
+                                </tr>
+                                <tr>
+                                    <td class="field"><apex:outputField value="{!opportunity.Description__c}"/></td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </td>
+                    <td style="width: 500px; text-align: top; vertical-align: top; padding: 15px;">
+                        <table class="grid">
+                            <tr>
+                                <td class="header"><apex:outputText value="{!$Label.lbl_ThreatsOfClient}" /></td>
+                            </tr>
+                            <apex:repeat value="{!clientPlanOverviewController.threats}" var="threat">
+                                <tr>
+                                    <th>{!threat.Name}</th>
+                                </tr>
+                                <tr>
+                                    <td class="field"><apex:outputField value="{!threat.Description__c}"/></td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pagePresence}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_Presence}</div>
+            
+            <apex:outputPanel rendered="{!clientPlan.Country_Presence_Image_ID__c != null}">
+                <div class="section">
+                    <table class="grid" style="width: 1100px">
+                        <tr>
+                            <td class="field">
+                                <div class="standaloneImgWrapper">
+                                    <apex:image styleClass="standaloneImgPresence" url="/servlet/servlet.FileDownload?file={!clientPlan.Country_Presence_Image_ID__c}" rendered="{!clientPlan.Country_Presence_Image_ID__c != null}" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageFinancials}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_Environment}</div>
+            
+            <apex:outputPanel rendered="{!!clientPlanFinancials.empty}">
+                <div class="section">
+                    <div class="subtitle">
+                        <b>{!$ObjectType.Client_Plan__c.fields.FAIS_Status__c.Label}</b>:&nbsp;<apex:outputField value="{!Client_Plan__c.FAIS_Status__c}" />
+                    </div>
+                    <div class="subtitle">
+                        <b>{!$ObjectType.Client_Plan__c.fields.Latest_Audited_Financial_Statement__c.Label}</b>:&nbsp;<apex:outputField value="{!Client_Plan__c.Latest_Audited_Financial_Statement__c}" />
+                    </div>
+                    
+                    <br/>
+                    
+                    
+                    <apex:outputPanel rendered="{!clientPlanFinancialsController.plan.Financial_Information_Image_ID__c == null}">
+                        <table id="finTable" class="finTable">
+                            <thead>
+                                <tr>
+                                    <td style="border-collapse: collapse; border-width: 0px">&nbsp;</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <th>
+                                            <apex:outputText value="{!f.Month__c} " rendered="{!f.Month__c != null && (f.Financial_Results__c == null || f.Financial_Results__c != 'Audited Full Year')}"/>
+                                            <apex:outputText value="{!clientPlanFinancialsController.plan.Financial_Year_End__c} " rendered="{!clientPlanFinancialsController.plan.Financial_Year_End__c != null && f.Financial_Results__c != null && f.Financial_Results__c == 'Audited Full Year'}"/>
+                                            <apex:outputField value="{!f.Year__c}"/>
+                                        </th>
+                                    </apex:repeat>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Financial_Results__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Financial_Results__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_IncomeStatement}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_Turnover}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Turnover__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA_Margin__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA_Margin__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_Interest_Expense_Income__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_Income__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetInterestExpenseIncomeBAGLFacilitiesOnly}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Interest_Expense_BAGL_facilities__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.PAT__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.PAT__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_BalanceSheet}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_TotalAssets}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Assets__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_TotalTangibleAssets}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Tangible_Assets__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Gross_Debt__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Gross_Debt__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Subordinated_Shareholder_Loans__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Subordinated_Shareholder_Loans__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Cash_and_cash_equivalents__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_and_cash_equivalents__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetDebt}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Debt__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_CashFlows}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetWorth}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Worth__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Tangible_Net_Worth__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Tangible_Net_Worth__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Total_Liabilities__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Total_Liabilities__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_CashGeneratedByOperations}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_Generated_by_Operations__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Cash_flow_from_operating_activities_Adj__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Cash_flow_from_operating_activities_Adj__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Capex__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Capex__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_FreeCashFlow}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Free_Cash_Flow__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_cash_generation_utilization__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_cash_generation_utilization__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_Ratios}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBITDA_Net_Interest_cover__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBITDA_Net_Interest_cover__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="label">{!$Label.lbl_NetDebtEbitda}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Debt_Cash_Ebitda__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$Label.lbl_GrossDebtEbitda}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Gross_Debt_Cash_Ebitda__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Tangible_Gearing_Net_Debt_TNW__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Tangible_Gearing_Net_Debt_TNW__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label" colspan="3">{!$Label.lbl_Others}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Net_Asset_Value__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Net_Asset_Value__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EPS__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EPS__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.EBIT__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.EBIT__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Market_Cap__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Market_Cap__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.ROE__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.ROE__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.ROA__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.ROA__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <!--<tr>
+<td class="label">{!$ObjectType.Financial_Information__c.fields.Total_Interest_Bearing_Debt__c.Label}</td>
+<apex:repeat value="{!clientPlanFinancials}" var="f">
+<td class="field"><apex:outputField value="{!f.Total_Interest_Bearing_Debt__c}"/></td>
+</apex:repeat>
+</tr> -->
+                                
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Debt_Equity__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Debt_Equity__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Current_Ratio__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Current_Ratio__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                <tr>
+                                    <td class="label">{!$ObjectType.Financial_Information__c.fields.Interest_Cover_Ratio__c.Label}</td>
+                                    <apex:repeat value="{!clientPlanFinancials}" var="f">
+                                        <td class="field"><apex:outputField value="{!f.Interest_Cover_Ratio__c}"/></td>
+                                    </apex:repeat>
+                                </tr>
+                                
+                                
+                            </tbody>
+                        </table>
+                    </apex:outputPanel>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!clientPlanFinancials.empty || clientPlanFinancialsController.plan.Financial_Information_Image_ID__c != null}">
+                <div class="section">
+                    <table class="grid" style="width: 1100px">
+                        <tr>    
+                            <td class="field">
+                                <div class="standaloneImgWrapper">
+                                    <apex:image styleClass="standaloneImgGroup" url="/servlet/servlet.FileDownload?file={!clientPlanFinancialsController.plan.Financial_Information_Image_ID__c}" rendered="{!clientPlanFinancialsController.plan.Financial_Information_Image_ID__c != null}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!(clientPlanFinancialsController.plan.Financial_Information_Image_ID__c != null || !clientPlanFinancials.Empty)&&(clientPlanFinancialsController.plan.FinancialCommentary__c != NULL && clientPlanFinancialsController.plan.FinancialCommentary__c != '')}">
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <th>{!$ObjectType.Client_Plan__c.fields.FinancialCommentary__c.Label}</th>
+                        </tr>
+                        <tr>
+                            <td class="field">
+                                <apex:outputField value="{!Client_Plan__c.FinancialCommentary__c}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+        	</apex:outputPanel>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageFacilitiesBreakdown}">
+            <!-- Tonga MM : Remove existing product Section from Client plan as they will now utilize the ACM table section
+<!--  <apex:outputPanel rendered="{!!clientPlanExistingProducts.empty}">
+<div class="section">
+<table class="grid">
+<tr>
+<td class="header" colspan="7">{!$Label.lbl_ExistingProducts}</td>
+</tr>
+<tr>
+<th>{!$Label.lbl_Product}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Country__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Maturity_Date__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Limit__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Utilisation__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Margin__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.RoRWA__c.Label}</th>
+</tr>
+<apex:repeat value="{!clientPlanExistingProducts}" var="existingProduct">
+<tr>
+<td class="field"><apex:outputField value="{!existingProduct.Product_Level_3__r.Name}"/></td>
+<td class="field"><apex:outputField value="{!existingProduct.Country__c}"/></td>
+<td class="field"><apex:outputText value="{0,date,MM/dd/yyyy}" rendered="{!existingProduct.Maturity_Date__c != null}"><apex:param value="{!existingProduct.Maturity_Date__c}" /></apex:outputText></td>
+<td class="field" style="text-align: right"><apex:outputField value="{!existingProduct.Limit__c}"/></td>
+<td class="field" style="text-align: right"><apex:outputField value="{!existingProduct.Utilisation__c}"/></td>
+<td class="field" style="text-align: right"><apex:outputField value="{!existingProduct.Margin__c}"/></td>
+<td class="field" style="text-align: right"><apex:outputField value="{!existingProduct.RoRWA__c}"/></td>
+</tr>
+</apex:repeat>
+</table>
+</div>
+<apex:outputpanel rendered="{!isGlobalParent}">
+<table class="grid">
+<tr>
+<td class="header" colspan="7">{!$Label.lbl_ExistingProducts}</td>
+</tr>
+<tr>
+<th>{!$Label.lbl_Product}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Country__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Maturity_Date__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Limit__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Utilisation__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.Margin__c.Label}</th>
+<th>{!$ObjectType.Budget_Revenue__c.fields.RoRWA__c.Label}</th>
+</tr>
+
+
+<apex:variable var="cnt" value="{!1}" /> 
+
+<apex:repeat value="{!accountListToBudgetRevenues}" var="currentAccount">
+<tr>
+<th colspan="7">{!accountListToBudgetRevenues[currentAccount].Name}</th>
+</tr>
+<apex:repeat value="{!clientPlanToBudgetRevenues[currentAccount]}" var="budgetRevenue">
+<tr >
+<td class="field"><apex:outputText value="{!budgetRevenue.Product_Level_3__r.Name}" /></td>
+<td class="field"><apex:outputField value="{!budgetRevenue.Country__c}" /></td>
+<td class="field">
+<apex:outputText value="{0, date, dd/MM/yyyy}" >
+<apex:param value="{!budgetRevenue.Maturity_Date__c}" /> 
+</apex:outputText>
+</td>
+
+
+<td class="field">
+<apex:outputField value="{!budgetRevenue.Limit__c}" />
+
+</td>
+<td class="field">
+<apex:outputField value="{!budgetRevenue.Utilisation__c}" />
+
+</td>
+
+<td class="field">
+<apex:outputField value="{!budgetRevenue.Margin__c}" />
+</td>
+
+
+<td class="toTrim">
+<apex:outputField value="{!budgetRevenue.RoRWA__c}" />
+
+</td>           
+
+</tr>
+
+</apex:repeat>
+</apex:repeat>
+</table>
+</apex:outputpanel>
+</apex:outputPanel>
+
+<br/>
+-->
+            <apex:outputPanel rendered="{!!acmfs.Empty}">
+                <div style="page-break-before: always;">
+                    <div class="title" >{!$Label.lbl_TotalFacilitiesBreakdownSchedule}</div>
+                    <table  class="grid" style="border-collapse: separate;border-spacing: 0px 0px;-fs-table-paginate: paginate;page-break-inside: auto;">
+                        <thead>
+                            <tr>
+                                <td class="header" colspan="12">{!$Label.lbl_ACMFacilities}</td>
+                            </tr>
+                            <tr  >
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYPRODUCTDESCRIPTION__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Country__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.EXPIRYDATE__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FACILITYAMOUNT__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.LOSSGIVENDEFAULT__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.ACMUTILIZATIONAMOUNT__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.GROSS_MARGIN__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.FTP_bps__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Net_Margin__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.Arrang_Fee__c.Label}" />
+                                    </span>
+                                </th>
+                                <th>
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.COM_FEES__c.Label}" />
+                                    </span>
+                                </th>
+                                <th >
+                                    <span>
+                                        <apex:outputText value="{!$ObjectType.ACMFacility__c.fields.RoRWA__c.Label}" />
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:variable value="{!0}" var="acmfsKeyIndex"/>
+                            <apex:repeat value="{!acmfsKeys}" var="acmfsKey">
+                                <tr id="{!acmfsKey}">
+                                    <td colspan="12" bgcolor="#bfbfbf">
+                                        {!acmfsLabels[acmfsKeyIndex]}
+                                    </td>
+                                </tr>
+                                <apex:repeat value="{!acmfsMap[acmfsKey]}" var="acmf">
+                                    <tr id="{!acmf.Id}" >
+                                        <td class="field">
+                                            {!acmf.FACILITYPRODUCTDESCRIPTION__c}
+                                        </td>
+                                        <td class="field">
+                                            {!acmf.Country__c}
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{0, date, dd/MM/yyyy}" rendered="{!acmf.EXPIRYDATE__c != null}">
+                                                <apex:param value="{!acmf.EXPIRYDATE__c}" /> 
+                                            </apex:outputText>
+                                        </td>
+                                        <td class="field">
+                                            {!acmf.FACILITYCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.FACILITYAMOUNT__c}"/></apex:outputText>
+                                        </td>
+                                        <td class="field">
+                                            {!acmf.LOSSGIVENDEFAULT__c}
+                                        </td>
+                                        <td class="field">
+                                            {!acmf.ACMUTILIZATIONCURRENCY__c} <apex:outputText value="{0, number, ###,##0}"><apex:param value="{!acmf.ACMUTILIZATIONAMOUNT__c}"/></apex:outputText>
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.GROSS_MARGIN__c}" />
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.FTP_bps__c}"/>
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.NET_MARGIN__c}"/>
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.Arrang_Fee__c}"/>
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.COM_FEES__c}"/>
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!acmf.RoRWA__c}"/>
+                                        </td>
+                                    </tr>
+                                    
+                                </apex:repeat>
+                                <apex:variable var="acmfsKeyIndex" value="{!acmfsKeyIndex + 1}"/>
+                            </apex:repeat>
+                            <tr>
+                                <th colspan="12" class="facilityProductDescription">
+                                    {!$Label.lbl_ACMSubTotal}
+                                </th>
+                            </tr>
+                            <apex:repeat value="{!facilitySubTotalMap}" var="key">
+                                <tr>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td style="word-wrap:break-word" class="field">
+                                        {!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                        <apex:param value="{!facilitySubTotalMap[key].facilityAmountSubTotal}"/>
+                                        </apex:outputText>
+                                        ({!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                        <apex:param value="{!facilitySubTotalMap[key].convertedFacilityAmountSubTotal}"/>
+                                        </apex:outputText>)
+                                    </td>
+                                    <td class="field"/>
+                                    <td class="field">
+                                        {!key}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                        <apex:param value="{!facilitySubTotalMap[key].utilizationAmountSubTotal}"/>
+                                        </apex:outputText> 
+                                        ({!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                        <apex:param value="{!facilitySubTotalMap[key].convertedUtilizationAmountSubTotal}"/>
+                                        </apex:outputText>)
+                                    </td>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                    <td class="field"/>
+                                </tr>
+                            </apex:repeat>
+                            <tr>
+                                <th colspan="12" class="facilityProductDescription">
+                                    {!$Label.lbl_ACMTotal}
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field">
+                                    {!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!ACMFacilityFacilityTotal}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td class="field"/>
+                                <td class="field">
+                                    {!userCurrency}&nbsp;<apex:outputText value="{0, number,  ###,###,###.##}">
+                                    <apex:param value="{!ACMFacilityUtilizationTotal}"/>
+                                    </apex:outputText> 
+                                    
+                                </td>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field"/>
+                                <td class="field"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            
+            <br/>
+            <apex:outputPanel rendered="{!!clientPlanFinancialsController.absaSecurity.empty}">
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <td class="header" colspan="2">{!$Label.lbl_AbsaSecurity}</td>
+                        </tr>
+                        <tr>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Security_Description__c.Label}" /></th>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Security__c.fields.Value__c.Label}" /></th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanFinancialsController.absaSecurity}" var="security">
+                            <tr>
+                                <td class="field securityDescription"><apex:outputField value="{!security.Security_Description__c}" /></td>
+                                <td class="field" style="text-align: right">{!security.CurrencyIsoCode}<apex:outputText value="{0, number, ###,##0}"><apex:param value="{!security.Value__c}"/></apex:outputText></td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!!clientPlanFinancialsController.otherFacility.empty}">
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <td class="header" colspan="4">{!$Label.lbl_OtherFacilities}</td>
+                        </tr>
+                        <tr>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Product__c.Label}" /></th>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Bank__c.Label}" /></th>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Country__c.Label}" /></th>
+                            <th><apex:outputText value="{!$ObjectType.Client_Plan_Facility__c.fields.Limit__c.Label}" /></th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanFinancialsController.otherFacility}" var="facility">
+                            <tr>
+                                <td class="field"><apex:outputText value="{!facility.Product_Level_3__r.Name}" /></td>
+                                <td class="field"><apex:outputText value="{!facility.Bank__c}" /></td>
+                                <td class="field"><apex:outputText value="{!facility.Country__c}" /></td>
+                                <td class="field" style="text-align: right">{!facility.CurrencyIsoCode}<apex:outputText value="{0, number, ###,##0}"><apex:param value="{!facility.Limit__c}"/></apex:outputText>      </td>
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                            <td class="header" colspan="4">{!$Label.lbl_CurrencySubTotal}</td>
+                        </tr>
+                        <apex:repeat value="{!clientPlanFinancialsController.currencyTotalsMap}" var="key">
+                            <tr class="slds-hint-parent">
+                                <td class="field"></td>
+                                <td class="field"></td>
+                                <td class="field"></td>
+                                <td class="field"  style="text-align: right;">
+                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                        {!key} &nbsp;<apex:param value="{!clientPlanFinancialsController.currencyTotalsMap[key].subTotal}" />
+                                    </apex:outputText>
+                                    ( {!clientPlanFinancialsController.userCurrencyCode} 
+                                    <apex:outputText value="{0, number, ###,###,###.##}">
+                                        <apex:param value="{!clientPlanFinancialsController.currencyTotalsMap[key].convertedSubTotal}" />
+                                    </apex:outputText>)
+                                </td>
+                                <td class="slds-row-action"></td>
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                            <th class="header" colspan="4">{!$Label.lbl_OtherFacilityTotal}</th>
+                        </tr>
+                        <tr>
+                            <td class="field"></td>
+                            <td class="field"></td>
+                            <td class="field"></td>
+                            <td class="field" style="text-align: right;">
+                                <apex:outputText value="{0, number, ###,###,###.##}">
+                                    {!clientPlanFinancialsController.userCurrencyCode}&nbsp; <apex:param value="{!clientPlanFinancialsController.totalOtherFacilities}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            <!-- ############################################################# ACM Facilities-->
+        </apex:outputPanel> 
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageRevenuesByProduct}">
+            <div class="page-break"></div>
+            <div class="title"><apex:outputText value="{!$Label.lbl_RevenuesByProduct}"/></div>
+            
+            <apex:outputPanel rendered="{!clientPlanRevByProduct != null}">
+                <div class="section">
+                    <table class="revProduct">
+                        <tr>
+                            <td class="header" colspan="8">{!$Label.lbl_RevenuesByProduct}</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductIncludedRoRwa}</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductLast12M}</td>
+                            <td class="label">{!$Label.lbl_RWA}</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductNext12M}</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductNext12MProb}</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductNext1224M}</td>
+                            <td class="label">{!$Label.lbl_RevenuesByProductNext1224MProb}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductAssetSales}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_AssetSalesFinance__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_AssetSalesFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_AssetSalesFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_AssetSalesFinance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_AssetSalesFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_AssetSalesFinance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_AssetSalesFinance__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductAvgDepBal}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_AverageDepositBalance__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_AverageDepositBalance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_AverageDepositBalance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_AverageDepositBalance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_AverageDepositBalance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_AverageDepositBalance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_AverageDepositBalance__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductCommercialPropertyFinance}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_CommercialPropertyFinance__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_CommercialPropertyFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_CommercialPropertyFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_CommercialPropertyFinance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_CommercialPropertyFinance__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_CommercialPropertyFinance__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_CommercialPropertyFinance__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductDebt}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Debt__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Debt__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Debt__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Debt__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Debt__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Debt__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Debt__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductDeposits}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Deposits__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Deposits__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Deposits__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Deposits__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Deposits__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Deposits__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Deposits__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductEquities}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Equities__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Equities__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Equities__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Equities__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Equities__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Equities__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Equities__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductFixedIncome}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_FixedIncome__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_FixedIncome__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_FixedIncome__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_FixedIncome__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_FixedIncome__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_FixedIncome__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_FixedIncome__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductFX}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_FX__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_FX__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_FX__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_FX__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_FX__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_FX__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_FX__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductOtherMA}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_OtherMADCMECM__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_OtherMADCMECM__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_OtherMADCMECM__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_OtherMADCMECM__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_OtherMADCMECM__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_OtherMADCMECM__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_OtherMADCMECM__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductOtherRBB}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_OtherRBBWealth__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_OtherRBBWealth__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_OtherRBBWealth__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_OtherRBBWealth__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_OtherRBBWealth__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_OtherRBBWealth__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_OtherRBBWealth__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductOtherTrade}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_OtherTrade__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_OtherTrade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_OtherTrade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_OtherTrade__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_OtherTrade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_OtherTrade__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_OtherTrade__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductPassive}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Passive__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Passive__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Passive__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Passive__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Passive__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Passive__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Passive__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductPrimeServices}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_PrimeServices__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_PrimeServices__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_PrimeServices__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_PrimeServices__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_PrimeServices__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_PrimeServices__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_PrimeServices__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductPrivateEquity}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_PrivateEquity__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_PrivateEquity__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_PrivateEquity__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_PrivateEquity__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_PrivateEquity__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_PrivateEquity__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_PrivateEquity__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductTrade}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Trade__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Trade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Trade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Trade__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Trade__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Trade__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Trade__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductTransProd}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_TransactionProducts__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_TransactionProducts__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_TransactionProducts__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_TransactionProducts__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_TransactionProducts__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_TransactionProducts__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_TransactionProducts__c}" /></td>
+                        </tr>
+                        <!--<tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductDerivatives}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Derivatives__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Derivatives__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Derivatives__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Derivatives__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Derivatives__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Derivatives__c}" /></td>
+                        </tr>-->
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductTreasury}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_Treasury__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_Treasury__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_Treasury__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_Treasury__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_Treasury__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_Treasury__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_Treasury__c}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">{!$Label.lbl_RevenuesByProductWorkingCapital}</td>
+                            <td class="included"><apex:outputField value="{!clientPlanRevByProduct.rorwa_WorkingCapital__c}"/></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.H12_WorkingCapital__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.RWA_WorkingCapital__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F12_WorkingCapital__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F12P_WorkingCapital__c}" /></td>
+                            <td class="rev"><apex:outputField value="{!clientPlanRevByProduct.F24_WorkingCapital__c}" /></td>
+                            <td class="prob"><apex:outputField value="{!clientPlanRevByProduct.F24P_WorkingCapital__c}" /></td>
+                        </tr>
+                        <!-- Calculations -->
+                        <tr>
+                            <td colspan="2">{!$Label.lbl_RevenuesByProductTotalCon}</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_H12_Contribution__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F12_Contribution__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F24_Contribution__c}" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">{!$Label.lbl_RevenuesByProductTotalNonLenCon}</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_H12_Non_Lending_Contrib__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F12_Non_Lending_Contrib__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F24_Non_Lending_Contrib__c}" /></td>
+                            <td>&nbsp;</td>
+                        </tr>                           
+                        <tr>
+                            <td colspan="4">{!$Label.lbl_RevenuesByProductTotalConWei}</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F12_Contrib_Weighted__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F24_Contrib_Weighted__c}" /></td>
+                            <td>&nbsp;</td>
+                        </tr>                                   
+                        <tr>
+                            <td colspan="4">{!$Label.lbl_RevenuesByProductTotalNonLenConWei}</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F12_Non_Lendng_Contrib_Weighted__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.Tot_F24_Non_Lendng_Contrib_Weighted__c}" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">{!$Label.lbl_DerivativesLegacyTotals}</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.H12_Derivatives__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.F12_Derivatives__c}" /></td>
+                            <td>&nbsp;</td>
+                            <td class="sum"><apex:outputField value="{!clientPlanRevByProduct.F24_Derivatives__c}" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageStrategies}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_Strategy}</div>
+            
+            <apex:outputPanel rendered="{!!clientPlanStrategyController.strategies.empty}">
+                <table style="width: 1050px">
+                    <apex:repeat value="{!clientPlanStrategyController.strategies}" var="strategy">
+                        <tr>
+                            <td>
+                                <table class="grid" style="font-size: 12px;">
+                                    <tr>
+                                        <td class="header">{!strategy.Name}</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$ObjectType.Client_Plan_Strategy__c.fields.Client_Strategy__c.Label}</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="field"><apex:outputField value="{!strategy.Client_Strategy__c}"/></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$ObjectType.Client_Plan_Strategy__c.fields.Bank_Strategy__c.Label}</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="field"><apex:outputField value="{!strategy.Bank_Strategy__c}"/></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$Label.lbl_Opportunities}</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">
+                                            <apex:variable var="cnt" value="{!0}"/>
+                                            
+                                            <apex:repeat value="{!clientPlanStrategyController.optysMap[strategy.Id]}" var="opty">
+                                                <div>{!opty.Name} - {!opty.Probability}%</div>
+                                                <apex:variable var="cnt" value="{!cnt+1}"/>
+                                            </apex:repeat>
+                                            <apex:outputPanel rendered="{!cnt == 0}">
+                                                <div>&nbsp;-</div>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <th>{!$Label.lbl_PotentialOpportunities}</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">
+                                            <apex:variable var="cnt" value="{!0}"/>
+                                            <apex:repeat value="{!clientPlanStrategyController.unqOptysMap[strategy.Id]}" var="opty">
+                                                <div>{!opty.Name} - {!opty.Probability__c}</div>
+                                                <apex:variable var="cnt" value="{!cnt+1}"/>
+                                            </apex:repeat>
+                                            <apex:outputPanel rendered="{!cnt == 0}">
+                                                <div>&nbsp;-</div>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>    
+        
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageOpportunities}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_Opportunities}</div>
+            
+            <apex:outputPanel rendered="{!!clientPlanController.unqOptys.empty}">
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <td class="header" colspan="6">{!$Label.lbl_PotentialFutureOpps}</td>
+                        </tr>
+                        <tr>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}</th>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}</th>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}</th>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}</th>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}</th>
+                            <th>{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanController.unqOptys}" var="potentialOpportunity">
+                            <tr>
+                                <td class="field"><apex:outputField value="{!potentialOpportunity.Name}"/></td>
+                                <td class="field">
+                                    <apex:outputField value="{!potentialOpportunity.Product_Level_3__r.Name}" rendered="{!potentialOpportunity.Product_Level_3__r != null}"/>
+                                    <apex:outputField value="{!potentialOpportunity.Product_Level_2__r.Name}" rendered="{!potentialOpportunity.Product_Level_3__r == null && potentialOpportunity.Product_Level_2__r != null}" />
+                                    <apex:outputField value="{!potentialOpportunity.Product_Level_1__r.Name}" rendered="{!potentialOpportunity.Product_Level_3__r == null && potentialOpportunity.Product_Level_2__r == null && potentialOpportunity.Product_Level_1__r != null}" />
+                                </td>
+                                <td class="field"><apex:outputField value="{!potentialOpportunity.Stage__c}" /></td>
+                                <td class="field"><apex:outputText value="{0, date, dd/MM/yyyy}"><apex:param value="{!potentialOpportunity.Close_Date__c}" /> </apex:outputText></td>
+                                <td class="field"><apex:outputField value="{!potentialOpportunity.Probability__c}"/></td>
+                                <td class="field"><apex:outputField value="{!potentialOpportunity.Type__c}" /></td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                    <br/>
+                    <br/>
+                    <apex:outputpanel rendered="{!isGlobalParent}">
+                        <table class="grid">
+                            <tr>
+                                <td class="header" colspan="6">{!$Label.lbl_PotentialFutureOpps}</td>
+                            </tr>
+                            <tr>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Name.Label}</th>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}</th>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}</th>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}</th>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}</th>
+                                <th>{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}</th>
+                            </tr>
+                            <apex:repeat value="{!accountListToPotentialOpps}" var="currentAccount">
+                                <tr>
+                                    <th colspan="7">{!accountListToPotentialOpps[currentAccount].Name}</th>
+                                </tr>
+                                <apex:repeat value="{!clientPlanToPotentialOpportunities[currentAccount]}" var="potentialOpp">
+                                    <tr >
+                                        <td class="field">
+                                            <apex:outputText value="{!potentialOpp.Name}" />
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!potentialOpp.Product_Level_3__r.Name}" rendered="{!potentialOpp.Product_Level_3__r != null}"/>
+                                            <apex:outputText value="{!potentialOpp.Product_Level_2__r.Name}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r != null}" />
+                                            <apex:outputText value="{!potentialOpp.Product_Level_1__r.Name}" rendered="{!potentialOpp.Product_Level_3__r == null && potentialOpp.Product_Level_2__r == null && potentialOpp.Product_Level_1__r != null}" />
+                                        </td>
+                                        
+                                        <td class="field">
+                                            <apex:outputText value="{!potentialOpp.Stage__c}" />
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{0, date, dd/MM/yyyy}">
+                                                <apex:param value="{!potentialOpp.Close_Date__c}" /> 
+                                            </apex:outputText>
+                                        </td>                            
+                                        <td>
+                                            <apex:outputText value="{!potentialOpp.Probability__c}" />
+                                        </td>
+                                        <td class="field">
+                                            <apex:outputText value="{!potentialOpp.Type__c}" />
+                                        </td>
+                                        
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </table>
+                    </apex:outputpanel>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!!clientPlanController.pipelineOptys.empty}">
+                <br/>
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <td class="header" colspan="7">{!$Label.lbl_OpenOpportunities}</td>
+                        </tr>
+                        <tr>
+                            <th>{!$ObjectType.Opportunity.fields.Name.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.Total_Balance_Facility_Size__c.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.OwnerId.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.CloseDate.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.Probability.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}</th>
+                            <th>{!$ObjectType.Opportunity.fields.StageName.Label}</th>
+                        </tr>
+                        <apex:repeat value="{!clientPlanController.pipelineOptys}" var="openOpportunity">
+                            <tr>
+                                <td class="field"><apex:outputField value="{!openOpportunity.Name}"/></td>
+                                <td class="field">{!openOpportunity.CurrencyIsoCode}<apex:outputText value="{0, number, ###,##0}"><apex:param value="{!openOpportunity.Total_Balance_Facility_Size__c}"/></apex:outputText></td>
+                                <td class="field"><apex:outputField value="{!openOpportunity.Owner.Name}" /></td>
+                                <td class="field"><apex:outputText value="{0, date, dd/MM/yyyy}"><apex:param value="{!openOpportunity.CloseDate}" /> </apex:outputText></td>
+                                <td class="field"><apex:outputField value="{!openOpportunity.Probability}"/></td>
+                                <td class="field">{!openOpportunity.CurrencyIsoCode}<apex:outputText value="{0, number, ###,##0}"><apex:param value="{!openOpportunity.Annualised_Income__c}"/></apex:outputText></td>
+                                <td class="field"><apex:outputField value="{!openOpportunity.StageName}" /></td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                    <br/>
+                    <br/>
+                    <apex:outputpanel rendered="{!isGlobalParent}">
+                        <table class="grid">
+                            <tr>
+                                <td class="header" colspan="7">{!$Label.lbl_OpenOpportunities}</td>
+                            </tr>
+                            <tr>
+                                <th>{!$ObjectType.Opportunity.fields.Name.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.Total_Balance_Facility_Size__c.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.OwnerId.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.CloseDate.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.Probability.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}</th>
+                                <th>{!$ObjectType.Opportunity.fields.StageName.Label}</th>
+                            </tr>
+                            <apex:repeat value="{!accountListToOpps}" var="currentAccount">
+                                <tr>
+                                    <th colspan="7">{!accountListToOpps[currentAccount].Name}</th>
+                                </tr>
+                                <apex:repeat value="{!clientPlanToOpportunities[currentAccount]}" var="currentOpportnity">
+                                    <tr>
+                                        <td class="field"><apex:outputField value="{!currentOpportnity.Name}" /></td>
+                                        <td class="field">{!currentOpportnity.Total_Balance_Facility_Size__c}</td>  
+                                        <td class="field"><apex:outputField value="{!currentOpportnity.Owner.Name}" /></td>
+                                        <td class="field"><apex:outputText value="{0, date, dd/MM/yyyy}">
+                                            <apex:param value="{!currentOpportnity.CloseDate}" />
+                                            </apex:outputText></td>
+                                        <td class="field"><apex:outputText value="{!currentOpportnity.Probability}%" /></td>                            
+                                        <td class="field"><apex:outputField value="{!currentOpportnity.Annualised_Income__c}" /></td>                            
+                                        <td class="field"><apex:outputField value="{!currentOpportnity.StageName}" /></td> 
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </table>
+                    </apex:outputpanel>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <!-- ############################################################# -->
+        <!-- ############################################################# -->
+        <apex:outputPanel rendered="{!pageContactBio}">
+            <div class="page-break"></div>
+            <div class="title">{!$Label.lbl_ContactBio}</div>
+            
+            <apex:outputPanel >
+                <br/>
+                <div class="section">
+                    <table class="grid">
+                        <tr>
+                            <td class="header" colspan="3">{!$Label.lbl_ContactBio}</td>
+                        </tr>
+                        <tr>
+                            <th>{!$ObjectType.Contact.fields.Name.Label}</th>
+                            <th>{!$ObjectType.Contact.fields.Image__c.Label}</th>
+                            <th>{!$ObjectType.Contact.fields.Biography__c.Label}</th>
+                            
+                        </tr>
+                        <apex:repeat value="{!clientPlanStakeholders}" var="stakeholder">
+                            <tr style="display: {!IF(stakeholder.Contact__r.Image__c == NULL && stakeholder.Contact__r.Biography__c == NULL,'none','table-row')}">
+                                <td class="field" width="20%"><apex:outputField value="{!stakeholder.Contact__r.Name}"/></td>
+                                <td class="field" width="30%"><apex:outputField value="{!stakeholder.Contact__r.Image__c}" /></td>
+                                <td class="field" width="50%"><apex:outputField value="{!stakeholder.Contact__r.Biography__c}" /></td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                    <br/>
+                    <br/>
+                    
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </body>
+</apex:page>

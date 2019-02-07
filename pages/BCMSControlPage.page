@@ -1,0 +1,296 @@
+<apex:page standardController="Day_1_Template__c" extensions="BCMSControlPageController" showHeader="true" sidebar="true">
+        <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+        
+        <vs:importvisualstrap />
+        <c:ProgressBar />
+    <apex:form >
+        <apex:outputPanel id="page">
+        <apex:sectionHeader subtitle="{!$Label.lbl_CreateCaseInBcms}" />
+        <apex:pageBlock title="{!$Label.lbl_OnboardingInfo}" id="MainData">
+            <apex:pageBlockSection title="{!$Label.lbl_BasicInfo}">
+                <apex:outputField value="{!Day1Info.Primary_Legal_Entity__r.Name}"/>
+                <apex:outputField value="{!Day1Info.Registration_Number__c}"/>
+                <apex:outputField value="{!Day1Info.pcpoeg__c}"/>
+                <apex:outputField value="{!Day1Info.Group_Name__c}"/>
+                <apex:outputField value="{!Day1Info.nobbt__c}"/>
+                <apex:outputField value="{!Day1Info.wex4cert__c}"/>
+                <apex:outputField value="{!Day1Info.itcboap__c}"/>
+                <apex:outputField value="{!Day1Info.Guarantor_s__c}"/>
+                <apex:outputField value="{!Day1Info.Is_the_client_a_SPV__c}"/>
+                <apex:outputField value="{!Day1Info.Is_the_client_an_Associated_Party__c}"/>
+                <apex:outputField value="{!Day1Info.Is_the_client_a_MSB__c}"/>
+                <apex:outputField value="{!Day1Info.Will_interest_rates_and_charges_apply__c}"/>
+                <apex:inputfield value="{!Day1Info.ISC_Description__c}" styleClass="description">
+                    <apex:actionSupport event="onchange" action="{!saveIscDescription}" reRender="MainData" onsubmit="startLoading('{!$Label.lbl_Loading}');" oncomplete="prepareSicDescriptionClick();endLoading();"/>
+                </apex:inputfield>
+                <apex:outputField value="{!Day1Info.ISC_Code__c}"/>
+                <apex:inputField value="{!Day1Info.SIC_Description__c}" styleClass="sicDescription"/>
+                <apex:outputField value="{!Day1Info.SIC_Code__c}"/>
+                <apex:inputField value="{!Day1Info.MI_Flag__c}" styleClass="description">
+                    <apex:actionSupport event="onchange" action="{!saveMiFlag}" reRender="MainData" onsubmit="startLoading('{!$Label.lbl_Loading}');" oncomplete="prepareSicDescriptionClick();endLoading();"/>
+                </apex:inputField>
+                <apex:outputField value="{!Day1Info.MI_Flag_Code__c}"/>
+                <apex:inputField value="{!Day1Info.Legal_Entity_Type__c}" styleClass="description"/>
+                <apex:outputField value="{!Day1Info.Site_Code__c}"/>
+                <apex:inputField value="{!Day1Info.Legal_Entity__c}" styleClass="description">
+                    <apex:actionSupport event="onchange" action="{!saveLegalDescription}" reRender="MainData" onsubmit="startLoading('{!$Label.lbl_Loading}');" oncomplete="prepareSicDescriptionClick();endLoading();"/>
+                </apex:inputfield>
+                <apex:outputField value="{!Day1Info.Legal_Entity_Code__c}"/>
+                <apex:inputField value="{!Day1Info.dosp__c}" styleClass="description">
+                    <apex:actionSupport event="onchange" action="{!savePersonDesignation}" reRender="MainData" onsubmit="startLoading('{!$Label.lbl_Loading}');" oncomplete="prepareSicDescriptionClick();endLoading();"/>
+                </apex:inputfield>
+                <apex:outputField value="{!Day1Info.dosp_code__c}"/>
+
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.lbl_ContactPerson}">
+                <apex:outputField value="{!Day1Info.spccn__r.FirstName}"/>
+                <apex:outputField value="{!Day1Info.spccn__r.LastName}"/>
+                <apex:outputField value="{!Day1Info.spccn__r.Phone}"/>
+                <apex:outputField value="{!Day1Info.spccn__r.Email}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.lbl_Address}">
+                <apex:outputField value="{!Day1Info.Primary_Legal_Entity__r.BillingStreet}"/>
+                <apex:outputField value="{!Day1Info.Primary_Legal_Entity__r.BillingCity}"/>
+                <apex:outputField value="{!Day1Info.Primary_Legal_Entity__r.BillingPostalCode}"/>
+                <apex:outputField value="{!Day1Info.Primary_Legal_Entity__r.BillingCountry}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <apex:pageBlock title="{!$Label.lbl_OutcomeOfWsCall}" rendered="true" id="Outcome">
+            <apex:pageBlockButtons location="top" id="Buttons">
+                <apex:actionStatus onstart="startLoading('{!$Label.lbl_Loading}');" onstop="endLoading(); disableSaveButton(); showOutcomeText();" id="loadStatus"/>
+                <apex:commandButton id="createBCMS" action="{!saveCase}" value="{!$Label.btn_CreateCase}" rendered="{!!bcmsCreated}" reRender="ErrorMessages,isCreateSuccessPanel" status="loadStatus" /> 
+                <apex:commandButton id="cancel" action="{!cancel}" value="{!$Label.btn_Cancel}"/>
+
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="Notifications">
+                <apex:outputText id="AlreadyInBCMS" styleClass="redNotification" rendered="{!bcmsCreated}" value="{!$Label.lbl_BcmsAlreadyCreated}{!Day1Info.BCMS_Prospect_Id__c}"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockTable value="{!AssignedAttachments}" var="attach" title="{!$Label.lbl_Documents}" styleClass="attachmentsTable">
+                <apex:column title="{!$Label.lbl_Name}" value="{!attach.Name}"/>
+                <apex:column title="{!$Label.lbl_Description}" value="{!attach.Description}"/>
+                <apex:column title="{!$Label.lbl_CreateDocument}" styleClass="{!attach.Id}">
+                    <apex:commandButton id="createDocument"  value="{!$Label.lbl_CreateDocument}" rendered="{!bcmsCreated}" onclick="populateAttachId('{!attach.Id}');startLoading('{!$Label.lbl_Loading}');return false;"/>
+                </apex:column>
+                <apex:column styleClass="hidden" headerClass="hidden" value="{!attach.Id}"/>
+            </apex:pageBlockTable>
+
+            <apex:pageBlockSection id="ErrorMessages">
+                <apex:outputText id="ErrorMessageTexts" value="{!outcomeOfWSCall}" escape="false"/>
+            </apex:pageBlockSection>        
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$Label.lbl_AttestationData}" rendered="{!attestationreceived}">
+            <apex:pageBlockButtons location="top" id="Confirtmation">
+                <apex:commandButton id="ConfirmAttestation" value="{!$Label.lbl_ConfirmAttestationData}" rendered="{!attestationreceived}" onclick="startLoading('{!$Label.lbl_Loading}');populateAttestationConfirmation('true');return false;"/>
+                <apex:commandButton id="DeclineAttestation" value="{!$Label.lbl_DeclineAttestationData}" rendered="{!attestationreceived}" onclick="return false;" html-data-toggle="modal" html-data-target="#declinedreasonModal" styleClass="btn-primary brn-lg"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!AttestationDataToShow}" var="parsedXML" id="attestationTable" >
+                <apex:column value="{!parsedXML.nodName}" headerValue="Nod Name"/>
+                <apex:column value="{!parsedXML.nodValue}" headerValue="Nod Value"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+        </apex:outputPanel>
+
+
+        <!-- Hidden panel to pass value that case has or has not been created, so we can disable create case button-->
+        <apex:outputPanel id="isCreateSuccessPanel" styleClass="isCreateSuccessPanel hidden">
+            <apex:pageBlock id="isCreateSuccessPanelCase">
+                {!isCreateSuccess}
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel id="savedDocumentsIdsJsonPanel" styleClass="savedDocumentsIdsJsonPanel hidden">
+            {!savedDocumentsIdsJson}
+        </apex:outputPanel>
+
+        <apex:actionFunction name="populateAttachId" reRender="ErrorMessages,isCreateSuccessPanel,savedDocumentsIdsJsonPanel" action="{!saveDocument}" oncomplete="endLoading();
+                disableButtonsByDocumentIds(); showOutcomeText();prepareSicDescriptionClick();">
+            <apex:param name="param1" value="" assignTo="{!attachId}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="populateAttestationConfirmation" reRender="attestationTable" action="{!confirmAttestationData}" 
+                oncomplete="endLoading();prepareSicDescriptionClick();">
+            <apex:param name="param2" value="" assignTo="{!confirmationValue}"/>
+            <apex:param name="param3" value="" assignTo="{!declinationReason}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="populateSicDescription" action="{!saveSicDescription}" oncomplete="endLoading();prepareSicDescriptionClick();" reRender="MainData">
+            <apex:param name="param4" value="" assignTo="{!sicDescription}"/>
+        </apex:actionFunction>
+
+        <!--modal that will be displayed to the user-->
+        <vs:modal title="{!$Label.lbl_ReasonToDeclineAttData}" id="declinedreasonModal">
+            <apex:outputPanel layout="block" styleClass="errorMessage hidden declinedreasonAlert" >
+                {!$Label.lbl_InsertAttestationData}
+            </apex:outputPanel> 
+            <apex:inputTextarea styleClass="declinedreason"/>
+            <apex:outputPanel layout="block" styleClass="modal-footer">
+                <apex:commandButton value="{!$Label.btn_Close}" styleClass="btn-warning" html-data-dismiss="modal"/>
+                <apex:commandButton value="{!$Label.btn_Save}" styleClass="btn-success" onclick="processXmlUpdate();return false;" />
+            </apex:outputPanel>
+        </vs:modal>
+
+        <vs:modal title="{!$Label.lbl_PickUpSicDescription}" id="sicDescriptionModal">
+            <apex:outputPanel layout="block" styleClass="sicDescriptionPanel" >
+                <apex:pageBlock id="sicDescriptionBlock">
+                    <apex:pageBlockTable value="{!SicPickListToShow}" var="sic" id="SicDesc" styleClass="sicTable">
+                        <apex:column value="{!sic}" headerValue="SIC Description"/>
+                    </apex:pageBlockTable>
+
+                </apex:pageBlock>   
+            </apex:outputPanel> 
+            <apex:outputPanel layout="block" styleClass="modal-footer">
+                <apex:commandButton value="Close" styleClass="btn-warning" html-data-dismiss="modal"/>
+            </apex:outputPanel>
+        </vs:modal>
+
+    </apex:form>    
+
+
+
+
+    <style>
+        #declinedreasonModal .modal-dialog,
+        #sicDescriptionModal .modal-dialog {
+            margin-top: 250px;
+        }
+        .declinedreason {
+            width:      100%;
+        }
+        /*to hide closing next to the modal name*/
+        .close {
+            display:    none;
+        }
+        .redNotification {
+            color:      red;
+            font-size:  16px;
+        }
+        .errorMessage {
+            color:      red;
+            font-size:  10px;
+        }
+        .successMessage {
+            color:      green;
+            font-size:  10px;
+        }
+        .hidden {
+            display:    none;
+        }
+        .sicDescription {
+            width:      100%;
+        }
+        .description {
+            width:      100%;
+        }
+        .sicTable {
+            cursor: pointer;
+        }
+        .detailList tbody tr:nth-child(11) select {
+            width: 100%;
+        }
+        .detailList tbody tr:nth-child(8) td {
+            padding-right: 6px;
+        }
+
+    </style>
+    
+    <script type="text/javascript">
+        j$ = jQuery.noConflict();
+
+        j$('document').ready( function() {
+
+            disableButtonsByDocumentIds();
+            setSicModalHeight();
+            prepareSicDescriptionClick();
+            prepareSicModalClick();
+            prepareProgressBarPosition();
+
+        });        
+
+        function prepareSicDescriptionClick() {
+            j$('.sicDescription').click(function() {
+                j$('#sicDescriptionModal').modal('show');
+            });
+        }
+
+        function prepareSicModalClick() {
+            j$('.sicTable td').click( function() {
+                j$('#sicDescriptionModal').modal('hide');
+                var content = j$(this).html();
+                startLoading('{!$Label.lbl_Loading}');
+                populateSicDescription(content);
+            });
+
+        }
+
+        function setSicModalHeight() {
+            var height = j$(window).height() - 100;
+            j$('#sicDescriptionModal .modal-content').height(height);
+            j$('.sicDescriptionPanel').css('overflow-y', 'scroll');
+            j$('.sicDescriptionPanel').height(height - 120);
+        }
+
+        function processXmlUpdate() {
+            var content = j$('.declinedreason').val();
+
+            if (content.length > 10) {
+                j$('#declinedreasonModal').modal('hide');
+                startLoading();
+                populateAttestationConfirmation('false', content);
+
+            } else {
+                j$('.declinedreasonAlert').show();
+            }
+        }
+
+        function disableButtonsByDocumentIds() {
+            var savedDocumentsJsonString = j$('.savedDocumentsIdsJsonPanel').html();
+            var savedDocuments = JSON.parse(savedDocumentsJsonString);
+
+            for (var i = 0; i < savedDocuments.length; i++) {
+                var button = j$('.' + savedDocuments[i] + ' input');
+                j$(button).attr("disabled","true");
+                j$(button).attr("class","btnDisabled");
+            }
+        }
+
+        function disableSaveButton() {
+            var isSuccess = j$('.isCreateSuccessPanel').html();
+            if (isSuccess == 'true') {
+                j$("[id$='createBCMS']").attr("disabled","true");
+                j$("[id$='createBCMS']").attr("class","btnDisabled");
+            }   
+        }
+        function showOutcomeText() {
+            var isSuccess = j$('.isCreateSuccessPanel').html();
+            if (isSuccess == 'true') {
+                j$("[id$='ErrorMessageTexts']").attr("class", "successMessage");
+            } else {
+                j$("[id$='ErrorMessageTexts']").attr("class", "errorMessage");
+            }
+        }
+        /*  
+         *Pass the Id of the element to block   
+         **/  
+         function blockElement(sfId){   
+           j$('[id$='+sfId+']').block({ message: '<img src="/img/loading32.gif" /><h1> Loading...</h1>',   
+             css: {   
+                border: 'none',   
+                padding: '15px',   
+                '-webkit-border-radius': '10px',   
+                '-moz-border-radius': '10px',   
+                opacity: .9  
+             }   
+           });   
+           return false;  
+         }           
+         /*  
+         *Pass the Id of the element to unblock   
+         **/  
+         function unblockElement(sfId){  
+           j$('[id$='+sfId+']').unblock();  
+         }
+
+
+    </script>
+</apex:page>

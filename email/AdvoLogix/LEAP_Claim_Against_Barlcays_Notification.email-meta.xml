@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify Head of Litigation when Matter is Claim Against Barclays</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Claim Against Barlcays Notification</name>
+    <style>freeForm</style>
+    <subject>Notification: Matter flagged as Claim Against Barclays/ABSA</subject>
+    <textOnly>Good day,
+
+Please be aware that {!advpm__Matter__c.Name} has been flagged as &quot;Claim Against Barclays&quot;.
+
+Matter Name: {!advpm__Matter__c.Name}
+Description: {!advpm__Matter__c.advpm__Description__c}
+Claim By/Against: {!advpm__Matter__c.Claim_By_Against_Barclays__c}
+Business Unit: {!advpm__Matter__c.Business_Unit_Cluster_Segment__c}
+Probable (For Approval): {!advpm__Matter__c.Probable_For_Approval__c}
+
+
+Regards
+Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

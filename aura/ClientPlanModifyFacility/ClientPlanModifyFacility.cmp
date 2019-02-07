@@ -1,0 +1,57 @@
+<aura:component controller="ClientPlanFinancialsControllerMobile">
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="facilityId" type="Id" required="true" />
+    <aura:attribute name="isBarclays" type="Boolean" required="true" />
+    <aura:attribute name="timestamp" type="String" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    <aura:handler name="ProductSearchEvent" event="c:ProductSearchEvent" action="{!c.onProductSelected}"/>
+    
+     <div class="slds">
+         
+         <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    {!if(v.facilityId == null, 'Add ', 'Edit ')} {!if(v.isBarclays, 'Absa/Barclays ', 'other ')} facility
+                </div>
+                
+                <div id="wholePage">
+                    
+                    <c:ClientPlanProductSearch timestamp="{!v.timestamp}" value="{!v.facility.Product_Level_3__r.Name}" />
+                    
+                    <ui:inputCurrency aura:id="limit" label="Limit" value="{!v.facility.Limit__c}" class="marginBottom1em" />
+                    <span aura:id="limitError" class="toggle red">Decimal value required</span>
+                    
+                    <ui:inputSelect aura:id="currency" label="Currency ISO code" class="dynamic marginBottom1em" >
+                        <aura:iteration items="{!v.currencyIsoCodeOptions}" var="o">
+                            <ui:inputSelectOption text="{!o}" label="{!o}" />
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    
+                    <aura:if isTrue="{!v.isBarclays}">
+                    	<ui:inputCurrency aura:id="utilisation" label="Utilisation" value="{!v.facility.Utilisation__c}" class="marginBottom1em"/>
+                    	<span aura:id="utilisationError" class="toggle red">Decimal value required</span>
+                        
+                        <aura:set attribute="else">
+                            <ui:inputText aura:id="bank" label="Bank" value="{!v.facility.Bank__c}" class="marginBottom1em" />
+                        </aura:set>
+                    </aura:if>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeSave}">Save</button>
+                    </div>
+                    
+                </div>
+                
+             </aura:set>
+         </aura:if>
+    </div>
+	
+</aura:component>

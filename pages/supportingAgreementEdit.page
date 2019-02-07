@@ -1,0 +1,229 @@
+<apex:page standardController="Supporting_Agreement__c" extensions="supportingAgreementExtension" doctype="html-5.0">
+
+    <style>
+        .table-header {
+            font-weight: bold;
+        }
+    </style>
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+
+    <script>
+        $(document).ready(function() {
+            $('[id$=masterAgreementType]').prop('disabled', true);
+            checkAgreementType();
+        });
+    
+    	function checkAgreementType() {
+            
+            var selectedAgreementType = $('[id$=supportingAgreementType]').val();
+            
+        	if(selectedAgreementType == 'CSA'){
+            	$('[id$=otherSections]').show();
+            }
+            else {
+            	$('[id$=otherSections]').hide();
+            }
+            
+        }
+    </script>
+
+    <script>
+        $('document').ready(function() {
+            if($('[id$=amendmentType]').val() == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+           }
+           else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+           }
+        });
+
+        function updateAmendmentFields(element){
+            if(element.value == 'Regulatory compliance'){
+                $('[id$=amendmentReason]').prop('disabled', true);
+                $('[id$=regName]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', false);
+            }
+            else{
+                $('[id$=regName]').prop('disabled', true);
+                $('[id$=amendmentReason]').prop('disabled', false);
+                $('[id$=effDate]').prop('disabled', true);
+            }
+        }
+    </script>
+
+   <apex:sectionHeader title="{!$ObjectType.Supporting_Agreement__c.Label} Edit" subtitle="New {!$ObjectType.Supporting_Agreement__c.Label}" />
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:form >
+        <apex:outputPanel rendered="{!suppAgreementPanel}" id="suppAgreementPanel">
+
+            <apex:pageBlock title="{!$ObjectType.Supporting_Agreement__c.Label} Edit" mode="edit">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!save}"  />
+                    <apex:commandButton value="Cancel" action="{!cancel}"  />
+                </apex:pageBlockButtons>
+				
+                <apex:pageBlockSection title="" columns="1">
+                    <apex:inputField value="{!Supporting_Agreement__c.Master_Agreement_Type__c}" id="masterAgreementType" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Supporting_Agreement_Type__c}" onchange="checkAgreementType();" id="supportingAgreementType"   />
+                    <apex:inputField value="{!Supporting_Agreement__c.Other_Agreement__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:outputPanel id="otherSections">
+                
+                <apex:pageBlockSection title="Collateral Informatiion" columns="2">
+                    <apex:inputField value="{!Supporting_Agreement__c.Collateral_type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Eligible_Collateral_Type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.CSA_Type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Other_Eligible_Collateral_Type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Triparty_Agent__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Regulatory_Collateral_Type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Transaction_Exposure_Calculation_Method__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Other_Regulatory_Collateral_Type__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Rehypothecation__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Termination_Currency__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Substitution__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Base_Currency__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Uncleared_Swaps_Margin_Indicator_UCSM__c}" />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Threshold Information" columns="1" >
+
+                    <apex:inputField value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Fixed_Amount__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Counterparty_Collateral_Threshold_Fixed__c}" />
+
+                    <br/>
+
+                    <apex:panelGrid styleClass="list" columns="5" headerClass="table-header" rowClasses="dataRow">
+
+                        <apex:facet name="header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Fitch11" styleClass="table-header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Moody's" styleClass="table-header" />
+                        <apex:outputText value="Collateral Threshold Ratings Based - Standard & Poor's" styleClass="table-header" />
+                        <apex:outputText value="Bank Collateral Threshold Ratings Based" styleClass="table-header" />
+                        <apex:outputText value="Counterparty Collateral Threshold Ratings Based" styleClass="table-header" />
+
+                        <apex:outputText value="AAA" />
+                        <apex:outputText value="Aaa" />
+                        <apex:outputText value="AAA" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AAA_M_Aaa_S_P_AAA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AAA_M_Aaa_S_P_AAA__c}" />
+
+                        <apex:outputText value="AA+" />
+                        <apex:outputText value="Aa1" />
+                        <apex:outputText value="AA+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa1_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa1_S_P_AA__c}" />
+
+                        <apex:outputText value="AA" />
+                        <apex:outputText value="Aa2" />
+                        <apex:outputText value="AA" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa2_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa2_S_P_AA__c}" />
+
+                        <apex:outputText value="AA-" />
+                        <apex:outputText value="Aa3" />
+                        <apex:outputText value="AA-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa3_S_P_AA__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa3_S_P_AA__c}" />
+
+                        <apex:outputText value="A+" />
+                        <apex:outputText value="A1" />
+                        <apex:outputText value="A+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A1_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A1_S_P_A__c}" />
+
+                        <apex:outputText value="A" />
+                        <apex:outputText value="A2" />
+                        <apex:outputText value="A" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A2_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A2_S_P_A__c}" />
+
+                        <apex:outputText value="A-" />
+                        <apex:outputText value="A3" />
+                        <apex:outputText value="A-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_A_M_A3_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_A_M_A3_S_P_A__c}" />
+
+                        <apex:outputText value="BBB+" />
+                        <apex:outputText value="Baa1" />
+                        <apex:outputText value="BBB+" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa1_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa1_S_P_BBB__c}" />
+
+                        <apex:outputText value="BBB" />
+                        <apex:outputText value="Baa2" />
+                        <apex:outputText value="BBB" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa2_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa2_S_P_BBB__c}" />
+
+                        <apex:outputText value="BBB-" />
+                        <apex:outputText value="Baa3" />
+                        <apex:outputText value="BBB-" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa3_S_P_BBB__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa3_S_P_BBB__c}" />
+
+                        <apex:outputText value="Below BB" />
+                        <apex:outputText value="Below Ba1" />
+                        <apex:outputText value="Below BB" />
+                        <apex:inputField value="{!Supporting_Agreement__c.BCTRB_F_Below_B_M_Below_Ba1_S_P_A__c}" />
+                        <apex:inputField value="{!Supporting_Agreement__c.CCTRB_F_BelowB_M_BelowBa1_S_P_BelowB__c}" />
+
+                    </apex:panelGrid>
+
+                    <br/><br/>
+
+                    <apex:inputField value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Amount_Eligibl__c}" />
+                    <apex:inputField value="{!Supporting_Agreement__c.Counterparty_Collateral_Threshold_Amount__c}" />
+
+                </apex:pageBlockSection>
+                </apex:outputPanel>
+            </apex:pageBlock>
+                
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!amendmentPanel}" id="amendmentPanel">
+            <apex:pageBlock mode="edit" id="pageBlockAmendment" title="Amendment Information">
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveAmendment}" />
+                    <apex:commandButton value="Cancel" action="{!CancelAmendment}" immediate="true" html-formnovalidate="formnovalidate" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2">
+                    <apex:pageBlockSection columns="1" >
+                        <apex:pageBlockSectionItem labelStyle="width:50%">
+                            <apex:outputLabel value="Amendment Reason Type" for="amendmentType" />
+                            <apex:selectList value="{!amendmentType}" multiselect="false" size="1" id="amendmentType" onChange="updateAmendmentFields(this)">
+                                <apex:selectOptions value="{!categories}"/>
+                            </apex:selectList>
+                            <!--<apex:inputText id="amendmentType"/>-->
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Reason" for="amendmentReason" />
+                            <apex:inputText value="{!amendmentReason}" id="amendmentReason"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Name of Regulation" for="regName" />
+                            <apex:inputText value="{!regulationName}" id="regName"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Effective Date" for="effDate" />
+                            <apex:input type="date" value="{!amendmentDate}" id="effDate" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Amendment Document Uploaded" for="docUploaded" />
+                            <apex:inputCheckbox value="{!amendmentDocument}" id="docUploaded"/>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+    </apex:form>    
+    
+</apex:page>

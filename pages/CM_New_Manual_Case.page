@@ -1,0 +1,698 @@
+<!-- 2016-12-07 Rudolf Niehaus - CloudSmiths-->
+<apex:page standardController="Case" extensions="ADAPT360" sidebar="{!isNotCSCProfile}" showHeader="{!isNotCSCProfile}" standardStylesheets="true" action="{!addAsTeamMember}">
+    <head>
+        <script src="../../soap/ajax/37.0/connection.js" type="text/javascript">
+        </script>
+        <script src="../../soap/ajax/37.0/apex.js" type="text/javascript">
+        </script> 
+        <apex:includeScript value="/support/console/35.0/integration.js"/>
+    </head>
+    <apex:form id="newCaseForm">
+        <apex:actionFunction name="ClosedStatus"  reRender="pgblockE"/>
+                
+        <apex:pageMessages id="pagemsg"></apex:pageMessages>
+         <apex:actionFunction name="CallApexMethod" action="{!searchSalesforceAccounts}" reRender="blockseccif,pagemsg" status="searchSta">
+            <apex:param id="qtype" name="qType" value="" assignTo="{!qType}"/>
+            <apex:param id="qvalue" name="qValue" value="" assignTo="{!qValue}" />
+        </apex:actionFunction>
+        <apex:pageBlock id="pgblockCIF" tabStyle="Account" rendered="{!isCSCProfile}">
+                 <div style="float: right;" width="100%">
+                     <button  type="button" id="cifDetails" onclick="caseSubTab(document.getElementById('qt').value);return true;" >
+                    View CIF Details
+                     </button>
+                    <button  type="button" id="accSearch" onclick="searchSF(document.getElementById('regId').value,'accountNumber');return true;" >
+                    Account Number
+                     </button>
+                     <button  type="button" id="regSearch" onclick="searchSF(document.getElementById('regId').value,'passport');return true;" >
+                     Reg. No / Passport
+                     </button>
+                     <button  type="button" id="idSearch" onclick="searchSF(document.getElementById('regId').value,'identityDocument');return true;" >
+                    ID Number
+                     </button>
+                      <button  type="button" id="cifsfSearch" onclick="searchSF(document.getElementById('regId').value,'cif2cif');return true;" >
+                    CIF No
+                     </button>
+                     <button  type="button" id="cifSearch" onclick="searchSF(document.getElementById('regId').value,'cif');return true;">
+                    Relationship Name
+                     </button>
+                     <!-- ***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ****** -->
+                     <!--
+                     <button  type="button" id="cifUserCode" onclick="searchSF(document.getElementById('regId').value,'ucode');return true;" >
+                    User Code
+                    </button>
+                    -->
+                </div>
+                <br/><br/>
+            <apex:actionFunction action="{!accountSelection}" name="addAccount" reRender="blockseccif,pagemsg" status="searchSta"/>
+            <apex:actionFunction action="{!cifSelection}" name="cifAccount" reRender="blockseccif,pagemsg" status="searchSta"/>
+            <apex:pageBlockSection id="blockseccif" columns="4">
+                <apex:outputText value="Relationship Name(s)" />
+                <apex:selectList id="relationships" size="1" value="{!relName}" onchange="addAccount()" >
+                    <apex:selectOptions value="{!accountOptions}" />
+                </apex:selectList>
+                <apex:actionStatus startText="Busy Searching...." stopText="" id="searchSta"/>
+                <input type="text" id="regId" value="{!qValue}" onchange="updateStyle(this);" style="white-space: pre-wrap;"/>
+                <input type="hidden" id="relcif" value="{!relCIF}" style="white-space: pre;"/>
+                 <apex:outputText value="" />
+                 <apex:outputText value="" />
+                 <apex:outputText value="" rendered="{!PrimaryClients.size <= 1}"/>
+                 <apex:outputText value="CIF Data" rendered="{!PrimaryClients.size > 1}"/>
+                <apex:selectList id="cifrelationships" size="1" value="{!cifName}" onchange="cifAccount()" rendered="{!PrimaryClients.size > 1}">
+                    <apex:selectOptions value="{!cifdataOptions}" />
+                </apex:selectList>
+                <input type="hidden" id="relid" value="{!relID}" />
+                <input type="hidden" id="qt" value="{!qType}" />
+                <input type="hidden" id="qv" value="{!qValue}" />
+                <input type="hidden" id="relname" value="{!relName}" />
+                 <script>
+                var CIFNUMBER = '{!relCIF}';
+                var  regId2;
+                var queryType;
+                function caseSubTab(qtype){
+                    //alert(CIFNUMBER);
+                    regId2 = CIFNUMBER;
+                    queryType = qtype;
+                    sforce.console.getFocusedPrimaryTabId(primaryTabId2);  
+                };
+                var primaryTabId2 = function primaryTabId2(result2) {
+                    sforce.console.openSubtab(result2.id , '/apex/ADAPT360?regId=' + regId2 + '&queryType=' + queryType, true, 'CIF: ' + document.getElementById('relname').value, null);
+                };
+                </script>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+        <apex:pageBlock id="pgblockStaRel" tabStyle="Account" rendered="{!isNotCSCProfile}">
+            <apex:pageBlockSection id="blocksecStdRel" columns="1">
+                <apex:actionFunction name="validateAccountID" reRender="blockseccif,pagemsg" status="searchSta"/>
+                <apex:inputField value="{!theCase.AccountId}" id="stdRelId" onchange="updateStyle(this);validateAccountID();" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockA" >
+            <apex:pageBlockSection id="blocksecA" columns="2" >
+                <apex:inputField id="ownid" value="{!theCase.OwnerId}"  onchange="updateStyle(this);" />
+                <apex:outputField value="{!theCase.RecordTypeId}" />
+                <apex:inputField id="cont" value="{!theCase.Email_Sender_Name__c}"  onchange="updateStyle(this);" />
+                <apex:outputText value="" />
+                <apex:inputField id="contemail" value="{!theCase.Email_From_Address__c}" onchange="updateStyle(this);" />
+                <apex:inputField id="sta" value="{!theCase.Status}" onchange="updatePageSection(this);"/>
+                <apex:inputField id="suack" value="{!theCase.Suppress_Acknowledge_Alert__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="pri" value="{!theCase.Priority}" onchange="updateStyle(this);"/>
+                <apex:inputField id="indate" value="{!theCase.Incident_Date__c}" onchange="updateStyle(this);" />
+                <apex:inputField id="cor" value="{!theCase.Origin__c}"  onchange="updateStyle(this);"/>
+               <apex:outputText value="" />
+            </apex:pageBlockSection> 
+        </apex:pageBlock>
+        
+        <apex:pageBlock tabStyle="Account" id="pgblockC" >
+            <apex:pageBlockSection id="blocksecC" columns="1"> 
+                <apex:inputField id="sject" value="{!theCase.Subject}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="desc" value="{!theCase.Description}" style="width: 450px; height: 150px" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockD">
+            <apex:pageBlockSection id="blocksecD" columns="2"> 
+                <apex:inputField id="servcat" value="{!theCase.Complaint_Service_Category__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingArea" value="{!theCase.Resolving_Area__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servtype" value="{!theCase.Complaint_Service_Type__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="resolvingTeam" value="{!theCase.Resolving_Team__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="servsub" value="{!theCase.Complaint_Service_Sub_Category__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="cha" value="{!theCase.Complaint_Channel__c}"  onchange="updateStyle(this);"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockstaff">
+            <apex:pageBlockSection id="blocksecstaff" columns="2"> 
+                <apex:inputField id="stafferror" value="{!theCase.Staff_Error__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="mnpi" value="{!theCase.MNPI__c}"  />
+                <apex:inputField id="errdesc" value="{!theCase.Staff_Error_Description__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="mnpiopp" value="{!theCase.Opportunity_Name__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="satffname" value="{!theCase.Staff_Member_Name__c}" onchange="updateStyle(this);"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblockE">
+            <apex:pageBlockSection id="blocksecE" columns="2" > 
+                <apex:inputField id="desiredAction" value="{!theCase.Desired_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootcc" value="{!theCase.Root_Cause_Category__c}" onchange="updateStyle(this);"/>
+                <apex:inputField id="actionTaken" value="{!theCase.Action_Taken__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="rootc" value="{!theCase.Root_Cause__c}"/>
+                <apex:inputField id="businessOwnerAction" value="{!theCase.Business_Owner_Action__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="resolutionDetail" value="{!theCase.Resolution_Detail__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value=""/>
+                <apex:inputField id="ResolvedInFavourOf" value="{!theCase.Resolved_In_Favour_Of__c}"  onchange="updateStyle(this);"/>
+                <apex:outputText value="" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <br/>
+        <div style="text-align:center;">
+            <button  type="button" id="buttonNewCase" onclick="newCase();" >
+            Create Case
+        </button>
+        </div>
+    </apex:form>
+    <script type="text/javascript">
+   
+    // Overwrite std SF styling
+    //---------------------------------------------------------------------------------
+    var newCaseButton = document.getElementById('buttonNewCase');
+    newCaseButton.style.background = '#0070d2';
+    newCaseButton.style.borderColor = '#0070d2';
+    newCaseButton.style.font = '13.3333px Arial';
+    newCaseButton.style.color = 'white';
+    newCaseButton.style.borderRadius = '4px';
+    newCaseButton.style.padding = '10px 10px 10px 10px';
+    newCaseButton.style.cursor = 'pointer';
+    
+    document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+    
+    if(newCaseButton.disabled){
+        newCaseButton.disabled = false;
+    }
+    
+   if('{!isCSCProfile}' == 'true'){
+       
+        var accSearch = document.getElementById('accSearch');
+        accSearch.style.background = '#00cccc';
+        accSearch.style.borderColor = '#00cccc';
+        accSearch.style.font = '11px Arial';
+        accSearch.style.color = 'white';
+        accSearch.style.borderRadius = '4px';
+        
+        var regSearch = document.getElementById('regSearch');
+        regSearch.style.background = '#00cccc';
+        regSearch.style.borderColor = '#00cccc';
+        regSearch.style.font = '11px Arial';
+        regSearch.style.color = 'white';
+        regSearch.style.borderRadius = '4px';
+        
+        var idSearch = document.getElementById('idSearch');
+        idSearch.style.background = '#00cccc';
+        idSearch.style.borderColor = '#00cccc';
+        idSearch.style.font = '11px Arial';
+        idSearch.style.color = 'white';
+        idSearch.style.borderRadius = '4px';
+        
+        var cifDetails = document.getElementById('cifDetails');
+        cifDetails.style.background = '#00cccc';
+        cifDetails.style.borderColor = '#00cccc';
+        cifDetails.style.font = '11px Arial';
+        cifDetails.style.color = 'white';
+        cifDetails.style.borderRadius = '4px';
+        
+        var cifsfSearch = document.getElementById('cifsfSearch');
+        cifsfSearch.style.background = '#00cccc';
+        cifsfSearch.style.borderColor = '#00cccc';
+        cifsfSearch.style.font = '11px Arial';
+        cifsfSearch.style.color = 'white';
+        cifsfSearch.style.borderRadius = '4px';
+        
+        var cifSearch = document.getElementById('cifSearch');
+        cifSearch.style.background = '#0070d2';
+        cifSearch.style.borderColor = '#0070d2';
+        cifSearch.style.font = '11px Arial';
+        cifSearch.style.color = 'white';
+        cifSearch.style.borderRadius = '4px';
+       //***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+       //var cifUserCode = document.getElementById('cifUserCode');
+       //cifUserCode.style.background = '#0070d2';
+       //cifUserCode.style.borderColor = '#0070d2';
+       //cifUserCode.style.font = '11px Arial';
+       // cifUserCode.style.color = 'white';
+       //cifUserCode.style.borderRadius = '4px';
+    }
+    //------------------------------------------------------------------------------
+    //set default values
+    //------------------------------------------------------------------------------
+    //document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.requests}').value = '1';
+    //document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cha}').value = '';
+    //------------------------------------------------------------------------------
+    
+    
+    //greate a new AJAX Case object and assign the current std controller ID to this Case
+    var theCase = new sforce.SObject("Case");
+    
+    var caseId;
+    var caseNumber;
+    var pId;
+    var isDataOk = false;
+   
+
+    function newCase(){
+   
+        document.getElementById('buttonNewCase').disabled = true;
+        document.getElementById('{!$Component.newCaseForm}').style.cursor = 'wait';
+        
+        sforce.connection.sessionId= '{!$Api.Session_ID}';
+
+        //user input validation section 
+        //---------------------------------------------------------------------------------
+        var relID = '';
+        var stdRelID = '';
+        var stdRelElement = '';
+
+        if('{!isCSCProfile}' == 'true'){
+             relID = document.getElementById('relid');
+            
+        }else{
+            stdRelID = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}_lkid');
+            stdRelElement = document.getElementById('{!$Component.newCaseForm.pgblockStaRel.blocksecStdRel.stdRelId}');
+        }
+        var searchBar = document.getElementById('regId');
+        //Block A
+        var suack = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.suack}');
+        var contName = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cont}');
+        var contEmail = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.contemail}');
+        var sta = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.sta}');
+        var prio = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.pri}');
+        var cor = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.cor}');
+        var indate = document.getElementById('{!$Component.newCaseForm.pgblockA.blocksecA.indate}');
+        
+        //MNPI Section
+        //Tonga MM : Values Captured under Block E are no longer captured for Feedback record Type
+        /**/
+        
+        
+        //Block C
+        var sject = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.sject}');
+        var desc = document.getElementById('{!$Component.newCaseForm.pgblockC.blocksecC.desc}');           
+        
+        //Block D
+         var resolvingArea = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingArea}');
+        var resolvingTeam = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.resolvingTeam}');
+        //var q = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.fullteam}');
+        //var typecomp = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.typecomp}');
+        var srvtype = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servtype}');
+        var cha = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.cha}');
+        var subCat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servsub}');
+        var cat = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.servcat}');
+        // var svr = document.getElementById('{!$Component.newCaseForm.pgblockD.blocksecD.svr}');
+        
+        //Block E
+       var desiredAction,rootcc,actionTaken,businessOwnerAction,rootc,resolutionDetail,resolvedInFavourOf;
+        
+        
+        
+        //Staff Block
+        var stafferror = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.stafferror}');
+        var errdec = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.errdesc}');
+        var staffname = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.satffname}');
+        var staffSection = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff}');
+         var mnpi = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.mnpi}');
+        var mnpiopp = document.getElementById('{!$Component.newCaseForm.pgblockstaff.blocksecstaff.mnpiopp}');
+        
+        
+       
+        if(sta.value.includes('Closed')){
+            desiredAction = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.desiredAction}');
+            rootcc = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.rootcc}');
+            actionTaken = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.actionTaken}');
+            rootc = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.rootc}');
+            businessOwnerAction = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.businessOwnerAction}');
+            resolutionDetail = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.resolutionDetail}');
+            resolvedInFavourOf = document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE.resolvedInFavourOf}');
+        }
+       
+       if('{!isCSCProfile}' == 'true'){
+            if(relID.value == null || relID.value == ''||stdRelID.value=='000000000000000'){
+                
+                alert("Please link a Relationship to this record first");
+                searchBar.style.backgroundColor = "#ffe6e6";
+                searchBar.style.borderColor = 'red';
+                searchBar.placeholder = 'Search CIF / Salesforce';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                searchBar.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+                
+            }
+           
+        }else{
+            
+            if(stdRelElement.value == null || stdRelElement.value == '' || stdRelID.value=='000000000000000'){
+                
+                alert("Please link a Relationship to this record first");
+                stdRelElement.style.backgroundColor = "#ffe6e6";
+                stdRelElement.style.borderColor = 'red';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                stdRelElement.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+            }
+        }
+
+        if(contName.value == null || contName.value == ''){
+            contName.style.borderColor = 'red';
+            contName.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            contName.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+               document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(contEmail.value == null || contEmail.value == ''){
+            contEmail.style.borderColor = 'red';
+            contEmail.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            contEmail.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+               document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(indate.value == null || indate.value == ''){
+            indate.style.borderColor = 'red';
+            indate.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            indate.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+              document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(prio.value == null || prio.value == '' || prio.value == '--None--'){
+            prio.style.borderColor = 'red';
+            prio.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            prio.focus();
+            return null;
+        }
+        if(cor.value == null || cor.value == '' || cor.value == '--None--'){
+            cor.style.borderColor = 'red';
+            cor.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            cor.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+              document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        
+        if(mnpi.checked){
+            if(mnpiopp.value == null || mnpiopp.value == ''){
+                mnpiopp.style.borderColor = 'red';
+                mnpiopp.style.backgroundColor = "#ffe6e6";
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                mnpiopp.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+            }
+        }
+        
+        if(sject.value == null || sject.value == ''){
+            sject.style.borderColor = 'red';
+            sject.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            sject.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        
+         if(resolvingTeam.value == null || resolvingTeam.value == '' || resolvingTeam.value == '--None--'){
+            resolvingTeam.style.borderColor = 'red';
+            resolvingTeam.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            resolvingTeam.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+              document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+        if(resolvingArea.value == null || resolvingArea.value == '' || resolvingArea.value == '--None--'){
+            resolvingArea.style.borderColor = 'red';
+            resolvingArea.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            resolvingArea.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+              document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }
+     
+        
+        if(srvtype.value == null || srvtype.value == '' || srvtype.value == '--None--'){
+            srvtype.style.borderColor = 'red';
+            srvtype.style.backgroundColor = "#ffe6e6";
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            srvtype.focus();
+            if(document.getElementById('buttonNewCase').disabled){
+               document.getElementById('buttonNewCase').disabled = false;
+            }
+            return null;
+        }else if(srvtype.value != ''){
+            if(subCat.value == null || subCat.value == '' || subCat.value == '--None--'){
+                subCat.style.borderColor = 'red';
+                subCat.style.backgroundColor = "#ffe6e6";
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                subCat.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+            }else if(subCat != ''){
+                if(cat.value == null || cat.value == '' || cat.value == '--None--'){
+                    cat.style.backgroundColor = "#ffe6e6";
+                    cat.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    cat.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            } 
+         }
+        
+       
+        
+        if(srvtype.value == 'Staff Related Issues' && (stafferror.checked == false || errdec.value == null || errdec.value == '' || staffname.value == null || staffname.value == '')){
+            alert('You have to complete ALL the fields under the \'Staff Error\' page section, if you have selected \'Staff Related Issues\' as a service type');
+           staffSection.style.backgroundColor = "#ffe6e6";
+           document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+           errdec.focus();
+           if(document.getElementById('buttonNewCase').disabled){
+               document.getElementById('buttonNewCase').disabled = false;
+           }
+           return null;
+        }
+        
+        if(sta.value.includes('Closed')){
+            if(desiredAction.value == null || desiredAction.value == '' || desiredAction.value == '--None--'){
+                    desiredAction.style.backgroundColor = "#ffe6e6";
+                    desiredAction.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    desiredAction.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(rootcc.value == null || rootcc.value == '' || rootcc.value == '--None--'){
+                    rootcc.style.backgroundColor = "#ffe6e6";
+                    rootcc.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    rootcc.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(actionTaken.value == null || actionTaken.value == '' || actionTaken.value == '--None--'){
+                    actionTaken.style.backgroundColor = "#ffe6e6";
+                    actionTaken.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    actionTaken.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(rootc.value == null || rootc.value == '' || rootc.value == '--None--'){
+                    rootc.style.backgroundColor = "#ffe6e6";
+                    rootc.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    rootc.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(businessOwnerAction.value == null || businessOwnerAction.value == '' || businessOwnerAction.value == '--None--'){
+                    businessOwnerAction.style.backgroundColor = "#ffe6e6";
+                    businessOwnerAction.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    businessOwnerAction.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(resolutionDetail.value == null || resolutionDetail.value == '' || resolutionDetail.value == '--None--'){
+                    resolutionDetail.style.backgroundColor = "#ffe6e6";
+                    resolutionDetail.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    resolutionDetail.focus();
+                    if(document.getElementById('buttonNewCase').disabled){
+                        document.getElementById('buttonNewCase').disabled = false;
+                    }
+                    return null;
+                }
+            if(resolvedInFavourOf.value == null || resolvedInFavourOf.value == '' || resolvedInFavourOf.value == '--None--'){
+                resolvedInFavourOf.style.backgroundColor = "#ffe6e6";
+                resolvedInFavourOf.style.borderColor = 'red';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                resolvedInFavourOf.focus();
+                if(document.getElementById('buttonNewCase').disabled){
+                    document.getElementById('buttonNewCase').disabled = false;
+                }
+                return null;
+            }
+        }
+        
+        
+ 
+        //insert the new complaints case using AJAX toolkit
+        if('{!isCSCProfile}' == 'true'){
+            theCase.AccountId = relID.value;
+        }else{
+            theCase.AccountId =  stdRelID.value;
+        }
+        
+        if(sta.value.includes('Closed')){
+            
+            theCase.Desired_Action__c = desiredAction.value;
+            theCase.Root_Cause_Category__c = rootcc.value;
+            theCase.Root_Cause__c = rootc.value;
+            theCase.Action_Taken__c = actionTaken.value;
+            theCase.Business_Owner_Action__c = businessOwnerAction.value;
+            theCase.Resolution_Detail__c = resolutionDetail.value;
+            theCase.Resolved_In_Favour_Of__c = resolvedInFavourOf.value;            
+        }
+
+        theCase.Email_Sender_Name__c = contName.value;
+        theCase.Email_From_Address__c = contEmail.value;
+        theCase.Status = sta.value;
+        theCase.Subject = sject.value;
+        theCase.Description = desc.value;
+        theCase.Priority = prio.value;
+        //Tonga MM : 
+        //theCase.Severity__c = svr.value;
+        //theCase.Type_Of_Complaint__c = typecomp.value;
+        //format date
+        var d = new Date(indate.value).toISOString().split('T')[0];
+            
+        if(cha.value == null || cha.value == '' || cha.value == '--None--'){
+           theCase.Complaint_Channel__c = null;
+        }else{
+            theCase.Complaint_Channel__c = cha.value;
+        }
+        theCase.Incident_Date__c = d;
+        //theCase.Business_Area__c = busarea.value;
+        //theCase.Nature_Of_Complaint__c = noc.value;
+        //theCase.Root_Cause_Category__c = rootcc.value;
+        
+        /*if(rootcc.value != 'Unknown'){
+            theCase.Root_Cause__c = rootc.value;
+        }*/
+        
+        //theCase.Impact__c = imp.value;
+        //theCase.Operational_Risk_Event_Reference__c = opprisk.value;
+        theCase.Suppress_Acknowledge_Alert__c = suack.checked;
+        theCase.Origin__c = cor.value;
+        // 
+        theCase.MNPI__c = mnpi.checked;
+        theCase.Opportunity_Name__c = mnpiopp.value;
+        theCase.Staff_Error__c = stafferror.checked;
+        theCase.Staff_Error_Description__c = errdec.value;
+        //
+        theCase.Staff_Error__c = stafferror.checked;
+        theCase.Staff_Error_Description__c = errdec.value;
+        theCase.Staff_Member_Name__c = staffname.value;
+     
+        theCase.Resolving_Team__c = resolvingTeam.value;
+        theCase.Resolving_Area__c = resolvingArea.value;
+        theCase.Complaint_Service_Category__c = cat.value;
+        theCase.Complaint_Service_Sub_Category__c = subCat.value;
+        theCase.Complaint_Service_Type__c = srvtype.value;
+        theCase.RecordTypeId = '{!theCase.RecordTypeId}';
+        theCase.OwnerId = '{!theCase.OwnerId}';
+        //theCase.ContactId = contId.value;
+
+        var result;
+        var caseID = '{!theCase.Id}';
+        if(caseID)
+        {
+            theCase.Id = caseID;
+            result = sforce.connection.update([theCase]);
+        }
+        else
+        {
+            result = sforce.connection.create([theCase]);
+        }
+        
+        //if successful navigate user to the edit page of the new updated Case
+        if(result[0].getBoolean('success')){
+            caseId = result[0].id;
+            
+            //are we in the console?
+            if (sforce.console.isInConsole()){
+                sforce.console.getFocusedPrimaryTabId(curTabId);
+            }else{
+                window.top.location='/' + caseId;
+            }
+        }else{
+            alert('The Case could not be created at this stage');
+            alert('Send this additional INFO to your Salesforce Admin:\n' + result[0]);
+        }
+    };
+    
+    var curTabId = function curTabId(result){
+         //Open updated case in a new Console primary tab
+        sforce.console.getFocusedPrimaryTabId(closetab);
+        sforce.console.openPrimaryTab(null, caseId , true, 'New Complaint Case');
+    };
+    
+    var closetab = function closetab(result){
+        //sforce.console.refreshNavigationTab();
+        //Now that we have the tab ID, we can close it
+        var tabId = result.id;
+        sforce.console.closeTab(tabId);
+    };
+    function updateStyle(veld){
+        veld.style.borderColor = '#e6e6e6';
+        veld.style.backgroundColor = '#ffffff';
+        veld.placeholder = '';
+        
+    };
+    function updatePageSection(status)
+    {        
+        if(status.value.includes('Closed'))
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='block';
+        }
+        else
+        {
+            document.getElementById('{!$Component.newCaseForm.pgblockE.blocksecE}').style.display ='none';
+        }
+    }
+    function infoBox(fname){
+        alert('You cannot update the ' + fname + ' value. Please use the Transfer Quick Action to move this Email to a different Queue');
+    };
+    
+    function searchSF(rname,qtype){ 
+       CallApexMethod(qtype,rname);
+    };
+     //get the lookup field record ID
+    //function getLookUpId(str) {
+        //  return document.getElementById(str + '_lkid').value;
+    //};
+    </script>
+</apex:page>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>Agency_Transfer_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>Agency</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Transfer_History</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Facility_Tranche__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility Tranche</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Facility_Tranche__c.Facility__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Facility__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Facility_Tranche__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Facility</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Facility__c.Agreement__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Agreement__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Facility__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transfer_Amount__c</fullName>
+        <externalId>false</externalId>
+        <label>Transfer Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Transfer_Fee__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Transfer Fee</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Transferee2__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Transferee_Tranche__c != null, HYPERLINK(&apos;/&apos; + Transferee_Tranche__r.Id,  Transferee_Tranche__r.Name ), IF(  Transferee_Facility__c != null, HYPERLINK(&apos;/&apos; + Transferee_Facility__r.Id,  Transferee_Facility__r.Name )  , HYPERLINK(&apos;/&apos; + Transferee_Agreement__r.Id,  Transferee_Agreement__r.Name )) )</formula>
+        <label>Transferee</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Transferee_Agreement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferee (Agreement)</label>
+        <referenceTo>Agreement_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferee_Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferee (Facility)</label>
+        <referenceTo>Facility_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferee_Tranche__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferee (Tranche)</label>
+        <referenceTo>Tranche_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferee__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferee</label>
+        <referenceTo>Agreement_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers</relationshipLabel>
+        <relationshipName>Agency_Transfers3</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferor2__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(Transferor_Tranche__c != null, HYPERLINK(&apos;/&apos; + Transferor_Tranche__r.Id,  Transferor_Tranche__r.Name ), IF(Transferor_Facility__c   != null, HYPERLINK(&apos;/&apos; + Transferor_Facility__r.Id,  Transferor_Facility__r.Name )  , HYPERLINK(&apos;/&apos; + Transferor_Agreement__r.Id,  Transferor_Agreement__r.Name )) )</formula>
+        <label>Transferor</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Transferor_Agreement__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferor (Agreement)</label>
+        <referenceTo>Agreement_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers (Transferor)</relationshipLabel>
+        <relationshipName>Agency_Transfers1</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferor_Facility__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferor (Facility)</label>
+        <referenceTo>Facility_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers (Transferor)</relationshipLabel>
+        <relationshipName>Agency_Transfers1</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferor_Tranche__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferor (Tranche)</label>
+        <referenceTo>Tranche_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers (Transferor)</relationshipLabel>
+        <relationshipName>Agency_Transfers1</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Transferor__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Transferor</label>
+        <referenceTo>Agreement_Party__c</referenceTo>
+        <relationshipLabel>Agency Transfers (Transferor)</relationshipLabel>
+        <relationshipName>Agency_Transfers2</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>Agency Transfer</label>
+    <nameField>
+        <displayFormat>TRANS-{0}</displayFormat>
+        <label>Transfer #</label>
+        <trackHistory>true</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Agency Transfers</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Agreement_Agency_Transfer</fullName>
+        <active>true</active>
+        <label>Agreement Agency Transfer</label>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Facility_Agency_Transfer</fullName>
+        <active>true</active>
+        <label>Facility Agency Transfer</label>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Tranche_Agency_Transfer</fullName>
+        <active>true</active>
+        <label>Tranche Agency Transfer</label>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <startsWith>Vowel</startsWith>
+    <visibility>Public</visibility>
+</CustomObject>

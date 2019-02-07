@@ -1,0 +1,93 @@
+<apex:page sidebar="false" controller="FitToLend_Approval"  tabStyle="advpm__Matter__c" >
+    
+    <style> 
+    .pbSubheader
+    {
+        background-color: green !important; 
+        border-color: none !important;
+    }
+    </style>
+    
+    <!-- FORM -->
+    <apex:form >
+        
+        <!-- SECTION HEADER -->
+        <apex:sectionHeader title="Fit To Lend Checklist - Submit for Approval" />   
+
+        <apex:pageMessages />
+        
+        <!-- PAGE BLOCK -->
+        <apex:pageBlock rendered="{!NOT(hasError)}">            
+            
+            <apex:outputPanel rendered="{!debug}" layout="none"> 
+                ** DEBUG ** <br />
+                FLOW: {!isFlow} <br />
+                MISSING ROLES: {!missingRoles} <br />
+                PARTICIPANT #: {!participantList.size} <br /> 
+                WRAPPER #: {!participantWrapperList.size} <br />
+                ** DEBUG END ** <br /> <br />
+            </apex:outputPanel>
+            
+            <!-- BUTTONS -->
+            <apex:pageBlockButtons location="Bottom">
+                <apex:commandButton action="{!actionCancel}"  value="Cancel" immediate="true"/>
+                <apex:commandButton id="SaveB"  action="{!actionSubmitApproval}" rendered="{!AND(userCanSubmit, NOT(missingRoles))}" value="Submit For Approval" immediate="false"/>
+            </apex:pageBlockButtons>
+            <!-- / BUTTONS -->
+            
+            <!-- SECTION --> 
+            <apex:pageBlockSection rendered="{!NOT(userCanSubmit)}" columns="1">  
+                Please note <b>ONLY</b> participants with the role <b>"Transaction Administration"</b> may submit a "Fit To Lend Checklist" for approval.
+            </apex:pageBlockSection>
+            <!-- / SECTION -->
+            
+            <!-- SECTION - FLOW --> 
+            <apex:pageBlockSection rendered="{!AND(missingRoles, NOT(isFlow))}" columns="1"> 
+                The below <b>participant roles</b> must be defined on a BESPOKE deal <b>BEFORE</b> a "Fit To Lend Checklist" can be submitted for approval.
+                <ul>
+                    <li>Legal Counsel</li>
+                    <li>Product</li>
+                    <li>Credit</li>
+                </ul>
+                
+            </apex:pageBlockSection>
+            <!-- / SECTION -->
+
+            <!-- SECTION - NON FLOW --> 
+            <apex:pageBlockSection rendered="{!AND(missingRoles, isFlow)}" columns="1"> 
+                The below <b>participant roles</b> must be defined on a STANDARD deal <b>BEFORE</b> a "Fit To Lend Checklist" can be submitted for approval.
+                <ul>
+                    <li>Product</li>
+                    <li>Credit</li>
+                </ul>
+                
+            </apex:pageBlockSection>
+            <!-- / SECTION -->
+            
+            <!-- SECTION --> 
+            <apex:pageBlockSection rendered="{!ParticipantWrapperList.size = 0}" columns="1">  
+                There are no participants available on the associated Deal to select for approval submission.
+            </apex:pageBlockSection>
+            <!-- / SECTION --> 
+            
+            <!-- SECTION --> 
+            <apex:pageBlockSection title="Select Participants" rendered="{!AND(ParticipantWrapperList.size > 0, NOT(missingRoles), userCanSubmit)}" columns="1">                 
+                <!-- TABLE -->
+                <apex:pageBlockTable value="{!participantWrapperList}" var="WrapRec">
+                    <apex:column headerValue="Selected"><apex:InputCheckBox value="{!WrapRec.selected}"/></apex:column> 
+                    <apex:column value="{!WrapRec.record.Name}" headerClass="Participant Name" />
+                    <apex:column value="{!WrapRec.record.advpm__Role__c}" />
+                    <apex:column value="{!WrapRec.record.Primary_Contact_for_Role__c}" /> 
+                </apex:pageBlockTable>
+                <!-- / TABLE -->
+                
+            </apex:pageBlockSection>
+            <!-- / SECTION --> 
+            
+        </apex:pageBlock>
+        <!-- / PAGE BLOCK -->
+        
+    </apex:form>
+    <!-- / FORM -->
+    
+</apex:page>

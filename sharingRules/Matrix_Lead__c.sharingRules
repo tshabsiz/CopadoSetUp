@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>CIB_Coverage_Bankers</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share Leads with status &quot;Open&quot; with all Bankers</description>
+        <label>CIB Coverage Bankers</label>
+        <sharedTo>
+            <allInternalUsers></allInternalUsers>
+        </sharedTo>
+        <criteriaItems>
+            <field>Lead_Status__c</field>
+            <operation>equals</operation>
+            <value>Open</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingOwnerRules>
+        <fullName>Share_matrix_leads_with_sector_heads</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>share matrix leads with sector heads</description>
+        <label>Share matrix leads with sector heads</label>
+        <sharedTo>
+            <group>CIB_Coverage_Sector_Heads</group>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

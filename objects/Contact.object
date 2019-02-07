@@ -1,0 +1,3343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>AddCampaign</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>AddToCampaign</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CallHighlightAction</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EmailHighlightAction</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnableCustomerPortal</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnablePartnerPortalUser</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnableSelfService</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ListClean</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Merge</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>NewContact</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>RequestUpdate</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SmsHighlightAction</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Action override updated by Lightning App Builder during activation.</comment>
+        <content>Contact_Record_Page_Custom</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewCustomerPortal</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewPartnerPortalUser</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewSelfService</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>QuickStartLayout</compactLayoutAssignment>
+    <compactLayouts>
+        <fullName>QuickStartLayout</fullName>
+        <fields>Name</fields>
+        <fields>AccountId</fields>
+        <fields>Job_Role__c</fields>
+        <fields>Job_title__c</fields>
+        <fields>Phone</fields>
+        <fields>MobilePhone</fields>
+        <fields>Email</fields>
+        <fields>OwnerId</fields>
+        <label>Quick Start Layout</label>
+    </compactLayouts>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>true</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <fields>
+        <fullName>AccountId</fullName>
+        <inlineHelpText>Only Relationship Groups or Prospect Relationships can be related to a Contact</inlineHelpText>
+        <lookupFilter>
+            <active>false</active>
+            <booleanFilter>((1 OR 5) AND 2) OR ((3 OR 5) AND 4) OR ((5 OR 6) AND 7)</booleanFilter>
+            <errorMessage>Contacts can only be loaded to Relationship Group, Prospects, Prospects - Individual and Prospect - Legal Entity record types of the Relationship.</errorMessage>
+            <filterItems>
+                <field>$Profile.Name</field>
+                <operation>equals</operation>
+                <value>Barclays Standard User,Barclays Business Owner, Barclays EDC User, ABSA META User, Barclays Private Side User, Legal Content Standard User, Legal Standard User, Litigation Standard User,, ABSA META User, ABSA Research User</value>
+            </filterItems>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Relationship Group, Prospect, On/Off Panel Law Firm</value>
+            </filterItems>
+            <filterItems>
+                <field>$Profile.Name</field>
+                <operation>equals</operation>
+                <value>Barclays Wealth Advisor</value>
+            </filterItems>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>Client - Individual, Client - Legal Entity, Prospect - Individual, Prospect - Legal Entity</value>
+            </filterItems>
+            <filterItems>
+                <field>$Profile.Name</field>
+                <operation>contains</operation>
+                <value>Barclays Administrator, Delegated Admins, System Administrator, Legal Content Standard User, Legal Standard User, Litigation Standard User</value>
+            </filterItems>
+            <filterItems>
+                <field>$Profile.Name</field>
+                <operation>equals</operation>
+                <value>Barclays EDC User</value>
+            </filterItems>
+            <filterItems>
+                <field>Account.RecordTypeId</field>
+                <operation>equals</operation>
+                <value>EDC Client</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Address_line_1__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 1</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Address_line_2__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 2</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Address_line_3__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 3</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Address_line_4__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 4</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Address_line_5__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 5</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Address_line_6__c</fullName>
+        <externalId>false</externalId>
+        <label>Address Line 6</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Assisstant_Phone_number__c</fullName>
+        <externalId>false</externalId>
+        <formula>Assistant_Name__r.Phone</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Assisstant Phone number</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>AssistantName</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>AssistantPhone</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Assistant_Contact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Assistant Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Contacts (Assistant Contact)</relationshipLabel>
+        <relationshipName>Contacts1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Assistant_Email_Freetext__c</fullName>
+        <description>Email of contact&apos;s assistant</description>
+        <externalId>false</externalId>
+        <label>Assistant Email</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Assistant_Email__c</fullName>
+        <externalId>false</externalId>
+        <formula>Assistant_Name__r.Email</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Assistant Email</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Assistant_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Assistant Name</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Contacts</relationshipLabel>
+        <relationshipName>Contacts</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Assistant_Name_freetext__c</fullName>
+        <description>Name of contact assistant</description>
+        <externalId>false</externalId>
+        <label>Assistant Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Assistant_Phone_Number_Freetext__c</fullName>
+        <description>Phone number of contact&apos;s assistant</description>
+        <externalId>false</externalId>
+        <label>Assistant Phone Number</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Assistants_Email__c</fullName>
+        <externalId>false</externalId>
+        <formula>Assistant_Name__r.Email</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Assistants Email</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_Account_Number__c</fullName>
+        <description>Wealth field
+Barclays account number linked to the contact</description>
+        <externalId>false</externalId>
+        <label>Barclays Account Number</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Biography__c</fullName>
+        <externalId>false</externalId>
+        <label>Biography</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Birthdate</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Birthday__c</fullName>
+        <description>Wealth field
+Date of Birth</description>
+        <externalId>false</externalId>
+        <label>Birthday</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Birthday_notification__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Used in workflow to send Birthday notification- Checked means the contact owner will receive the notification 48 hours prior to the birthday</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked the contact owner will receive notification 48 hours prior to contact birthday</inlineHelpText>
+        <label>Birthday notification</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Bloomberg_Client__c</fullName>
+        <externalId>false</externalId>
+        <label>Bloomberg Client</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>YES</fullName>
+                    <default>false</default>
+                    <label>YES</label>
+                </value>
+                <value>
+                    <fullName>NO</fullName>
+                    <default>false</default>
+                    <label>NO</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Categories_of_contacts__c</fullName>
+        <description>This is used to identify different categories of contacts used for client satisfaction surveys</description>
+        <externalId>false</externalId>
+        <label>Contact Category</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Decision Maker</fullName>
+                    <default>false</default>
+                    <label>Decision Maker</label>
+                </value>
+                <value>
+                    <fullName>Operational</fullName>
+                    <default>false</default>
+                    <label>Operational</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Client_ID__c</fullName>
+        <description>Wealth field
+Barclays client ID number</description>
+        <externalId>false</externalId>
+        <label>Client ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Client_Strength__c</fullName>
+        <externalId>false</externalId>
+        <label>Client Strength</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>1</fullName>
+                    <default>false</default>
+                    <label>1</label>
+                </value>
+                <value>
+                    <fullName>2</fullName>
+                    <default>false</default>
+                    <label>2</label>
+                </value>
+                <value>
+                    <fullName>3</fullName>
+                    <default>false</default>
+                    <label>3</label>
+                </value>
+                <value>
+                    <fullName>4</fullName>
+                    <default>false</default>
+                    <label>4</label>
+                </value>
+                <value>
+                    <fullName>5</fullName>
+                    <default>false</default>
+                    <label>5</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Comment__c</fullName>
+        <externalId>false</externalId>
+        <label>Comment</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Company_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Company Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact_Relationship__c</fullName>
+        <description>Surfacing Contact&apos;s primary account for purposes of availability on email template</description>
+        <externalId>false</externalId>
+        <formula>Account.Name</formula>
+        <label>Contact Relationship</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact_preference__c</fullName>
+        <description>Wealth field
+Specfies contacts preferred method of contact</description>
+        <externalId>false</externalId>
+        <label>Contact Preference</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Email</fullName>
+                    <default>false</default>
+                    <label>Email</label>
+                </value>
+                <value>
+                    <fullName>Mobile</fullName>
+                    <default>false</default>
+                    <label>Mobile</label>
+                </value>
+                <value>
+                    <fullName>Phone</fullName>
+                    <default>false</default>
+                    <label>Phone</label>
+                </value>
+                <value>
+                    <fullName>Unknown</fullName>
+                    <default>false</default>
+                    <label>Unknown</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Contacts_Related_CIF__c</fullName>
+        <externalId>false</externalId>
+        <formula>Account.CIF__c</formula>
+        <label>Contacts Related CIF</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CurrencyIsoCode</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Data_Governance_Agreed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Select the checkbox if the agreement has been made with the Client</inlineHelpText>
+        <label>Data Governance Agreed?</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Department</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Description</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>DoNotCall</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Email</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Equity_Research_Recipient__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Is this contact subscribed to receive ABSA Equity Research Reports?</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Is this contact subscribed to receive ABSA Equity Research Reports?</inlineHelpText>
+        <label>Equity Research Recipient?</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Events_Functions__c</fullName>
+        <description>Temporary Field to Relate Contacts to POC Events/Functions</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Temporary Field to Relate Contacts to POC Events/Functions</inlineHelpText>
+        <label>Events/Functions</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>IMF Breakfast</fullName>
+                    <default>false</default>
+                    <label>IMF Breakfast</label>
+                </value>
+                <value>
+                    <fullName>IMF Dinner</fullName>
+                    <default>false</default>
+                    <label>IMF Dinner</label>
+                </value>
+                <value>
+                    <fullName>NMF Dinner</fullName>
+                    <default>false</default>
+                    <label>NMF Dinner</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>ExternalContactId__c</fullName>
+        <externalId>true</externalId>
+        <label>ExternalContactId</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FICC_Research_Recipient__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Is this contact subscribed to receive ABSA FICC Research Reports?</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Is this contact subscribed to receive ABSA FICC Research Reports?</inlineHelpText>
+        <label>FICC Research Recipient?</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Fax</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>General_Interests__c</fullName>
+        <description>Wealth field
+General interests of contact</description>
+        <externalId>false</externalId>
+        <label>General Interests</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Antiques</fullName>
+                    <default>false</default>
+                    <label>Antiques</label>
+                </value>
+                <value>
+                    <fullName>Architecture and Building</fullName>
+                    <default>false</default>
+                    <label>Architecture and Building</label>
+                </value>
+                <value>
+                    <fullName>Ballet</fullName>
+                    <default>false</default>
+                    <label>Ballet</label>
+                </value>
+                <value>
+                    <fullName>Cars, bikes and boats</fullName>
+                    <default>false</default>
+                    <label>Cars, bikes and boats</label>
+                </value>
+                <value>
+                    <fullName>Cheese and Wine events</fullName>
+                    <default>false</default>
+                    <label>Cheese and Wine events</label>
+                </value>
+                <value>
+                    <fullName>Electrical Engineering</fullName>
+                    <default>false</default>
+                    <label>Electrical Engineering</label>
+                </value>
+                <value>
+                    <fullName>Fashion</fullName>
+                    <default>false</default>
+                    <label>Fashion</label>
+                </value>
+                <value>
+                    <fullName>Fine Dining</fullName>
+                    <default>false</default>
+                    <label>Fine Dining</label>
+                </value>
+                <value>
+                    <fullName>Health and Fitness</fullName>
+                    <default>false</default>
+                    <label>Health and Fitness</label>
+                </value>
+                <value>
+                    <fullName>History</fullName>
+                    <default>false</default>
+                    <label>History</label>
+                </value>
+                <value>
+                    <fullName>Home improvement</fullName>
+                    <default>false</default>
+                    <label>Home improvement</label>
+                </value>
+                <value>
+                    <fullName>Literature</fullName>
+                    <default>false</default>
+                    <label>Literature</label>
+                </value>
+                <value>
+                    <fullName>Model Making</fullName>
+                    <default>false</default>
+                    <label>Model Making</label>
+                </value>
+                <value>
+                    <fullName>Opera</fullName>
+                    <default>false</default>
+                    <label>Opera</label>
+                </value>
+                <value>
+                    <fullName>Performing Arts</fullName>
+                    <default>false</default>
+                    <label>Performing Arts</label>
+                </value>
+                <value>
+                    <fullName>Pets</fullName>
+                    <default>false</default>
+                    <label>Pets</label>
+                </value>
+                <value>
+                    <fullName>Photo, Film and Video</fullName>
+                    <default>false</default>
+                    <label>Photo, Film and Video</label>
+                </value>
+                <value>
+                    <fullName>Stand up comedy</fullName>
+                    <default>false</default>
+                    <label>Stand up comedy</label>
+                </value>
+                <value>
+                    <fullName>Theatre</fullName>
+                    <default>false</default>
+                    <label>Theatre</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>HasOptedOutOfEmail</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>HasOptedOutOfFax</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>HomePhone</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>I_confirm_clients_permission__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>I confirm I have client&apos;s permission</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Image__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Image size must be 50 x 50 pixels or roughly 1.5cm x 1.5cm</inlineHelpText>
+        <label>Image</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Inactive_Contact__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Check active contacts</description>
+        <externalId>false</externalId>
+        <label>Inactive Contact</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Jigsaw</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Job_Role__c</fullName>
+        <description>Wealth - This specifies the role of the contact i.e. CEO</description>
+        <externalId>false</externalId>
+        <label>Primary Role</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Analyst</fullName>
+                    <default>false</default>
+                    <label>Analyst</label>
+                </value>
+                <value>
+                    <fullName>Asset Consultant</fullName>
+                    <default>false</default>
+                    <label>Asset Consultant</label>
+                </value>
+                <value>
+                    <fullName>Assistant</fullName>
+                    <default>false</default>
+                    <label>Assistant</label>
+                </value>
+                <value>
+                    <fullName>Broker - Dealing</fullName>
+                    <default>false</default>
+                    <label>Broker - Dealing</label>
+                </value>
+                <value>
+                    <fullName>Business Executive / Business Unit Head / Partner</fullName>
+                    <default>false</default>
+                    <label>Business Executive / Business Unit Head / Partner</label>
+                </value>
+                <value>
+                    <fullName>CEO</fullName>
+                    <default>false</default>
+                    <label>CEO</label>
+                </value>
+                <value>
+                    <fullName>CEO / Managing Director / President</fullName>
+                    <default>false</default>
+                    <label>CEO / Managing Director / President</label>
+                </value>
+                <value>
+                    <fullName>CFO / Financial Director / Finance Partner</fullName>
+                    <default>false</default>
+                    <label>CFO / Financial Director / Finance Partner</label>
+                </value>
+                <value>
+                    <fullName>Chairman / Board member</fullName>
+                    <default>false</default>
+                    <label>Chairman / Board member</label>
+                </value>
+                <value>
+                    <fullName>CIO</fullName>
+                    <default>false</default>
+                    <label>CIO</label>
+                </value>
+                <value>
+                    <fullName>Compliance</fullName>
+                    <default>false</default>
+                    <label>Compliance</label>
+                </value>
+                <value>
+                    <fullName>Consultant</fullName>
+                    <default>false</default>
+                    <label>Consultant</label>
+                </value>
+                <value>
+                    <fullName>COO</fullName>
+                    <default>false</default>
+                    <label>COO</label>
+                </value>
+                <value>
+                    <fullName>COO / CIO / CTO / CMO</fullName>
+                    <default>false</default>
+                    <label>COO / CIO / CTO / CMO</label>
+                </value>
+                <value>
+                    <fullName>Director</fullName>
+                    <default>false</default>
+                    <label>Director</label>
+                </value>
+                <value>
+                    <fullName>Finance Manager</fullName>
+                    <default>false</default>
+                    <label>Finance Manager</label>
+                </value>
+                <value>
+                    <fullName>Financial Advisory</fullName>
+                    <default>false</default>
+                    <label>Financial Advisory</label>
+                </value>
+                <value>
+                    <fullName>Financial Advisory Administrator</fullName>
+                    <default>false</default>
+                    <label>Financial Advisory Administrator</label>
+                </value>
+                <value>
+                    <fullName>Governor</fullName>
+                    <default>false</default>
+                    <label>Governor</label>
+                </value>
+                <value>
+                    <fullName>Individual</fullName>
+                    <default>false</default>
+                    <label>Individual</label>
+                </value>
+                <value>
+                    <fullName>Legal Representative</fullName>
+                    <default>false</default>
+                    <label>Legal Representative</label>
+                </value>
+                <value>
+                    <fullName>Markets - Administration</fullName>
+                    <default>false</default>
+                    <label>Markets - Administration</label>
+                </value>
+                <value>
+                    <fullName>Markets - Dealing</fullName>
+                    <default>false</default>
+                    <label>Markets - Dealing</label>
+                </value>
+                <value>
+                    <fullName>Markets - Sales</fullName>
+                    <default>false</default>
+                    <label>Markets - Sales</label>
+                </value>
+                <value>
+                    <fullName>Minister</fullName>
+                    <default>false</default>
+                    <label>Minister</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Portfolio Manager</fullName>
+                    <default>false</default>
+                    <label>Portfolio Manager</label>
+                </value>
+                <value>
+                    <fullName>Project Manager / Consultant / Analyst / Engineer</fullName>
+                    <default>false</default>
+                    <label>Project Manager / Consultant / Analyst / Engineer</label>
+                </value>
+                <value>
+                    <fullName>Research</fullName>
+                    <default>false</default>
+                    <label>Research</label>
+                </value>
+                <value>
+                    <fullName>Research Analyst</fullName>
+                    <default>false</default>
+                    <label>Research Analyst</label>
+                </value>
+                <value>
+                    <fullName>Treasurer</fullName>
+                    <default>false</default>
+                    <label>Treasurer</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Job_title__c</fullName>
+        <externalId>false</externalId>
+        <label>Job Title</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Key_Influencer__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Key Influencer</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>LastCURequestDate</fullName>
+    </fields>
+    <fields>
+        <fullName>LastCUUpdateDate</fullName>
+    </fields>
+    <fields>
+        <fullName>LeadSource</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>MailingAddress</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Market_Product__c</fullName>
+        <externalId>false</externalId>
+        <label>Market Products</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Africa</fullName>
+                    <default>false</default>
+                    <label>Africa</label>
+                </value>
+                <value>
+                    <fullName>Convertible Bonds</fullName>
+                    <default>false</default>
+                    <label>Convertible Bonds</label>
+                </value>
+                <value>
+                    <fullName>Equity Derivatives</fullName>
+                    <default>false</default>
+                    <label>Equity Derivatives</label>
+                </value>
+                <value>
+                    <fullName>Equity Research</fullName>
+                    <default>false</default>
+                    <label>Equity Research</label>
+                </value>
+                <value>
+                    <fullName>Equity Sales</fullName>
+                    <default>false</default>
+                    <label>Equity Sales</label>
+                </value>
+                <value>
+                    <fullName>Equity Trading</fullName>
+                    <default>false</default>
+                    <label>Equity Trading</label>
+                </value>
+                <value>
+                    <fullName>Fixed Income</fullName>
+                    <default>false</default>
+                    <label>Fixed Income</label>
+                </value>
+                <value>
+                    <fullName>FX</fullName>
+                    <default>false</default>
+                    <label>FX</label>
+                </value>
+                <value>
+                    <fullName>Loans</fullName>
+                    <default>false</default>
+                    <label>Loans</label>
+                </value>
+                <value>
+                    <fullName>Non-Equity Research</fullName>
+                    <default>false</default>
+                    <label>Non-Equity Research</label>
+                </value>
+                <value>
+                    <fullName>Prime Services</fullName>
+                    <default>false</default>
+                    <label>Prime Services</label>
+                </value>
+                <value>
+                    <fullName>Structured Sales</fullName>
+                    <default>false</default>
+                    <label>Structured Sales</label>
+                </value>
+                <value>
+                    <fullName>Structured Solutions</fullName>
+                    <default>false</default>
+                    <label>Structured Solutions</label>
+                </value>
+                <value>
+                    <fullName>META - Annual Payer Income and Growth</fullName>
+                    <default>false</default>
+                    <label>META - Annual Payer Income and Growth</label>
+                </value>
+                <value>
+                    <fullName>META - Autocalls</fullName>
+                    <default>false</default>
+                    <label>META - Autocalls</label>
+                </value>
+                <value>
+                    <fullName>META - Bespoke</fullName>
+                    <default>false</default>
+                    <label>META - Bespoke</label>
+                </value>
+                <value>
+                    <fullName>META - Equity Factor ETF</fullName>
+                    <default>false</default>
+                    <label>META - Equity Factor ETF</label>
+                </value>
+                <value>
+                    <fullName>META - IERC Super Factor Fund - option cost minimised</fullName>
+                    <default>false</default>
+                    <label>META - IERC Super Factor Fund - option cost minimised</label>
+                </value>
+                <value>
+                    <fullName>META - Income and Growth</fullName>
+                    <default>false</default>
+                    <label>META - Income and Growth</label>
+                </value>
+                <value>
+                    <fullName>META - Protected Funds</fullName>
+                    <default>false</default>
+                    <label>META - Protected Funds</label>
+                </value>
+                <value>
+                    <fullName>META - Managed Notes</fullName>
+                    <default>false</default>
+                    <label>META - Managed Notes</label>
+                </value>
+                <value>
+                    <fullName>META - Multi Asset Factor Portfolio</fullName>
+                    <default>false</default>
+                    <label>META - Multi Asset Factor Portfolio</label>
+                </value>
+                <value>
+                    <fullName>META - Regular Saver</fullName>
+                    <default>false</default>
+                    <label>META - Regular Saver</label>
+                </value>
+                <value>
+                    <fullName>META - SA Factors</fullName>
+                    <default>false</default>
+                    <label>META - SA Factors</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>6</visibleLines>
+    </fields>
+    <fields>
+        <fullName>MobilePhone</fullName>
+        <inlineHelpText>Correct format is
+Country code (1 to 3 digits) [space] area code (1 to 4 digits) [space] subscriber mobile phone number
+e.g.
+27 11 123 4567 or
+27 11 1234567 or
+1 408 1234567 or
+254 20 76228484</inlineHelpText>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Name</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Next_Birthday__c</fullName>
+        <description>For use in Birthday notifications</description>
+        <externalId>false</externalId>
+        <inlineHelpText>In compliance with Privacy requirement actual birth date is not captured. 
+Next Birthday is required for Birthday notifications.</inlineHelpText>
+        <label>Next Birthday</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>OtherAddress</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>OtherPhone</fullName>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Other__c</fullName>
+        <description>Wealth field
+Other interest of contact</description>
+        <externalId>false</externalId>
+        <label>Other</label>
+        <length>254</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>OwnerId</fullName>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Owners_role__c</fullName>
+        <externalId>false</externalId>
+        <formula>Owner.UserRole.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Owners role</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Phone</fullName>
+        <inlineHelpText>Correct format is
+Country code (1 to 3 digits) [space] area code (1 to 4 digits) [space] subscriber phone number
+e.g.
+27 11 123 4567 or
+27 11 1234567 or
+1 408 1234567 or
+254 20 76228484</inlineHelpText>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Phone_2__c</fullName>
+        <description>Wealth field
+Second phone number</description>
+        <externalId>false</externalId>
+        <label>Phone 2</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Phone_3__c</fullName>
+        <description>Wealth field
+Third Phone Number</description>
+        <externalId>false</externalId>
+        <label>Phone 3</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Position__c</fullName>
+        <externalId>false</externalId>
+        <label>Position</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Post_code__c</fullName>
+        <externalId>false</externalId>
+        <label>Post Code</label>
+        <length>4</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Postal_Area__c</fullName>
+        <externalId>false</externalId>
+        <label>Postal Area</label>
+        <length>29</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Contact__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>To identify main Contact at an Organisation for Client satisfaction survey or marketing initiatives. Please only mark ONE Primary Contact per Organisation</inlineHelpText>
+        <label>Primary Contact</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Province__c</fullName>
+        <externalId>false</externalId>
+        <label>Province</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Related_Group_Client__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <inlineHelpText>Please select only Clients belonging to the Relationship Group</inlineHelpText>
+        <label>Related Group Client</label>
+        <lookupFilter>
+            <active>true</active>
+            <errorMessage>Please select only Clients belonging to the Relationship Group</errorMessage>
+            <filterItems>
+                <field>Account.Parent.Id</field>
+                <operation>equals</operation>
+                <valueField>$Source.AccountId</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Contacts</relationshipLabel>
+        <relationshipName>Client_Contacts</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relationship_Manager_Business_Area__c</fullName>
+        <externalId>false</externalId>
+        <formula>Relationship_Manager__r.UserRole.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Relationship Manager Business Area</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Relationship_Manager_Email__c</fullName>
+        <externalId>false</externalId>
+        <formula>Relationship_Manager__r.Email</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Relationship Manager Email</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Relationship_Manager__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship Manager</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Contacts</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relationship_Record_Type__c</fullName>
+        <externalId>false</externalId>
+        <formula>Account.RecordType.Name</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Relationship Record Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ReportsToId</fullName>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Research_Contact__c</fullName>
+        <externalId>false</externalId>
+        <label>Research Contact?</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>YES</fullName>
+                    <default>false</default>
+                    <label>YES</label>
+                </value>
+                <value>
+                    <fullName>NO</fullName>
+                    <default>false</default>
+                    <label>NO</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Research_Subscription__c</fullName>
+        <externalId>false</externalId>
+        <label>Research Subscription</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Equities All</fullName>
+                    <default>false</default>
+                    <label>Equities All</label>
+                </value>
+                <value>
+                    <fullName>Equities: Client sector only</fullName>
+                    <default>false</default>
+                    <label>Equities: Client sector only</label>
+                </value>
+                <value>
+                    <fullName>FICC All</fullName>
+                    <default>false</default>
+                    <label>FICC All</label>
+                </value>
+                <value>
+                    <fullName>Finra All</fullName>
+                    <default>false</default>
+                    <label>Finra All</label>
+                </value>
+                <value>
+                    <fullName>Finra: Morning Sheet only</fullName>
+                    <default>false</default>
+                    <label>Finra: Morning Sheet only</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Reset_Birthday_email_system__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>not on page layout, just to ensure continuous sending of notifications to contact owners prior to the contact&apos;s birthday</description>
+        <externalId>false</externalId>
+        <label>Reset Birthday email system</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Responsibility__c</fullName>
+        <externalId>false</externalId>
+        <label>Responsibility</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SMS_opt_out__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Tick this button should this Client Contact decline to receive any communications via text message</inlineHelpText>
+        <label>SMS Opt Out</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Source_System__c</fullName>
+        <externalId>false</externalId>
+        <label>Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_User__c</fullName>
+        <externalId>false</externalId>
+        <label>Source User</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sports_1__c</fullName>
+        <description>Wealth - Sporting interest of contact</description>
+        <externalId>false</externalId>
+        <label>Sports 1</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cricket</fullName>
+                    <default>false</default>
+                    <label>Cricket</label>
+                </value>
+                <value>
+                    <fullName>EPL</fullName>
+                    <default>false</default>
+                    <label>EPL</label>
+                </value>
+                <value>
+                    <fullName>NPFL</fullName>
+                    <default>false</default>
+                    <label>NPFL</label>
+                </value>
+                <value>
+                    <fullName>PSL</fullName>
+                    <default>false</default>
+                    <label>PSL</label>
+                </value>
+                <value>
+                    <fullName>Rugby</fullName>
+                    <default>false</default>
+                    <label>Rugby</label>
+                </value>
+                <value>
+                    <fullName>GPL</fullName>
+                    <default>false</default>
+                    <label>GPL</label>
+                </value>
+                <value>
+                    <fullName>Cycling</fullName>
+                    <default>false</default>
+                    <label>Cycling</label>
+                </value>
+                <value>
+                    <fullName>Golf</fullName>
+                    <default>false</default>
+                    <label>Golf</label>
+                </value>
+                <value>
+                    <fullName>Hockey</fullName>
+                    <default>false</default>
+                    <label>Hockey</label>
+                </value>
+                <value>
+                    <fullName>Sailing</fullName>
+                    <default>false</default>
+                    <label>Sailing</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Sports_2__c</fullName>
+        <description>Wealth - Second Sporting Interest of contact</description>
+        <externalId>false</externalId>
+        <label>Sports 2</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cricket</fullName>
+                    <default>false</default>
+                    <label>Cricket</label>
+                </value>
+                <value>
+                    <fullName>EPL</fullName>
+                    <default>false</default>
+                    <label>EPL</label>
+                </value>
+                <value>
+                    <fullName>NPFL</fullName>
+                    <default>false</default>
+                    <label>NPFL</label>
+                </value>
+                <value>
+                    <fullName>PSL</fullName>
+                    <default>false</default>
+                    <label>PSL</label>
+                </value>
+                <value>
+                    <fullName>Rugby</fullName>
+                    <default>false</default>
+                    <label>Rugby</label>
+                </value>
+                <value>
+                    <fullName>GPL</fullName>
+                    <default>false</default>
+                    <label>GPL</label>
+                </value>
+                <value>
+                    <fullName>Cycling</fullName>
+                    <default>false</default>
+                    <label>Cycling</label>
+                </value>
+                <value>
+                    <fullName>Golf</fullName>
+                    <default>false</default>
+                    <label>Golf</label>
+                </value>
+                <value>
+                    <fullName>Hockey</fullName>
+                    <default>false</default>
+                    <label>Hockey</label>
+                </value>
+                <value>
+                    <fullName>Sailing</fullName>
+                    <default>false</default>
+                    <label>Sailing</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Sports_Details_2__c</fullName>
+        <description>Wealth - Details of sport interest</description>
+        <externalId>false</externalId>
+        <label>Sports Details 2</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <controllingField>Sports_2__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cape Cobras</fullName>
+                    <default>false</default>
+                    <label>Cape Cobras</label>
+                </value>
+                <value>
+                    <fullName>Dolphins</fullName>
+                    <default>false</default>
+                    <label>Dolphins</label>
+                </value>
+                <value>
+                    <fullName>Highveld Lions</fullName>
+                    <default>false</default>
+                    <label>Highveld Lions</label>
+                </value>
+                <value>
+                    <fullName>Knights</fullName>
+                    <default>false</default>
+                    <label>Knights</label>
+                </value>
+                <value>
+                    <fullName>Proteas</fullName>
+                    <default>false</default>
+                    <label>Proteas</label>
+                </value>
+                <value>
+                    <fullName>Titans</fullName>
+                    <default>false</default>
+                    <label>Titans</label>
+                </value>
+                <value>
+                    <fullName>Warriors</fullName>
+                    <default>false</default>
+                    <label>Warriors</label>
+                </value>
+                <value>
+                    <fullName>Arsenal</fullName>
+                    <default>false</default>
+                    <label>Arsenal</label>
+                </value>
+                <value>
+                    <fullName>Chelsea</fullName>
+                    <default>false</default>
+                    <label>Chelsea</label>
+                </value>
+                <value>
+                    <fullName>Liverpool</fullName>
+                    <default>false</default>
+                    <label>Liverpool</label>
+                </value>
+                <value>
+                    <fullName>Manchester City</fullName>
+                    <default>false</default>
+                    <label>Manchester City</label>
+                </value>
+                <value>
+                    <fullName>Manchester United</fullName>
+                    <default>false</default>
+                    <label>Manchester United</label>
+                </value>
+                <value>
+                    <fullName>Tottenham Hotspur</fullName>
+                    <default>false</default>
+                    <label>Tottenham Hotspur</label>
+                </value>
+                <value>
+                    <fullName>Enyimba</fullName>
+                    <default>false</default>
+                    <label>Enyimba</label>
+                </value>
+                <value>
+                    <fullName>Giwa</fullName>
+                    <default>false</default>
+                    <label>Giwa</label>
+                </value>
+                <value>
+                    <fullName>Kano Pillars</fullName>
+                    <default>false</default>
+                    <label>Kano Pillars</label>
+                </value>
+                <value>
+                    <fullName>Warri Wolves</fullName>
+                    <default>false</default>
+                    <label>Warri Wolves</label>
+                </value>
+                <value>
+                    <fullName>Ajax Cape Town</fullName>
+                    <default>false</default>
+                    <label>Ajax Cape Town</label>
+                </value>
+                <value>
+                    <fullName>Bloemfontein Celtic</fullName>
+                    <default>false</default>
+                    <label>Bloemfontein Celtic</label>
+                </value>
+                <value>
+                    <fullName>Kaizer Chiefs</fullName>
+                    <default>false</default>
+                    <label>Kaizer Chiefs</label>
+                </value>
+                <value>
+                    <fullName>Mamelodi Sundowns</fullName>
+                    <default>false</default>
+                    <label>Mamelodi Sundowns</label>
+                </value>
+                <value>
+                    <fullName>Moroka Swallows</fullName>
+                    <default>false</default>
+                    <label>Moroka Swallows</label>
+                </value>
+                <value>
+                    <fullName>Orlando Pirates</fullName>
+                    <default>false</default>
+                    <label>Orlando Pirates</label>
+                </value>
+                <value>
+                    <fullName>Bulls</fullName>
+                    <default>false</default>
+                    <label>Bulls</label>
+                </value>
+                <value>
+                    <fullName>Cheetahs</fullName>
+                    <default>false</default>
+                    <label>Cheetahs</label>
+                </value>
+                <value>
+                    <fullName>Sharks</fullName>
+                    <default>false</default>
+                    <label>Sharks</label>
+                </value>
+                <value>
+                    <fullName>Springboks</fullName>
+                    <default>false</default>
+                    <label>Springboks</label>
+                </value>
+                <value>
+                    <fullName>Stormers</fullName>
+                    <default>false</default>
+                    <label>Stormers</label>
+                </value>
+                <value>
+                    <fullName>Ashanti Gold</fullName>
+                    <default>false</default>
+                    <label>Ashanti Gold</label>
+                </value>
+                <value>
+                    <fullName>Berekum Chelsea</fullName>
+                    <default>false</default>
+                    <label>Berekum Chelsea</label>
+                </value>
+                <value>
+                    <fullName>Hearts of Oak</fullName>
+                    <default>false</default>
+                    <label>Hearts of Oak</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Cape Cobras</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Dolphins</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Highveld Lions</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Knights</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Proteas</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Titans</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Warriors</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Arsenal</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Chelsea</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Liverpool</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Manchester City</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Manchester United</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Tottenham Hotspur</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Enyimba</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Giwa</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Kano Pillars</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Warri Wolves</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Ajax Cape Town</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Bloemfontein Celtic</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Kaizer Chiefs</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Mamelodi Sundowns</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Moroka Swallows</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Orlando Pirates</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Bulls</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Cheetahs</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Sharks</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Springboks</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Stormers</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Ashanti Gold</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Berekum Chelsea</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Hearts of Oak</valueName>
+            </valueSettings>
+        </valueSet>
+        <visibleLines>7</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Sports_Details__c</fullName>
+        <description>Wealth - Details of sport interest</description>
+        <externalId>false</externalId>
+        <label>Sports Details 1</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <controllingField>Sports_1__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cape Cobras</fullName>
+                    <default>false</default>
+                    <label>Cape Cobras</label>
+                </value>
+                <value>
+                    <fullName>Dolphins</fullName>
+                    <default>false</default>
+                    <label>Dolphins</label>
+                </value>
+                <value>
+                    <fullName>Highveld Lions</fullName>
+                    <default>false</default>
+                    <label>Highveld Lions</label>
+                </value>
+                <value>
+                    <fullName>Knights</fullName>
+                    <default>false</default>
+                    <label>Knights</label>
+                </value>
+                <value>
+                    <fullName>Proteas</fullName>
+                    <default>false</default>
+                    <label>Proteas</label>
+                </value>
+                <value>
+                    <fullName>Titans</fullName>
+                    <default>false</default>
+                    <label>Titans</label>
+                </value>
+                <value>
+                    <fullName>Warriors</fullName>
+                    <default>false</default>
+                    <label>Warriors</label>
+                </value>
+                <value>
+                    <fullName>Arsenal</fullName>
+                    <default>false</default>
+                    <label>Arsenal</label>
+                </value>
+                <value>
+                    <fullName>Chelsea</fullName>
+                    <default>false</default>
+                    <label>Chelsea</label>
+                </value>
+                <value>
+                    <fullName>Liverpool</fullName>
+                    <default>false</default>
+                    <label>Liverpool</label>
+                </value>
+                <value>
+                    <fullName>Manchester City</fullName>
+                    <default>false</default>
+                    <label>Manchester City</label>
+                </value>
+                <value>
+                    <fullName>Manchester United</fullName>
+                    <default>false</default>
+                    <label>Manchester United</label>
+                </value>
+                <value>
+                    <fullName>Tottenham Hotspur</fullName>
+                    <default>false</default>
+                    <label>Tottenham Hotspur</label>
+                </value>
+                <value>
+                    <fullName>Enyimba</fullName>
+                    <default>false</default>
+                    <label>Enyimba</label>
+                </value>
+                <value>
+                    <fullName>Giwa</fullName>
+                    <default>false</default>
+                    <label>Giwa</label>
+                </value>
+                <value>
+                    <fullName>Kano Pillars</fullName>
+                    <default>false</default>
+                    <label>Kano Pillars</label>
+                </value>
+                <value>
+                    <fullName>Warri Wolves</fullName>
+                    <default>false</default>
+                    <label>Warri Wolves</label>
+                </value>
+                <value>
+                    <fullName>Ajax Cape Town</fullName>
+                    <default>false</default>
+                    <label>Ajax Cape Town</label>
+                </value>
+                <value>
+                    <fullName>Bloemfontein Celtic</fullName>
+                    <default>false</default>
+                    <label>Bloemfontein Celtic</label>
+                </value>
+                <value>
+                    <fullName>Kaizer Chiefs</fullName>
+                    <default>false</default>
+                    <label>Kaizer Chiefs</label>
+                </value>
+                <value>
+                    <fullName>Mamelodi Sundowns</fullName>
+                    <default>false</default>
+                    <label>Mamelodi Sundowns</label>
+                </value>
+                <value>
+                    <fullName>Moroka Swallows</fullName>
+                    <default>false</default>
+                    <label>Moroka Swallows</label>
+                </value>
+                <value>
+                    <fullName>Orlando Pirates</fullName>
+                    <default>false</default>
+                    <label>Orlando Pirates</label>
+                </value>
+                <value>
+                    <fullName>Bulls</fullName>
+                    <default>false</default>
+                    <label>Bulls</label>
+                </value>
+                <value>
+                    <fullName>Cheetahs</fullName>
+                    <default>false</default>
+                    <label>Cheetahs</label>
+                </value>
+                <value>
+                    <fullName>Sharks</fullName>
+                    <default>false</default>
+                    <label>Sharks</label>
+                </value>
+                <value>
+                    <fullName>Springboks</fullName>
+                    <default>false</default>
+                    <label>Springboks</label>
+                </value>
+                <value>
+                    <fullName>Stormers</fullName>
+                    <default>false</default>
+                    <label>Stormers</label>
+                </value>
+                <value>
+                    <fullName>Ashanti Gold</fullName>
+                    <default>false</default>
+                    <label>Ashanti Gold</label>
+                </value>
+                <value>
+                    <fullName>Berekum Chelsea</fullName>
+                    <default>false</default>
+                    <label>Berekum Chelsea</label>
+                </value>
+                <value>
+                    <fullName>Hearts of Oak</fullName>
+                    <default>false</default>
+                    <label>Hearts of Oak</label>
+                </value>
+                <value>
+                    <fullName>Lions</fullName>
+                    <default>false</default>
+                    <label>Lions</label>
+                </value>
+                <value>
+                    <fullName>Bafana Bafana</fullName>
+                    <default>false</default>
+                    <label>Bafana Bafana</label>
+                </value>
+                <value>
+                    <fullName>Nigeria</fullName>
+                    <default>false</default>
+                    <label>Nigeria</label>
+                </value>
+                <value>
+                    <fullName>Ghana</fullName>
+                    <default>false</default>
+                    <label>Ghana</label>
+                </value>
+                <value>
+                    <fullName>England</fullName>
+                    <default>false</default>
+                    <label>England</label>
+                </value>
+                <value>
+                    <fullName>Ivory Coast</fullName>
+                    <default>false</default>
+                    <label>Ivory Coast</label>
+                </value>
+                <value>
+                    <fullName>Senegal</fullName>
+                    <default>false</default>
+                    <label>Senegal</label>
+                </value>
+                <value>
+                    <fullName>University of Pretoria</fullName>
+                    <default>false</default>
+                    <label>University of Pretoria</label>
+                </value>
+                <value>
+                    <fullName>Supersport United</fullName>
+                    <default>false</default>
+                    <label>Supersport United</label>
+                </value>
+                <value>
+                    <fullName>Bidvest Wits</fullName>
+                    <default>false</default>
+                    <label>Bidvest Wits</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Cape Cobras</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Dolphins</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Highveld Lions</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Knights</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Proteas</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Titans</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Cricket</controllingFieldValue>
+                <valueName>Warriors</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Arsenal</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Chelsea</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Liverpool</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Manchester City</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Manchester United</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>EPL</controllingFieldValue>
+                <valueName>Tottenham Hotspur</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Enyimba</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Giwa</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Kano Pillars</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>NPFL</controllingFieldValue>
+                <valueName>Warri Wolves</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Ajax Cape Town</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Bloemfontein Celtic</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Kaizer Chiefs</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Mamelodi Sundowns</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Moroka Swallows</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>PSL</controllingFieldValue>
+                <valueName>Orlando Pirates</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Bulls</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Cheetahs</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Sharks</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Springboks</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Stormers</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Rugby</controllingFieldValue>
+                <valueName>Lions</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Ashanti Gold</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Berekum Chelsea</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>GPL</controllingFieldValue>
+                <valueName>Hearts of Oak</valueName>
+            </valueSettings>
+        </valueSet>
+        <visibleLines>7</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Title</fullName>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Travel_Preferences__c</fullName>
+        <description>Wealth - Contacts preferred mode of travel</description>
+        <externalId>false</externalId>
+        <label>Travel Preferences</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Active</fullName>
+                    <default>false</default>
+                    <label>Active</label>
+                </value>
+                <value>
+                    <fullName>Beach Holiday</fullName>
+                    <default>false</default>
+                    <label>Beach Holiday</label>
+                </value>
+                <value>
+                    <fullName>Biking / Hiking</fullName>
+                    <default>false</default>
+                    <label>Biking / Hiking</label>
+                </value>
+                <value>
+                    <fullName>City Trips</fullName>
+                    <default>false</default>
+                    <label>City Trips</label>
+                </value>
+                <value>
+                    <fullName>Cultural</fullName>
+                    <default>false</default>
+                    <label>Cultural</label>
+                </value>
+                <value>
+                    <fullName>Domestic daytrips</fullName>
+                    <default>false</default>
+                    <label>Domestic daytrips</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Weekend Trips</fullName>
+                    <default>false</default>
+                    <label>Weekend Trips</label>
+                </value>
+                <value>
+                    <fullName>Winter Sports</fullName>
+                    <default>false</default>
+                    <label>Winter Sports</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>UK_Barclays_Contact_ID__c</fullName>
+        <caseSensitive>true</caseSensitive>
+        <externalId>true</externalId>
+        <label>UK Barclays Contact ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Wealth_Assistant_Email__c</fullName>
+        <description>Wealth - Email address of contact assistant</description>
+        <externalId>false</externalId>
+        <label>Assistant Email</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Wealth_Assistant_Name__c</fullName>
+        <description>Wealth - Contacts assistants name (Not lookup)</description>
+        <externalId>false</externalId>
+        <label>Assistant Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Wealth_Assistant_Phone_Number__c</fullName>
+        <description>Wealth - Phone Number for contact assistant</description>
+        <externalId>false</externalId>
+        <label>Assistant Phone Number</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>advpm__CaseSafeID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>CASESAFEID( Id )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>CaseSafeID</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Company_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Company Name</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Marital_Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Marital Status</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Divorced</fullName>
+                    <default>false</default>
+                    <label>Divorced</label>
+                </value>
+                <value>
+                    <fullName>Married</fullName>
+                    <default>false</default>
+                    <label>Married</label>
+                </value>
+                <value>
+                    <fullName>Single</fullName>
+                    <default>false</default>
+                    <label>Single</label>
+                </value>
+                <value>
+                    <fullName>Widowed</fullName>
+                    <default>false</default>
+                    <label>Widowed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Middle_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Middle Name</label>
+        <length>30</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Other_Email__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Other Email</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Photo_Height__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Photo Height</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Photo_ID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Photo_ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Photo_Width__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Photo Width</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Photo__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&quot;/apex/advpm__SelectContactPhoto?action=upload&amp;id=&quot; &amp; Id, IMAGE( IF( advpm__Photo_ID__c != &quot;&quot;, &quot;/servlet/servlet.FileDownload?file=&quot; &amp; advpm__Photo_ID__c, &quot;/profilephoto/005/F&quot;) , &quot;Change Photo&quot;, IF(ISNULL(advpm__Photo_Height__c),200,advpm__Photo_Height__c), IF(ISNULL(advpm__Photo_Width__c),185,advpm__Photo_Width__c) ), &quot;_self&quot;) &amp; BR() &amp; HYPERLINK(&quot;/apex/advpm__SelectContactPhoto?action=upload&amp;id=&quot; &amp; Id, &quot;Change Photo&quot;, &quot;_self&quot;) &amp; &quot; | &quot; &amp; HYPERLINK(&quot;/apex/advpm__SelectContactPhoto?action=clear&amp;id=&quot; &amp; Id, &quot;Clear&quot;, &quot;_self&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Photo</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Role__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Role</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Child</fullName>
+                    <default>false</default>
+                    <label>Child</label>
+                </value>
+                <value>
+                    <fullName>Client</fullName>
+                    <default>false</default>
+                    <label>Client</label>
+                </value>
+                <value>
+                    <fullName>Parent</fullName>
+                    <default>false</default>
+                    <label>Parent</label>
+                </value>
+                <value>
+                    <fullName>Partner</fullName>
+                    <default>false</default>
+                    <label>Partner</label>
+                </value>
+                <value>
+                    <fullName>Plaintiff</fullName>
+                    <default>false</default>
+                    <label>Plaintiff</label>
+                </value>
+                <value>
+                    <fullName>Respondant</fullName>
+                    <default>false</default>
+                    <label>Respondant</label>
+                </value>
+                <value>
+                    <fullName>Spouse</fullName>
+                    <default>false</default>
+                    <label>Spouse</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__SSN__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>SSN</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Sex__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Sex</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Male</fullName>
+                    <default>false</default>
+                    <label>Male</label>
+                </value>
+                <value>
+                    <fullName>Female</fullName>
+                    <default>false</default>
+                    <label>Female</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Client</fullName>
+                    <default>false</default>
+                    <label>Client</label>
+                </value>
+                <value>
+                    <fullName>Associate</fullName>
+                    <default>false</default>
+                    <label>Associate</label>
+                </value>
+                <value>
+                    <fullName>Employee</fullName>
+                    <default>false</default>
+                    <label>Employee</label>
+                </value>
+                <value>
+                    <fullName>Prospect</fullName>
+                    <default>false</default>
+                    <label>Prospect</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>pi__Needs_Score_Synced__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Used for Pardot Scoring Categories. Indicates that new scores will soon be synced from Pardot for this contact.
+
+            Scoring Categories are used for multi-product engagement scoring in Pardot and are available to customers using Pardot Pro Edition and Pardot Ultimate Edition. Please visit this page for more information on this feature and how to set up Salesforce to view these scores: http://help.pardot.com/customer/portal/articles/2396977-scoring-categories-overview</description>
+        <externalId>false</externalId>
+        <label>Needs Score Synced</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>pi__Pardot_Last_Scored_At__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Used for Pardot Scoring Categories. Indicates the last time a Scoring Category score was updated for this contact.
+
+            Scoring Categories are used for multi-product engagement scoring in Pardot and are available to customers using Pardot Pro Edition and Pardot Ultimate Edition. Please visit this page for more information on this feature and how to set up Salesforce to view these scores: http://help.pardot.com/customer/portal/articles/2396977-scoring-categories-overview</description>
+        <externalId>false</externalId>
+        <label>Pardot Last Scored At</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>pi__campaign__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Pardot Campaign represents the first marketing touch with a prospect. It may be a campaign associated with your web site, landing page, paid search initiative, or any other marketing effort. Prospects may only be associated with one Pardot campaign. This value can later be changed manually or via an Automation Rule.</description>
+        <externalId>false</externalId>
+        <label>Pardot Campaign</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__comments__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Pardot Comments</label>
+        <length>32000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>pi__conversion_date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The date and time of the form, form handler, or landing page submission when a Pardot tracked anonymous visitor first became a known prospect.</description>
+        <externalId>false</externalId>
+        <label>Pardot Conversion Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>pi__conversion_object_name__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This is the name of the object (form, form handler, landing page, or video form) that converted an anonymous visitor into a named prospect.</description>
+        <externalId>false</externalId>
+        <label>Pardot Conversion Object Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__conversion_object_type__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The type of object which converted an anonymous visitor into a named prospect (form, form handler, landing page, or video form).</description>
+        <externalId>false</externalId>
+        <label>Pardot Conversion Object Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__created_date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Pardot created date represents the date and time at which the Prospect record was created in Pardot. This will often differ from your Salesforce.com created date.</description>
+        <externalId>false</externalId>
+        <label>Pardot Created Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>pi__first_activity__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Pardot First Activity</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>pi__first_search_term__c</fullName>
+        <deprecated>false</deprecated>
+        <description>If a Prospects first touch was the result of a search, this field contains the search term.</description>
+        <externalId>false</externalId>
+        <label>Pardot First Referrer Query</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__first_search_type__c</fullName>
+        <deprecated>false</deprecated>
+        <description>If a Prospects first touch was the result of a search, this field contains the type of search conducted.</description>
+        <externalId>false</externalId>
+        <label>Pardot First Referrer Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__first_touch_url__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The value of the referrer for the first tracked request made by a Prospect.</description>
+        <externalId>false</externalId>
+        <label>Pardot First Referrer</label>
+        <length>65000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
+        <fullName>pi__grade__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Pardot grade is based on how well a prospect fits your organization&apos;s ideal customer profile. Explicit factors such as company size, industry, job title and more help determine this value. A combination of grade (explicit) and score (implicit) can be used to very effectively optimize the sales team&apos;s time. Grade, like score, is calculated within the Pardot system and cannot be edited in Salesforce.com.</description>
+        <externalId>false</externalId>
+        <label>Pardot Grade</label>
+        <length>10</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__last_activity__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Pardot Last Activity</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>pi__notes__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Pardot Notes</label>
+        <length>32000</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>pi__pardot_hard_bounced__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Boolean that determines whether contact hard bounced.</description>
+        <externalId>false</externalId>
+        <label>Pardot Hard Bounced</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>pi__score__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The Pardot score is based on implicit buying signals a lead demonstrates through his or her activities and responses to your marketing efforts. The higher the score, the more active the lead has been. A combination of score (implicit buying signals) and grade (explicit factors) helps you prioritize your prospects. Score, like grade, is calculated within the Pardot system and cannot be edited in Salesforce.com.</description>
+        <externalId>false</externalId>
+        <label>Pardot Score</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__url__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This link takes you directly into the relevant prospect&apos;s profile within Pardot. From there you can view his or her complete activity history. This URL is generated within the Pardot system and cannot be edited in Salesforce.com.</description>
+        <externalId>false</externalId>
+        <label>Pardot URL</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>pi__utm_campaign__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Google Analytics Campaign</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__utm_content__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Google Analytics Content</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__utm_medium__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Google Analytics Medium</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__utm_source__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Google Analytics Source</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>pi__utm_term__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Google Analytics Term</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <listViews>
+        <fullName>AllContacts</fullName>
+        <columns>FULL_NAME</columns>
+        <columns>ACCOUNT.NAME</columns>
+        <columns>Relationship_Record_Type__c</columns>
+        <columns>Job_Role__c</columns>
+        <columns>Job_title__c</columns>
+        <columns>CONTACT.PHONE1</columns>
+        <columns>CONTACT.EMAIL</columns>
+        <columns>CORE.USERS.ALIAS</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>CORE.USERS.ALIAS</field>
+            <operation>equals</operation>
+            <value>ThiseN</value>
+        </filters>
+        <label>All Contacts</label>
+    </listViews>
+    <listViews>
+        <fullName>Contacts_Created_Today</fullName>
+        <columns>FULL_NAME</columns>
+        <columns>ACCOUNT.NAME</columns>
+        <columns>CONTACT.TITLE</columns>
+        <columns>CONTACT.PHONE1</columns>
+        <columns>CONTACT.EMAIL</columns>
+        <columns>CORE.USERS.ALIAS</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>CONTACT.CREATED_DATE</field>
+            <operation>equals</operation>
+            <value>11/17/2017 12:00 AM</value>
+        </filters>
+        <label>Contacts Created Today</label>
+    </listViews>
+    <listViews>
+        <fullName>MyContacts</fullName>
+        <columns>FULL_NAME</columns>
+        <columns>ACCOUNT.NAME</columns>
+        <columns>Relationship_Record_Type__c</columns>
+        <columns>Job_Role__c</columns>
+        <columns>Job_title__c</columns>
+        <columns>CONTACT.PHONE1</columns>
+        <columns>CONTACT.EMAIL</columns>
+        <columns>CORE.USERS.ALIAS</columns>
+        <filterScope>Mine</filterScope>
+        <label>My Contacts</label>
+    </listViews>
+    <searchLayouts>
+        <customTabListAdditionalFields>FULL_NAME</customTabListAdditionalFields>
+        <customTabListAdditionalFields>ACCOUNT.NAME</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Relationship_Record_Type__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CONTACT.PHONE1</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CONTACT.EMAIL</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CORE.USERS.FIRST_NAME</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CORE.USERS.LAST_NAME</customTabListAdditionalFields>
+        <listViewButtons>Add_To_Event</listViewButtons>
+        <lookupDialogsAdditionalFields>FULL_NAME</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>ACCOUNT.NAME</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>CONTACT.PHONE1</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>CONTACT.EMAIL</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>CORE.USERS.ALIAS</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>FULL_NAME</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>ACCOUNT.NAME</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>ACCOUNT.SITE</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CONTACT.PHONE1</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CONTACT.PHONE3</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CONTACT.PHONE4</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CONTACT.PHONE5</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>CONTACT.PHONE6</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>ACCOUNT.NAME</searchFilterFields>
+        <searchFilterFields>CONTACT.FIRST_NAME</searchFilterFields>
+        <searchFilterFields>CONTACT.LAST_NAME</searchFilterFields>
+        <searchFilterFields>CONTACT.EMAIL</searchFilterFields>
+        <searchFilterFields>Job_Role__c</searchFilterFields>
+        <searchFilterFields>Job_title__c</searchFilterFields>
+        <searchResultsAdditionalFields>FULL_NAME</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>ACCOUNT.NAME</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>CONTACT.PHONE1</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>CONTACT.EMAIL</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>CORE.USERS.ALIAS</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Private</sharingModel>
+    <validationRules>
+        <fullName>Fax_Number_Validation</fullName>
+        <active>true</active>
+        <errorConditionFormula>NOT(ISBLANK(Fax)) &amp;&amp; 
+NOT(REGEX(Fax, &quot;[0-9]{4,5}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4,7}&quot;))</errorConditionFormula>
+        <errorDisplayField>Fax</errorDisplayField>
+        <errorMessage>The correct format is: Country Code, Area Code Space Three Digits Space Remainder Digits. eg. 2711 237 1434</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>International_Phone_Number_Validation</fullName>
+        <active>true</active>
+        <description>This validates the correctness of the data inserted in the phone number field to the following requirement
+
+Country Code	Identification Code	Subscriber Number
+cc = 1 to 3 digits	x = 1 to 4 digits	maximum = 15 − (cc + x) = 8 to 11 digits
+International</description>
+        <errorConditionFormula>AND( ISCHANGED(Phone),NOT(ISBLANK(Phone)) &amp;&amp; OR( 
+NOT(OR(REGEX(Phone, &quot;[0-9]{1,3}[&apos; &apos;][0-9]{1,4}[&apos; &apos;][0-9\\s]{3,13}&quot;), 
+REGEX(Phone, &quot;[&apos;2&apos;][&apos;7&apos;][&apos; &apos;][0-9]{2}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4}&quot;),REGEX(Phone, &quot;[0-9]{2}[&apos; &apos;][0-9]{2}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4,13}&quot;))),(LEN(TRIM(SUBSTITUTE(Phone,&quot; &quot;,&quot;&quot;)))) &gt; 15))</errorConditionFormula>
+        <errorDisplayField>Phone</errorDisplayField>
+        <errorMessage>Correct format is
+Country code (1 to 3 digits) [space] area code (1 to 4 digits) [space] subscriber phone number
+e.g. 
+27 11 123 4567 or 
+27 11 1234567 or
+1 408 1234567 or
+254 20 76228484</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Mandatory_First_Name</fullName>
+        <active>true</active>
+        <description>Makes First Name field mandatory</description>
+        <errorConditionFormula>ISBLANK(FirstName)</errorConditionFormula>
+        <errorMessage>Please enter a First Name for the contact</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Mobile_Number_Validation</fullName>
+        <active>true</active>
+        <description>This validates the correctness of the data inserted in the mobile number field to the following requirement
+
+Country Code	Identification Code	Subscriber Number
+cc = 1 to 3 digits	x = 1 to 4 digits	maximum = 15 − (cc + x) = 8 to 11 digits
+International</description>
+        <errorConditionFormula>AND( ISCHANGED(MobilePhone),NOT(ISBLANK(MobilePhone)) &amp;&amp; OR( 
+NOT(OR(REGEX(MobilePhone, &quot;[0-9]{1,3}[&apos; &apos;][0-9]{1,4}[&apos; &apos;][0-9\\s]{3,13}&quot;), 
+REGEX(MobilePhone, &quot;[&apos;2&apos;][&apos;7&apos;][&apos; &apos;][0-9]{2}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4}&quot;),REGEX(MobilePhone, &quot;[0-9]{2}[&apos; &apos;][0-9]{2}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4,13}&quot;))),(LEN(TRIM(SUBSTITUTE(MobilePhone,&quot; &quot;,&quot;&quot;)))) &gt; 15))</errorConditionFormula>
+        <errorDisplayField>MobilePhone</errorDisplayField>
+        <errorMessage>Correct format is
+Country code (1 to 3 digits) [space] area code (1 to 4 digits) [space] subscriber mobile phone number
+e.g. 
+27 11 123 4567 or 
+27 11 1234567 or
+1 408 1234567 or
+254 20 76228484</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Next_birthday_must_be_in_future</fullName>
+        <active>true</active>
+        <description>When capturing next birthday the year must be this year or next year.
+Used in Birthday notification workflow and capture in this way to comply with Privacy requirements.</description>
+        <errorConditionFormula>NOT(Next_Birthday__c  &gt;  TODAY())</errorConditionFormula>
+        <errorDisplayField>Next_Birthday__c</errorDisplayField>
+        <errorMessage>The next birthday must be in the future.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Number_Validation</fullName>
+        <active>true</active>
+        <errorConditionFormula>NOT(ISBLANK(OtherPhone)) &amp;&amp; 
+NOT(REGEX(OtherPhone, &quot;[0-9]{4,5}[&apos; &apos;][0-9]{3}[&apos; &apos;][0-9]{4,7}&quot;))</errorConditionFormula>
+        <errorDisplayField>OtherPhone</errorDisplayField>
+        <errorMessage>The correct format is: Country Code, Area Code Space Three Digits Space Remainder Digits. eg. 2711 237 1434</errorMessage>
+    </validationRules>
+    <webLinks>
+        <fullName>Add_To_Event</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Add To Event</masterLabel>
+        <openType>sidebar</openType>
+        <page>evDelegateCreation_AddContacts</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>GoogleMaps</fullName>
+        <availability>online</availability>
+        <displayType>link</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>url</linkType>
+        <masterLabel>Google Maps</masterLabel>
+        <openType>newWindow</openType>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+        <url>http://maps.google.com/maps?f=q&amp;hl=en&amp;q={!Contact_MailingStreet}+{!Contact_MailingCity}+{!Contact_MailingState}&amp;om=1</url>
+    </webLinks>
+    <webLinks>
+        <fullName>GoogleSearch</fullName>
+        <availability>online</availability>
+        <displayType>link</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>url</linkType>
+        <masterLabel>Google Search</masterLabel>
+        <openType>newWindow</openType>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+        <url>http://www.google.com/search?q={!Contact_FirstName} {!Contact_LastName}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>SDOC__Email_Docs</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Email S-Docs</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/SDOC__SDEmail?id={!Contact.Id}&amp;Object=Contact</url>
+    </webLinks>
+    <webLinks>
+        <fullName>SDOC__S_Docs</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>S-Docs</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/SDOC__SDCreate1?id={!Contact.Id}&amp;Object=Contact</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Create_Action_Plan</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Create Action Plan</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>{!URLFOR($Site.Prefix+&apos;/apex/advpm__ActionPlanSelect&apos;, null, [refId=Contact.Id,refType=URLENCODE(&apos;Contact&apos;),retURL=Contact.Id], false)}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Create_Action_Plans</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Create Contact Action Plans</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__ActionPlansCreateContact</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Create_Document</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Create Document</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>{!URLFOR($Site.Prefix+&apos;/apex/advpm__SelectTemplate&apos;, Contact.Id, [id=Contact.Id,refName=Contact.Name], false)}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Mass_Edit_Update</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Mass Edit/Update</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__MassUpdateContact</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Participation_Map</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Participation Map</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>{!URLFOR($Site.Prefix+&apos;/apex/advpm__ParticipationMapContact&apos;, null, [id=Contact.Id,fw=URLENCODE(&apos;1&apos;),retURL=Contact.Id], false)}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Process_Assignment</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Process Assignment</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>{!URLFOR($Site.Prefix+&apos;/apex/advpm__AssignmentTemplateSelect&apos;, Contact.Id, [id=Contact.Id], false)}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>advpm__Process_Assignment_List</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <linkType>page</linkType>
+        <masterLabel>Process Assignment</masterLabel>
+        <openType>replace</openType>
+        <page>advpm__ProcessAssignmentListContact</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>dsfs__Send_with_DocuSign</fullName>
+        <availability>online</availability>
+        <description>This button will initiate a DocuSign Envelope that is linked to the Contact</description>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Send with DocuSign</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>{!REQUIRESCRIPT(&quot;/apex/dsfs__DocuSign_JavaScript&quot;)}
+DocuSign_CreateEnvelope();</url>
+    </webLinks>
+    <webLinks>
+        <fullName>evAddtoEvent</fullName>
+        <availability>online</availability>
+        <description>RN - add contacts as delegates to an event</description>
+        <displayType>massActionButton</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Add to Event</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+        <url>{!REQUIRESCRIPT(&quot;/soap/ajax/40.0/connection.js&quot;)}
+
+var contacts = {!GETRECORDIDS($ObjectType.Contact)};
+
+if(contacts[0] == null){
+  alert(&quot;Please select at least one contact to add to an Event.&quot;);
+}else{
+  window.location = &apos;apex/evDelegateCreation_AddContacts?recs=&apos;+contacts.join(&apos;,&apos;);
+}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>evAddtoEventIndividual</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Add to Event</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/evDelegateCreation_AddContacts?recs={!Contact.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>pi__Send_Pardot_Email</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Send Pardot Email</masterLabel>
+        <openType>sidebar</openType>
+        <page>pi__SendPardotEmailContact</page>
+        <protected>false</protected>
+    </webLinks>
+    <webLinks>
+        <fullName>pi__Send_Pardot_Emails</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Send Engage Email</masterLabel>
+        <openType>sidebar</openType>
+        <page>pi__MicroCampaignContact</page>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+    </webLinks>
+    <webLinks>
+        <fullName>pi__Send_Single_Pardot_Email</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Send Engage Email</masterLabel>
+        <openType>sidebar</openType>
+        <page>pi__MicroCampaignSingleContact</page>
+        <protected>false</protected>
+    </webLinks>
+    <webLinks>
+        <fullName>pi__Send_to_Prospect_Insight</fullName>
+        <availability>online</availability>
+        <description>Send this Contact to Pardot</description>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Send to Pardot</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/pi__SendToPardot?contactEmail={!URLENCODE(Contact.Email)}&amp;contactId={!Contact.Id}&amp;serverUrl={!$Api.Partner_Server_URL_90}</url>
+    </webLinks>
+</CustomObject>

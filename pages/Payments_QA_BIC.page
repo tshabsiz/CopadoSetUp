@@ -1,0 +1,93 @@
+<apex:page standardController="Case" extensions="Payments_QA_Statements_Ext" showHeader="false" sidebar="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm">
+        <apex:messages ></apex:messages>
+        <div class="slds">
+            <div class="slds-form--stacked" id="cnumb">
+                <div class="slds-form-element" id="divcnumb">
+                    <label class="slds-form-element__label">Vostro Bic / Customer Number</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputText id="cnumbval" value="{!custKey}" styleclass="slds-input" ></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="slds-form-element slds-float--right">
+                <span id="newMsg">
+                    <button id="btn" class="slds-button slds-button--brand" type="button" onclick="search();" >
+                        Search
+                    </button>
+                    <apex:actionFunction name="searchAction" action="{!searchBIC}" reRender="src" status="searchSta"/>
+                </span>
+            </div>
+            <br/><br/>
+            <apex:outputPanel id="src" layout="block" style="overflow:auto;width:750px;height:250px">
+             <apex:actionStatus startText="Busy Searching...." stopText="" id="searchSta" startStyle="color: grey;font-weight: bold;font-size:large;"/>    
+            <div class="slds-scrollable--x" id="cltlist">
+                <table width="100%" id="bicclients" class="slds-table slds-table--bordered ">
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-cell-shrink">Account Number(Statements)</th>
+                        <th class="slds-cell-shrink">Tier Ref</th>
+                        <th class="slds-cell-shrink">Name</th>
+                        <th class="slds-cell-shrink">Date Opened</th>
+                    </tr>
+                    <apex:repeat value="{!bicList.DETAILLINE}" var="rc" id="lst">
+                        <tr class="slds-hint-parent slds-is-selected">
+                            <td class="slds-cell-shrink">
+                            <a href="#" class="tooltip" onclick="openSubTab('{!rc.PODSPA}');return false;">
+                                 <apex:outputText value="{!rc.PODSPA}" />
+                            </a>
+                            </td>
+                            <td class="slds-cell-shrink">
+                            <a href="#" class="tooltip" onclick="openSubTab2('{!rc.PODSPA}');return false;">
+                                 <apex:outputText value="{!rc.POCNUM}{!rc.POCURR}{!rc.POACOD}" />
+                            </a>
+                            </td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.POANAM}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.POAOPN}" /></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+            </apex:outputPanel>
+        </div>
+    </apex:form> 
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+    var accBicCode = '';
+    var tierInput = '';
+    
+    function search(){
+        searchAction();
+    };
+    
+    function openSubTab(accNr) {
+        accBicCode = accNr;
+        sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+    };
+    var primaryTabId2 = function primaryTabId2(result2) {
+        sforce.console.openSubtab(result2.id , '/apex/Payments_QA_Statements?bic=' + accBicCode, true, accBicCode, null);
+    };
+    function RefreshPrimaryTab(){
+        if (sforce.console.isInConsole()){
+            sforce.console.getFocusedPrimaryTabId(showTabId);
+        }else{
+            window.top.location.href = '/' + consoleCaseId;
+        }
+    };
+    
+    var showTabId = function showTabId(result){
+        var tabId = result.id;
+        sforce.console.refreshPrimaryTabById(tabId, true);
+    };
+    function openSubTab2(tier) {
+        tierInput = tier;
+        sforce.console.getFocusedPrimaryTabId(primaryTabId3);
+    };
+     var primaryTabId3 = function primaryTabId3(result3) {
+        sforce.console.openSubtab(result3.id , '/apex/Payments_Tier_View?tierref=' + tierInput, true, tierInput, null);
+    };
+    </script>
+</apex:page>

@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <enableFeeds>false</enableFeeds>
+    <fieldSets>
+        <fullName>advpm__fieldSet_Content</fullName>
+        <description>To be used on Content Module.</description>
+        <displayedFields>
+            <field>advpm__Category__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>advpm__Matter__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>advpm__Type__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <label>fieldSet_Content</label>
+    </fieldSets>
+    <fieldSets>
+        <fullName>advpm__fieldSet_ContentTime</fullName>
+        <availableFields>
+            <field>advpm__Log_Time__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>advpm__Time_In_Hours__c</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <description>To be used to enable Time on Matter Content Module</description>
+        <label>fieldSet_ContentTime</label>
+    </fieldSets>
+    <fields>
+        <fullName>Barclays_SA__Assign_multi_category__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>HYPERLINK(&quot;/apex/&quot; + IF(ISBLANK($Setup.Barclays_SA__DSA_App_Setting__c.Barclays_SA__Package_Name__c), &quot;&quot;, $Setup.Barclays_SA__DSA_App_Setting__c.Barclays_SA__Package_Name__c + &quot;__&quot;) + &quot;AssignCategories?contentid=&quot;+ Id, &quot;Click Here&quot; , &quot;_blank&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Assign multi category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Available_Offline__c</fullName>
+        <defaultValue>true</defaultValue>
+        <deprecated>false</deprecated>
+        <description>This content will be available offline.</description>
+        <externalId>false</externalId>
+        <label>Available Offline</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Document_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Document Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Shareable</fullName>
+                    <default>false</default>
+                    <label>Shareable</label>
+                </value>
+                <value>
+                    <fullName>Competitive Information</fullName>
+                    <default>false</default>
+                    <label>Competitive Information</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Internal_Document__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Checkbox to define a document to be Internal only. The document will Only show up in Internal Mode for a Given Configuration.</description>
+        <externalId>false</externalId>
+        <label>Internal Document</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__IsFeatured__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Featured</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Public_URL__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Public URL for HTML 5 content. Used to email public content link to customers.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Publicly available link for HTML 5 content, used in DSA email to customer. Put a public URL in this field for any HTML 5 content that is available publicly on your website.</inlineHelpText>
+        <label>Public URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>ContentSize</fullName>
+    </fields>
+    <fields>
+        <fullName>CurrencyIsoCode</fullName>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Description</fullName>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>FileExtension</fullName>
+    </fields>
+    <fields>
+        <fullName>FileType</fullName>
+    </fields>
+    <fields>
+        <fullName>IsAssetEnabled</fullName>
+    </fields>
+    <fields>
+        <fullName>Language</fullName>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>Matter_Category__c</fullName>
+        <externalId>false</externalId>
+        <label>Matter Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Action Lines</fullName>
+                    <default>false</default>
+                    <label>Action Lines</label>
+                </value>
+                <value>
+                    <fullName>Banking Ombudsman</fullName>
+                    <default>false</default>
+                    <label>Banking Ombudsman</label>
+                </value>
+                <value>
+                    <fullName>CEO’s Office</fullName>
+                    <default>false</default>
+                    <label>CEO’s Office</label>
+                </value>
+                <value>
+                    <fullName>Class Action</fullName>
+                    <default>false</default>
+                    <label>Class Action</label>
+                </value>
+                <value>
+                    <fullName>Competition / Antitrust</fullName>
+                    <default>false</default>
+                    <label>Competition / Antitrust</label>
+                </value>
+                <value>
+                    <fullName>Compliance with orders made by the Court</fullName>
+                    <default>false</default>
+                    <label>Compliance with orders made by the Court</label>
+                </value>
+                <value>
+                    <fullName>Consumer Statutory Rights</fullName>
+                    <default>false</default>
+                    <label>Consumer Statutory Rights</label>
+                </value>
+                <value>
+                    <fullName>Contentious IP</fullName>
+                    <default>false</default>
+                    <label>Contentious IP</label>
+                </value>
+                <value>
+                    <fullName>Contract Disputes (other)</fullName>
+                    <default>false</default>
+                    <label>Contract Disputes (other)</label>
+                </value>
+                <value>
+                    <fullName>Court Proceedings</fullName>
+                    <default>false</default>
+                    <label>Court Proceedings</label>
+                </value>
+                <value>
+                    <fullName>Court Proceedings Filed</fullName>
+                    <default>false</default>
+                    <label>Court Proceedings Filed</label>
+                </value>
+                <value>
+                    <fullName>Customers</fullName>
+                    <default>false</default>
+                    <label>Customers</label>
+                </value>
+                <value>
+                    <fullName>Cybercrime</fullName>
+                    <default>false</default>
+                    <label>Cybercrime</label>
+                </value>
+                <value>
+                    <fullName>Data Protection</fullName>
+                    <default>false</default>
+                    <label>Data Protection</label>
+                </value>
+                <value>
+                    <fullName>Debt Recovery</fullName>
+                    <default>false</default>
+                    <label>Debt Recovery</label>
+                </value>
+                <value>
+                    <fullName>Delict</fullName>
+                    <default>false</default>
+                    <label>Delict</label>
+                </value>
+                <value>
+                    <fullName>Employment Related Matters</fullName>
+                    <default>false</default>
+                    <label>Employment Related Matters</label>
+                </value>
+                <value>
+                    <fullName>Financial Crime</fullName>
+                    <default>false</default>
+                    <label>Financial Crime</label>
+                </value>
+                <value>
+                    <fullName>Fraud</fullName>
+                    <default>false</default>
+                    <label>Fraud</label>
+                </value>
+                <value>
+                    <fullName>Incorrect Payments / Transfer of Funds</fullName>
+                    <default>false</default>
+                    <label>Incorrect Payments / Transfer of Funds</label>
+                </value>
+                <value>
+                    <fullName>Insolvency bankruptcy / Business rescue</fullName>
+                    <default>false</default>
+                    <label>Insolvency bankruptcy / Business rescue</label>
+                </value>
+                <value>
+                    <fullName>Market Misconduct</fullName>
+                    <default>false</default>
+                    <label>Market Misconduct</label>
+                </value>
+                <value>
+                    <fullName>Mortgage Related Activity</fullName>
+                    <default>false</default>
+                    <label>Mortgage Related Activity</label>
+                </value>
+                <value>
+                    <fullName>National Credit Regulator/Tribunal</fullName>
+                    <default>false</default>
+                    <label>National Credit Regulator/Tribunal</label>
+                </value>
+                <value>
+                    <fullName>Not Applicable</fullName>
+                    <default>false</default>
+                    <label>Not Applicable</label>
+                </value>
+                <value>
+                    <fullName>Not Categorised</fullName>
+                    <default>false</default>
+                    <label>Not Categorised</label>
+                </value>
+                <value>
+                    <fullName>Ombudsman (other)</fullName>
+                    <default>false</default>
+                    <label>Ombudsman (other)</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+                <value>
+                    <fullName>Pension Fund Adjudicators</fullName>
+                    <default>false</default>
+                    <label>Pension Fund Adjudicators</label>
+                </value>
+                <value>
+                    <fullName>Personal Injury</fullName>
+                    <default>false</default>
+                    <label>Personal Injury</label>
+                </value>
+                <value>
+                    <fullName>Pre-Court Proceedings</fullName>
+                    <default>false</default>
+                    <label>Pre-Court Proceedings</label>
+                </value>
+                <value>
+                    <fullName>Product Mis-Selling</fullName>
+                    <default>false</default>
+                    <label>Product Mis-Selling</label>
+                </value>
+                <value>
+                    <fullName>Professional Negligence</fullName>
+                    <default>false</default>
+                    <label>Professional Negligence</label>
+                </value>
+                <value>
+                    <fullName>Reckless Lending</fullName>
+                    <default>false</default>
+                    <label>Reckless Lending</label>
+                </value>
+                <value>
+                    <fullName>Regulators (other)</fullName>
+                    <default>false</default>
+                    <label>Regulators (other)</label>
+                </value>
+                <value>
+                    <fullName>Subpoena</fullName>
+                    <default>false</default>
+                    <label>Subpoena</label>
+                </value>
+                <value>
+                    <fullName>Supplier Contract Disputes</fullName>
+                    <default>false</default>
+                    <label>Supplier Contract Disputes</label>
+                </value>
+                <value>
+                    <fullName>Systems and Controls</fullName>
+                    <default>false</default>
+                    <label>Systems and Controls</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Matter_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Matter Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Complaints</fullName>
+                    <default>false</default>
+                    <label>Complaints</label>
+                </value>
+                <value>
+                    <fullName>Investigation</fullName>
+                    <default>false</default>
+                    <label>Investigation</label>
+                </value>
+                <value>
+                    <fullName>Litigation</fullName>
+                    <default>false</default>
+                    <label>Litigation</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>OwnerId</fullName>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>SharingOption</fullName>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>SharingPrivacy</fullName>
+        <trackHistory>true</trackHistory>
+    </fields>
+    <fields>
+        <fullName>TagCsv</fullName>
+    </fields>
+    <fields>
+        <fullName>Title</fullName>
+        <trackHistory>false</trackHistory>
+    </fields>
+    <fields>
+        <fullName>advpm__AdvoDoc_Log__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>AdvoDoc Log</label>
+        <referenceTo>advpm__AdvoDoc_Log__c</referenceTo>
+        <relationshipLabel>Content Versions</relationshipLabel>
+        <relationshipName>Content_Versions</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Category__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>General</fullName>
+                    <default>true</default>
+                    <label>General</label>
+                </value>
+                <value>
+                    <fullName>Internal</fullName>
+                    <default>false</default>
+                    <label>Internal</label>
+                </value>
+                <value>
+                    <fullName>Litigation</fullName>
+                    <default>false</default>
+                    <label>Litigation</label>
+                </value>
+                <value>
+                    <fullName>Marketing</fullName>
+                    <default>false</default>
+                    <label>Marketing</label>
+                </value>
+                <value>
+                    <fullName>Sales</fullName>
+                    <default>false</default>
+                    <label>Sales</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__Log_Time__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Log Time</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter_Legal_Hold__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( advpm__Matter__r.advpm__Legal_Hold__c , &quot;Yes&quot;, &quot;No&quot; )</formula>
+        <label>Matter Legal Hold</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Matter</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Content</relationshipLabel>
+        <relationshipName>Content</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Time_In_Hours__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Time (In Hours)</label>
+        <precision>12</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Time__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>When &quot;Log Time&quot; is checked and &quot;Time (In Hours)&quot; has been provided, a Time Entry for the related Matter is automatically created and linked in this field.</inlineHelpText>
+        <label>Time Entry</label>
+        <referenceTo>advpm__Time__c</referenceTo>
+        <relationshipLabel>Content</relationshipLabel>
+        <relationshipName>Content</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>PleadingContract</fullName>
+                    <default>false</default>
+                    <label>PleadingContract</label>
+                </value>
+                <value>
+                    <fullName>Fax</fullName>
+                    <default>false</default>
+                    <label>Fax</label>
+                </value>
+                <value>
+                    <fullName>Form</fullName>
+                    <default>false</default>
+                    <label>Form</label>
+                </value>
+                <value>
+                    <fullName>Motion</fullName>
+                    <default>false</default>
+                    <label>Motion</label>
+                </value>
+                <value>
+                    <fullName>Pleading</fullName>
+                    <default>false</default>
+                    <label>Pleading</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>matter_description__c</fullName>
+        <externalId>false</externalId>
+        <label>matter description</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>matter_name__c</fullName>
+        <externalId>false</externalId>
+        <label>matter name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>matter_notes__c</fullName>
+        <externalId>false</externalId>
+        <label>matter notes</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <recordTypes>
+        <fullName>Articles</fullName>
+        <active>true</active>
+        <label>Articles</label>
+        <picklistValues>
+            <picklist>Barclays_SA__Document_Type__c</picklist>
+            <values>
+                <fullName>Competitive Information</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Shareable</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Matter_Category__c</picklist>
+            <values>
+                <fullName>Action Lines</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Banking Ombudsman</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>CEO%E2%80%99s Office</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Class Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Competition %2F Antitrust</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Compliance with orders made by the Court</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Consumer Statutory Rights</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Contentious IP</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Contract Disputes %28other%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Court Proceedings</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Court Proceedings Filed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Customers</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cybercrime</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Data Protection</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Debt Recovery</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delict</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Employment Related Matters</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Crime</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fraud</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Incorrect Payments %2F Transfer of Funds</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Insolvency bankruptcy %2F Business rescue</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Market Misconduct</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Mortgage Related Activity</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>National Credit Regulator%2FTribunal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Not Applicable</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Not Categorised</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Ombudsman %28other%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pension Fund Adjudicators</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Personal Injury</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pre-Court Proceedings</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Product Mis-Selling</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Professional Negligence</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reckless Lending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Regulators %28other%29</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Subpoena</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Supplier Contract Disputes</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Systems and Controls</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Matter_Type__c</picklist>
+            <values>
+                <fullName>Complaints</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Investigation</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Litigation</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>advpm__Category__c</picklist>
+            <values>
+                <fullName>General</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Internal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Litigation</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Marketing</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sales</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>advpm__Type__c</picklist>
+            <values>
+                <fullName>Fax</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Form</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Motion</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pleading</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PleadingContract</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Legal_Content</fullName>
+        <active>true</active>
+        <label>Legal Content</label>
+        <picklistValues>
+            <picklist>Barclays_SA__Document_Type__c</picklist>
+            <values>
+                <fullName>Competitive Information</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Shareable</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Matter_Category__c</picklist>
+            <values>
+                <fullName>Action Lines</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Banking Ombudsman</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Class Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Compliance with orders made by the Court</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Consumer Statutory Rights</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Contentious IP</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Court Proceedings</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Court Proceedings Filed</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Customers</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cybercrime</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Data Protection</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Debt Recovery</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Delict</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Employment Related Matters</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Crime</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Fraud</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Market Misconduct</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Mortgage Related Activity</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Not Applicable</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Not Categorised</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pension Fund Adjudicators</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Personal Injury</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pre-Court Proceedings</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Product Mis-Selling</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Professional Negligence</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reckless Lending</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Subpoena</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Supplier Contract Disputes</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Systems and Controls</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Matter_Type__c</picklist>
+            <values>
+                <fullName>Complaints</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Investigation</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Litigation</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>advpm__Category__c</picklist>
+            <values>
+                <fullName>General</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Internal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Litigation</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Marketing</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Sales</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>advpm__Type__c</picklist>
+            <values>
+                <fullName>Fax</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Form</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Motion</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pleading</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>PleadingContract</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <searchResultsAdditionalFields>VERSION.TITLE</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>VERSION.CONTENT_SIZE</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>VERSION.FILE_EXTENSION</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>VERSION.LAST_UPDATE</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>VERSION.OWNER</searchResultsAdditionalFields>
+    </searchLayouts>
+</CustomObject>

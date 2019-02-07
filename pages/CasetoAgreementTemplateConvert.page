@@ -1,0 +1,42 @@
+<apex:page controller="Agreement_TemplateHandler" tabStyle="Agreement_Template__c" >
+  
+ <apex:form >
+  
+  
+  
+  <apex:pageBlock title="Agreement Template" mode="edit" >
+   <apex:pageBlockButtons >
+  <!-- action="{!Cancel}"  -->
+  
+  <apex:commandButton value="Next" action="{!ConvertMattertoTemplate}" /> <apex:commandButton value="Cancel"  action="{!Cancel}" immediate="true"  />
+  </apex:pageBlockButtons>
+  
+      <apex:pageMessages id="errors" />
+      <apex:sectionHeader subtitle="Agreement Template Edit" title="New Agreement Template"/>
+      <apex:pageBlockSection title="Agreement Template Information" > 
+      
+       
+       
+          <apex:inputField required="true"  value="{!newAgreementTemplate.Name}"/>   
+               
+          <apex:inputField required="true"  value="{!newAgreementTemplate.SuggestedTags__c}" />      
+          <apex:inputField required="true"  value="{!newAgreementTemplate.Jurisdiction__c}" />      
+             
+          <apex:inputField required="true"  value="{!newAgreementTemplate.Description__c}" style="width:300px; height:100px"/> 
+          
+          <apex:inputField value="{!newAgreementTemplate.HotDocs_Template_ID__c}"/>      
+         
+          </apex:pageBlockSection>      
+          
+          
+         
+         </apex:pageBlock> 
+  
+  
+       
+       
+  </apex:form>
+ 
+  
+  
+</apex:page>

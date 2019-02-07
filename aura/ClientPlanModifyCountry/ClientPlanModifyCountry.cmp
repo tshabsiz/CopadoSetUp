@@ -1,0 +1,61 @@
+<aura:component controller="ClientPlanPreseceControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="countryId" type="Id" required="true" />
+    <aura:attribute name="engaged" type="String" required="true" />
+    <aura:attribute name="primaryBank" type="String" required="true" />
+    <aura:attribute name="timestamp" type="Integer" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <ltng:require scripts="/resource/jquery_1_11,/resource/typeahead" />
+    
+    <div class="slds">
+        <div id="{!v.timestamp}">
+            
+            <aura:if isTrue="{!v.showProgressBar}">
+                <c:ProgressBarLightningMobile />
+                
+                <aura:set attribute="else">
+                    
+                    <div id="pageLabel">
+                        {!if(v.countryId == null, 'Add country', 'Edit country')}
+                    </div>
+                    
+                    <div id="wholePage">
+                        <aura:if isTrue="{!v.mapMetadata}">
+                            
+                            <div class="marginBottom1em">
+                                <label class="block" for="bankingCountryInput">Banking country</label>
+                                <input class="slds-input" id="bankingCountryInput" type="text" />
+                                <span aura:id="bankingCountryError" class="toggle red">Banking country is required</span>
+                            </div>
+                            
+                            <ui:inputSelect aura:id="engaged" label="Engaged" class="dynamic marginBottom1em" value="{!v.country.Engaged__c}">
+                                <aura:iteration items="{!v.engagedOptions}" var="o">
+                                    <ui:inputSelectOption text="{!o}" label="{!o}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            
+                            <ui:inputSelect aura:id="primaryBank" label="Primary bank" class="dynamic marginBottom1em" value="{!v.country.Primary_Bank__c}">
+                                <aura:iteration items="{!v.primaryBankOptions}" var="o">
+                                    <ui:inputSelectOption text="{!o}" label="{!o}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            
+                            <div id="buttonsWrapper">
+                                <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                                <button class="slds-button slds-button--brand" onclick="{!c.onBeforeModifyCountry}">Save</button>
+                            </div>
+                        </aura:if>
+                    </div>
+                    
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+    
+</aura:component>

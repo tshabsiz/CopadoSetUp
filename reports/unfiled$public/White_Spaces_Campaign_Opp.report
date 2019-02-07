@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Account$Name</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities$Name</field>
+    </columns>
+    <columns>
+        <field>Account$Segment__c</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities$StageName</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities.OpportunityLineItems$Product_Name__c</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities$Income_this_Year__c</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities.OpportunityLineItems$Annualised_Income__c</field>
+    </columns>
+    <columns>
+        <field>Account.Opportunities$Campaign</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Account.Opportunities$Campaign</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Primary Banking White Spaces Campaign</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>White Spaces Campaign - Opp</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Accounts_with_Opportunities_and_Products_and_Owner__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Account$Call_Report_Last_Logged_Date__c</dateColumn>
+        <interval>INTERVAL_CURRENT</interval>
+    </timeFrameFilter>
+</Report>

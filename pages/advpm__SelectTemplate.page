@@ -1,0 +1,381 @@
+<apex:page controller="advpm.SelectTemplateController" tabStyle="advpm__AdvoDoc_Template__c" id="pg">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__AdvoDoc_Resources,'/Scripts/jquery.min.js')}"/>
+    <!-- 
+    <apex:includeScript value="{!URLFOR($Resource.ZeroClipboard, 'v2.2.0/dist/ZeroClipboard.min.js')}" />
+    -->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__ClipboardJS, 'v1.5.12/dist/clipboard.min.js')}" />
+    <script type="text/javascript">
+        function redirect(tId){
+            //$('.'+tId).click();
+            if ({!isLightning}) {
+                openUrl('{!JSENCODE(recordId)}');
+            }
+            else{
+                openUrl('/{!JSENCODE(recordId)}');
+            }
+            if (tId != null && tId != '')
+                hideLoader(tId);
+        }
+        function openUrl(url) {
+            if ({!isLightning}) {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToSObject(url);
+                }
+            }
+            else {
+                location.href = url;
+            }
+        }
+        var d = sfdcPage.dialogs['myCustomSFDCDialog'], close;
+        var da = sfdcPage.dialogs['myCustomSFDCDialogAlert'], closeAlert;
+        var dcp = sfdcPage.dialogs['myCustomSFDCDialogCopyPreview'], closeCopyPreview, btnCopyPreview;
+        var ddp = sfdcPage.dialogs['myCustomSFDCDialogSuccessConfirm'], closeSuccessConfirm;
+        function showSFDCSimpleDialog(titleText, iframeSrc) {
+            if (!d) {
+                d = sfdcPage.dialogs['myCustomSFDCDialog'] = new SimpleDialog('myCustomSFDCDialog', true);
+                d.setWidth(1000);
+                d.createDialog();
+            }
+            d.setTitle(titleText);
+           
+            $(d.dialog).find('#myCustomSFDCDialogInner').html('<iframe src="'+iframeSrc+'" height="550" width="965" border="0" style="border: 0;" />');
+            $(d.dialog).find('#myCustomSFDCDialogInner iframe').on('load', function() {
+                $(this).contents().find('input[type="submit"]').on('click', function() {
+                    if ($(this).val() == 'Cancel') d.hide();
+                    return false;
+                });
+            });
+
+            if ($(d.dialog).find('#InlineEditDialogX').size() == 0) {
+                close = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                close.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    d.hide();
+                });
+                close.insertBefore($(d.dialog).find('.topLeft h2'));
+            }
+            d.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                d.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+        function showSFDCSimpleDialogAlert(advDocId) {
+            if (!da) {
+                da = sfdcPage.dialogs['myCustomSFDCDialogAlert'] = new SimpleDialog('myCustomSFDCDialogAlert', true);
+                da.setWidth(400);
+                da.createDialog();
+            }
+            da.setTitle('Create Now');
+            var alohaBtnBrand = {!isLightning} ? '' : 'height:30px; color:white; background:#2f8daf;';
+            var alohaBtnNeutral = {!isLightning} ? '' : 'height:30px;';
+            var ht = '<div class="generateOptions '+({!isLightning}?'slds':'')+'" style="width:100%;"><div style="width:100%;">What format would you like to create the document in?<br /><br /></div><div style="text-align:center;"><input type="radio" id="tmplformat_d" name="tmplformat" value="DOCX" /> <label for="tmplformat_d">DOCX</label><br /><input type="radio" id="tmplformat_p" name="tmplformat" value="PDF" checked="checked" style="margin-left: -7px;" /> <label for="tmplformat_p">PDF</label><br /><br /></div><div style="text-align:center;"><input type="button" style="width:75px;font-size: 12px;'+alohaBtnBrand+'" class="btn slds-button slds-button--brand" value="Create" onclick="createNowDoc(\''+advDocId+'\');da.hide();return false;" /><input type="button" value="Cancel" style="width:75px;font-size: 12px;'+alohaBtnNeutral+'" class="btn slds-button slds-button--neutral" onclick="da.hide();return false;" style="margin-left:1em;" /></div></div>';
+            da.setContentInnerHTML( ht );
+            
+            if ($(da.dialog).find('#InlineEditDialogX').size() == 0) {
+                closeAlert = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                closeAlert.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    da.hide();
+                });
+                closeAlert.insertBefore($(da.dialog).find('.topLeft h2'));
+            }
+            da.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                da.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+        }
+        function showSFDCSimpleDialogSuccessConfirm(contentId, contentDocId){
+           if (!ddp) {
+                ddp = sfdcPage.dialogs['myCustomSFDCDialogSuccessConfirm'] = new SimpleDialog('myCustomSFDCDialogSuccessConfirm', true);
+                ddp.setWidth(400);
+                ddp.createDialog();
+            }
+            ddp.setTitle('AdvoDoc Created');
+            var alohaBtnBrand = {!isLightning} ? '' : 'height:30px; color:white; background:#2f8daf;';
+            var alohaBtnNeutral = {!isLightning} ? '' : 'height:30px;';
+            var ht = '<div class="generateOptions '+({!isLightning}?'slds':'')+'" style="width:100%;">'+
+                     '<div style="width:100%;text-align:center;">Your document has been created.<br /><br /><br /></div>'+
+                     '<div style="text-align:center;">'+
+                     '<input style="width:95px;font-size: 12px;'+alohaBtnBrand+'" type="button" value=" Go To " class="btn slds-button slds-button--brand" onclick="OpenFile(\''+contentDocId+'\');return false;" />'+
+                     '<input style="width:95px;font-size: 12px;'+alohaBtnBrand+'" type="button" value=" Download "  class="btn slds-button slds-button--brand" onclick="DownloadFile(\''+contentId+'\');return false;" />'+
+                     '<input style="width:95px;font-size: 12px;'+alohaBtnNeutral+'" type="button" value=" Back "  class="btn slds-button slds-button--neutral" onclick="redirect();return false;" />'+
+                     '</div>'+
+                     '</div>';
+            ddp.setContentInnerHTML( ht );
+            
+            if ($(ddp.dialog).find('#InlineEditDialogX').size() == 0) {
+                closeAlertSuccessConfirm = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" onclick="redirect();return false;" class="dialogClose">Close</a>');
+                closeAlertSuccessConfirm.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    ddp.hide();
+                });
+                closeAlertSuccessConfirm.insertBefore($(ddp.dialog).find('.topLeft h2'));
+            }
+            ddp.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                ddp.dialog.style.top = lastMouseY + 10 + 'px';
+            } 
+        }
+        
+        function showLoader(ob) {
+            $('.loader_'+ob).css('display','inline');
+        }
+        function hideLoader(ob) {
+            $('.loader_'+ob).css('display','none');
+        }
+        function createNowDoc(advDocId) {
+            showLoader(advDocId);
+            var f = '';
+            if (document.getElementById('tmplformat_d').checked)
+                f = 'docx';
+            else
+                f = 'pdf';
+            generate(advDocId, f);
+        }
+        function DownloadFile(contentId){
+            location.href = '{!$Site.Prefix}/sfc/servlet.shepherd/version/download/'+contentId;
+        }
+        function OpenFile(contentId) {
+            if ({!isLightning})
+                openUrl(contentId);
+            else
+                openUrl('/'+contentId);
+        }
+    </script>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            /*body {font-size: 100%;}*/
+            .list .iconColumn, .list .actionColumn {width: 186px;white-space:nowrap!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">    
+        <apex:sectionHeader title="New AdvoDoc" subtitle="{!JSINHTMLENCODE(recordName)}" />
+        <div style="float:left;">&#171;&nbsp;<apex:outputLink value="/{!JSINHTMLENCODE(recordId)}">Back to {!LOWER($ObjectType[sObjName].label)}</apex:outputLink></div>
+        <br /><br />
+        <!-- <p>Select below an AdvoDoc Template to apply to this record and create a document automatically.</p> -->
+    </apex:outputPanel>
+    
+    <apex:form id="form" styleClass="{!IF(isLightning,'slds','')}">
+        <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="New AdvoDoc" 
+                                headerDescription="Select an AdvoDoc Template"
+                                parentEntity="{!JSINHTMLENCODE($ObjectType[sObjName].labelPlural)}" 
+                                parentEntityLink="{!$ObjectType[sObjName].keyPrefix}" 
+                                parentRecordName="{!JSINHTMLENCODE(recordName)}" 
+                                parentRecordID="{!recordId}">
+                <div class="" style="margin-top:-35px;min-width:230px;">
+                    <apex:actionStatus id="loadingCategory">
+                        <apex:facet name="start">
+                            <apex:outputPanel >
+                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    <apex:selectList value="{!selectedCategory}" size="1" styleClass="slds-input slds-float--right" style="width:85%">
+                        <apex:actionSupport event="onchange" action="{!refreshAdvolist}" rerender="tmplTable" status="loadingCategory" />
+                        <apex:selectOptions value="{!categoryList}" />
+                    </apex:selectList>
+                </div>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <style type="text/css">
+            .loader img {margin-left:4px;}
+            .no-records {margin-left: -5px;}
+            #myCustomSFDCDialogCopyPreviewContent {max-height: 400px!important;overflow-y: auto!important;}
+            .btnClipboard {
+                position: relative;
+                display: inline-block;
+                padding: 6px 12px;
+                font-size: 13px;
+                font-weight: bold;
+                line-height: 20px;
+                color: #333;
+                white-space: nowrap;
+                vertical-align: middle;
+                cursor: pointer;
+                /*background-color: #eee;
+                background-image: linear-gradient(#fcfcfc,#eee);
+                border: 1px solid #d5d5d5;*/
+                background-color: #ccc;
+                background-image: linear-gradient(#fcfcfc,#ccc);
+                border: 1px solid #aaa;
+                border-radius: 3px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .clipboard-data {display:none!important;}
+        </style>
+        
+                        
+        <apex:actionFunction name="generate" action="{!saveDoc}" rerender="form,msgs" oncomplete="if({!saveSuccess}){showSFDCSimpleDialogSuccessConfirm('{!generatedContentId}','{!generatedContentDocId}');}">
+            <apex:param name="parm" value="" assignTo="{!selectedTemplate}"/>
+            <apex:param name="parm2" value="" assignTo="{!type}"/>
+        </apex:actionFunction>
+        <apex:actionFunction name="generateclipboard" action="{!ParseTemplate}" rerender="form,msgs,out" oncomplete="doClipboardAction();"  >
+            <apex:param name="parm" value="" assignTo="{!selectedTemplate}"/>
+        </apex:actionFunction>
+        
+        <apex:pageBlock title="{!IF(isLightning,'','Select an AdvoDoc Template')}" mode="edit">
+            <apex:pageMessages id="msgs" />
+            <apex:facet name="header">
+                <apex:outputPanel layout="block" styleClass="pbHeader" rendered="{!!isLightning}">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td class="pbTitle">
+                                    <h2 class="mainTitle">Select an AdvoDoc Template</h2>
+                                </td>
+                                <td align="right" style="text-align: right;">
+                                    <apex:actionStatus id="loadingCategory">
+                                        <apex:facet name="start">
+                                            <apex:outputPanel >
+                                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                                            </apex:outputPanel>
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                    <apex:selectList value="{!selectedCategory}" size="1">
+                                        <apex:actionSupport event="onchange" action="{!refreshAdvolist}" rerender="tmplTable" status="loadingCategory" />
+                                        <apex:selectOptions value="{!categoryList}" />
+                                    </apex:selectList>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:facet>
+            
+            <apex:outputPanel layout="none" id="tmplTable">
+                <apex:pageBlockTable value="{!advDocList}" var="advDoc" rendered="{!advDocList.size>0}" styleClass="slds-table">
+                    <apex:column headerValue="Action" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap actionColumn"> 
+                        <apex:outputLink title="Preview" value="javascript:showSFDCSimpleDialog('AdvoDoc Preview','{!$Site.Prefix}/apex/advpm__generatepdf?Id={!recordId}&TempId={!advDoc.Id}&type=PDF')" styleClass="actionLink {!advDoc.Id}"><img src="{!URLFOR($Resource.SLDS0202, 'assets/icons/utility/preview_60.png')}" width="14" style="margin-left:0.25em;vertical-align:top;{!IF(isLightning,'padding-top:2px','')}" /></apex:outputLink><!-- 
+                        --><apex:outputText value=" | " /><!-- 
+                        --><apex:outputLink title="Clipboard" value="javascript:void(0);" styleClass="actionLink {!advDoc.Id}" onclick="showLoader('{!JSENCODE(advDoc.Id)}');generateclipboard('{!JSENCODE(advDoc.Id)}');"><img src="{!URLFOR($Resource.SLDS0202, 'assets/icons/utility/paste_60.png')}" width="14" style="margin-left:0.25em;vertical-align:top;{!IF(isLightning,'padding-top:2px','')}" /></apex:outputLink><!-- 
+                        --><apex:outputText value=" | " /><!-- 
+                        --><apex:outputLink title="Create Now" rendered="{!advDoc.advpm__Format__c != ''}" value="javascript:void(0);" styleClass="actionLink {!advDoc.Id}" onclick="showLoader('{!JSENCODE(advDoc.Id)}');generate('{!JSENCODE(advDoc.Id)}', '{!JSENCODE(advDoc.advpm__Format__c)}');">Create Now</apex:outputLink>
+                        <apex:outputLink title="Create Now" rendered="{!advDoc.advpm__Format__c == ''}" value="javascript:void(0);" styleClass="actionLink {!advDoc.Id}" onclick="showSFDCSimpleDialogAlert('{!JSENCODE(advDoc.Id)}');">Create Now</apex:outputLink>
+                        <apex:outputPanel id="loadingStatus" styleClass="loader">
+                            <span class="loader_{!advDoc.Id}" style="display:none;">
+                                <apex:image rendered="{!!isLightning}" width="16" height="16" title="Processing..." alt="Processing..." value="/img/loading.gif" />
+                                <apex:image rendered="{!isLightning}" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+                            </span>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column value="{!advDoc.Name}" headerValue="Template Name" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!advDoc.advpm__Description__c}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!advDoc.advpm__Format__c}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!advDoc.advpm__Category__c}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!advDoc.LastModifieddate}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                    <apex:column value="{!advDoc.CreatedById}" headerClass="{!IF(isLightning,'slds-text-heading--label','')}" styleClass="slds-cell-wrap" />
+                </apex:pageBlockTable>
+                <apex:pageBlockSection columns="1" rendered="{!NOT(advDocList.size>0)}">
+                    <apex:outputPanel styleClass="no-records">No Templates found.</apex:outputPanel>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+        <apex:outputPanel id="out" styleClass="clipboard-data">
+            <!-- <div id="clipboarddata" class="clipboarddata">{!body}</div> -->
+            <textarea id="clipboarddata" class="clipboarddata">{!body}</textarea>
+        </apex:outputPanel>
+        <script type="text/javascript">
+            function doClipboardAction(){
+                showSFDCSimpleDialogCopyPreview();
+            }
+            function showSFDCSimpleDialogCopyPreview() {
+            if (!dcp) {
+                dcp = sfdcPage.dialogs['myCustomSFDCDialogCopyPreview'] = new SimpleDialog('myCustomSFDCDialogCopyPreview', true);
+                dcp.setWidth(800);
+                dcp.createDialog();
+            }
+            dcp.setTitle('Clipboard Preview');
+            dcp.setContentInnerHTML( $("#clipboarddata").val() );
+            
+            if ($(dcp.dialog).find('#InlineEditDialogX').size() == 0) {
+                closeCopyPreview = $('<a id="InlineEditDialogX" title="Close" tabindex="0" href="javascript:void(0)" class="dialogClose">Close</a>');
+                closeCopyPreview.mouseover(function() {
+                    this.className = 'dialogCloseOn';
+                }).mouseout(function() {
+                    this.className = 'dialogClose';
+                }).click(function() {
+                    //var clipboard = new Clipboard('button.btnClipboard');
+                    //clipboard.destroy();
+                    //ZeroClipboard.destroy();
+                    dcp.hide();
+                });
+                closeCopyPreview.insertBefore($(dcp.dialog).find('.topLeft h2'));
+                
+                var htmlClip = '<table style="margin-top: -50px;float: right;"><tr><td style="text-align:right;" class="slds">';
+                htmlClip += '<button style="margin-right: 25px;" class="btnClipboard slds-button slds-button--brand" title="Click to Copy to Clipboard">Copy to Clipboard</button>';
+                //htmlClip += '<button style="margin-right: 25px;" class="btnClipboard" data-clipboard-target="clipboarddata">Copy to Clipboard</button>';
+                htmlClip += '</td></tr></table>';
+                btnCopyPreview = $(htmlClip);
+                btnCopyPreview.insertBefore($(dcp.dialog).find('.bottomLeft'));
+            }
+            dcp.show();
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                dcp.dialog.style.top = lastMouseY + 10 + 'px';
+            }
+            
+            var clipboard = new Clipboard('button.btnClipboard', {
+                target: function() {
+                    return document.querySelector('#myCustomSFDCDialogCopyPreviewInner');
+                }
+            });
+            clipboard.on('success', function(e) {
+                e.clearSelection();
+                dcp.hide();
+            });
+            clipboard.on('error', function(e) {
+                alert(e);
+            });
+            
+            /*
+            var zeroClient = new ZeroClipboard( $('button.btnClipboard'), {
+                moviePath: "{!URLFOR($Resource.advpm__ZeroClipboard, 'v2.2.0/dist/ZeroClipboard.swf')}"
+            });
+            zeroClient.on( "ready", function(event) {
+                //console.log( 'Zero SWF movie is loaded' );
+                
+                zeroClient.on( 'copy', function(event) {
+                    var rel = event.relatedTarget;  // the element specified by `data-clipboard-target`
+                    if ( rel ) {
+                        event.clipboardData.clearData();
+                        event.clipboardData.setData( 'text/plain', rel.value || rel.textContent || rel.innerText );
+                        event.clipboardData.setData( 'text/html', rel.value || rel.outerHtml || rel.innerHtml );
+                    }
+                });
+                zeroClient.on( 'aftercopy', function(event) {
+                    //console.log('Copied text to clipboard: ' + event.data['text/plain']);
+                });
+            });
+            zeroClient.on( 'error', function(event) {
+                alert( 'Clipboard error "' + event.name + '": ' + event.message );
+                ZeroClipboard.destroy();
+            });
+            */
+        }
+        </script>
+    </apex:form>
+</apex:page>

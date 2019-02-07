@@ -1,0 +1,2381 @@
+<!-- 11/01/2016 C Reinecke US-0839 Added Client Country Filter and Column -->
+<!-- 05/22/2017 Tonga MM SFAFRICA - 675 Added Opportunity Country Filter,Team Name and Team member Name -->
+<!-- Tonga MM 1043 : Added additional columns as requested by client(TB Region,Sub Stage,Product Partner Approval,Product Partner)-->
+<apex:page controller="PipelineReportController" tabStyle="Opportunity" docType="html-5.0" sidebar="false" readOnly="true">
+    
+    <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+    <apex:includeScript value="{!$Resource.typeahead}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_datepicker, 'jquery-ui.min.js')}"/>
+    <apex:includeScript value="{!$Resource.jquery_widget}"/>
+    <apex:includeScript value="{!$Resource.jquery_doublescroll}"/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.chosen, 'chosen.jquery.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.chosen, 'chosen.min.css')}"/>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.jquery_datepicker, 'jquery-ui.min.css')}"/>
+    
+    <script>
+    
+    var currentSortColumn;
+    var currentSortOrder;
+    var asc = 'ASC';
+    var desc = 'DESC';
+    var lastClickedColumn;
+    var lastScrollbarPosition;
+    
+    (function($) {
+        $.fn.outside = function(ename, cb) {
+            return this.each(function() {
+                var $this = $(this),
+                    self = this;
+                $(document.body).bind(ename, function tempo(e) {
+                    if(e.target !== self && !$.contains(self, e.target)) {
+                        cb.apply(self, [e]);
+                        if(!self.parentNode) $(document.body).unbind(ename, tempo);
+                    }
+                });             
+            });
+        };
+    }(jQuery));
+    
+    //SF names of columns for sorting
+    var sfOppFields = [
+        'Name', 'Account.Name', 'Account_Name__r.Name', 'RecordType.Name', 'Account.Client_Country__c', 'Account.Client_Region__c', 
+        'Account.Transactional_Banking_Region__c', 'Account.Segment__c', 'Account.Industry', 
+        'ProductList__c', '', '', 'Account.Team_F__c', 'Account.Owner.Name', 'Opportunity_Country__c', 
+        'Owner.Name', 'ProductPartner__r.Name', 'ProductPartnerApprovalStatus__c', 'StageName', 'SubStage__c', 
+        'Total_Balance_Facility_Size__c', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'First_Drawdown__c', 
+        'Income_this_Year__c', 'Annualised_Income__c','Probability', 'Weighted_Income_this_Year__c', 
+        'Weighted_Annualised_Income__c', 'CloseDate', 'CreatedDate', 'Days_Since_Last_Stage_Change__c', '', '', 
+        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 
+        '', '', 'Push_Counter__c'
+    ];
+    
+    //after document is ready actions
+    $('document').ready(function() {
+        
+        prepareTableWidth();
+        prepareTableSorting();
+        prepareMonthPicker();
+        prepareFixedHeader();
+        prepareDoubleScroll();
+        
+        prepareChosenForOrgType();
+        
+        addOptionsToOrgSelect();
+        prepareChosenForOrg();
+        
+        prepareChosenForProduct1();
+        prepareChosenForProduct2();
+        prepareChosenForProduct3();
+        
+        addOptionsToCovTeamSelect();
+        prepareChosenForCoverageTeam();
+        
+        var bankersJsonString = $('.bankersPanel').html();
+        var bankersJson = JSON.parse(bankersJsonString);
+        addOptionsToCovBankerAndOppOwnerSelects(bankersJson);
+        prepareChosenForCoverageBanker();
+        prepareChosenForOppOwner();
+        prepareChosenForProductPartner();
+        
+        prepareChosenForPipeline();
+        prepareChosenForStage();
+        prepareChosenForRole();
+        prepareChosenForClientCountry();
+        prepareChosenForClientRegion();
+        prepareChosenForSegment();
+        prepareChosenForOpportunityCountry();
+        prepareChosenForTeamMember();
+        prepareChosenForTeamName();
+        
+        //Tonga MM : 1043
+        prepareChosenForSubStage();
+        prepareChosenForApprovalStatus();
+        prepareChosenForTBRegion();
+        
+    });
+    
+    //actions before table rerenders
+    function onBeforeTableRerender() {
+        lastScrollbarPosition = $('#inner').scrollLeft();
+    }
+    
+    //actions after table rerenders
+    function onTableRerendered() {
+        prepareTableSorting();
+        prepareTableWidth();
+        prepareFixedHeader();
+        prepareDoubleScroll();
+        $('#inner').scrollLeft(lastScrollbarPosition);
+        endLoading();
+    }
+    
+    function addOptionsToOrgSelect() {
+        var buyingGroupString = $('.buyingGroupPanel').html();
+        var buyingGroupJson = JSON.parse(buyingGroupString);
+        
+        var options = '';
+        for (var i = 0; i < buyingGroupJson.length; i++) {
+            options += '<option value="' + buyingGroupJson[i].id + '">' + buyingGroupJson[i].name + '</option>';
+        }
+        $('.buyingGroupSelect').html(options);
+    }
+    
+    function addOptionsToCovTeamSelect() {
+        var coverageTeamString = $('.coverageTeamPanel').html();
+        var coverageTeamJson = JSON.parse(coverageTeamString);
+        
+        var options = '';
+        for (var i = 0; i < coverageTeamJson.length; i++) {
+            options += '<option value="' + coverageTeamJson[i] + '">' + coverageTeamJson[i] + '</option>';
+        }
+        $('.coverageTeamSelect').html(options);
+    }
+    
+    function addOptionsToCovBankerAndOppOwnerSelects(bankersJson) {
+        var options = '';
+        for (var i = 0; i < bankersJson.length; i++) {
+            options += '<option value="' + bankersJson[i].id + '">' + bankersJson[i].name + '</option>';
+        }
+        $('.oppOwnerSelect').html(options);
+        $('.coverageBankerSelect').html(options);
+        $('.teamMemberSelect').html(options);
+        $('.productPartnerSelect').html(options);
+    }
+    
+    
+    //chosens preparation
+    
+    var fireOrgType = false;
+    function prepareChosenForOrgType() {
+        $('.orgTypeSelect').chosen();
+        $('.orgTypeSelect').on('change', function(evt, params) {
+            
+            if (!fireOrgType) {
+                $('#tableOverlay').show();
+                $('.orgTypeFilter').css('z-index', '1150');
+                $('.orgTypeFilter').css('position', 'relative');
+            }
+            fireOrgType = true;
+        });
+        
+        $('.orgTypeFilter').outside('click', function(e) {
+            if (fireOrgType) {
+                $('#tableOverlay').hide();
+                $('.orgTypeFilter').css('z-index', '1010');
+                $('.orgTypeFilter').css('position', '');
+                fireOrgType = false;
+                startLoading();
+                var filterJson = prepareFilterJson('orgTypeFilter');
+                prepareQueryWithOrgType(filterJson);
+            }
+        });
+    }
+    
+    function onOrgTypeSelected() {
+        onTableRerendered();
+        addOptionsToOrgSelect();
+        $('.buyingGroupSelect').trigger("chosen:updated");
+    }
+    
+    var fireOrg = false;
+    function prepareChosenForOrg() {
+        $('.buyingGroupSelect').chosen();
+        $('.buyingGroupSelect').on('change', function(evt, params) {
+            
+            if (!fireOrg) {
+                $('#tableOverlay').show();
+                $('.orgFilter').css('z-index', '1150');
+                $('.orgFilter').css('position', 'relative');
+            }
+            fireOrg = true;
+        });
+        
+        $('.orgFilter').outside('click', function(e) {
+            if (fireOrg) {
+                $('#tableOverlay').hide();
+                $('.orgFilter').css('z-index', '1010');
+                $('.orgFilter').css('position', '');
+                fireOrg = false;
+                startLoading();
+                var filterJson = prepareFilterJson('orgFilter');
+                prepareQueryWithBuyingGroupId(filterJson);
+            }
+        });
+    }
+    
+    var fireProduct1 = false;
+    function prepareChosenForProduct1() {
+        $('.product1Select').chosen();
+        $('.product1Select').on('change', function(evt, params) {
+            
+            if (!fireProduct1) {
+                $('#tableOverlay').show();
+                $('.product1Filter').css('z-index', '1150');
+                $('.product1Filter').css('position', 'relative');
+            }
+            fireProduct1 = true;
+        });
+        
+        $('.product1Filter').outside('click', function(e) {
+            if (fireProduct1) {
+                $('#tableOverlay').hide();
+                $('.product1Filter').css('z-index', '1010');
+                $('.product1Filter').css('position', '');
+                fireProduct1 = false;
+                startLoading();
+                removeChosenOfProduct3();
+                removeChosenOfProduct2();
+                var filterJson = prepareFilterJson('product1Filter');
+                prepareQueryWithProduct1(filterJson);
+            }
+        });
+    }
+    
+    function removeChosenOfProduct2() {
+        $('.product2Select').siblings().remove();
+        $('.product2Select').show();
+    }
+    
+    var fireProduct2 = false;
+    function prepareChosenForProduct2() {
+        $('.product2Select').chosen();
+        $('.product2Select').on('change', function(evt, params) {
+            
+            if(!fireProduct2) {
+                $('#tableOverlay').show();
+                $('.product2Filter').css('z-index', '1150');
+                $('.product2Filter').css('position', 'relative');
+            }
+            fireProduct2 = true;
+        });
+        
+        $('.product2Filter').outside('click', function(e) {
+            if (fireProduct2) {
+                $('#tableOverlay').hide();
+                $('.product2Filter').css('z-index', '1010');
+                $('.product2Filter').css('position', '');
+                fireProduct2 = false;
+                startLoading();
+                removeChosenOfProduct3();
+                var filterJson = prepareFilterJson('product2Filter');
+                prepareQueryWithProduct2(filterJson);
+            }
+        });
+    }
+    
+    function removeChosenOfProduct3() {
+        $('.product3Select').siblings().remove();
+        $('.product3Select').show();
+    }
+    
+    var fireProduct3 = false;
+    function prepareChosenForProduct3() {
+        $('.product3Select').chosen();
+        $('.product3Select').on('change', function(evt, params) {
+            
+            if(!fireProduct3) {
+                $('#tableOverlay').show();
+                $('.product3Filter').css('z-index', '1150');
+                $('.product3Filter').css('position', 'relative');
+            }
+            fireProduct3 = true;
+        });
+        
+        $('.product3Filter').outside('click', function(e) {
+            if (fireProduct3) {
+                $('#tableOverlay').hide();
+                $('.product3Filter').css('z-index', '1010');
+                $('.product3Filter').css('position', '');
+                fireProduct3 = false;
+                startLoading();
+                var filterJson = prepareFilterJson('product3Filter');
+                prepareQueryWithProduct3(filterJson);
+            }
+        });
+    }
+    
+    //Function used to stop user from clearing level1 when level 2 exists
+    function ToggleProductLevel1() {
+        var filterProduct2Json = prepareFilterJson('product2Filter');
+        var children = document.getElementById('j_id0_j_id10_productsList_chosen').childNodes;
+        if (filterProduct2Json != null && filterProduct2Json != '[]') {
+            document.getElementById('j_id0_j_id10_productsList_chosen').style.pointerEvents = 'none';
+            document.getElementById('j_id0:j_id10:clearfilterProduct1').style.pointerEvents = 'none';
+            document.getElementById('j_id0:j_id10:selectAllProduct1').style.pointerEvents = 'none';
+        } else {
+            document.getElementById('j_id0_j_id10_productsList_chosen').style.pointerEvents = '';
+            document.getElementById('j_id0:j_id10:clearfilterProduct1').style.pointerEvents = '';
+            document.getElementById('j_id0:j_id10:selectAllProduct1').style.pointerEvents = '';
+        }
+    }
+    //Function used to stop user from clearing level2 when level 3 exists
+    function ToggleProductLevel2() {
+    	var filterProduct3Json = prepareFilterJson('product3Filter');
+        var children = document.getElementById('j_id0_j_id10_productsLevel2List_chosen').childNodes;
+        if (filterProduct3Json != null && filterProduct3Json != '[]') {
+           document.getElementById('j_id0_j_id10_productsLevel2List_chosen').style.pointerEvents = 'none';
+           document.getElementById('j_id0:j_id10:clearfilterProduct2').style.pointerEvents = 'none';
+            document.getElementById('j_id0:j_id10:selectAllProduct2').style.pointerEvents = 'none';
+        } else {
+           document.getElementById('j_id0_j_id10_productsLevel2List_chosen').style.pointerEvents = '';
+           document.getElementById('j_id0:j_id10:clearfilterProduct2').style.pointerEvents = '';
+           document.getElementById('j_id0:j_id10:selectAllProduct2').style.pointerEvents = '';
+        }
+    }
+    
+    var fireCovTeam = false;
+    function prepareChosenForCoverageTeam() {
+        $('.coverageTeamSelect').chosen();
+        $('.coverageTeamSelect').on('change', function(evt, params) {
+            
+            if(!fireCovTeam) {
+                $('#tableOverlay').show();
+                $('.covTeamFilter').css('z-index', '1150');
+                $('.covTeamFilter').css('position', 'relative');
+            }
+            fireCovTeam = true;
+        });
+        
+        $('.covTeamFilter').outside('click', function(e) {
+            if (fireCovTeam) {
+                $('#tableOverlay').hide();
+                $('.covTeamFilter').css('z-index', '1010');
+                $('.covTeamFilter').css('position', '');
+                fireCovTeam = false;
+                startLoading();
+                var filterJson = prepareFilterJson('covTeamFilter');
+                prepareQueryWithCoverageTeam(filterJson);
+            }
+        });
+    }
+    
+    var fireCovBanker = false;
+    function prepareChosenForCoverageBanker() {
+        $('.coverageBankerSelect').chosen();
+        $('.coverageBankerSelect').on('change', function(evt, params) {
+            
+            if (!fireCovBanker) {
+                $('#tableOverlay').show();
+                $('.covBankerFilter').css('z-index', '1150');
+                $('.covBankerFilter').css('position', 'relative');
+            }
+            fireCovBanker = true;
+        });
+        
+        $('.covBankerFilter').outside('click', function(e) {
+            if (fireCovBanker) {
+                $('#tableOverlay').hide();
+                $('.covBankerFilter').css('z-index', '1010');
+                $('.covBankerFilter').css('position', '');
+                fireCovBanker = false;
+                startLoading();
+                var filterJson = prepareFilterJson('covBankerFilter');
+                prepareQueryWithBankerIds(filterJson);
+            }
+        });
+    }
+    
+    var fireOppOwner = false;
+    function prepareChosenForOppOwner(bankersJson) {
+        $('.oppOwnerSelect').chosen();
+        $('.oppOwnerSelect').on('change', function(evt, params) {
+            
+            if (!fireOppOwner) {
+                $('#tableOverlay').show();
+                $('.oppOwnerFilter').css('z-index', '1150');
+                $('.oppOwnerFilter').css('position', 'relative');
+            }
+            fireOppOwner = true;
+        });
+        
+        $('.oppOwnerFilter').outside('click', function(e) {
+            if (fireOppOwner) {
+                $('#tableOverlay').hide();
+                $('.oppOwnerFilter').css('z-index', '1010');
+                $('.oppOwnerFilter').css('position', '');
+                fireOppOwner = false;
+                startLoading();
+                var filterJson = prepareFilterJson('oppOwnerFilter');
+                prepareQueryWithOppOwnerIds(filterJson);
+            }
+        });
+    }
+    
+    var firePipeline = false;
+    function prepareChosenForPipeline() {
+        $('.pipelineSelect').chosen();
+        $('.pipelineSelect').on('change', function(evt, params) {
+            
+            if (!fireSegment) {                
+                $('#tableOverlay').show();
+                $('.pipelineFilter').css('z-index', '1150');
+                $('.pipelineFilter').css('position', 'relative');
+            }
+            firePipeline = true;
+        });
+        
+        $('.pipelineFilter').outside('click', function(e) {
+            if (firePipeline) {
+                $('#tableOverlay').hide();
+                $('.pipelineFilter').css('z-index', '1010');
+                $('.pipelineFilter').css('position', '');
+                firePipeline = false;
+                startLoading();
+                removeChosenOfStage();
+                var filterJson = prepareFilterJson('pipelineFilter');
+                applyPipelineFilter(filterJson);
+            }
+        });
+    }
+    
+    function removeChosenOfStage() {
+        $('.stageSelect').siblings().remove();
+        $('.stageSelect').show();
+    }
+    
+    var fireStage = false;
+    function prepareChosenForStage() {
+        $('.stageSelect').chosen();
+        $('.stageSelect').on('change', function(evt, params) {
+            
+            if (!fireStage) {
+                $('#tableOverlay').show();
+                $('.stageFilter').css('z-index', '1150');
+                $('.stageFilter').css('position', 'relative');
+            }
+            fireStage = true;
+        });
+        
+        $('.stageFilter').outside('click', function(e) {
+            if (fireStage) {
+                $('#tableOverlay').hide();
+                $('.stageFilter').css('z-index', '1010');
+                $('.stageFilter').css('position', '');
+                fireStage = false;
+                startLoading();
+                var filterJson = prepareFilterJson('stageFilter');
+                applyStageFilter(filterJson);
+            }
+        });
+    }
+    
+    var fireRole = false;
+    function prepareChosenForRole() {
+        $('.roleSelect').chosen();
+        $('.roleSelect').on('change', function(evt, params) {
+            
+            if (!fireRole) {
+                $('#tableOverlay').show();
+                $('.roleFilter').css('z-index', '1150');
+                $('.roleFilter').css('position', 'relative');
+            }
+            fireRole = true;
+        });
+        
+        $('.roleFilter').outside('click', function(e) {
+            if (fireRole) {
+                $('#tableOverlay').hide();
+                $('.roleFilter').css('z-index', '1010');
+                $('.roleFilter').css('position', '');
+                fireRole = false;
+                startLoading();
+                var filterJson = prepareFilterJson('roleFilter');
+                applyRoleFilter(filterJson);
+            }
+        });
+    }
+    
+    var fireClientCountry = false;
+    function prepareChosenForClientCountry() {
+        $('.clientCountrySelect').chosen();
+        $('.clientCountrySelect').on('change', function(evt, params) {
+            
+            if (!fireClientCountry) {                
+                $('#tableOverlay').show();
+                $('.clientCountryFilter').css('z-index', '1150');
+                $('.clientCountryFilter').css('position', 'relative');
+            }
+            fireClientCountry = true;
+        });
+        
+        $('.clientCountryFilter').outside('click', function(e) {
+            if (fireClientCountry) {
+                $('#tableOverlay').hide();
+                $('.clientCountryFilter').css('z-index', '1010');
+                $('.clientCountryFilter').css('position', '');
+                fireClientCountry = false;
+                startLoading();
+                var filterJson = prepareFilterJson('clientCountryFilter');
+                applyClientCountryFilter(filterJson);
+            }
+        });
+    }
+    
+    var fireClientRegion = false;
+    function prepareChosenForClientRegion() {
+        $('.clientRegionSelect').chosen();
+        $('.clientRegionSelect').on('change', function(evt, params) {
+            
+            if (!fireClientRegion) {                
+                $('#tableOverlay').show();
+                $('.clientRegionFilter').css('z-index', '1150');
+                $('.clientRegionFilter').css('position', 'relative');
+            }
+            fireClientRegion = true;
+        });
+        
+        $('.clientRegionFilter').outside('click', function(e) {
+            if (fireClientRegion) {
+                $('#tableOverlay').hide();
+                $('.clientRegionFilter').css('z-index', '1010');
+                $('.clientRegionFilter').css('position', '');
+                fireClientRegion = false;
+                startLoading();
+                var filterJson = prepareFilterJson('clientRegionFilter');
+                applyClientRegionFilter(filterJson);
+            }
+        });
+    }
+    
+    var fireSegment = false;
+    function prepareChosenForSegment() {
+        $('.segmentSelect').chosen();
+        $('.segmentSelect').on('change', function(evt, params) {
+            
+            if (!fireSegment) {                
+                $('#tableOverlay').show();
+                $('.segmentFilter').css('z-index', '1150');
+                $('.segmentFilter').css('position', 'relative');
+            }
+            fireSegment = true;
+        });
+        
+        $('.segmentFilter').outside('click', function(e) {
+            if (fireSegment) {
+                $('#tableOverlay').hide();
+                $('.segmentFilter').css('z-index', '1010');
+                $('.segmentFilter').css('position', '');
+                fireSegment = false;
+                startLoading();
+                var filterJson = prepareFilterJson('segmentFilter');
+                applySegmentFilter(filterJson);
+            }
+        });
+    }
+    
+    //Tonga MM : 
+    var fireOpportunityCountry = false;
+    function prepareChosenForOpportunityCountry() {
+        $('.opportunityCountrySelect').chosen();
+        $('.opportunityCountrySelect').on('change', function(evt, params) {
+            
+            if (!fireOpportunityCountry) {                
+                $('#tableOverlay').show();
+                $('.opportunityCountryFilter').css('z-index', '1150');
+                $('.opportunityCountryFilter').css('position', 'relative');
+            }
+            fireOpportunityCountry = true;
+        });
+        
+        $('.opportunityCountryFilter').outside('click', function(e) {
+            if (fireOpportunityCountry) {
+                $('#tableOverlay').hide();
+                $('.opportunityCountryFilter').css('z-index', '1010');
+                $('.opportunityCountryFilter').css('position', '');
+                fireOpportunityCountry = false;
+                startLoading();
+                var filterJson = prepareFilterJson('opportunityCountryFilter');
+                applyOpportunityCountryFilter(filterJson);
+            }
+        });
+    }
+    var fireTeamMember = false;
+    function prepareChosenForTeamMember() {
+        $('.teamMemberSelect').chosen();
+        $('.teamMemberSelect').on('change', function(evt, params) {
+            
+            if (!fireTeamMember) {
+                $('#tableOverlay').show();
+                $('.teamMemberFilter').css('z-index', '1150');
+                $('.teamMemberFilter').css('position', 'relative');
+            }
+            fireTeamMember = true;
+        });
+        
+        $('.teamMemberFilter').outside('click', function(e) {
+            if (fireTeamMember) {
+                $('#tableOverlay').hide();
+                $('.teamMemberFilter').css('z-index', '1010');
+                $('.teamMemberFilter').css('position', '');
+                fireTeamMember = false;
+                startLoading();
+                var filterJson = prepareFilterJson('teamMemberFilter');
+                prepareQueryWithTeamMemberIds(filterJson);
+            }
+        });
+    }
+    
+    //Tonga MM
+    var fireTeamName = false;
+    function prepareChosenForTeamName() {
+        $('.teamNameSelect').chosen();
+        $('.teamNameSelect').on('change', function(evt, params) {
+            
+            if (!fireTeamName) {
+                $('#tableOverlay').show();
+                $('.teamNameFilter').css('z-index', '1150');
+                $('.teamNameFilter').css('position', 'relative');
+            }
+            fireTeamName = true;
+        });
+        
+        $('.teamNameFilter').outside('click', function(e) {
+            if (fireTeamName) {
+                $('#tableOverlay').hide();
+                $('.teamNameFilter').css('z-index', '1010');
+                $('.teamNameFilter').css('position', '');
+                fireTeamName = false;
+                startLoading();
+                var filterJson = prepareFilterJson('teamNameFilter');
+                applyTeamNameFilter(filterJson);
+            }
+        });
+    }
+    
+    //Tonga MM : 1043
+    var fireSubStage = false;
+    function prepareChosenForSubStage() {
+        $('.subStageSelect').chosen();
+        $('.subStageSelect').on('change', function(evt, params) {
+            
+            if (!fireSubStage) {                
+                $('#tableOverlay').show();
+                $('.subStageFilter').css('z-index', '1150');
+                $('.subStageFilter').css('position', 'relative');
+            }
+            fireSubStage = true;
+        });
+        
+        $('.subStageFilter').outside('click', function(e) {
+            if (fireSubStage) {
+                $('#tableOverlay').hide();
+                $('.subStageFilter').css('z-index', '1010');
+                $('.subStageFilter').css('position', '');
+                fireSubStage = false;
+                startLoading();
+                var filterJson = prepareFilterJson('subStageFilter');
+                applySubStageFilter(filterJson);
+            }
+        });
+    }
+    
+    var fireApprovalStatus = false;
+    function prepareChosenForApprovalStatus() {
+        $('.approvalStatusSelect').chosen();
+        $('.approvalStatusSelect').on('change', function(evt, params) {
+            
+            if (!fireApprovalStatus) {                
+                $('#tableOverlay').show();
+                $('.approvalStatusFilter').css('z-index', '1150');
+                $('.approvalStatusFilter').css('position', 'relative');
+            }
+            fireApprovalStatus = true;
+        });
+        
+        $('.approvalStatusFilter').outside('click', function(e) {
+            if (fireApprovalStatus) {
+                $('#tableOverlay').hide();
+                $('.approvalStatusFilter').css('z-index', '1010');
+                $('.approvalStatusFilter').css('position', '');
+                fireApprovalStatus = false;
+                startLoading();
+                var filterJson = prepareFilterJson('approvalStatusFilter');
+                applyApprovalStatusFilter(filterJson);
+            }
+        });
+    }
+    
+    var  fireTBRegion = false;
+    function prepareChosenForTBRegion() {
+        $('.TBRegionSelect').chosen();
+        $('.TBRegionSelect').on('change', function(evt, params) {
+            
+            if (! fireTBRegion) {                
+                $('#tableOverlay').show();
+                $('.TBRegionFilter').css('z-index', '1150');
+                $('.TBRegionFilter').css('position', 'relative');
+            }
+            fireTBRegion = true;
+        });
+        
+        $('.TBRegionFilter').outside('click', function(e) {
+            if ( fireTBRegion) {
+                $('#tableOverlay').hide();
+                $('.TBRegionFilter').css('z-index', '1010');
+                $('.TBRegionFilter').css('position', '');
+                fireTBRegion = false;
+                startLoading();
+                var filterJson = prepareFilterJson('TBRegionFilter');
+                applyTBRegionFilter(filterJson);
+            }
+        });
+    }
+    var fireProductPartner = false;
+    function prepareChosenForProductPartner() {
+        $('.productPartnerSelect').chosen();
+        $('.productPartnerSelect').on('change', function(evt, params) {
+            
+            if (!fireProductPartner) {
+                $('#tableOverlay').show();
+                $('.productPartnerFilter').css('z-index', '1150');
+                $('.productPartnerFilter').css('position', 'relative');
+            }
+            fireProductPartner = true;
+        });
+        
+        $('.productPartnerFilter').outside('click', function(e) {
+            if (fireProductPartner) {
+                $('#tableOverlay').hide();
+                $('.productPartnerFilter').css('z-index', '1010');
+                $('.productPartnerFilter').css('position', '');
+                fireProductPartner = false;
+                startLoading();
+                var filterJson = prepareFilterJson('productPartnerFilter');
+                prepareQueryWithProductPartnerIds(filterJson);
+            }
+        });
+    }
+    
+    //prepares json of values from selected values in filter in td given by parameter
+    function prepareFilterJson(tdClass) {
+        var selectedIndexes = [];
+        $('.' + tdClass + ' .search-choice a').each( function() {
+            var index = $(this).attr('data-option-array-index');
+            selectedIndexes.push(index);
+        });
+        
+        var selectedValues = [];
+        for (var i = 0; i < selectedIndexes.length; i++) {
+            var index = parseInt(selectedIndexes[i]) + 1;
+            var value = $('.' + tdClass + ' option:nth-child(' + index + ')').attr('value');
+            selectedValues.push(String(value));
+        }
+        return JSON.stringify(selectedValues);
+    }
+    
+    //double scroll creation
+    function prepareDoubleScroll() {
+        $('#inner').doubleScroll();
+        var width = $('.optysTable').width();
+        $('.suwala-doubleScroll-scroll').width(width);
+    }
+    
+    //fixed header creation
+    function prepareFixedHeader() {
+        
+        var tableOffset = $(".optysTable").offset().top;
+        
+        var $fixedHeader = $("#headerFixed");
+        var $leftFixedHeader = $("#leftHeaderFixed");
+        var $rightHide = $('#rightHide');
+        var $leftHide = $('#leftHide');
+        
+        //appends content to fixed headers
+        var fixedHeaderContent = '<tr>';
+        var leftFixedHeaderContent = '<tr>';
+        $('.optysTable thead th div').each(function( index ) {
+            if (index < 2) {
+                var content = $(this).html();
+                leftFixedHeaderContent += '<th>' + content + '</th>';
+            } else if (index > 1) {
+                var content = $(this).html();
+                fixedHeaderContent += '<th>' + content + '</th>';
+            }
+        });
+        fixedHeaderContent += '</tr>';
+        $($fixedHeader).append(fixedHeaderContent);
+        leftFixedHeaderContent += '</tr>';
+        $($leftFixedHeader).append(leftFixedHeaderContent);
+        
+        //adds style to fixed header
+        $('.optysTable thead th').each(function( index ) {
+            if (index < 2) {
+                //-2 because of padding
+                var width = $(this).outerWidth() - 2;
+                var actIndex = index + 1;
+                $('#leftHeaderFixed tbody th:nth-child(' + actIndex + ')').css('min-width', width + 'px');
+                
+            } else if (index > 1) {
+                //-2 because of padding
+                var width = $(this).outerWidth() - 2;
+                var actIndex = index - 1;
+                $('#headerFixed tbody th:nth-child(' + actIndex + ')').css('min-width', width + 'px');
+            }
+        });     
+        
+        //bind of table scroll to fixed header scroll
+        $("#inner").scroll(function () {
+            $("#headerFixed").offset({ left: -1*this.scrollLeft + 339 });
+        });
+        
+        //bind of vertical page scroll
+        //hides or shows fixed header according to scroll position
+        $(window).bind("scroll", function() {
+            var offset = $(this).scrollTop();
+            
+            if (offset >= tableOffset && $fixedHeader.is(":hidden")) {
+                $fixedHeader.show();
+                $leftFixedHeader.show();
+                $rightHide.show();
+                $leftHide.show();
+            } else if (offset < tableOffset) {
+                $fixedHeader.hide();
+                $leftFixedHeader.hide();
+                $rightHide.hide();
+                $leftHide.hide();
+            }
+        });
+    }
+    
+    //table sorting preparation
+    function prepareTableSorting() {
+        
+        setSortClass();
+        
+        $('.optysTable thead th').each(function( index ) {
+            
+            if ((index >= 10 && index <= 11)||(index >= 21 && index <= 34)||(index >= 43 && index <= 72)) {
+                return;
+            }
+            
+            //default class for not sorted column
+            $(this).addClass('header');
+            
+            //class switching
+            $(this).click(function() {
+                var hasUp = $(this).hasClass('headerSortUp');
+                var hasDown = $(this).hasClass('headerSortDown');
+                
+                //column not sorted yet
+                if (!hasUp && !hasDown) {
+                    //removing classes from previously clicked column
+                    $(lastClickedColumn).removeClass('headerSortUp');
+                    $(lastClickedColumn).removeClass('headerSortDown');
+                    $(lastClickedColumn).addClass('header');
+                    lastClickedColumn = $(this);
+                    
+                    //changing class
+                    $(this).removeClass('header');
+                    $(this).addClass('headerSortUp');
+                    
+                    //TODO start function to sort up by selected column
+                    var field = getFieldByElement(this);
+                    startLoading();
+                    currentSortColumn = field;
+                    currentSortOrder = asc;
+                    sort(field, asc);
+                    
+                    //column previously sorted asc
+                } else if (hasUp) {
+                    $(this).removeClass('headerSortUp');
+                    $(this).addClass('headerSortDown');
+                    
+                    //TODO start function to sort down by previously selected column
+                    var field = getFieldByElement(this);
+                    startLoading();
+                    currentSortColumn = field;
+                    currentSortOrder = desc;
+                    sort(field, desc);
+                    
+                    //column previously sorted desc
+                } else if (hasDown) {
+                    $(this).removeClass('headerSortDown');
+                    $(this).addClass('headerSortUp');
+                    
+                    //TODO start function to sort up by previously selected column
+                    var field = getFieldByElement(this);
+                    startLoading();
+                    currentSortColumn = field;
+                    currentSortOrder = asc;
+                    sort(field, asc);
+                }
+            });
+        });
+    }
+    
+    //currently sorted column needs to have class set after table rerenders
+    function setSortClass() {
+        var columnIndex = -1;
+        for (var i = 0; i < sfOppFields.length; i++) {
+            if (sfOppFields[i] == currentSortColumn) {
+                columnIndex = i;
+            }
+        }
+        
+        if (columnIndex != -1) {
+            var index = columnIndex + 1;
+            var element = $('.optysTable thead th:nth-child(' + index + ')');
+            if (currentSortOrder == asc) {
+                $(element).addClass('headerSortUp');
+            } else {
+                $(element).addClass('headerSortDown');
+            }
+            
+        }
+    }
+    
+    //returns SF column name according to column index
+    function getFieldByElement(element) {
+        var position = $('.optysTable thead th').index(element);
+        return sfOppFields[position];
+    }
+    
+    //prepares table width
+    function prepareTableWidth() {
+        //84 is salesforce's page margins and paddings
+        var windowWidth = window.innerWidth - 84;
+        
+        var element = $('#optysBlockWrapper .pbBody');
+        $(element).css('width', windowWidth + 'px');
+        
+    }
+    
+    //prepares month picker - one of filters
+    function prepareMonthPicker() {
+        
+        //old action overriden by me
+        var old_fn = $.datepicker._updateDatepicker;
+        
+        var fireFromOnClose = true;
+        
+        $.datepicker._updateDatepicker = function(inst) {
+            old_fn.call(this, inst);
+            
+            //button panel
+            var buttonPane = $(this).datepicker("widget").find(".ui-datepicker-buttonpane");
+            
+            //creates clear button
+            $("<button type='button' class='ui-datepicker-clean ui-state-default ui-priority-primary" +
+              " ui-corner-all'>Clear</button>").appendTo(buttonPane).click(function(ev) {
+                
+                fireFromOnClose = false;
+                $('#datepicker').datepicker( "hide" );
+                $('#datepicker').datepicker( "setDate", null);
+                fireFromOnClose = true;
+                startLoading();
+                prepareQueryWithDate('');
+            });
+        }
+        
+        $('#datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'MM yy',
+            closeText: 'Done',
+            onClose: function(dateText, inst) { 
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).datepicker('setDate', new Date(year, month, 1));
+                
+                if (fireFromOnClose == true) {
+                    month++;
+                    startLoading();
+                    prepareQueryWithDate(year + '-' + month);
+                } 
+            },
+            onSelect: function(d,i){
+                if(d !== i.lastVal){
+                    $(this).change();
+                }
+            }
+        });
+    }
+    
+    function prepareSortingParameters() {
+        passSortParameters(currentSortColumn, currentSortOrder);
+    }
+    
+    function setCloseDateHidden() {
+        var value = $('.closeDateSource').val();
+        prepareQueryWithDate(value);
+        startLoading();
+    }
+    
+    //progress bar start
+    function startLoading() {
+        $('#load_scrl').css('top', $(document).scrollTop() + 200);
+        $('.loadingBox').show();
+    }
+    
+    //progress bar end
+    function endLoading() {
+        $('.loadingBox').hide();
+    }
+    
+    function allOrgTypeSelect(){
+        var allValues = [];
+        $('.orgTypeSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.orgTypeSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('orgTypeFilter');
+        prepareQueryWithOrgType(filterJson);
+        return false;
+    }
+    
+    function clearOrgTypeSelect(){
+        $('.orgTypeSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('orgTypeFilter');
+        prepareQueryWithOrgType(filterJson);
+        return false;
+    }
+    
+    function allProduct1Select(){
+        var allValues = [];
+        $('.product1Select option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.product1Select').val(allValues).trigger('chosen:updated');
+        startLoading();
+        removeChosenOfProduct2();
+        removeChosenOfProduct3();
+        var filterJson = prepareFilterJson('product1Filter');
+        prepareQueryWithProduct1(filterJson);
+        return false;
+    }
+    
+    function clearProduct1Select(){
+        $('.product1Select').val('').trigger('chosen:updated');
+        startLoading();
+        removeChosenOfProduct2();
+        removeChosenOfProduct3();
+        var filterJson = prepareFilterJson('product1Filter');
+        prepareQueryWithProduct1(filterJson);
+        return false;
+    }
+    
+    function allProduct2Select(){
+        var allValues = [];
+        $('.product2Select option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.product2Select').val(allValues).trigger('chosen:updated');
+        startLoading();
+        removeChosenOfProduct3();
+        var filterJson = prepareFilterJson('product2Filter');
+        prepareQueryWithProduct2(filterJson);
+        return false;
+    }
+    
+    function clearProduct2Select(){
+        $('.product2Select').val('').trigger('chosen:updated');
+        startLoading();
+        removeChosenOfProduct3();
+        var filterJson = prepareFilterJson('product2Filter');
+        prepareQueryWithProduct2(filterJson);
+        return false;
+    }
+    
+    function allProduct3Select(){
+        var allValues = [];
+        $('.product3Select option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.product3Select').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('product3Filter');
+        prepareQueryWithProduct3(filterJson);
+        return false;
+    }
+    
+    function clearProduct3Select(){
+        $('.product3Select').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('product3Filter');
+        prepareQueryWithProduct3(filterJson);
+        return false;
+    }
+    
+    function allCoverageTeamSelect(){
+        var allValues = [];
+        $('.coverageTeamSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.coverageTeamSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('covTeamFilter');
+        prepareQueryWithCoverageTeam(filterJson);
+        return false;
+    }
+    
+    function clearCoverageTeamSelect(){
+        $('.coverageTeamSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('covTeamFilter');
+        prepareQueryWithCoverageTeam(filterJson);
+        return false;
+    }
+    
+    function allCoverageBankerSelect(){
+        var allValues = [];
+        $('.coverageBankerSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.coverageBankerSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('covBankerFilter');
+        prepareQueryWithBankerIds(filterJson);
+        return false;
+    }
+    
+    function clearCoverageBankerSelect(){
+        $('.coverageBankerSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('covBankerFilter');
+        prepareQueryWithBankerIds(filterJson);
+        return false;
+    }
+    
+    function allOppOwnerSelect(){
+        var allValues = [];
+        $('.oppOwnerSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.oppOwnerSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('oppOwnerFilter');
+        prepareQueryWithOppOwnerIds(filterJson);
+        return false;
+    }
+    
+    function clearOppOwnerSelect(){
+        $('.oppOwnerSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('oppOwnerFilter');
+        prepareQueryWithOppOwnerIds(filterJson);
+        return false;
+    }
+    
+    function allPipelineSelect(){
+        var allValues = [];
+        $('.pipelineSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.pipelineSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        removeChosenOfStage();
+        var filterJson = prepareFilterJson('pipelineFilter');
+        applyPipelineFilter(filterJson);
+        return false;
+    }
+    
+    function clearPipelineSelect(){
+        $('.pipelineSelect').val('').trigger('chosen:updated');
+        startLoading();
+        removeChosenOfStage();
+        var filterJson = prepareFilterJson('pipelineFilter');
+        applyPipelineFilter(filterJson);
+        return false;
+    }
+    
+    function allStageSelect(){
+        var allValues = [];
+        $('.stageSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.stageSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('stageFilter');
+        applyStageFilter(filterJson);
+        return false;
+    }
+    
+    function clearStageSelect(){
+        $('.stageSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('stageFilter');
+        applyStageFilter(filterJson);
+        return false;
+    }
+    
+    function allRoleSelect(){
+        var allValues = [];
+        $('.roleSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.roleSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('roleFilter');
+        applyRoleFilter(filterJson);
+        return false;
+    }
+    
+    function clearRoleSelect(){
+        $('.roleSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('roleFilter');
+        applyRoleFilter(filterJson);
+        return false;
+    }
+    
+    function allClientCountrySelect(){
+        var allValues = [];
+        $('.clientCountrySelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.clientCountrySelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('clientCountryFilter');
+        applyClientCountryFilter(filterJson);
+        return false;
+    }
+    
+    function clearClientCountrySelect(){
+        $('.clientCountrySelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('clientCountryFilter');
+        applyClientCountryFilter(filterJson);
+        return false;
+    }
+    
+    function allClientRegionSelect(){
+        var allValues = [];
+        $('.clientRegionSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.clientRegionSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('clientRegionFilter');
+        applyClientRegionFilter(filterJson);
+        return false;
+    }
+    
+    function clearClientRegionSelect(){
+        $('.clientRegionSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('clientRegionFilter');
+        applyClientRegionFilter(filterJson);
+        return false;
+    }
+    
+    function allSegmentSelect(){
+        var allValues = [];
+        $('.segmentSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.segmentSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('segmentFilter');
+        applySegmentFilter(filterJson);
+        return false;
+    }
+    
+    function clearSegmentSelect(){
+        $('.segmentSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('segmentFilter');
+        applySegmentFilter(filterJson);
+        return false;
+    }
+    function allTeamNameSelect(){
+        var allValues = [];
+        $('.teamNameSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.teamNameSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('teamNameFilter');
+        applyTeamNameFilter(filterJson);
+        return false;
+    }
+    
+    function clearTeamNameSelect(){
+        $('.teamNameSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('teamNameFilter');
+        applyTeamNameFilter(filterJson);
+        return false;
+    }
+    
+    function allOpportunityCountrySelect(){
+        var allValues = [];
+        $('.opportunityCountrySelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.opportunityCountrySelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('opportunityCountryFilter');
+        applyOpportunityCountryFilter(filterJson);
+        return false;
+    }
+    
+    function clearOpportunityCountrySelect(){
+        $('.opportunityCountrySelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('opportunityCountryFilter');
+        applyOpportunityCountryFilter(filterJson);
+        return false;
+    }
+    
+    function allSubStageSelect(){
+        var allValues = [];
+        $('.subStageSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.subStageSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('subStageFilter');
+        applySubStageFilter(filterJson);
+        return false;
+    }
+    
+    function clearSubStageSelect(){
+        $('.subStageSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('subStageFilter');
+        applySubStageFilter(filterJson);
+        return false;
+    }
+    function allApprovalStatusSelect(){
+        var allValues = [];
+        $('.approvalStatusSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.approvalStatusSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('approvalStatusFilter');
+        applyApprovalStatusFilter(filterJson);
+        return false;
+    }
+    
+    function clearApprovalStatusSelect(){
+        $('.approvalStatusSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('approvalStatusFilter');
+        applyApprovalStatusFilter(filterJson);
+        return false;
+    }
+    function allTBRegionSelect(){
+        var allValues = [];
+        $('.TBRegionSelect option').each(function() {
+            allValues.push($(this).val());
+        });
+        $('.TBRegionSelect').val(allValues).trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('TBRegionFilter');
+        applyTBRegionFilter(filterJson);
+        return false;
+    }
+    
+    function clearTBRegionSelect(){
+        $('.TBRegionSelect').val('').trigger('chosen:updated');
+        startLoading();
+        var filterJson = prepareFilterJson('TBRegionFilter');
+        applyTBRegionFilter(filterJson);
+        return false;
+    }
+    </script>
+    
+    <style>
+        
+        #optysBlockWrapper .pbButton a, #optysBlockWrapper .pbButtonb a {
+        margin: 10px;
+        }
+        
+        .suwala-doubleScroll-scroll-wrapper {
+        margin-left: 296px;
+        }
+        
+        .optysTable thead th div {
+        margin-right: 10px;
+        }
+        
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+        margin: 2px 12px 7px;
+        }
+        
+        th.header {
+        background-image: url({!URLFOR($Resource.jquery_tablesorter, 'themes/blue/bg.gif')}) !IMPORTANT;
+        background-repeat: no-repeat !IMPORTANT;
+        background-position: center right !IMPORTANT;
+        cursor: pointer !IMPORTANT;
+        }
+        
+        th.headerSortUp {
+        background-image: url({!URLFOR($Resource.jquery_tablesorter, 'themes/blue/asc.gif')}) !IMPORTANT;
+        background-color: #e5c130 !IMPORTANT;
+        background-repeat: no-repeat !IMPORTANT;
+        background-position: center right !IMPORTANT;
+        cursor: pointer !IMPORTANT;
+        }
+        
+        th.headerSortDown {
+        background-image: url({!URLFOR($Resource.jquery_tablesorter, 'themes/blue/desc.gif')}) !IMPORTANT;
+        background-color: #e5c130 !IMPORTANT;
+        background-repeat: no-repeat !IMPORTANT;
+        background-position: center right !IMPORTANT;
+        cursor: pointer !IMPORTANT;
+        }
+        
+        .ui-datepicker-calendar {
+        display: none;
+        }
+        
+        .bold {
+        font-weight: bold;
+        }
+        
+        .tt-menu {
+        width: 422px;
+        margin: 12px 0;
+        padding: 8px 0;
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        }
+        
+        .tt-suggestion {
+        padding: 3px 20px;
+        font-size: 18px;
+        line-height: 24px;
+        cursor: pointer;
+        }
+        
+        .tt-open .tt-selectable:hover {
+        background-color: #e5c130;
+        }
+        
+        .alignRight, .totalRow th {
+        text-align: right;
+        }
+        
+        .alignCenter {
+        text-align: center;
+        }
+        
+        #filtersTable td {
+        vertical-align: top;
+        }
+        
+        #filtersTable td select, .coverageBankerTypeahead {
+        width: 170px;
+        height: 25px;
+        border-radius: 3px;
+        }
+        
+        #filtersTable td input {
+        width: 170px;
+        height: 21px;
+        border-radius: 3px;
+        }
+        
+        #filtersTable .chosen-container-single input {
+        width: 160px;
+        }
+        
+        #filtersTable td {
+        width: 170px;
+        }
+        
+        .chosen-container-single .chosen-single, .chosen-choices {
+        border-radius: 3px;
+        }
+        
+        #datepicker {
+        padding-left: 5px;
+        width: 162px !IMPORTANT;
+        }
+        
+        body .pbBody table.list tr.headerRow th {
+        padding-left: 10px;
+        padding-right: 10px;
+        min-width: 66px;
+        text-align: center;
+        }
+        
+        .overlay {
+        display:    none;
+        position:   fixed;
+        z-index:    1000;
+        top:        0;
+        left:       0;
+        height:     100%;
+        width:      100%;
+        background: rgba( 255, 255, 255, .8 ) 
+        url('{!$Resource.WorkingGif}') 
+        50% 50% 
+        no-repeat;
+        }
+        
+        #outer {
+        position: relative;
+        }
+        
+        #inner {
+        overflow-x: scroll;
+        overflow-y: visible;
+        margin-left: 296px;
+        }
+        
+        .list td.firstColumn, .list td.secondColumn {
+        padding-bottom: 0px;
+        padding-top: 8px;
+        }
+        
+        .firstColumn {
+        position: absolute;
+        left: 0px;
+        width: 127px;
+        }
+        
+        td.firstColumn {
+        width: 141px;
+        }
+        
+        .secondColumn {
+        position: absolute;
+        left: 148px;
+        width: 127px;
+        }
+        
+        td.secondColumn {
+        width: 141px;
+        }
+        
+        .optysTable td {
+        height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 170px;
+        }
+        
+        #headerFixedWrapper table {
+        border-spacing: 0px;
+        }
+        
+        #headerFixed, #leftHeaderFixed {
+        position: fixed;
+        top: 0px;
+        display: none;
+        border-left: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        border-top: 0;
+        background-color: #eee;
+        }
+        
+        #headerFixed {
+        z-index: 100;
+        }
+        
+        #leftHeaderFixed {
+        left: 33px;
+        z-index: 200;
+        }
+        
+        #headerFixed th, #leftHeaderFixed th {
+        border-style: solid;
+        border-color: #d4dadc;
+        border-width: 0 0 0 0;
+        text-align: center;
+        }
+        
+        #rightHide {
+        display: none;
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        z-index: 200;
+        background-color: #eee;
+        width: 35px;
+        height: 17px;
+        }
+        
+        #leftHide {
+        display: none;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: 200;
+        background-color: #eee;
+        width: 33px;
+        height: 17px;
+        }
+        
+        #grandTotalsTable td {
+        min-width: 172px;
+        }
+        
+        .font125 {
+        font-size: 125%;
+        }
+        
+        .loadingBox {
+        z-index: 1200;
+        }
+        
+    </style>
+    
+    <apex:form >
+        
+        <apex:sectionheader title="{!$ObjectType.Opportunity.Label}" subtitle="{!$Label.lbl_PipelineReport}" />
+        <table >
+            <tr >
+                <td>Select view :</td>
+                <td >
+                    <apex:selectList style="width: 300px" styleClass="clientCountrySelect" value="{!chosenView}">
+                        <apex:selectOptions value="{!ListView}"/>
+                    </apex:selectList>
+                </td>
+            </tr>
+            
+        </table>
+        <!-- filters at the top of the page -->
+        <div id="tableOverlay" style="display: none;position: absolute;top:0;left:0;width: 100%;height:100%;z-index:1100;opacity:0.4;filter: alpha(opacity = 50)"></div>
+        <table cellspacing="15px" id="filtersTable">
+            <tr>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Account.fields.Client_Country__c.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_Relationships_Owned_by_Coverage_Banker}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.Opportunity_Country__c.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_OpportunityOwner}"/></td>                
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Product2.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Product_Level_2__c.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Product_Level_3__c.Label}"/></td>
+            </tr>
+            <tr>
+                <td>           
+                    <div class="clientCountryFilter">
+                        <apex:selectList multiselect="true" styleClass="clientCountrySelect">
+                            <apex:selectOptions value="{!accountClientCountryValues}"/>
+                            <apex:actionFunction name="applyClientCountryFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="accountClientCountryOptionsJson" value="" assignTo="{!accountClientCountryOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allClientCountrySelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearClientCountrySelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="covBankerFilter">
+                        <select class="coverageBankerSelect" multiple="multiple"></select>
+                        <apex:actionFunction name="prepareQueryWithBankerIds" reRender="optysBlock, totalsTableWrapper" 
+                                             action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="bankerIdsJson" value="" assignTo="{!bankerIdsJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allCoverageBankerSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearCoverageBankerSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="opportunityCountryFilter">
+                        <apex:selectList multiselect="true" styleClass="opportunityCountrySelect">
+                            <apex:selectOptions value="{!OpportunityCountryValues}"/>
+                            <apex:actionFunction name="applyOpportunityCountryFilter" reRender="optysBlock, totalsTableWrapper" action="{!prepareData}"
+                                                 oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="opportunityCountryJson" value="" assignTo="{!opportunityCountryJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                        <apex:outputLink value="/" onclick="return allOpportunityCountrySelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                        &nbsp;
+                        <apex:outputLink value="/" onclick="return clearOpportunityCountrySelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                    </div>
+                </td>
+                <td>
+                    <div class="oppOwnerFilter">
+                        <select class="oppOwnerSelect" multiple="multiple"></select>
+                        <apex:actionFunction name="prepareQueryWithOppOwnerIds" reRender="optysBlock, totalsTableWrapper"
+                                             action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="oppOwnerIdsJson" value="" assignTo="{!oppOwnerIdsJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allOppOwnerSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearOppOwnerSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="product1Filter">
+                        <apex:selectList id="productsList" size="1" styleClass="product1Select" multiselect="true">
+                            <apex:selectOptions value="{!ProductsLevel1}"/>
+                            <apex:actionFunction name="prepareQueryWithProduct1" reRender="productsLevel3List, productsLevel2List, optysBlock, 
+                                                                                           totalsTableWrapper" oncomplete="onTableRerendered();prepareChosenForProduct2();prepareChosenForProduct3();"
+                                                 action="{!prepareData}" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="productLevel1OptionsJson" value="" assignTo="{!productLevel1OptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink id="selectAllProduct1" value="/" onclick="return allProduct1Select();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink id="clearfilterProduct1" value="/" onclick="return clearProduct1Select();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>  
+                    <div class="product2Filter">
+                        <apex:selectList id="productsLevel2List" size="1" styleClass="product2Select" multiselect="true">
+                            <apex:selectOptions value="{!productsLevel2}"/>
+                            <apex:actionFunction name="prepareQueryWithProduct2" reRender="productsLevel3List, optysBlock, 
+                                                                                           totalsTableWrapper" oncomplete="onTableRerendered();prepareChosenForProduct2();prepareChosenForProduct3();ToggleProductLevel1();" 
+                                                 action="{!prepareData}" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="productLevel2OptionsJson" value="" assignTo="{!productLevel2OptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink id="selectAllProduct2" value="/" onclick="return allProduct2Select();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink id="clearfilterProduct2" value="/" onclick="return clearProduct2Select();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>  
+                    <div class="product3Filter">
+                        <apex:selectList id="productsLevel3List" size="1" styleClass="product3Select" multiselect="true">
+                            <apex:selectOptions value="{!productsLevel3}"/>
+                            <apex:actionFunction name="prepareQueryWithProduct3" reRender="optysBlock, 
+                                                                                           totalsTableWrapper" oncomplete="onTableRerendered();prepareChosenForProduct3();ToggleProductLevel2();" 
+                                                 action="{!prepareData}" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="productLevel3OptionsJson" value="" assignTo="{!productLevel3OptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allProduct3Select();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearProduct3Select();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_OrganisationType}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Account.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.StageName.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_PipelineFilter}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.OpportunityTeamMember.fields.Name.Label}"/></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_Opportunity_Team_Member_Role}"/></td>
+            </tr>
+            <tr>
+                <td class="orgTypeFilter">
+                    <div class="orgTypeFilter">
+                        <apex:selectList styleClass="orgTypeSelect" size="1" multiselect="true">
+                            <apex:selectOptions value="{!orgTypes}"/>
+                            <apex:actionFunction name="prepareQueryWithOrgType" action="{!prepareData}"
+                                                 reRender="buyingGroupPanel,optysBlock,totalsTableWrapper" onbeforedomupdate="onBeforeTableRerender();"
+                                                 oncomplete="onOrgTypeSelected();">
+                                <apex:param name="orgTypeJson" value="" assignTo="{!orgTypeJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allOrgTypeSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearOrgTypeSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="orgFilter">
+                        <select class="buyingGroupSelect" multiple="multiple" size="1"></select>
+                        <apex:actionFunction name="prepareQueryWithBuyingGroupId" reRender="optysBlock, totalsTableWrapper" 
+                                             oncomplete="onTableRerendered();" action="{!prepareData}" 
+                                             onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="orgIdJson" value="" assignTo="{!orgIdJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                </td>
+                <td>    
+                    <div class="stageFilter">       
+                        <apex:selectList id="stageList" multiselect="true" styleClass="stageSelect">
+                            <apex:selectOptions value="{!opportunityStageValues}"/>
+                            <apex:actionFunction name="applyStageFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="optyStageOptionsJson" value="" assignTo="{!optyStageOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allStageSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearStageSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td class="pipelineFilter">
+                    <apex:selectList multiselect="true" styleClass="pipelineSelect">
+                        <apex:selectOptions value="{!pipelineValues}"/>
+                        <apex:actionFunction name="applyPipelineFilter" reRender="stageList, optysBlock, totalsTableWrapper" action="{!prepareData}"
+                                             oncomplete="onTableRerendered();prepareChosenForStage();" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="pipelineOptionsJson" value="" assignTo="{!pipelineOptionsJson}"/>
+                        </apex:actionFunction>
+                    </apex:selectList>
+                    <apex:outputLink value="/" onclick="return allPipelineSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearPipelineSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="teamMemberFilter">
+                        <select class="teamMemberSelect" multiple="multiple"></select>
+                        <apex:actionFunction name="prepareQueryWithTeamMemberIds" reRender="optysBlock, totalsTableWrapper" 
+                                             action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="teamMemberIdsJson" value="" assignTo="{!teamMemberIdsJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                </td>
+                <td>    
+                    <div class="roleFilter">       
+                        <apex:selectList id="roleList" multiselect="true" styleClass="roleSelect">
+                            <apex:selectOptions value="{!teamRoleValues}"/>
+                            <apex:actionFunction name="applyRoleFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="teamRoleOptionsJson" value="" assignTo="{!teamRoleOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allRoleSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearRoleSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+            </tr>
+            
+            <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Account.fields.Segment__c.Label}"/></td>
+            <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_Relationships_Owned_by_Coverage_Team}"/></td>
+            <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.SubStage__c.Label}"/></td>
+            <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_EndCloseDateFilter}"/></td>
+            <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.User.fields.Team__c.Label}"/></td>
+            <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.ProductPartner__c.Label}"/></td>
+            
+            <tr>
+            </tr>
+            
+            <tr>
+                <td>
+                    <div class="segmentFilter">
+                        <apex:selectList multiselect="true" styleClass="segmentSelect">
+                            <apex:selectOptions value="{!accountSegmentValues}"/>
+                            <apex:actionFunction name="applySegmentFilter" reRender="optysBlock, totalsTableWrapper" action="{!prepareData}"
+                                                 oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="accountSegmentOptionsJson" value="" assignTo="{!accountSegmentOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allSegmentSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearSegmentSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="covTeamFilter">
+                        <select class="coverageTeamSelect" multiple="multiple"></select>
+                        <apex:actionFunction name="prepareQueryWithCoverageTeam" reRender="optysBlock, totalsTableWrapper" 
+                                             oncomplete="onTableRerendered();" action="{!prepareData}" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="userTeamOptionsJson" value="" assignTo="{!userTeamOptionsJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allCoverageTeamSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearCoverageTeamSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>
+                <td>
+                    <div class="subStageFilter">      
+                        <apex:selectList multiselect="true" styleClass="subStageSelect">
+                            <apex:selectOptions value="{!OpportunitySubStageValues}"/>
+                            <apex:actionFunction name="applySubStageFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="optySubStageOptionsJson" value="" assignTo="{!optySubStageOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allSubStageSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearSubStageSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                    
+                </td>
+                <td>
+                    <input id="datepicker"/>
+                    <apex:actionFunction name="prepareQueryWithDate" reRender="optysBlock, totalsTableWrapper" 
+                                         oncomplete="onTableRerendered();" action="{!prepareData}" 
+                                         onbeforedomupdate="onBeforeTableRerender();">
+                        <apex:param name="closeDateString" value="" assignTo="{!closeDateString}"/>
+                    </apex:actionFunction>
+                </td>
+                <td>    
+                    <div class="teamNameFilter">       
+                        <apex:selectList id="teamNameList" multiselect="true" styleClass="teamNameSelect">
+                            <apex:selectOptions value="{!UserTeamNameValues}"/>
+                            <apex:actionFunction name="applyTeamNameFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="teamNameOptionsJson" value="" assignTo="{!teamNameOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                        <apex:outputLink value="/" onclick="return allTeamNameSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                        &nbsp;
+                        <apex:outputLink value="/" onclick="return clearTeamNameSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                    </div>
+                </td>
+                <td>
+                    <div class="productPartnerFilter">
+                        <select class="productPartnerSelect" multiple="multiple"></select>
+                        <apex:actionFunction name="prepareQueryWithProductPartnerIds" reRender="optysBlock, totalsTableWrapper" 
+                                             action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                            <apex:param name="productPartnerIdsJson" value="" assignTo="{!productPartnerIdsJson}"/>
+                        </apex:actionFunction>
+                    </div>
+                </td>
+                
+            </tr>
+            <tr>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Account.fields.Client_Region__c.Label}"/></td>
+                <td></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Account.fields.Transactional_Banking_Region__c.Label}"/></td>
+                <td></td>
+                <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.ProductPartnerApprovalStatus__c.Label}"/></td>
+            </tr>
+            <tr>
+                <td>     
+                    <div class="clientRegionFilter">      
+                        <apex:selectList multiselect="true" styleClass="clientRegionSelect">
+                            <apex:selectOptions value="{!accountClientRegionValues}"/>
+                            <apex:actionFunction name="applyClientRegionFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="accountClientRegionOptionsJson" value="" assignTo="{!accountClientRegionOptionsJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allClientRegionSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearClientRegionSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                </td>                
+                <td>
+                </td>               
+                <td>
+                    <div class="TBRegionFilter">       
+                        <apex:selectList id="TBRegionList" multiselect="true" styleClass="TBRegionSelect">
+                            <apex:selectOptions value="{!TBRegionValues}"/>
+                            <apex:actionFunction name="applyTBRegionFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="TBRegionOptionJson" value="" assignTo="{!TBRegionOptionJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allTBRegionSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearTBRegionSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>                    
+                </td>
+                <td>                    
+                </td>
+                <td>
+                    <div class="approvalStatusFilter">       
+                        <apex:selectList id="approvalStatusList" multiselect="true" styleClass="approvalStatusSelect">
+                            <apex:selectOptions value="{!OpportunityApprovalStatusValues}"/>
+                            <apex:actionFunction name="applyApprovalStatusFilter" reRender="optysBlock, totalsTableWrapper" 
+                                                 action="{!prepareData}" oncomplete="onTableRerendered();" onbeforedomupdate="onBeforeTableRerender();">
+                                <apex:param name="optyApprovalStatusOptionJson" value="" assignTo="{!optyApprovalStatusOptionJson}"/>
+                            </apex:actionFunction>
+                        </apex:selectList>
+                    </div>
+                    <apex:outputLink value="/" onclick="return allApprovalStatusSelect();">{!$Label.lbl_SelectAll}</apex:outputLink>
+                    &nbsp;
+                    <apex:outputLink value="/" onclick="return clearApprovalStatusSelect();">{!$Label.lbl_ClearFilter}</apex:outputLink>
+                    
+                </td>
+            </tr>
+        </table>
+        
+        <!-- grand totals -->
+        <apex:outputPanel id="totalsTableWrapper" layout="block">
+            <table cellspacing="15px" id="grandTotalsTable">
+                <tr>
+                    <td><apex:outputLabel styleClass="bold" value="{!$Label.lbl_FacilitySizeBalance}"/></td>
+                    <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.Income_this_Year__c.Label}"/></td>
+                    <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}"/></td>
+                    <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.Weighted_Income_this_Year__c.Label}"/></td>
+                    <td><apex:outputLabel styleClass="bold" value="{!$ObjectType.Opportunity.fields.Weighted_Annualised_Income__c.Label}"/></td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}" 
+                                         styleClass="bold font125">
+                            <apex:param value="{!facilitySize}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}" 
+                                         styleClass="bold font125">
+                            <apex:param value="{!incomeThisYear}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}"
+                                         styleClass="bold font125">
+                            <apex:param value="{!annualisedIncome}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}" 
+                                         styleClass="bold font125">
+                            <apex:param value="{!weightedIncomeThisYear}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}"
+                                         styleClass="bold font125">
+                            <apex:param value="{!weightedAnnualisedIncome}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        
+        <apex:pageMessages id="pageMessages"/>
+        
+        <div id="optysBlockWrapper">
+            <apex:pageBlock id="optysBlock" title="{!queryOffset} - {!queryOffset + Optys.size} (of {!optyCount})">
+                
+                <!-- pagination buttons -->
+                <apex:pageBlockButtons location="both">
+                    <apex:commandLink value="<< First" action="{!moveFirst}" rerender="optysBlock" 
+                                      onclick="onBeforeTableRerender();startLoading();" oncomplete="onTableRerendered();" />
+                    <apex:commandLink value="< Previous" action="{!movePrevious}" rerender="optysBlock" 
+                                      onclick="onBeforeTableRerender();startLoading();" oncomplete="onTableRerendered();"/>
+                    <apex:commandLink value="Next >" action="{!moveNext}" rerender="optysBlock" 
+                                      onclick="onBeforeTableRerender();startLoading();" oncomplete="onTableRerendered();"/>
+                    <apex:commandLink value="Last >>" action="{!moveLast}" rerender="optysBlock" 
+                                      onclick="onBeforeTableRerender();startLoading();" oncomplete="onTableRerendered();"/>
+                </apex:pageBlockButtons>
+                
+                <!-- inner and outer divs because of left columns fixation -->
+                <div id="outer">
+                    <div id="inner">
+                        <!-- div for first row fixation -->
+                        <div id="headerFixedWrapper">
+                            <div id="leftHide"/>
+                            
+                            <!-- static first two columns -->
+                            <table id="leftHeaderFixed"></table>
+                            
+                            <!-- scrollable columns -->
+                            <table id="headerFixed"></table>
+                            <div id="rightHide"/>
+                        </div>
+                        <apex:pageBlockTable value="{!Optys}" var="opty" id="optysTable" styleClass="optysTable">
+                            <apex:column headerValue="{!$Label.lbl_OpportunityName}" styleClass="firstColumn" headerClass="firstColumn">
+                                <a href="/{!opty.Id}"
+                                   id="lookup{!opty.Id}opp4"
+                                   onblur="LookupHoverDetail.getHover('lookup{!opty.Id}opp4').hide();"
+                                   onfocus="LookupHoverDetail.getHover('lookup{!opty.Id}opp4', '/{!opty.Id}/m?retURL=/{!opty.Id}&isAjaxRequest=1').show();"
+                                   onmouseout="LookupHoverDetail.getHover('lookup{!opty.Id}opp4').hide();"
+                                   onmouseover="LookupHoverDetail.getHover('lookup{!opty.Id}opp4', '/{!opty.Id}/m?retURL=/{!opty.Id}&isAjaxRequest=1').show();">
+                                    
+                                    <apex:outputField value="{!opty.Name}"/>
+                                </a>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Name.Label}" styleClass="secondColumn" 
+                                         headerClass="secondColumn">
+                                <a href="/{!opty.Account.Id}"
+                                   id="lookup{!opty.Account.Id}acc"
+                                   onblur="LookupHoverDetail.getHover('lookup{!opty.Account.Id}acc').hide();"
+                                   onfocus="LookupHoverDetail.getHover('lookup{!opty.Account.Id}acc', '/{!opty.Account.Id}/m?retURL=/{!opty.Account.Id}&isAjaxRequest=1').show();"
+                                   onmouseout="LookupHoverDetail.getHover('lookup{!opty.Account.Id}acc').hide();"
+                                   onmouseover="LookupHoverDetail.getHover('lookup{!opty.Account.Id}acc', '/{!opty.Account.Id}/m?retURL=/{!opty.Account.Id}&isAjaxRequest=1').show();">
+                                    
+                                    <apex:outputField value="{!opty.Account.Name}"/>
+                                </a>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Account_Name__c.Label}" 
+                                         headerClass="floatHeader">
+                                <a href="/{!opty.Account_Name__c}"
+                                   id="lookup{!opty.Account_Name__c}acc"
+                                   onblur="LookupHoverDetail.getHover('lookup{!opty.Account_Name__c}acc').hide();"
+                                   onfocus="LookupHoverDetail.getHover('lookup{!opty.Account_Name__c}acc', '/{!opty.Account_Name__c}/m?retURL=/{!opty.Account_Name__c}&isAjaxRequest=1').show();"
+                                   onmouseout="LookupHoverDetail.getHover('lookup{!opty.Account_Name__c}acc').hide();"
+                                   onmouseover="LookupHoverDetail.getHover('lookup{!opty.Account_Name__c}acc', '/{!opty.Account_Name__c}/m?retURL=/{!opty.Account_Name__c}&isAjaxRequest=1').show();">
+                                    
+                                    <apex:outputField value="{!opty.Account_Name__r.Name}"/>
+                                </a>
+                            </apex:column>
+                            <apex:column headerValue="{!$Label.lbl_Type}" title="{!opty.RecordType.Name}" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.RecordType.Name}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Client_Country__c.Label}" 
+                                         title="{!opty.Account.Client_Country__c}" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Client_Country__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Client_Region__c.Label}" 
+                                         title="{!opty.Account.Client_Region__c}" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Client_Region__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Transactional_Banking_Region__c.Label}" 
+                                         title="{!opty.Account.Transactional_Banking_Region__c}" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Transactional_Banking_Region__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Segment__c.Label}" title="{!opty.Account.Segment__c}"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Segment__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Account.fields.Industry.Label}" title="{!opty.Account.Industry}"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Industry}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Product2.Label} 1" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].PricebookEntry.Product2.Name, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].PricebookEntry.Product2.Name}" 
+                                                  rendered="{!opty.OpportunityLineItems.size > 0}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Product2.Label} 2" headerClass="floatThead"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Product_Level_2__r.Name, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Product_Level_2__r.Name}" 
+                                                  rendered="{!opty.OpportunityLineItems.size > 0}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Product2.Label} 3" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Product_Level_3__r.Name, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Product_Level_3__r.Name}" 
+                                                  rendered="{!opty.OpportunityLineItems.size > 0}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$Label.lbl_CoverageTeam}" title="{!opty.Account.Team_F__c}" 
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Team_F__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$Label.lbl_CoverageBanker}" title="{!opty.Account.Owner.Name}" 
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Account.Owner.Name}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Opportunity_Country__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Opportunity_Country__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$Label.lbl_OpportunityOwner}" title="{!opty.Owner.Name}" 
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Owner.Name}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.ProductPartner__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.ProductPartner__r.Name}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.ProductPartnerApprovalStatus__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.ProductPartnerApprovalStatus__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.StageName.Label}" title="{!opty.StageName}"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.StageName}"/>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.SubStage__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.SubStage__c}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$Label.lbl_FacilitySizeBalance}" styleClass="alignRight"
+                                         headerClass="floatHeader">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}">
+                                    <apex:param value="{!opty.Total_Balance_Facility_Size__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Hold_Size__c.Label}" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Hold_Size__c, '')}">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}" 
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Hold_Size__c != NULL}">
+                                	<apex:param value="{!opty.OpportunityLineItems[0].Hold_Size__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.LoanType__c.Label}"
+                                         styleClass="alignCenter"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].LoanType__c, '')}"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].LoanType__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].LoanType__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.RefinanceIncreaseDecrease__c.Label}"
+                                         styleClass="alignCenter"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].RefinanceIncreaseDecrease__c, '')}" 
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].RefinanceIncreaseDecrease__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].RefinanceIncreaseDecrease__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Underwrite__c.Label}"
+                                         styleClass="alignCenter"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Underwrite__c, '')}"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Underwrite__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Underwrite__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Gross_Margin__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Gross_Margin__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Gross_Margin__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Gross_Margin__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Ftp__c.Label}" headerClass="floatHeader"
+                                         styleClass="alignRight" 
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Ftp__c, '')}">
+                                <apex:outputText value="{!opty.OpportunityLineItems[0].Ftp__c}"
+                                                 rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Ftp__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Margin__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Margin__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Margin__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Margin__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Arranging_Fee__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Arranging_Fee__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Arranging_Fee__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Arranging_Fee__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Other_Fees__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Other_Fees__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Other_Fees__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Other_Fees__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Committment_Fee__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Committment_Fee__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Committment_Fee__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Committment_Fee__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.Annual_Facility_Fee__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].Annual_Facility_Fee__c, '')}">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].Annual_Facility_Fee__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].Annual_Facility_Fee__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.DG_TTC__c.Label}"
+                                         styleClass="alignCenter"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].DG_TTC__c, '')}" 
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.OpportunityLineItems[0].DG_TTC__c}"
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].DG_TTC__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.OpportunityLineItem.fields.LGD__c.Label}" headerClass="floatHeader"
+                                         styleClass="alignCenter" 
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].LGD__c, '')}">
+                                <apex:outputText value="{!opty.OpportunityLineItems[0].LGD__c}"
+                                                 rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].LGD__c != NULL}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="1st {!$ObjectType.OpportunityLineItem.fields.RWA__c.Label}" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityLineItems.size > 0, opty.OpportunityLineItems[0].RWA__c, '')}">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}" 
+                                                  rendered="{!opty.OpportunityLineItems.size > 0 && opty.OpportunityLineItems[0].RWA__c != NULL}">
+                                	<apex:param value="{!opty.OpportunityLineItems[0].RWA__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.First_Drawdown__c.Label}" styleClass="alignCenter"
+                                         headerClass="floatHeader">
+                                <apex:outputText value="{0, date, yyyy/MM/dd}">
+                                    <apex:param value="{!opty.First_Drawdown__c}" /> 
+                                </apex:outputText>
+                            </apex:column>
+                                                        
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Income_this_Year__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}">
+                                    <apex:param value="{!opty.Income_this_Year__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Annualised_Income__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}">
+                                    <apex:param value="{!opty.Annualised_Income__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Probability.Label}" 
+                                         styleClass="alignRight" title="{!opty.Probability}%" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Probability}"/>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Weighted_Income_this_Year__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}">
+                                    <apex:param value="{!opty.Weighted_Income_this_Year__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Weighted_Annualised_Income__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputText value="{!currencyIsoCode} {0,number,###,###,###,###,###,###,###,##0.00}">
+                                    <apex:param value="{!opty.Weighted_Annualised_Income__c}" />
+                                </apex:outputText>
+                            </apex:column>
+                            
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.CloseDate.Label}" 
+                                         styleClass="alignCenter" headerClass="floatHeader">
+                                <apex:outputText value="{0, date, yyyy/MM}">
+                                    <apex:param value="{!opty.CloseDate}" /> 
+                                </apex:outputText>
+                            </apex:column>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.CreatedDate.Label}" styleClass="alignCenter"
+                                         headerClass="floatHeader">
+                                <apex:outputText value="{0, date, yyyy/MM/dd}">
+                                    <apex:param value="{!opty.CreatedDate}" /> 
+                                </apex:outputText>
+                            </apex:column>
+                            <apex:column headerValue="{!$Label.lbl_NumberOfDaysSinceStageChanged}" styleClass="alignRight"
+                                         headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Days_Since_Last_Stage_Change__c}"/>
+                            </apex:column>
+                            <apex:repeat value="{!NUM_OF_OPPTEAMMEMBERS}" var="optyTeamMember">
+        						<apex:column headerValue="Opportunity Team Member {!optyTeamMember} Team" headerClass="floatHeader"
+                                         title="{!IF(opty.OpportunityTeamMembers.size > optyTeamMember - 1, opty.OpportunityTeamMembers[optyTeamMember - 1].User.Team__c, '')}">
+                                	<apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].User.Team__c}" 
+                                                  rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+                            	</apex:column>
+                                <apex:column headerValue="Opportunity Team Member {!optyTeamMember} Name" headerClass="floatHeader"
+                                             title="{!IF(opty.OpportunityTeamMembers.size > optyTeamMember - 1, opty.OpportunityTeamMembers[optyTeamMember - 1].Name, '')}">
+                                    <apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].Name}" 
+                                                      rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+                                </apex:column>
+                                <apex:column headerValue="Opportunity Team Member {!optyTeamMember} Role" headerClass="floatHeader"
+                                             title="{!IF(opty.OpportunityTeamMembers.size > optyTeamMember - 1, opty.OpportunityTeamMembers[optyTeamMember - 1].TeamMemberRole, '')}">
+                                    <apex:outputField value="{!opty.OpportunityTeamMembers[optyTeamMember - 1].TeamMemberRole}" 
+                                                      rendered="{!opty.OpportunityTeamMembers.size > optyTeamMember - 1}"/>
+                                </apex:column>
+    						</apex:repeat>
+                            <apex:column headerValue="{!$ObjectType.Opportunity.fields.Push_Counter__c.Label}" 
+                                         styleClass="alignRight" headerClass="floatHeader">
+                                <apex:outputField value="{!opty.Push_Counter__c}"/>
+                            </apex:column>
+                            
+                            <!-- Tonga MM : Added additional columns as requested by client-->
+                            
+                            
+                            
+                        </apex:pageBlockTable>
+                    </div>
+                </div>
+            </apex:pageBlock>
+        </div>
+        
+        <apex:commandButton action="{!showExcelPage}" value="Download Excel" />
+        
+        <!-- columns' sort action funtion -->
+        <apex:actionFunction name="sort" reRender="optysBlock" oncomplete="onTableRerendered();" 
+                             action="{!prepareData}" onbeforedomupdate="onBeforeTableRerender();">
+            <apex:param name="sortColumn" value="" assignTo="{!sortColumn}"/>
+            <apex:param name="sortOrder" value="" assignTo="{!sortOrder}"/>
+        </apex:actionFunction>
+        
+        <!-- progress bar -->
+        <div id="load_scrl" class="loadingBox" style="display:none"> </div>
+        <div class="loadingBox overlay"> </div>
+        
+        <!-- panels for getting JSONs from controler -->
+        <apex:outputPanel id="bankersPanel" styleClass="bankersPanel hidden">{!bankersJson}</apex:outputPanel>
+        <apex:outputPanel id="buyingGroupPanel" styleClass="buyingGroupPanel hidden">{!buyingGroupJson}</apex:outputPanel>
+        <apex:outputPanel id="coverageTeamPanel" styleClass="coverageTeamPanel hidden">{!coverageTeamJson}</apex:outputPanel>
+        
+    </apex:form>
+    
+</apex:page>

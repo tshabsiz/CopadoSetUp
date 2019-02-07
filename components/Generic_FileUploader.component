@@ -1,0 +1,66 @@
+<apex:component controller="Generic_FileUploader" allowDML="true">
+    
+	<apex:attribute name="objectId" description="Id of Object To Attach Files To." type="String" required="required" assignTo="{!sObjectId}"/>
+	<apex:attribute name="url" description="Url to go to after inserted." type="String" required="required" assignTo="{!saveUrl}"/>
+	<apex:attribute name="buttonStyleClass" description="classes to use on buttons" type="String" required="required" assignTo="{!buttonClass}"/>
+	<apex:attribute name="submitButtonText" description="classes to use on buttons" type="String" required="required" assignTo="{!submitButtonValue}"/> 
+	
+	
+    <!-- INSTRUCTIONS -->
+    <div>
+        <p>Please ensure that you upload any documentation relevant to the form submission.</p> 
+    </div>
+    
+    <br />
+	
+    <strong>Step 1. SELECT THE FILE TO UPLOAD:</strong>
+    <div>
+        <p>Click the "Choose File" button below to find the file.</p> 
+    </div>   
+    
+    <p>&nbsp;</p> 
+    
+    <!-- SELECT ATTACHMENT -->
+	<apex:form styleClass="form-horizontal" enctype="multipart/form-data">
+
+                <apex:inputFile id="selectedFile" value="{!attachment.Body}" filename="{!attachment.Name}" fileSize="{!attachment.BodyLength}" styleclass="btn" />
+                <span id="helpBlock" class="help-block">** Maximum size per file is 2 MB (Megabytes).</span>
+    
+    <p>&nbsp;</p> 
+    
+    <strong>Step 2. CLICK THE ATTACH FILE BUTTON:</strong>
+        <div>
+            <p>
+                Repeat Steps 1 and 2 to attach multiple files.  When the upload is complete the file information will appear below.  <br />
+            </p> 
+        </div>
+        <p>&nbsp;</p> 
+        <apex:commandButton action="{!addFile}" value="Attach File" disabled="{!ExistingAttachmentsSize >= 5}"  styleClass="slds-button slds-button--destructive" />  
+        <span id="helpBlock" class="help-block">** Maximum of 5 files can be uploaded.</span>
+	</apex:form>
+    
+    <!-- UPLOADED ATTACHMENTS -->
+    <apex:outputPanel rendered="{!ExistingAttachmentsSize > 0}">
+    <br />
+    <h4>You have just uploaded the following file(s)</h4> 
+    <br />
+    <br />
+    <table class="table table-bordered">
+        <tr>
+        	<th>File Name</th>
+        </tr>
+        <apex:repeat value="{!ExistingAttachments}" var="file" id="uplaodedFiles">
+            <tr>
+                <td>{!file.Name}</td>
+            </tr>
+        </apex:repeat>        
+    </table>
+    </apex:outputPanel>
+    
+    <hr class="divider"/>
+    
+    <apex:form >
+    	<apex:commandButton value="{!submitButtonValue}" styleClass="{!buttonClass}" action="{!finish}" />
+    </apex:form>
+
+</apex:component>

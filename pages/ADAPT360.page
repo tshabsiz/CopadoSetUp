@@ -1,0 +1,392 @@
+<apex:page controller="ADAPT360" showHeader="false" sidebar="false" action="{!runQueryFromURL}">
+    <apex:includeScript value="/soap/ajax/26.0/connection.js"/>
+    <apex:includeScript value="/support/console/26.0/integration.js"/>
+    <script type="text/javascript">
+    
+   </script>
+    
+    <apex:pageBlock tabStyle="Account" title="360 Overview {!IF($CurrentPage.parameters.regId==null,'','(' + $CurrentPage.parameters.regId + ')')}">
+        <apex:pageBlockSection title="Customer Profile" id="CusProfile" collapsible="false" columns="2" html-style="font-size: 11px" rendered="{!PrimaryClient!=null && PrimaryClient.individual!=null && Error==''}">
+            <apex:outputText style="font-weight:800" value="Choose Customer" rendered="{!PrimaryClients.size>1}"/>
+            <apex:form rendered="{!PrimaryClients.size>1}">
+              <apex:selectList id="cifs" size="1" value="{!CIFNumber}">
+                <apex:actionSupport event="onchange" rerender="CusProfile,cusTabPanel" />
+                <apex:selectOptions value="{!CIFOptions}"/>
+              </apex:selectList>
+            </apex:form>
+            <apex:outputText style="font-weight:800" value="Search Criteria" rendered="{!$CurrentPage.parameters.regId!='' && PrimaryClient.customerDetails.groupScheme.description!=null}" />
+            <apex:outputText escape="false" value="{!SUBSTITUTE($CurrentPage.parameters.regId,' ', '&nbsp;') + ' (' + PrimaryClient.customerDetails.groupScheme.description.value + ')'}" rendered="{!$CurrentPage.parameters.regId!='' && PrimaryClient.customerDetails.groupScheme.description!=null}" />
+			<apex:outputText style="font-weight:800" value="CIF Number" rendered="{!CIFNumber!='' && $CurrentPage.parameters.queryType!='' && $CurrentPage.parameters.queryType!='cif'}" />
+            <apex:outputText escape="false" value="{!SUBSTITUTE(CIFNumber,' ', '&nbsp;')}" rendered="{!CIFNumber!='' && $CurrentPage.parameters.queryType!='' && $CurrentPage.parameters.queryType!='cif'}" />
+            <apex:outputText style="font-weight:800" value="Customer Name" rendered="{!PrimaryClient.individual.salutationType.description.value!=null && PrimaryClient.individual.nameInitials.value!=null && PrimaryClient.individual.surname.value!=null}"/>
+            <apex:outputText value="{!PrimaryClient.individual.salutationType.description.value + ' ' + PrimaryClient.individual.nameInitials.value + ' ' + PrimaryClient.individual.surname.value}" rendered="{!PrimaryClient.individual.salutationType.description.value!=null && PrimaryClient.individual.nameInitials.value!=null && PrimaryClient.individual.surname.value!=null}"/>
+            <apex:outputText style="font-weight:800" value="Organisation Name" rendered="{!PrimaryClient.individual.salutationType.description.value==null && PrimaryClient.individual.nameInitials.value==null && PrimaryClient.individual.surname.value!=null}"/>
+            <apex:outputText value="{!PrimaryClient.individual.surname.value}" rendered="{!PrimaryClient.individual.salutationType.description.value==null && PrimaryClient.individual.nameInitials.value==null && PrimaryClient.individual.surname.value!=null}"/>
+            <apex:outputText style="font-weight:800" value="ID Type" rendered="{!PrimaryClient.customerDetails.identificationTypeId!=null}"/>
+            <apex:outputText value="{!PrimaryClient.customerDetails.identificationTypeId.code.value + ' ' + PrimaryClient.customerDetails.identificationTypeId.description.value}" rendered="{!PrimaryClient.customerDetails.identificationTypeId!=null}"/>
+            <apex:outputText style="font-weight:800" value="Registration Number" rendered="{!PrimaryClient.customerDetails.individualId!=null}"/>
+            <apex:outputText value="{!PrimaryClient.customerDetails.individualId.value}" rendered="{!PrimaryClient.customerDetails.individualId!=null}"/>
+            <apex:outputText style="font-weight:800" value="Cell Phone Number" rendered="{!PrimaryClient.contact.cellPhoneNumber!=null && PrimaryClient.contact.cellPhoneNumber.value!=''}"/>
+            <apex:outputText value="{!PrimaryClient.contact.cellPhoneNumber.value}" rendered="{!PrimaryClient.contact.cellPhoneNumber!=null && PrimaryClient.contact.cellPhoneNumber.value!=''}"/>
+            <apex:outputText style="font-weight:800" value="Home Phone" rendered="{!PrimaryClient.contact.homePhone!=null && PrimaryClient.contact.homePhone.value!=''}"/>
+            <apex:outputText value="{!PrimaryClient.contact.homePhone.value}" rendered="{!PrimaryClient.contact.homePhone!=null && PrimaryClient.contact.homePhone.value!=''}"/>
+            <apex:outputText style="font-weight:800" value="Work Phone" rendered="{!PrimaryClient.contact.workPhone!=null && PrimaryClient.contact.workPhone.value!=''}"/>
+            <apex:outputText value="{!PrimaryClient.contact.workPhone.value}" rendered="{!PrimaryClient.contact.workPhone!=null && PrimaryClient.contact.workPhone.value!=''}"/>
+            <apex:outputText style="font-weight:800" value="Telephone Number" rendered="{!PrimaryClient.contact.telephoneNumber!=null && PrimaryClient.contact.telephoneNumber.value!=''}"/>
+            <apex:outputText value="{!PrimaryClient.contact.telephoneNumber.value}" rendered="{!PrimaryClient.contact.telephoneNumber!=null && PrimaryClient.contact.telephoneNumber.value!=''}"/>
+        </apex:pageBlockSection>
+        <apex:tabPanel switchType="client" id="cusTabPanel" rendered="{!PrimaryClient!=null && PrimaryClient.individual!=null && Error==''}">
+            <apex:tab label="Account Summary" name="accountsPanel" id="accountsPanel">
+                <apex:pageBlockTable value="{!PrimaryClientAccounts}" var="account" rendered="{!PrimaryClient.account!=null}" columnsWidth="12%,12%,12%,12%,12%,12%,12%,12%">
+                    <apex:column headerValue="Account Number" value="{!account.accountNumber.value}"/>
+                    <apex:column headerValue="Product Name" value="{!account.product.value}"/>
+                    <apex:column headerValue="Branch" value="{!account.branch.value}"/>
+                    <apex:column headerValue="Corporate Code" value="{!account.corporationCode.value}"/>
+                    <apex:column headerValue="Status" value="{!account.accountStatus.value}"/>
+                    <apex:column headerValue="Date Closed" value="{!account.dateClosed.value}"/>
+                    <apex:column headerValue="Balance">
+                        <apex:outputText value="{0,number, ###,##0.00}" rendered="{!account.balanceFormatted!=null}">
+                            <apex:param value="{!account.balanceFormatted}"/>
+                        </apex:outputText>
+                        <apex:outputText value="" rendered="{!account.balanceFormatted==null}"/>
+                    </apex:column>
+                    <apex:column headerValue="Available Balance">
+                        <apex:outputText value="{0,number, ###,##0.00}" rendered="{!account.availableBalanceFormatted!=null}">
+                            <apex:param value="{!account.availableBalanceFormatted}"/>
+                        </apex:outputText>
+                        <apex:outputText value="" rendered="{!account.availableBalanceFormatted==null}"/>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <apex:outputText style="font-style:italic" value="No accounts found." rendered="{!PrimaryClient.account==null}" />
+            </apex:tab>
+            <apex:tab label="Company" name="companyPanel" id="companyPanel">
+                <apex:pageBlockSection id="companypageblock" collapsible="false" columns="1" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputPanel >
+                        <table width="100%" border="0">
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Customer Group"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.groupScheme.description.value}" rendered="{!PrimaryClient.customerDetails.groupScheme.description!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.groupScheme.description==null}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Organisation Name"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.individual.surname.value}" rendered="{!PrimaryClient.individual.salutationType.description.value==null && PrimaryClient.individual.nameInitials.value==null && PrimaryClient.individual.surname.value!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.individual.salutationType.description.value!=null && PrimaryClient.individual.nameInitials.value!=null && PrimaryClient.individual.surname.value!=null}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Customer Type"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.customerType.description.value}" rendered="{!PrimaryClient.customerDetails.customerType.description!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.customerType.description==null}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="ID Type"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.identificationTypeId.code.value + ' ' + PrimaryClient.customerDetails.identificationTypeId.description.value}" rendered="{!PrimaryClient.customerDetails.identificationTypeId!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.identificationTypeId==null}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Corporate Division"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.corporateDivision.description.value}" rendered="{!PrimaryClient.customerDetails.corporateDivision!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.corporateDivision==null}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Registration Number"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.individualId.value}" rendered="{!PrimaryClient.customerDetails.individualId!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.individualId==null}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Source of Income"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.sourceOfIncomeCode.description.value}" rendered="{!PrimaryClient.customerDetails.sourceOfIncomeCode!=null}"/>
+                                    <apex:outputText value="" rendered="{!PrimaryClient.customerDetails.sourceOfIncomeCode==null}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value=""/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value=""/>
+                                </td>
+                            </tr>
+                        </table>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="SIC" id="SICpageblock" collapsible="false" columns="2" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputText style="font-weight:800" value="SIC Code"/>
+                    <apex:outputText value="{!PrimaryClient.corporateEntity.standardIndustryCode.code.value}" rendered="{!PrimaryClient.corporateEntity.standardIndustryCode.code!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.corporateEntity.standardIndustryCode.code==null}"/>
+                    <apex:outputText style="font-weight:800" value="Description"/>
+                    <apex:outputText value="{!PrimaryClient.corporateEntity.standardIndustryCode.description.value}" rendered="{!PrimaryClient.corporateEntity.standardIndustryCode.description!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.corporateEntity.standardIndustryCode.description==null}"/>
+                    <apex:outputText style="font-weight:800" value="Country Incorporated"/>
+                    <apex:outputText value="{!PrimaryClient.corporateEntity.incorporatedCountry.code.value}" rendered="{!PrimaryClient.corporateEntity.incorporatedCountry.code!=null && PrimaryClient.corporateEntity.incorporatedCountry.code.value!='00;'}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.corporateEntity.incorporatedCountry.code==null || PrimaryClient.corporateEntity.incorporatedCountry.code.value=='00;'}"/>
+                    <apex:outputText value=""/>
+                    <apex:outputText value="{!PrimaryClient.corporateEntity.incorporatedCountry.description.value}" rendered="{!PrimaryClient.corporateEntity.incorporatedCountry.description!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.corporateEntity.incorporatedCountry.description==null}"/>   
+                </apex:pageBlockSection>
+            </apex:tab>
+            <apex:tab label="Contact" name="contactPanel" id="contactPanel">
+                <apex:pageBlockSection id="addresspageblock" collapsible="false" columns="3" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputText value=""/>
+                    <apex:outputText style="font-weight:800" value="Physical Address"/>
+                    <apex:outputText style="font-weight:800" value="Portfolio Postal Address"/>
+                    <apex:outputText style="font-weight:800" value="Line1"/>
+                    <apex:outputText value="{!PrimaryClient.location.physicalAddress.addressName1.value}" rendered="{!PrimaryClient.location.physicalAddress.addressName1.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.physicalAddress.addressName1.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.postalAddress.addressName1.value}" rendered="{!PrimaryClient.location.postalAddress.addressName1.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.postalAddress.addressName1.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="Line2"/>
+                    <apex:outputText value="{!PrimaryClient.location.physicalAddress.addressName2.value}" rendered="{!PrimaryClient.location.physicalAddress.addressName2.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.physicalAddress.addressName2.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.postalAddress.addressName2.value}" rendered="{!PrimaryClient.location.postalAddress.addressName2.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.postalAddress.addressName2.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="SA Suburb or Foreign Town & Zip Code"/>
+                    <apex:outputText value="{!PrimaryClient.location.physicalAddress.suburbName.value}" rendered="{!PrimaryClient.location.physicalAddress.suburbName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.physicalAddress.suburbName.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.postalAddress.suburbName.value}" rendered="{!PrimaryClient.location.postalAddress.suburbName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.postalAddress.suburbName.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="SA Town/City or Foreign Country"/>
+                    <apex:outputText value="{!PrimaryClient.location.physicalAddress.cityName.value}" rendered="{!PrimaryClient.location.physicalAddress.cityName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.physicalAddress.cityName.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.postalAddress.cityName.value}" rendered="{!PrimaryClient.location.postalAddress.cityName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.postalAddress.cityName.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="SA Postal Code"/>
+                    <apex:outputText value="{!PrimaryClient.location.physicalAddress.postCodeArea.value}" rendered="{!PrimaryClient.location.physicalAddress.postCodeArea.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.physicalAddress.postCodeArea.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.postalAddress.postCodeArea.value}" rendered="{!PrimaryClient.location.postalAddress.postCodeArea.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.postalAddress.postCodeArea.value==null}"/>
+                    <apex:outputText value=""/>
+                    <apex:outputText value=""/>
+                    <apex:outputText value=""/>
+                    <apex:outputText value=""/>
+                    <apex:outputText style="font-weight:800" value="Registered Address"/>
+                    <apex:outputText style="font-weight:800" value="Head Office Address"/>
+                    <apex:outputText style="font-weight:800" value="Address Line 1"/>
+                    <apex:outputText value="{!PrimaryClient.location.businessAddress.addressName1.value}" rendered="{!PrimaryClient.location.businessAddress.addressName1.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.businessAddress.addressName1.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.headOfficeAddress.addressName1.value}" rendered="{!PrimaryClient.location.headOfficeAddress.addressName1.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.headOfficeAddress.addressName1.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="Address Line 2"/>
+                    <apex:outputText value="{!PrimaryClient.location.businessAddress.addressName2.value}" rendered="{!PrimaryClient.location.businessAddress.addressName2.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.businessAddress.addressName2.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.headOfficeAddress.addressName2.value}" rendered="{!PrimaryClient.location.headOfficeAddress.addressName2.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.headOfficeAddress.addressName2.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="Suburb"/>
+                    <apex:outputText value="{!PrimaryClient.location.businessAddress.suburbName.value}" rendered="{!PrimaryClient.location.businessAddress.suburbName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.businessAddress.suburbName.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.headOfficeAddress.suburbName.value}" rendered="{!PrimaryClient.location.headOfficeAddress.suburbName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.headOfficeAddress.suburbName.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="City/Town"/>
+                    <apex:outputText value="{!PrimaryClient.location.businessAddress.cityName.value}" rendered="{!PrimaryClient.location.businessAddress.cityName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.businessAddress.cityName.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.headOfficeAddress.cityName.value}" rendered="{!PrimaryClient.location.headOfficeAddress.cityName.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.headOfficeAddress.cityName.value==null}"/>
+                    <apex:outputText style="font-weight:800" value="Postal Code"/>
+                    <apex:outputText value="{!PrimaryClient.location.businessAddress.postCodeArea.value}" rendered="{!PrimaryClient.location.businessAddress.postCodeArea.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.businessAddress.postCodeArea.value==null}"/>
+                    <apex:outputText value="{!PrimaryClient.location.headOfficeAddress.postCodeArea.value}" rendered="{!PrimaryClient.location.headOfficeAddress.postCodeArea.value!=null}"/>
+                    <apex:outputText value="" rendered="{!PrimaryClient.location.headOfficeAddress.postCodeArea.value==null}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection id="commspageblock" collapsible="false" columns="2" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputText style="font-weight:800" value="Home Phone" rendered="{!PrimaryClient.contact.homePhone!=null && PrimaryClient.contact.homePhone.value!=''}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.homePhone.value}" rendered="{!PrimaryClient.contact.homePhone!=null && PrimaryClient.contact.homePhone.value!=''}"/>
+                    <apex:outputText style="font-weight:800" value="Work Phone" rendered="{!PrimaryClient.contact.workPhone!=null && PrimaryClient.contact.workPhone.value!=''}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.workPhone.value}" rendered="{!PrimaryClient.contact.workPhone!=null && PrimaryClient.contact.workPhone.value!=''}"/>
+                    <apex:outputText style="font-weight:800" value="Email Address" rendered="{!PrimaryClient.contact.eMailUserId!=null && PrimaryClient.contact.eMailUserId.value!=''}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.eMailUserId.value}" rendered="{!PrimaryClient.contact.eMailUserId!=null && PrimaryClient.contact.eMailUserId.value!=''}"/>
+                    <apex:outputText style="font-weight:800" value="Preferred Communication Channel" rendered="{!PrimaryClient.contact.communicationChannelType!=null}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.communicationChannelType.description.value}" rendered="{!PrimaryClient.contact.communicationChannelType!=null}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Contact Person Details" id="contactpersonpageblock" collapsible="false" columns="2" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputText style="font-weight:800" value="Contact Person" rendered="{!PrimaryClient.contact.contactPerson!=null}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.contactPerson.value}" rendered="{!PrimaryClient.contact.contactPerson!=null}"/>
+                    <apex:outputText style="font-weight:800" value="Contact Designation" rendered="{!PrimaryClient.contact.designation!=null}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.designation.value}" rendered="{!PrimaryClient.contact.designation!=null}"/>
+                    <apex:outputText style="font-weight:800" value="Contact Telephone Number" rendered="{!PrimaryClient.contact.telephoneNumber!=null && PrimaryClient.contact.telephoneNumber.value!=''}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.telephoneNumber.value}" rendered="{!PrimaryClient.contact.telephoneNumber!=null && PrimaryClient.contact.telephoneNumber.value!=''}"/>
+                    <apex:outputText style="font-weight:800" value="Contact Cellphone Number" rendered="{!PrimaryClient.contact.cellPhoneNumber!=null && PrimaryClient.contact.cellPhoneNumber.value!=''}"/>
+                    <apex:outputText value="{!PrimaryClient.contact.cellPhoneNumber.value}" rendered="{!PrimaryClient.contact.cellPhoneNumber!=null && PrimaryClient.contact.cellPhoneNumber.value!=''}"/>
+                </apex:pageBlockSection>
+            </apex:tab>
+            <apex:tab label="Flags" name="flagsPanel" id="flagsPanel">
+                <apex:pageBlockSection id="flagspageblock" collapsible="false" columns="1" html-style="font-size: 11px; border:1px solid PowderBlue">
+                    <apex:outputPanel >
+                        <table width="100%" border="0" >
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Customer Holds"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Others"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800" value="Consumer Protection Act Threshold"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.CPAThreshold.value}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800" value="SBU Segment"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.sbuSegment.description.value}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="National Credit Act Threshold"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.NCAThreshold.value}"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="FICA Compliant"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.flags.compliant.value}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="In Liquidation"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.inLiquidation.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Forensic Hold"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.forensicHold.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Under Judicial Management"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.underJudicialManagement.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Financial Crime"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.financialCrime.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="In Business Rescue"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.inBusinessRescue.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Business Rescue Affected Party"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.inBusinessRescueAffectedParty.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText style="font-weight:800;" value="Placed In Business Rescue By"/>
+                                </td>
+                                <td colspan="1" width="25%">
+                                    <apex:outputText value="{!PrimaryClient.customerDetails.placedInBusinessRescueBy.value}"/>
+                                </td>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                            <tr>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                                <td colspan="1" width="25%"/>
+                            </tr>
+                        </table>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+            </apex:tab>
+            <apex:tab label="Account Authentication Details" name="AccAuthPanel" id="AccAuthPanel">
+                <apex:pageBlockTable value="{!Mandates}" var="mandate" rendered="{!Mandates.size>0}" columnsWidth="10%,18%,10%,10%,10%,10%,10%,12%">
+                    <apex:column headerValue="Account Number" value="{!mandate.authority[0].accountNumber.value}"/>
+                    <apex:column headerValue="Name">
+                        <apex:outputText value="{!mandate.individual.salutationType.description.value + ' ' + mandate.individual.nameInitials.value + ' ' + mandate.individual.surname.value}" rendered="{!mandate.individual.salutationType.description.value!=null && mandate.individual.nameInitials.value!=null && mandate.individual.surname.value!=null}"/>
+                        <apex:outputText value="{!mandate.individual.surname.value}" rendered="{!mandate.individual.salutationType.description.value==null && mandate.individual.nameInitials.value==null && mandate.individual.surname.value!=null}"/>
+                    </apex:column>
+                    <apex:column headerValue="Date Issued" value="{!mandate.authority[0].signatoryDetails[0].dateIssued.value}"/>
+                    <apex:column headerValue="Expiry" value="{!mandate.authority[0].signatoryDetails[0].expiryDate.value}"/>
+                    <apex:column headerValue="Maximum Amount">
+                        <apex:outputText value="{0,number, ###,##0.00}" rendered="{!mandate.authority[0].signatoryDetails[0].maximumAmountFormatted!=null}">
+                            <apex:param value="{!mandate.authority[0].signatoryDetails[0].maximumAmountFormatted}"/>
+                        </apex:outputText>
+                        <apex:outputText value="" rendered="{!mandate.authority[0].signatoryDetails[0].maximumAmountFormatted==null}"/>
+                    </apex:column>
+                    <apex:column headerValue="Status" value="{!mandate.authority[0].status.value}"/>
+                    <apex:column headerValue="Number of Signatures" value="{!mandate.authority[0].numberOfSignatures.value}"/>
+                    <apex:column headerValue="Authority Type" value="{!mandate.authority[0].authorityType.value}"/>
+                </apex:pageBlockTable>
+                <apex:outputText style="font-style:italic" value="No account authentication details found." rendered="{!Mandates.size=0}" />
+            </apex:tab>
+        </apex:tabPanel>
+        <apex:outputText style="font-style:italic;color:red" value="Could not find client info for this ID." rendered="{!(PrimaryClient==null || PrimaryClient.individual==null) && Error=='' && $CurrentPage.parameters.regId!=null && $CurrentPage.parameters.queryType!=null}" />
+        <apex:outputText style="font-style:italic;color:red" value="ERROR:{!Error}" rendered="{!Error!=''}" />
+        <apex:pageBlockSection title="Search" id="Search" collapsible="false" columns="1" html-style="font-size: 11px" rendered="{!($CurrentPage.parameters.regId==null || $CurrentPage.parameters.queryType==null) && Error==''}">
+            <form action="/apex/ADAPT360" method="GET">
+                <input type="text" name="regId" value="" required="required" />
+                <select name="queryType">
+                    <option value="accountNumber">Account No</option>
+                    <option value="cif">CIF</option>
+                    <option value="identityDocument">Identity Document No</option>
+                    <option value="passport">Passport</option>
+                    <option value="passport">Registration No</option>
+                </select>
+                <input type="submit" value="SEARCH" class="btn" />
+            </form>
+        </apex:pageBlockSection>
+        <BR/><BR/>
+        <apex:outputLink value="/apex/ADAPT360" id="backToSearchLink" rendered="{!$CurrentPage.parameters.regId!=null && $CurrentPage.parameters.queryType!=null}">Back to Search</apex:outputLink>
+    </apex:pageBlock>
+</apex:page>

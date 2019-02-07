@@ -1,0 +1,21 @@
+<apex:page controller="advpm.ContentTypeSelectController" tabStyle="Advologix_Setup__tab">
+<apex:form >
+    <apex:sectionHeader title="Advologix Setup" subTitle="Default Content Type" />
+    
+    <apex:pageblock mode="edit">
+        <apex:pageMessages />
+        <apex:pageblockButtons location="both">
+            <apex:commandButton value="  Save  " action="{!selectContentType}" />
+            <apex:commandButton value="  Cancel  " action="{!cancel}" /> 
+        </apex:pageblockButtons>
+        <apex:pageblockSection showHeader="false" columns="1">
+            <apex:pageblockSectionItem >
+                <apex:outputLabel value="Select Content Type" />
+                <apex:selectList value="{!selectedContentType}" size="1">
+                    <apex:selectOptions value="{!contentTypes}" />
+                </apex:selectList>
+            </apex:pageblockSectionItem>
+        </apex:pageblockSection>
+    </apex:pageblock>
+</apex:form>
+</apex:page>

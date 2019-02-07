@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>RN - CloudSmiths 
+Object where a developers can track running and system limits that are not available in Apex. e.g. Single Outbound Email limits</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Activate_Rule__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths</description>
+        <externalId>false</externalId>
+        <label>Activate Rule</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Current_Threshold__c</fullName>
+        <externalId>false</externalId>
+        <formula>( X24_Running_Limit__c / System_Limit__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Current Threshold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Enforce_Workaround_Percentage__c</fullName>
+        <description>RN - CloudSmiths
+Workaround threshold percentage. If this threshold is reached Salesforce will by pass the process that counts towards this specific limit and use an alternative process</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Enter a Workaround threshold percentage. If this threshold is reached Salesforce will by pass the process that counts towards this specific limit and use an alternative process</inlineHelpText>
+        <label>Enforce Workaround Percentage</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Limit_Was_Reset_At__c</fullName>
+        <description>RN - CloudSmiths
+When was the 24 hour limit reset by the system</description>
+        <externalId>false</externalId>
+        <inlineHelpText>When was the 24 hour limit reset by the system</inlineHelpText>
+        <label>Limit Was Reset At</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>System_Limit__c</fullName>
+        <description>RN - CloudSmiths
+The current Salesforce system limit as</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Please enter the current Salesforce system limit</inlineHelpText>
+        <label>System Limit</label>
+        <precision>18</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Use_WorkAround__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>RN - CloudSmiths
+Flag that could be used by code to by pass current processes and user alternative processes</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Set this flag to switch between the current process and the alternative workaround process. If CHECKED the workaround process will be enforced.</inlineHelpText>
+        <label>Use WorkAround</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Warning_Percentage__c</fullName>
+        <description>RN - CloudSmiths 
+If this percentage threshold is reached SF will send an email notification to Absa SF Support</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Enter a warning threshold percentage. If this threshold is reached Salesforce will send an email notification to Absa Salesforce Support</inlineHelpText>
+        <label>Warning Percentage</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Warning_Sent__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Warning Sent</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>X24_Running_Limit__c</fullName>
+        <defaultValue>0</defaultValue>
+        <description>RN - CloudSmiths
+The current running limit within a 24 hour cycle</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The current running limit within a 24 hour cycle - This value gets reset at 12:00GMT</inlineHelpText>
+        <label>24 Hour Running Limit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>System Limits Tracker</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>NAME</columns>
+        <columns>System_Limit__c</columns>
+        <columns>X24_Running_Limit__c</columns>
+        <columns>Current_Threshold__c</columns>
+        <columns>Warning_Percentage__c</columns>
+        <columns>Enforce_Workaround_Percentage__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Limits Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>System Limits Trackers</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

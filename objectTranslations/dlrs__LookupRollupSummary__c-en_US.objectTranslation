@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <help><!-- For Realtime rollups can only be set when the Child Apex Trigger has been deployed. --></help>
+        <label><!-- Active --></label>
+        <name>dlrs__Active__c</name>
+    </fields>
+    <fields>
+        <help><!-- Rollup operation. --></help>
+        <label><!-- Aggregate Operation --></label>
+        <name>dlrs__AggregateOperation__c</name>
+        <picklistValues>
+            <masterLabel>Avg</masterLabel>
+            <translation><!-- Avg --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Concatenate</masterLabel>
+            <translation><!-- Concatenate --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Concatenate Distinct</masterLabel>
+            <translation><!-- Concatenate Distinct --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Count</masterLabel>
+            <translation><!-- Count --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Count Distinct</masterLabel>
+            <translation><!-- Count Distinct --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>First</masterLabel>
+            <translation><!-- First --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Last</masterLabel>
+            <translation><!-- Last --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Max</masterLabel>
+            <translation><!-- Max --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Min</masterLabel>
+            <translation><!-- Min --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Sum</masterLabel>
+            <translation><!-- Sum --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <help><!-- API name of the field that will store the result of the rollup on the Parent Object, e.g. AnnualRevenue --></help>
+        <label><!-- Aggregate Result Field --></label>
+        <name>dlrs__AggregateResultField__c</name>
+    </fields>
+    <fields>
+        <help><!-- This field is used by the system when using the Calculate button to track if a calculation job is already running. Clear this field if the system reports the calculate job is already running and you known this is not the case. --></help>
+        <label><!-- Calculate Job Id --></label>
+        <name>dlrs__CalculateJobId__c</name>
+    </fields>
+    <fields>
+        <help><!-- Realtime mode requires an Apex Trigger to be deployed for the Child Object. Click Manage Child Trigger button to deploy. --></help>
+        <label><!-- Calculation Mode --></label>
+        <name>dlrs__CalculationMode__c</name>
+        <picklistValues>
+            <masterLabel>Developer</masterLabel>
+            <translation><!-- Developer --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Process Builder</masterLabel>
+            <translation><!-- Process Builder --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Realtime</masterLabel>
+            <translation><!-- Realtime --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Scheduled</masterLabel>
+            <translation><!-- Scheduled --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <help><!-- API name of the Child Object, e.g. Opportunity --></help>
+        <label><!-- Child Object --></label>
+        <name>dlrs__ChildObject__c</name>
+    </fields>
+    <fields>
+        <help><!-- Enter the character or characters to delimit values in the Field to Aggregate when rolling up text values into the Aggregate Result Field, enter BR() for new line. Only applies when using Concatenate operation. --></help>
+        <label><!-- Concatenate Delimiter --></label>
+        <name>dlrs__ConcatenateDelimiter__c</name>
+    </fields>
+    <fields>
+        <label><!-- Description --></label>
+        <name>dlrs__Description__c</name>
+    </fields>
+    <fields>
+        <help><!-- API name of the field on the Child Object that contains the value to rollup, e.g. Amount --></help>
+        <label><!-- Field to Aggregate --></label>
+        <name>dlrs__FieldToAggregate__c</name>
+    </fields>
+    <fields>
+        <help><!-- Only applicable when using the Concatenate, Concatenate Distinct, Last and First aggregate operations. Defaults to the field given in Field to Aggregate. --></help>
+        <label><!-- Field to Order By --></label>
+        <name>dlrs__FieldToOrderBy__c</name>
+    </fields>
+    <fields>
+        <help><!-- API name of the Parent Object, e.g. Account --></help>
+        <label><!-- Parent Object --></label>
+        <name>dlrs__ParentObject__c</name>
+    </fields>
+    <fields>
+        <help><!-- If you have specified a relationship criteria, you must confirm the fields referenced by it here on separate lines, for example for criteria StageName = &apos;Won&apos; list StageName in this field. You do not need to specify the Field to Aggregate field however. --></help>
+        <label><!-- Relationship Criteria Fields --></label>
+        <name>dlrs__RelationshipCriteriaFields__c</name>
+    </fields>
+    <fields>
+        <help><!-- SOQL WHERE clause applied when querying Child Object records, e.g. Amount &gt; 200 --></help>
+        <label><!-- Relationship Criteria --></label>
+        <name>dlrs__RelationshipCriteria__c</name>
+    </fields>
+    <fields>
+        <help><!-- API name of the Lookup field on the Child Object relating to the Parent Object, e.g. AccountId --></help>
+        <label><!-- Relationship Field --></label>
+        <name>dlrs__RelationshipField__c</name>
+    </fields>
+    <fields>
+        <label><!-- Lookup Rollup Summary Unique Name --></label>
+        <name>dlrs__UniqueName__c</name>
+    </fields>
+    <webLinks>
+        <label><!-- Calculate --></label>
+        <name>dlrs__Calculate</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- EnhancedEdit --></label>
+        <name>dlrs__EnhancedEdit</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- EnhancedNew --></label>
+        <name>dlrs__EnhancedNew</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- ManageChildTrigger --></label>
+        <name>dlrs__ManageChildTrigger</name>
+    </webLinks>
+</CustomObjectTranslation>

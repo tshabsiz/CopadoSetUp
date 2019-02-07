@@ -1,0 +1,349 @@
+<apex:page id="detailPage"  tabStyle="advpm__ActionPlanTemplate__c" standardController="advpm__ActionPlanTemplate__c" extensions="advpm.ActionPlanTemplateDetailController" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStyleSheets="true" >
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <title>
+        <apex:outputPanel layout="none" >{!$Label.advpm__ap_action_plan_template}</apex:outputPanel>
+        <apex:outputPanel layout="none" >{!actionPlanTemplate.Name}</apex:outputPanel>
+    </title>
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <script type="text/javascript">
+        var AP_DAYS_AFTER_MSG           = "{!$Label.ap_days_after_msg}";
+    </script>
+    <apex:includeScript value="{!$Resource.advpm__ActionPlan_Utilities}" />
+    <apex:includeScript value="{!$Resource.advpm__ActionPlans_sortable}" />
+    <apex:includeScript value="{!$Resource.advpm__ActionPlan_ActionPlanTemplateDetailScripts}" />
+    <apex:stylesheet value="{!$Resource.advpm__ActionPlan_ActionPlanTemplateDetailStyles}" />
+    <c:includeSLDS sldsV2="true" /><!-- value="{!URLFOR($Resource.SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" -->
+    <style type="text/css">
+        .slds .slds-modal--large .slds-modal__container{width:90%;max-width:960px;min-width:640px;}
+        .slds #editModal .slds-pill{display:block;}
+        .slds #editModal .slds-pill:hover{background-color:#fff;}
+        .slds #editModal .slds-pill__label{max-width:15.5rem;}
+        .slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+        .slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+        .slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+        .modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+        .slds-modal__close {right: -.8rem;}
+        .frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+        .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+        .date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+        .datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+        .slds .slds-modal--large .slds-modal__container{width:90%;max-width:960px;min-width:640px;}
+        .slds #editModal .slds-pill{display:block;}
+        .slds #editModal .slds-pill:hover{background-color:#fff;}
+        .slds #editModal .slds-pill__label{max-width:15.5rem;}
+        .slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+        .slds .slds-form-element__static {line-height: 1.75;}
+        .slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+        .slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+        .modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+        .slds-modal__close {right: -.8rem;}
+        .slds-button{font-size: 0.80rem;}
+        .slds-col--padded {
+             padding-right: 0px;
+             padding-left: 0px; 
+        }
+        .frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+        .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+        .date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+        .datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+         input[type=checkbox]{clear: both;display: block;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+        .uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+        .staff-input select {width: 20%;}
+        .staff-input input {width: 80%;}
+        .slds-table--bordered {border-top: none;}
+        select:-internal-list-box optgroup option::before {content: ""!important;}
+        body button {font-weight: normal;}
+        .slds ul li, .slds ol li {margin-left: 0px!important;}
+        .slds-button-group .slds-button + .slds-button, .slds-button-group .slds-button + .slds-button--last .slds-button {margin-left: -2px;}
+        .slds-dropdown__item > a {color: #0070d2;}
+        .slds .slds-form-element__static a, a.slds-changeLink {color: #16325C;}
+        .bPageBlock .detailList .data2Col {padding-left: 0px;}
+        .slds-checkbox [type="checkbox"][disabled] + .slds-checkbox--faux:after, .slds-checkbox [type="checkbox"][disabled] ~ .slds-checkbox--faux:after {border-color: #a8b7c7;}
+        .sortable th {border-bottom: 1px solid #ccc !important;}
+        .slds .slds-table .slds-cell-wrap {font-family: "Salesforce Sans", Arial, sans-serif;color: #16325C;}
+        .slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 12px;}
+        .slds .slds-panel .slds-form--stacked .slds-panel__section {padding-left: 24px;}
+        .slds-form--stacked .slds-form-element {margin-top: 0.5rem;}
+    </style>
+    <style type="text/css">
+        .detailList .helpOrb {position:relative;right: 0px;}
+        .bPageBlock .detailList tr td{border-bottom: 0px solid #e3deb8;}
+        .sortable th div {float: left;}
+        .sortable th {vertical-align: bottom !important;}
+        .hideD {display:none}
+    </style>
+    
+</head>
+<body class="slds">
+    <apex:form id="detailForm">
+     <apex:pageBlock id="templateDetail" mode="maindetail">
+        <apex:actionFunction name="doEdit" action="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateCreationSLDS?id={!actionPlanTemplate.Id}" />
+        <apex:actionFunction name="doDelete" action="{!deleteTemplate}" />
+        <apex:actionFunction name="doClone" action="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateCreationSLDS?clone=1&Id={!actionPlanTemplate.Id}"/>
+        <apex:actionFunction name="doNewActionPlan" action="{!$Site.Prefix}/apex/advpm__ActionPlanCreationSLDS?templateId={!actionPlanTemplate.Id}" />
+        <apex:actionFunction name="doExport" action="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateExport?Id={!actionPlanTemplate.Id}" />
+        
+        <c:slds_pageheader pageHeaderType="RECORD"
+                            headerTitle="{!$Label.advpm__ap_action_plan_template}" 
+                            headerSubTitle="{!actionPlanTemplate.Name}"
+                            headerIconCSS="slds-icon-custom-39"
+                            headerIconPath="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/custom-sprite/svg/symbols.svg#custom39')}">
+            <div class="slds-button-group" role="group">
+                <button id="edit" class="slds-button slds-button--neutral" onClick="doEdit();return false;">{!$Label.ap_Edit}</button>
+                <button id="delete" class="slds-button slds-button--neutral" onClick="var dl=confirm('{!$Label.ap_AreYouSureAsk}');if(dl){doDelete();}return false;">{!$Label.ap_Delete}</button>
+                <button id="clone" class="slds-button slds-button--neutral" onClick="doClone();return false;">{!$Label.ap_Clone}</button>
+                <!-- <apex:commandButton id="share" action="/p/share/CustomObjectSharingDetail?parentId={!actionPlanTemplate.Id}" value="{!$Label.ap_Sharing}"/> -->
+                <div class="slds-button--last slds-dropdown-trigger">
+                    <button class="slds-button slds-button--icon-border-filled">
+                        <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/utility-sprite/svg/symbols.svg#down')}" />
+                        <span class="slds-assistive-text">More</span>
+                    </button>
+                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                        <ul class="slds-dropdown__list" role="menu">
+                            <li id="menu-0-0" class="slds-dropdown__item">
+                                <a id="newActionPlan" href="javascript:void(0)" role="menuitem" onclick="doNewActionPlan();return false;">{!$Label.ap_New} {!$Label.ap_Action_Plan}</a>
+                            </li>
+                            <li id="menu-1-1" class="slds-dropdown__item">
+                                <a id="export" href="javascript:void(0)" role="menuitem" onclick="doExport();return false;">{!$Label.ap_Export}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </c:slds_pageheader>
+        
+        <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+	       <div class="slds-form--stacked">
+	           <div class="slds-panel__section">
+                    <h3 class="slds-text-heading--small slds-m-bottom--medium">{!$Label.advpm__ap_information}</h3>
+                        
+                        <div class="slds-grid slds-has-divider--bottom">
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">{!$ObjectType.advpm__ActionPlanTemplate__c.fields.Name.label}</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">{!actionPlanTemplate.Name}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Start_Date_Source_Field__c.label}</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">{!templateSourceObjField}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Description__c.label}</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">{!actionPlanTemplate.advpm__Description__c}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-has-divider--bottom">
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">{!$ObjectType.advpm__ActionPlanTemplate__c.fields.advpm__Source_Object__c.label}</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">{!templateSourceObj}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent" style="margin-top:0.45rem;">
+                                    <label class="slds-checkbox slds-form-element__label">
+                                        <apex:inputCheckbox value="{!actionPlanTemplate.advpm__SkipWeekends__c}"  disabled="true" id="skipWeekendCheckbox" style="margin: 0px;" />
+                                        <span class="slds-checkbox--faux"></span>
+                                        <apex:outputLabel styleclass="slds-form-element__label" value="{!$Label.advpm__ap_skipweekendswhen}" for="skipWeekendCheckbox" />
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">
+                                            <apex:outputPanel id="skipDayTable" layout="block" styleClass="slds-form-element" rendered="{!(actionPlanTemplate.advpm__SkipDay__c != null && actionPlanTemplate.advpm__SkipWeekends__c == true)}">
+                                                <span class="slds-form-element__label">{!$Label.ap_DefaultWeekendDueDates}&nbsp;<strong>{!actionPlanTemplate.SkipDay__c}</strong></span>
+                                            </apex:outputPanel>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">&nbsp;</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">&nbsp;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+                <div class="slds-form--stacked">
+                    <div class="slds-panel__section">
+                    <apex:pageBlockSection id="taskSection" columns="1">
+                      <apex:dataTable value="{!TemplateTasks}" var="task" id="theTable" styleClass="slds-table slds-table--bordered sortable" headerClass="slds-theme--shade">
+                        <apex:column headerClass="actTypeCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" id="columnOne" value="{!task.advpm__Activity_Type__c}" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Activity_Type__c.label}" />
+                        <apex:column headerClass="subjectCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Subject__c.label}" value="{!task.advpm__Subject__c}" />
+                        <apex:column headerClass="dependencyColumn slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__APTTaskTemplate__c.label}" value="{!task.APTTaskTemplate__r.advpm__Subject__c}" />
+                        <apex:column headerClass="daysCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" value="{!task.advpm__DaysFromStart__c}" >
+                            <apex:facet name="header">
+                                <div>Days Before<br/>or After</div>
+                            </apex:facet>
+                        </apex:column>
+                        <apex:column headerClass="startTimeCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap Start_Time_Display_field" >
+                            <apex:facet name="header">Start<br/>Time</apex:facet>
+                            <!-- <span class="hideD">{!task.advpm__taskIndex__c}.&nbsp;</span> -->
+                            <apex:outputField value="{!task.advpm__Start_Time_Display__c}"  rendered="{!task.advpm__Activity_Type__c == 'Event'}" />
+                        </apex:column>
+                        
+                        <apex:column headerClass="durationCol slds-text-heading--label slds-truncate" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__DurationInMinutes__c.label}" styleClass="slds-cell-wrap DurationInMinutes_field" >
+                            <apex:facet name="header">Duration<br/>(in minutes)</apex:facet>
+                            <apex:outputPanel rendered="{!task.advpm__Activity_Type__c == 'Event'}">
+                                <apex:outputField value="{!task.advpm__DurationInMinutes__c}"  />
+                            </apex:outputPanel>
+                        </apex:column>
+                        <apex:column headerClass="assigned_to_field slds-text-heading--label slds-truncate" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__User__c.label}" styleClass="slds-cell-wrap assigned_to_field" >
+                            <apex:outputField value="{!task.advpm__User__c}" rendered="{!task.advpm__User_Type__c != 'SourceUserFields'}" />
+                            <apex:outputLabel rendered="{!task.advpm__User_Type__c == 'SourceUserFields' && task.advpm__User_Source_Field__c != null && task.advpm__User_Source_Field__c != ''}">[<strong>{!map_SourceObjFields[task.advpm__User_Source_Field__c]}</strong>]</apex:outputLabel>
+                        </apex:column>
+                        
+                        <apex:column headerClass="typeCol slds-text-heading--label slds-truncate" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Type__c.label}" styleClass="slds-cell-wrap type_field" >
+                            <apex:outputField value="{!task.advpm__Type__c}" />
+                        </apex:column>
+                        
+                        <apex:column headerClass="priorityCol slds-text-heading--label slds-truncate" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Priority__c.label}" styleClass="slds-cell-wrap Priority_field" >
+                            <apex:outputField value="{!task.advpm__Priority__c}" rendered="{!task.advpm__Activity_Type__c == 'Task'}" />
+                        </apex:column>
+                        
+                        <apex:column headerClass="sendMailcol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap">
+                            <apex:facet name="header">Send<br/>Email</apex:facet>
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox">
+                                            <apex:inputCheckbox value="{!task.advpm__SendEmail__c}"  disabled="true"  style="margin: 0px;"/>
+                                            <span class="slds-checkbox--faux"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                        </apex:column>
+                        <apex:column headerClass="reminderCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Reminder__c.label}" >
+                            <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox">
+                                            <apex:inputCheckbox value="{!task.advpm__Reminder__c}" disabled="true"  style="margin: 0px;"/>
+                                            <span class="slds-checkbox--faux"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                      </apex:column>
+                        <apex:column headerClass="commentsCol slds-text-heading--label slds-truncate" styleClass="slds-cell-wrap" headerValue="{!$ObjectType.advpm__APTTaskTemplate__c.fields.advpm__Comments__c.label}">
+                            <apex:outputPanel id="commentPanel" style="display:none">
+                                <div id="commentContainer" onmouseout="javascript:ActionPlanTemplateDetailScripts.hideComments('{!$Component.theTable.columnOne}');">
+                                    <div class="hd">
+                                        <div class="hd-left">{!$Label.ap_Comments}</div>
+                                        <div class="hd-right"></div>
+                                    </div>
+                                    <div class="bd">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <textarea id="Comments" readonly="true" class="slds-textarea" >{!task.Comments__c}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!task.advpm__Comments__c != null}">(<a onmouseover="javascript:ActionPlanTemplateDetailScripts.showComments('{!$Component.theTable.columnOne}');" style="text-decoration:underline">...</a>)</apex:outputPanel>
+                        </apex:column>
+                    
+                    </apex:dataTable>
+                    </apex:pageBlockSection>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GANTT VIEW SECTION -->
+            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+              <div class="slds-form--stacked">
+                <div class="slds-panel__section">
+                  <h3 class="slds-text-heading--small slds-m-bottom--medium">Gantt View</h3>
+                    <apex:pageBlockSection columns="1">
+                        <iframe id="frame-gantt-ap" frameborder="0" scrolling="no" title="Action Plan Template Activities" width="100%" src="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateGantt?id={!ActionPlanTemplate__c.Id}"></iframe>
+                        <script type="text/javascript">
+                            function AdjustIframeHeightOnLoad() { document.getElementById("frame-gantt-ap").style.height = document.getElementById("frame-gantt-ap").contentWindow.document.body.scrollHeight + "px"; }
+                            function AdjustIframeHeight(i) { document.getElementById("frame-gantt-ap").style.height = parseInt(i) + "px"; }
+                        </script>
+                    </apex:pageBlockSection>
+                </div>
+              </div>
+            </div>
+            <!-- END GANTT VIEW SECTION -->
+            
+            <div class="slds-panel slds-grid slds-grid--vertical slds-nowrap">
+                <div class="slds-form--stacked">
+                    <div class="slds-panel__section">
+                        <h3 class="slds-text-heading--small slds-m-bottom--medium">System Information</h3>
+                        <div class="slds-grid">
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <label class="slds-form-element__label">{!$Label.ap_CreatedBy}</label>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">
+                                            <apex:outputField value="{!ActionPlanTemplate.CreatedById}" />,
+                                        </span>
+                                        <span class="slds-form-element__static">
+                                            <apex:outputField value="{!ActionPlanTemplate.CreatedDate}" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <label class="slds-form-element__label">{!$Label.advpm__ap_lastmodifiedby}</label>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static">
+                                            <apex:outputField value="{!ActionPlanTemplate.LastModifiedById}" />,
+                                        </span>
+                                        <span class="slds-form-element__static">
+                                            <apex:outputField value="{!ActionPlanTemplate.LastModifiedDate}" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size--1-of-3">
+                                <div class="slds-form-element slds-hint-parent">
+                                    <span class="slds-form-element__label">Owner</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static"><apex:outputField value="{!actionPlanTemplate.OwnerId}" />&nbsp;[<a class="slds-changeLink" href="/{!actionPlanTemplate.Id}/a?retURL={!$CurrentPage.URL}" >{!$Label.ap_Change}</a>]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </apex:pageBlock>
+        <script>
+            ActionPlanTemplateDetailScripts.removeHover();
+        </script>   
+    </apex:form>
+</body>
+</html>
+</apex:page>

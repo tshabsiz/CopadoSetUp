@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Reject KM Submission Reponse</name>
+    <style>freeForm</style>
+    <subject>Notification: Knowledge Request has been Rejected</subject>
+    <textOnly>Dear {!Case.User__c}
+
+Please be aware that your Knowledge Request submission has been Rejected.
+
+Knowledge Piece Title: {!Case.Subject}
+Reason for rejection: {!Case.Add_Case_Comment__c}
+Responsible Knowledge management team member -  {!Case.OwnerFullName}
+
+
+
+Regards
+Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

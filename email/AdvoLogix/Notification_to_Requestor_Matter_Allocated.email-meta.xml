@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Requestor of the legal work to be notified when a matter is allocated and when a Lead Lawyer is added.</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Notification to Requestor - Matter Allocated</name>
+    <style>freeForm</style>
+    <subject>Matter/Query has been Allocated and Lead Lawyer Assigned</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+
+
+Your matter/query has been allocated as follows:
+
+
+
+Allocated to: {!Case.OwnerFullName}
+
+
+
+Contact details: {!Case.OwnerEmail}
+
+
+
+Case number: {!Case.CaseNumber}
+
+
+
+Client Name: {!Case.External_Party_Name__c}
+
+
+
+Auto generated email - Please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

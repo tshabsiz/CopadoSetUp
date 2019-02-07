@@ -1,0 +1,81 @@
+<apex:component >
+        
+    <script>
+    
+        jQuery('document').ready(function() {
+            var height = jQuery( window ).height();
+            
+            //minus half of loadingBoxPanel
+            jQuery('.overlay').css('padding-top', height / 2 - 45);
+        });
+        
+        function startLoading(label) {
+            jQuery('#load_scrl').css('top', jQuery(document).scrollTop() + 200);
+            jQuery('#loadingBoxLabel').text(label);
+            
+            jQuery('.loadingBox').show();
+            var width = jQuery( window ).width();
+            var loadingBoxPanelWidth = jQuery('#loadingBoxPanel').width();
+            
+            //page width minus half of loadingBoxPanel
+            var padding = (width / 2) - (loadingBoxPanelWidth / 2);
+            jQuery('.overlay').css('padding-left', padding);
+        }
+        
+        function endLoading() {
+            jQuery('.loadingBox').hide();
+        }
+    
+    </script>
+        
+    <style>
+    
+        .overlay {
+            display:    none;
+            position:   fixed;
+            z-index:    2000;
+            top:        0;
+            left:       0;
+            height:     100%;
+            width:      100%;
+            background: rgba(0, 0, 0, 0.53);
+        }
+        
+        .slds-spinner--medium {
+            display: inline-block;
+        }
+        
+        #loadingBoxPanel {
+            height: 70px;
+            background-color: white;
+            border-radius: 7px;
+            display: inline-block;
+            padding-top: 8px;
+            padding-left: 10px;
+        }
+        
+        #loadingBoxPanel img {
+            
+        }
+        
+        #loadingBoxLabel {
+            margin-left: 14px;
+            margin-right: 27px;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+        }
+    
+    </style>
+    
+    <div id="load_scrl" class="loadingBox" style="display:none"> </div>
+    <div class="loadingBox overlay">
+        <div id="loadingBoxPanel">
+            <div class="slds-spinner--medium">
+                <img src="{!URLFOR($Resource.SLDS092, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." />
+            </div>
+            <div id="loadingBoxLabel"/>
+        </div>
+    </div>
+
+</apex:component>

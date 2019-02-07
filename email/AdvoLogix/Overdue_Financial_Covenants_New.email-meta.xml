@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>TMG Agent I am notified of overdue Financial Covenants 7 days after they became due</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Overdue Financial Covenants</name>
+    <style>freeForm</style>
+    <subject>Overdue Financial Covenants</subject>
+    <textOnly>Good day,
+
+In terms of the facility agreement between ABSA bank and {!Condition__c.Relationship__c}, the following information/financial undertakings is outstanding as per the {!Condition__c.Clause__c}.
+
+Facility Name: {!Condition__c.Name}
+Covenant Type: {!Condition__c.Type__c}
+Period: {!Condition__c.00N9E000000hxc5}, {!Condition__c.Activation_Start__c}, {!Condition__c.Activation_End__c}
+Due Date: {!Condition__c.Due_Date__c}
+
+Please submit the information to &lt;transaction management email address&gt; by &lt;due date&gt;.
+
+If you require any further information contact &lt;transaction management email address&gt;.
+
+Thank you,
+Transaction Management Group
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

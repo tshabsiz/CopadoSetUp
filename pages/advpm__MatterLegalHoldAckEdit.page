@@ -1,0 +1,22 @@
+<apex:page standardController="advpm__Matter_Legal_Hold_Acknowledgement__c" extensions="advpm.MatterLegalHoldAckController" tabStyle="advpm__Matter__c">
+<apex:form >
+    <apex:sectionHeader title="Matter Legal Hold Acknowledgement" subTitle="Edit" />
+    <apex:pageBlock mode="Edit">
+        <apex:pagemessages />
+        <apex:pageBlockButtons >
+            <apex:commandButton value="  Save  " action="{!save}" />
+            <apex:commandButton value="  Cancel  " action="{!cancel}" style="margin-left: 1em;" />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection columns="1">
+            <apex:outputField value="{!advpm__Matter_Legal_Hold_Acknowledgement__c.advpm__Matter__c}" />
+            <apex:outputField value="{!advpm__Matter_Legal_Hold_Acknowledgement__c.advpm__Recipient__c}" />
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Status" />
+                <apex:selectList value="{!advpm__Matter_Legal_Hold_Acknowledgement__c.advpm__Matter__c}" disabled="true">
+                    <apex:selectOption itemValue="Acknowledged" itemLabel="Acknowledged" />
+                </apex:selectList>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

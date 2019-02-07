@@ -1,0 +1,74 @@
+<!--
+
+16-01-2018 - TdB - Created VF Page
+
+--> 
+
+<apex:page sidebar="false" controller="Agreement_Approval"  tabStyle="Agreement__c">
+    <!-- FORM -->
+    <apex:form >
+        
+        <apex:actionFunction name="AF" action="{!disableCheckbox}"  rerender="participantBlock">
+        <apex:param name="selectItemId" value="" assignTo="{!participantSelectedId}"/>       
+    </apex:actionFunction>
+        
+        <!-- SECTION HEADER -->
+        <apex:sectionHeader title="Agreement - Submit for Approval" />   
+
+		<apex:pageBlock rendered="{!hasError}"> 
+            <apex:pageMessages />
+            <!-- BUTTONS -->
+            <apex:pageBlockButtons location="Bottom">
+               <apex:commandButton action="{!actionCancel}"  value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <!-- / BUTTONS -->
+        </apex:pageBlock>
+        
+        <!-- PAGE BLOCK -->
+        <apex:pageBlock rendered="{!NOT(hasError)}">            
+			<apex:pageMessages />
+            <!-- BUTTONS -->
+            <apex:pageBlockButtons location="Bottom">
+               <apex:commandButton id="SaveB"  action="{!actionSubmitApproval}" value="Submit For Approval"/>
+               <apex:commandButton action="{!actionCancel}"  value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <!-- / BUTTONS -->
+
+            <!-- SECTION --> 
+            <apex:pageBlockSection rendered="{!ParticipantWrapperList.size = 0}" columns="1">  
+                There are no participants available on the associated Deal to select for approval submission.
+            </apex:pageBlockSection>
+            <!-- / SECTION --> 
+            
+             <apex:pageBlockSection title="Review Information" rendered="{!ParticipantWrapperList.size > 0}" columns="1" collapsible="False"> 
+                 <apex:outputField value="{!agreementRecord.Name}"/>
+               
+                 <apex:inputField value="{!agreementRecord.Review_Due_Date__c}"/>
+                <apex:inputTextArea value="{!agreementRecord.Review_Comments__c}" cols="150" rows="5"  />
+            </apex:pageBlockSection>
+            
+            <!-- SECTION --> 
+            <apex:pageBlockSection title="Select Approver" rendered="{!ParticipantWrapperList.size > 0}" columns="1" collapsible="False">                 
+                <!-- TABLE -->
+                 <apex:outputPanel layout="block" id="participantBlock">
+                <apex:pageBlockTable value="{!participantWrapperList}" var="WrapRec">
+                    <apex:column headerValue="Selected">
+                        <apex:inputCheckbox onclick="AF('{!WrapRec.record.Id}')" value="{!WrapRec.selected}" selected="AF('IF(WrapRec.selected==true,true,false)')"/>
+                    </apex:column> 
+                    <apex:column value="{!WrapRec.record.Name}" headerClass="Participant Name" />
+                    <apex:column value="{!WrapRec.record.advpm__Role__c}" />
+                    <apex:column value="{!WrapRec.record.Primary_Contact_for_Role__c}" /> 
+                </apex:pageBlockTable>
+                <!-- / TABLE -->
+                </apex:outputPanel>
+                
+            </apex:pageBlockSection>
+            <!-- / SECTION --> 
+
+        </apex:pageBlock>
+        <!-- / PAGE BLOCK -->
+        
+    </apex:form>
+    <!-- / FORM -->
+    
+</apex:page>

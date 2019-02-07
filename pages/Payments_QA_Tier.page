@@ -1,0 +1,42 @@
+<apex:page standardController="Case" extensions="Payments_QA_Statements_Ext" showHeader="false" sidebar="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm">
+        <apex:messages ></apex:messages>
+        <div class="slds">
+            <div class="slds-form--stacked" id="cnumb">
+                <div class="slds-form-element" id="divcnumb">
+                    <label class="slds-form-element__label">Account Number</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputText id="cnumbval" value="{!inputKeyTier}" styleclass="slds-input" ></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="slds-form-element slds-float--right">
+                <span id="newMsg">
+                <button id="btn" class="slds-button slds-button--brand" type="button" onclick="request();" >
+                    Submit Request
+                </button>
+                </span>
+            </div>
+        </div>
+       
+    </apex:form> 
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+     var tierInput = '';
+    function request(){
+        //reqAction();
+        openSubTab();
+    };
+    function openSubTab() {
+        tierInput = document.getElementById('{!$Component.mainFrm.cnumbval}').value;
+        sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+    };
+    var primaryTabId2 = function primaryTabId2(result2) {
+        sforce.console.openSubtab(result2.id , '/apex/Payments_Tier_View?tierref=' + tierInput, true, tierInput, null);
+    };    
+    </script>
+</apex:page>

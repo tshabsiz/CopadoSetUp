@@ -1,0 +1,33 @@
+<messaging:emailTemplate subject="Salesforce - New JLOC submission created ({!relatedTo.Name} owned by {!relatedTo.owner.name})" recipientType="User" relatedToType="JLOC__c">
+<messaging:htmlEmailBody >
+<html>
+<body lang='EN-US' style='tab-interval:.5in'>
+<p style='margin:0in;margin-bottom:.0001pt'>
+<span style='font-size:10.0pt; font-family:"Arial","sans-serif";color:black'>
+A new JLOC submission has been created. Please note that the JLOC Paper cannot be submitted until Pre-sceening and Compliance checks have been completed. Details of the JLOC paper are:
+<br/><br/>
+JLOC Owner: {!relatedTo.owner.name}
+<br/>
+Client: {!relatedTo.Organisation__r.Name}
+<br/>
+Created Date: <apex:outputText value="{0, date, yyyy/MM/dd}"><apex:param value="{!relatedTo.CreatedDate}" /></apex:outputText>
+<br/><br/>
+</span>
+<span style='font-size:10.0pt; font-family:"Arial","sans-serif";color:black'>
+Click <a target="_blank" href="{!RelatedTo.Base_URL__c}{!RelatedTo.ID}">here</a> to access the JLOC record.
+</span>
+</p>
+</body>
+</html>
+</messaging:htmlEmailBody>
+
+<messaging:plainTextEmailBody >
+A new JLOC submission has been created. Please note that the JLOC Paper cannot be submitted until Pre-sceening and Compliance checks have been completed. Details of the JLOC paper are:
+
+JLOC Owner: {!relatedTo.owner.name}
+Client: {!relatedTo.Organisation__r.Name}
+Created Date: <apex:outputText value="{0, date, yyyy/MM/dd}"><apex:param value="{!relatedTo.CreatedDate}" /></apex:outputText>
+
+Follow this link {!RelatedTo.Base_URL__c}{!RelatedTo.ID} to access the JLOC record.
+</messaging:plainTextEmailBody>
+</messaging:emailTemplate>

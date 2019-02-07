@@ -1,0 +1,210 @@
+<apex:page applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" standardController="Event__c" extensions="evScheduleExtension_Controller">
+    
+    <apex:composition template="evTemplateStandard">
+        
+        <apex:define name="title"> 
+            <title>Attendance Register | {!Event__c.name}</title>
+        </apex:define>
+        
+        <apex:define name="body"> 
+            <apex:form html-data-toggle="validator" html-role="form" styleClass="form-horizontal">
+                <div id="responseErrors"></div>
+                <div class="page-section">
+                    <span class="ev-name">{!Event__c.Name}</span>
+                    <span class="ev-ven">{!Event__c.Venue__r.Name} - {!Event__c.Venue__r.Address__c}</span>
+                    <span class="ev-ven">                           
+                        <apex:outputText value="{0,date,EEEE MMMM d, yyyy}">
+                            <apex:param value="{!Event__c.Start_Date__c}" />
+                        </apex:outputText>
+                        &nbsp;-&nbsp;
+                        <apex:outputText value="{0,date,EEEE MMMM d, yyyy}">
+                            <apex:param value="{!Event__c.End_Date__c}" />
+                        </apex:outputText>
+                    </span>
+                </div>
+                <input type="text" id="searchInput" onkeyup="searchTable()" class="form-control" placeholder="Search for names.." title="Type in a name" />
+                <table id="registerTable" class="table" cellspacing="0">
+                    <tr class="primary-header">
+                        <th width="100">Time</th>
+                        <th width="130">Location</th>
+                        <th width="120">Meeting Type</th>
+                        <th width="160">Attendee</th>
+                        <th width="120">Attendance</th>
+                    </tr>  
+                    <apex:outputPanel layout="none" id="regButtons">
+                        <apex:repeat var="day" value="{!groups}">
+                            <tr class="header">
+                                <th colspan="5">
+                                    {!day.GroupedVal}
+                                </th>
+                            </tr>
+                            <apex:repeat var="session" value="{!day.sessions}">
+                                <apex:variable value="{!1}" var="rowNum"/>
+                                <apex:repeat var="sb" value="{!session.Session_Bookings__r}">
+                                    <tr class="{!IF((rowNum == (session.Scheduled_Delegates_Confirmed__c + session.Session_Bookings_Walk_Ins__c) && sb.Session__r.Type__c == 'Group') || sb.Session__r.Type__c == '1 on 1', '', 'no-bdr-btm')}">
+                                        <td>
+                                            <apex:outputText rendered="{!IF((rowNum == 1 && sb.Session__r.Type__c == 'Group') || sb.Session__r.Type__c == '1 on 1', 'true', 'false')}">
+                                                {!sb.Session__r.Start_Time_Text__c} - {!sb.Session__r.End_Time_Text__c}
+                                            </apex:outputText>
+                                        </td>
+                                        <td>
+                                            <apex:outputText rendered="{!IF((rowNum == 1 && sb.Session__r.Type__c == 'Group') || sb.Session__r.Type__c == '1 on 1', 'true', 'false')}">
+                                                {!sb.Session__r.Room__r.Name}
+                                            </apex:outputText>
+                                        </td>
+                                        <td>
+                                            <apex:outputText rendered="{!IF((rowNum == 1 && sb.Session__r.Type__c == 'Group') || sb.Session__r.Type__c == '1 on 1', 'true', 'false')}">
+                                                {!sb.Session__r.Type__c}
+                                            </apex:outputText>
+                                        </td>
+                                        <td>{!sb.Delegate__r.Full_Name__c}</td>
+                                        <td>
+                                            <a id="acceptButton" class="reg-icon tick {!IF(sb.Attendance_Status__c == 'Attended', 'active', '')}" onclick="updateAttendance(this, '{!sb.Id}', 'Attended');">
+                                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 
+                                            </a>
+                                            <a id="cancelButton" class="reg-icon cross {!IF(sb.Attendance_Status__c != 'Attended', 'active', '')} " onclick="updateAttendance(this, '{!sb.Id}', '');">
+                                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                                </apex:repeat>
+                                <apex:outputPanel rendered="{!session.Type__c == 'Group'}" layout="none">
+                                    <tr>
+                                        <td colspan="5">
+                                            <a class="btn btn-default" data-toggle="modal" onclick="updateAgendaItemValue('{!session.Id}');" data-target="#newDel"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Walk In</a>
+                                        </td>
+                                    </tr>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </apex:outputPanel>
+                </table>
+                
+                <apex:inputHidden id="delAgendaItem" value="{!delAgendaItem}"/>
+                
+                <div class="modal fade" id="newDel" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">New Delegate</h4>
+                            </div>
+                            <div class="modal-body">
+								<div class="modal-body-inner">
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">First Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delFirstName}" styleClass="form-control" required="true" 
+                                                        html-placeholder="First Name (required)"
+                                                        html-data-required-error="First name is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Last Name</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delLastName}" styleClass="form-control" required="true" 
+                                                        html-placeholder="Last Name (required)"
+                                                        html-data-required-error="First name is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Company</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delCompany}" styleClass="form-control" required="true" 
+                                                        html-placeholder="Company (required)"
+                                                        html-data-required-error="Company is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Email</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delEmail}" styleClass="form-control" required="true" 
+                                                        html-placeholder="Email (required)"
+                                                        html-data-required-error="Email is required"
+                                                        html-pattern="[^@]+@[^@]+\.[a-zA-Z]{2,}"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Title</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delTitle}" styleClass="form-control" required="true" 
+                                                        html-placeholder="Title (required)"
+                                                        html-data-required-error="Title is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group has-feedback">
+                                    <label class="control-label col-sm-3">Mobile</label>
+                                    <div class="col-sm-9">
+                                        <apex:inputText value="{!delMobile}" styleClass="form-control" required="true" 
+                                                        html-placeholder="Mobile (required)"
+                                                        html-data-required-error="Mobile is required"
+                                                        />
+                                        <span class="glyphicon form-control-feedback" html-aria-hidden="true"></span>
+                                        <div class="help-block with-errors v-err"></div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <apex:commandButton styleClass="btn btn-primary" action="{!addWalkIn}" value="Add" />
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+                
+                <script>
+                function updateAttendance(e, sdID, attStatus) {
+                    
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.evScheduleExtension_Controller.updateAttendance}',
+                        sdID, attStatus, 
+                        function(result, event){
+                            if (event.status) {
+								console.log('updated');
+                                $(e).addClass('active').siblings().removeClass('active');
+                            } else if (event.type === 'exception') {
+                                document.getElementById("responseErrors").innerHTML = 
+                                    event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                            } else {
+                                document.getElementById("responseErrors").innerHTML = event.message;
+                            }
+                        }, 
+                        {escape: true}
+                    );
+                }
+                
+                function updateAgendaItemValue(agendaId) {
+                    console.log("updateAgendaItemValue(agendaId): " + agendaId);
+                    v = document.getElementById('{!$Component.delAgendaItem}');
+                    v.value = agendaId;
+                }
+                </script>
+                
+            </apex:form>
+            
+        </apex:define>
+        
+    </apex:composition>
+</apex:page>

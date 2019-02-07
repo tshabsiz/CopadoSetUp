@@ -1,0 +1,33 @@
+<apex:page standardController="Event" tabStyle="Event" extensions="advpm.EventController" action="{!doRedirect}">
+<apex:form >
+    <apex:pageMessages />
+    <apex:actionFunction name="doRedirect" action="{!doRedirect}" />
+    <script type="text/javascript">
+        /*var previousOnload = window.onload;
+        window.onload = function() { 
+            if (previousOnload) { 
+                previousOnload();
+            }
+            init();
+        }
+        function init() {
+            if ({!isSF1}==true && '{!Event.Id}'!='') {
+            	sforce.one.navigateToURL('{!URLFOR($Page.CardWallEvent,null,[src=URLENCODE('EventEdit'),matid=Event.WhatId,id=Event.Id,gotoURL=URLENCODE('/'+Event.Id)])}');
+            }
+            else {
+            	doRedirect();
+            }
+            if ({!isLightning}) {
+                if ('{!Event.Id}'!='') {
+                    alert('Edit');
+                    //sforce.one.editRecord('{!Event.Id}');
+                    sforce.one.navigateToURL('/{!Event.Id}/e?nooverride=1') 
+                }
+                else {
+                    sforce.one.createRecord('Event');
+                }
+            }
+        }*/
+    </script>
+</apex:form>
+</apex:page>

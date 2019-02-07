@@ -1,0 +1,205 @@
+<apex:page standardController="advpm__Matter__c" extensions="KnowledgeHandlerV2" sidebar="false" tabStyle="advpm__Matter__c" standardStylesheets="false"  >
+ 
+ <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+ <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+ 
+ 
+ 
+ 
+ <!--
+ <button onclick='document.getElementById("Matter").classList.toggle("search")'>Hide/Show Search</button>
+ -->
+ <body>
+ 
+ <div id="inline_container"> 
+ 
+ 
+ <apex:form id="form1">
+  <apex:pageMessages id="errors" />
+  <apex:outputPanel rendered="{!refreshPage}">    
+  <script>window.top.location='/{!advpm__Matter__c.id}';    </script> </apex:outputPanel>
+  
+  
+  
+  <div id="toggle_menu">     
+  <table width="100%">
+  
+      <tr><td height="100%">
+          
+  
+                  <tr>  
+                    <td width="200" valign="top">
+                 
+                      <apex:pageBlock title="Search Knowledge" >
+                 
+                      <script type="text/javascript">
+                      
+                      function ChoseSearch() {
+                          if({!strRecordTypeName='Legal'}){
+                              
+                              doSearch();
+                          }
+                          else{
+                            doSearch1();                        
+                          }
+                      
+                      }
+                      
+                      function doSearch() {
+                        
+                        searchServer(
+                          document.getElementById("Description").value,
+                         document.getElementById('{!$Component.j_id0:form1:j_id61.Name1}').value,
+                          document.getElementById('{!$Component.j_id0:form1:j_id61.BusinessUnit}').value       
+                          );
+                      }
+                      function doSearch1() {
+                        searchServer2(
+                          document.getElementById("Description").value,
+                         document.getElementById('{!$Component.j_id0:form1:j_id61.Name1}').value,
+                          document.getElementById('{!$Component.j_id0:form1:j_id61.Summary}').value,
+                          document.getElementById('{!$Component.j_id0:form1:j_id61.Type}').value,
+                          document.getElementById('{!$Component.j_id0:form1:j_id61.Category}').value,   
+                          document.getElementById('{!$Component.j_id0:form1:j_id61.Notes}').value   
+                         
+                                   
+                          );
+                      }
+                      </script> 
+                 
+                      <apex:actionFunction name="searchServer" action="{!runContactSearch}" rerender="results,debug,errors">
+                          <apex:param name="Description" value="" />                      
+                          <apex:param name="Name1" value="" />
+                          <apex:param name="BusinessUnit" value="" />
+                                                 
+                      </apex:actionFunction>
+                      
+                      <apex:actionFunction name="searchServer2" action="{!runContactSearch}" rerender="results,debug,errors">
+                          <apex:param name="Description" value="" />                      
+                          <apex:param name="Name2" value="" />
+                          <apex:param name="Summary" value="" />
+                          <apex:param name="Type" value="" />
+                          <apex:param name="Category" value="" />
+                           <apex:param name="Notes" value="" />                           
+                      </apex:actionFunction>
+                      <table cellpadding="2" cellspacing="2">
+                      <tr>
+                                              
+                        <td style="font-weight:bold;">Type search criteria<br/><br/>
+                        <apex:actionRegion >
+                          <apex:inputtext value="{!Description }"  > <!-- onkeyup="doSearch();" -->
+                              <apex:actionSupport event="onkeyup" rerender="results"  action="{!runContactSearch}" />
+                          </apex:inputtext>              
+                      </apex:actionRegion>
+                        
+                     <!--   <input type="text" id="Description" onkeyup="ChoseSearch();"/> -->
+                        </td>
+                      </tr>
+                      
+                      
+                      
+                      </table>
+                 
+                      </apex:pageBlock>
+                 
+                    </td>
+                    </tr>
+                    <tr>
+                    <td valign="top" height="200">
+                 
+                    <apex:pageBlock mode="edit" id="results">
+                 <apex:pageBlockButtons >
+   <!-- oncomplete="boxrequest();" -->
+   <apex:commandButton value="Save" action="{!SaveEmbed}"  /> 
+  </apex:pageBlockButtons>
+                        <apex:pageBlockTable value="{!lst_LibraryDisplay}" var="cv">
+                 
+                            
+                 
+                            
+                        
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:commandLink value="title" >
+                                        <apex:param name="sortField" value="lastName" />
+                                    </apex:commandLink>
+                                </apex:facet>
+                              
+                              <a target="_blank" href="/{!cv.LibId}">{!cv.LibTitle}</a>
+                  <!--                            <apex:outputLink value="{!cv.id}" > {!cv.title}</apex:outputLink>
+                 
+                               <apex:outputLink onClick="window.open('/{!cv.id');" > {!cv.title}</apex:outputLink>
+                  -->
+                                 
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:commandLink value="Description" >
+                                        <apex:param name="sortField" value="Description" />
+                                    </apex:commandLink>
+                                </apex:facet>
+                                <apex:outputtext value="{!cv.LibDescription}" />
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">
+                                    <apex:commandLink value="Select" >
+                                        <apex:param name="sortField" value="Select" />
+                                    </apex:commandLink>
+                                </apex:facet>
+                                <apex:inputCheckbox value="{!cv.LibSelect}" />
+                            </apex:column>
+                            
+                      </apex:pageBlockTable>      
+                 
+                    </apex:pageBlock>
+                 
+                    </td>
+                  </tr>
+  
+       
+        
+     
+     </td>
+    </tr>
+ </table>
+ 
+ </div>
+
+ <div style="display:none">
+ <apex:pageBlock title="Matter" mode="edit" >
+      
+     
+      <apex:inputField value="{!Matter.Notes__c}" id="Notes"/>
+      <apex:inputField value="{!Matter.Matter_Type__c}" id="Type" /> 
+          <apex:inputField value="{!Matter.Category__c}" id="Category"/>
+          <apex:inputField value="{!Matter.advpm__Description__c}" id="Summary"/>
+          
+          <apex:inputField value="{!Matter.name}" id="Name1"/>
+          
+          <apex:inputField value="{!Matter.Business_Unit_Cluster_Segment__c}"  id="BusinessUnit"/>
+        
+      </apex:pageBlock>
+ </div>
+ 
+  </apex:form>
+ 
+ </div>
+ </body>
+ 
+</apex:page>
+
+
+
+       <!--
+           <apex:repeat var="cv" value="{!contentVersions}">
+           
+               
+             
+               {!cv.FileType}
+               {!cv.Owner.Name}
+               {!cv.VersionNumber}
+               
+      
+       <!--
+        <apex:iframe src="https://barclaysafrica--tmgleap.cs88.my.salesforce.com/0699E0000008fVq&output=embed" scrolling="true" id="theIframe"/>
+       -->

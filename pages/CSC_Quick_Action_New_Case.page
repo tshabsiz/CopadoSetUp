@@ -1,0 +1,395 @@
+<apex:page standardController="Case" extensions="ADAPT360" sidebar="false" showHeader="false" standardStylesheets="true" >
+    <head>
+        <!--<apex:includeScript value="{!URLFOR($Resource.CSCJQuery, 'jquery-1.12.4.min.js')}" />-->
+        <script src="../../soap/ajax/37.0/connection.js" type="text/javascript" >
+        </script>
+        <script src="../../soap/ajax/37.0/apex.js" type="text/javascript" >
+        </script>
+        <apex:includeScript value="/support/console/35.0/integration.js" />
+    </head>
+    <apex:form id="newCaseForm">
+        <apex:pageMessages id="pagemsg"></apex:pageMessages>
+        <apex:actionFunction name="CallApexMethod" action="{!searchSalesforceAccounts}" reRender="blockseccif,pagemsg" status="searchSta">
+            <apex:param id="qtype" name="qType" value="" assignTo="{!qType}"/>
+            <apex:param id="qvalue" name="qValue" value="" assignTo="{!qValue}"/>
+        </apex:actionFunction>
+        <apex:pageBlock id="pgblockCIF" tabStyle="Account" >
+            <div style="float: right;" width="100%">
+                <button  type="button" id="cifDetails" onclick="caseSubTab(document.getElementById('qt').value);return true;" >
+                    View CIF Details
+                </button>
+                <button  type="button" id="accSearch" onclick="searchSF(document.getElementById('regId').value,'accountNumber');return true;" >
+                    Account Number
+                </button>
+                <button  type="button" id="regSearch" onclick="searchSF(document.getElementById('regId').value,'passport');return true;" >
+                    Reg. No / Passport
+                </button>
+                <button  type="button" id="idSearch" onclick="searchSF(document.getElementById('regId').value,'identityDocument');return true;" >
+                    ID Number
+                </button>
+                <button  type="button" id="cifsfSearch" onclick="searchSF(document.getElementById('regId').value,'cif2cif');return true;" >
+                    CIF No
+                </button>
+                <button  type="button" id="cifSearch" onclick="searchSF(document.getElementById('regId').value,'cif');return true;" >
+                    Relationship Name
+                </button>
+                <!-- ***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+<button  type="button" id="cifUserCode" onclick="searchSF(document.getElementById('regId').value,'ucode');return true;" >
+User Code
+</button>
+-->
+            </div>
+            <br/><br/>
+            <apex:actionFunction action="{!accountSelection}" name="addAccount" reRender="blockseccif,pagemsg" status="searchSta"/>
+            <apex:actionFunction action="{!cifSelection}" name="cifAccount" reRender="blockseccif,pagemsg" status="searchSta"/>
+            <apex:pageBlockSection id="blockseccif" columns="4">
+                <apex:outputText value="Relationship Name(s)" />
+                <apex:selectList id="relationships" size="1" value="{!relName}" onchange="addAccount()" >
+                    <apex:selectOptions value="{!accountOptions}" />
+                </apex:selectList>
+                <apex:actionStatus startText="Busy Searching...." stopText="" id="searchSta"/>
+                <input type="text" id="regId" value="{!qValue}" onchange="updateStyle(this);" style="white-space: pre-wrap;"/>
+                <input type="hidden" id="relcif" value="{!relCIF}" style="white-space: pre;"/>
+                <apex:outputText value="" />
+                <apex:outputText value="" />
+                <apex:outputText value="" rendered="{!PrimaryClients.size <= 1}"/>
+                <apex:outputText value="CIF Data" rendered="{!PrimaryClients.size > 1}"/>
+                <apex:selectList id="cifrelationships" size="1" value="{!cifName}" onchange="cifAccount()" rendered="{!PrimaryClients.size > 1}">
+                    <apex:selectOptions value="{!cifdataOptions}" />
+                </apex:selectList>
+                <input type="hidden" id="relid" value="{!relID}"/>
+                <input type="hidden" id="qt" value="{!qType}"/>
+                <input type="hidden" id="qv" value="{!qValue}"/>
+                <input type="hidden" id="relname" value="{!relName}"/>
+                <script>
+                //alert('{!relCIF}');
+                var CIFNUMBER = '{!relCIF}';
+                var  regId2;
+                var queryType;
+                function caseSubTab(qtype){
+                    //alert(CIFNUMBER);
+                    regId2 = CIFNUMBER;
+                    queryType = qtype;
+                    sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+                };
+                var primaryTabId2 = function primaryTabId2(result2){
+                    sforce.console.openSubtab(result2.id , '/apex/ADAPT360?regId=' + regId2 + '&queryType=' + queryType, true, 'CIF: ' + document.getElementById('relname').value, null);
+                };
+                </script>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="opsblock" rendered="{!isDOSProfile}">
+            <apex:pageBlockSection id="reloptsec" >
+                <apex:inputField id="relops" value="{!Case.Colleague__c}" onchange="updateStyle(this);" />
+            </apex:pageBlockSection>    
+        </apex:pageBlock>
+        <apex:pageBlock tabStyle="Account" id="pgblock">
+            <apex:pageBlockSection id="blocksec" > 
+                <apex:outputText value="" />
+                <apex:inputField id="cha" value="{!Case.Channel__c}"  onchange="updateStyle(this);" />
+                <apex:inputField id="servtype" value="{!Case.Service_Type__c}" onchange="updateStyle(this);" /> 
+                <apex:inputField id="requests" value="{!Case.Number_of_Requests__c}"  onchange="updateStyle(this);"/>
+                <apex:inputField id="subCat" value="{!Case.Service_Sub_Category__c}" onchange="updateStyle(this);" />
+                <apex:inputField id="queue" value="{!Case.Queue__c}"  onclick="infoBox('Queue');"/>
+                <apex:inputField id="cat" value="{!Case.Service_Category__c}" onchange="updateStyle(this);" />
+                <apex:inputField id="dept" value="{!Case.Department__c}"  onclick="infoBox('Department');"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <br/>
+        <div style="float: right;">
+            <button  type="button" id="buttonNewCase" onclick="newCase('{!Case.Id}','{!Case.CaseNumber}');" >
+                Create Case
+            </button>
+        </div>
+    </apex:form>	
+    <script type="text/javascript">
+    
+    // Overwrite std SF styling
+    //---------------------------------------------------------------------------------
+    var newCaseButton = document.getElementById('buttonNewCase');
+    newCaseButton.style.background = '#0070d2';
+    newCaseButton.style.borderColor = '#0070d2';
+    newCaseButton.style.font = '13.3333px Arial';
+    newCaseButton.style.color = 'white';
+    newCaseButton.style.borderRadius = '4px';
+    newCaseButton.style.padding = '10px 10px 10px 10px';
+    newCaseButton.style.cursor = 'pointer';
+    //RN
+    if(newCaseButton.disabled){
+        newCaseButton.disabled = false;
+    }
+    
+    var accSearch = document.getElementById('accSearch');
+    accSearch.style.background = '#00cccc';
+    accSearch.style.borderColor = '#00cccc';
+    accSearch.style.font = '11px Arial';
+    accSearch.style.color = 'white';
+    accSearch.style.borderRadius = '4px';
+    
+    var regSearch = document.getElementById('regSearch');
+    regSearch.style.background = '#00cccc';
+    regSearch.style.borderColor = '#00cccc';
+    regSearch.style.font = '11px Arial';
+    regSearch.style.color = 'white';
+    regSearch.style.borderRadius = '4px';
+    
+    var idSearch = document.getElementById('idSearch');
+    idSearch.style.background = '#00cccc';
+    idSearch.style.borderColor = '#00cccc';
+    idSearch.style.font = '11px Arial';
+    idSearch.style.color = 'white';
+    idSearch.style.borderRadius = '4px';
+    
+    var cifDetails = document.getElementById('cifDetails');
+    cifDetails.style.background = '#00cccc';
+    cifDetails.style.borderColor = '#00cccc';
+    cifDetails.style.font = '11px Arial';
+    cifDetails.style.color = 'white';
+    cifDetails.style.borderRadius = '4px';
+    
+    var cifsfSearch = document.getElementById('cifsfSearch');
+    cifsfSearch.style.background = '#00cccc';
+    cifsfSearch.style.borderColor = '#00cccc';
+    cifsfSearch.style.font = '11px Arial';
+    cifsfSearch.style.color = 'white';
+    cifsfSearch.style.borderRadius = '4px';
+    
+    var cifSearch = document.getElementById('cifSearch');
+    cifSearch.style.background = '#0070d2';
+    cifSearch.style.borderColor = '#0070d2';
+    cifSearch.style.font = '11px Arial';
+    cifSearch.style.color = 'white';
+    cifSearch.style.borderRadius = '4px';
+    //***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+    //var cifUserCode = document.getElementById('cifUserCode');
+    //cifUserCode.style.background = '#0070d2';
+    //cifUserCode.style.borderColor = '#0070d2';
+    //cifUserCode.style.font = '11px Arial';
+    //cifUserCode.style.color = 'white';
+    //cifUserCode.style.borderRadius = '4px';
+    
+    document.getElementById('{!$Component.newCaseForm.pgblock}').style.background = 'white';
+    //document.getElementById('{!$Component.newCaseForm.pgblock}').style.borderColor = 'white';
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec}').style.background = 'white';
+    //document.getElementById('{!$Component.newCaseForm.pgblock.blocksec}').style.borderColor = 'white';
+    //---------------------------------------------------------------------------------
+    //set TAB ordre programmatically
+    //------------------------------------------------------------------------------------
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.servtype}').tabIndex = '2';
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.cha}').tabIndex = '3';
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.requests}').tabIndex = '4';
+    document.getElementById('buttonNewCase').tabIndex = '5';
+    
+    //------------------------------------------------------------------------------
+    //set default values
+    //------------------------------------------------------------------------------
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.requests}').value = '1';
+    document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.cha}').value = '';
+    //------------------------------------------------------------------------------
+    document.getElementById('regId').style.whiteSpace = 'pre';
+    
+    //greate a new AJAX Case object and assign the current std controller ID to this Case
+    var theEmail = new sforce.SObject("Case");
+    theEmail.id = '{!Case.Id}';
+    
+    var caseId;
+    var caseNumber;
+    var pId;
+    var isDataOk = false;
+    //***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+    //var userCode = '';
+    var accNr = '';
+    
+    function newCase(id,nr) {
+        
+        //RN - Disable button
+        newCaseButton.disabled = true;
+        document.getElementById('{!$Component.newCaseForm}').style.cursor = 'wait';
+        sforce.connection.sessionId= '{!$Api.Session_ID}';
+        
+        //assign variable values passed through from the button
+        caseId = id;
+        caseNumber = nr;
+        
+        //user input validation section 
+        //---------------------------------------------------------------------------------
+        //var rel = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.look}');
+        var relID = document.getElementById('relid');
+        var searchBar = document.getElementById('regId');
+        var relops = null;
+        if(document.getElementById('{!$Component.newCaseForm.opsblock.reloptsec.relops}') != null){
+            relops = document.getElementById('{!$Component.newCaseForm.opsblock.reloptsec.relops}');
+        }
+        var srvtype = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.servtype}');
+        var subCat = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.subCat}');
+        var cat = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.cat}');
+        var cha = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.cha}');
+        var nrReq = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.requests}');
+        var Iss = document.getElementById('{!$Component.newCaseForm.pgblock.blocksec.Iss}');
+        
+        
+        if(document.getElementById('{!$Component.newCaseForm.opsblock.reloptsec.relops}') == null || (!relops.checked)){
+            
+            if(relID.value == null || relID.value == '' ){
+                
+                alert("Please link a Relationship to this record first");
+                
+                searchBar.style.backgroundColor = "#ffe6e6";
+                searchBar.style.borderColor = 'red';
+                searchBar.placeholder = 'Search CIF / Salesforce';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                searchBar.focus();
+                if(newCaseButton.disabled){
+                    newCaseButton.disabled = false;
+                }
+                return null;
+            }
+        }
+        
+        
+        if(srvtype.value == null || srvtype.value == '' || srvtype.value == '--None--'){
+            //alert("Please select a Service Type");
+            //srvtype.style.backgroundColor = "#ffe6e6";
+            srvtype.style.borderColor = 'red';
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            //srvtype.focus();
+            if(newCaseButton.disabled){
+                newCaseButton.disabled = false;
+            }
+            return null;
+            
+        }else if(srvtype.value != ''){
+            if(subCat.value == null || subCat.value == '' || subCat.value == '--None--'){
+                //alert("Please select a Sub Category");
+                //subCat.style.backgroundColor = "#ffe6e6";
+                subCat.style.borderColor = 'red';
+                document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                //subCat.focus();
+                if(newCaseButton.disabled){
+                    newCaseButton.disabled = false;
+                }
+                return null;
+                
+            }else if(subCat != ''){
+                if(cat.value == null || cat.value == '' || cat.value == '--None--'){
+                    //alert("Please select a Cat");
+                    //cat.style.backgroundColor = "#ffe6e6";
+                    cat.style.borderColor = 'red';
+                    document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+                    if(newCaseButton.disabled){
+                        newCaseButton.disabled = false;
+                    }
+                    return null;
+                }
+            } 
+        }
+        if(cha.value == null || cha.value == ''){
+            //alert("Please link a Relationship to this record");
+            //rel.style.backgroundColor = "#ffe6e6";
+            cha.style.borderColor = 'red';
+            //rel.placeholder = 'Please select a Channel';
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            //cha.focus();
+            if(newCaseButton.disabled){
+                newCaseButton.disabled = false;
+            }
+            return null;
+        }
+        var regex = /^[0-9]+$/;
+        var x = nrReq.value;
+        if(nrReq.value == null || nrReq.value == '' || !x.match(regex)){
+            
+            if( !x.match(regex) ){
+                alert("Number of Requests must be a Number");
+            }
+            
+            nrReq.style.borderColor = 'red';
+            document.getElementById('{!$Component.newCaseForm}').style.cursor = 'default';
+            //nrReq.focus();
+            if(newCaseButton.disabled){
+                newCaseButton.disabled = false;
+            }
+            return null;
+        }
+        
+        //update the email type case using AJAX toolkit
+        theEmail.AccountId = relID.value;
+        theEmail.Service_Category__c = cat.value;
+        theEmail.Service_Sub_Category__c = subCat.value;
+        theEmail.Service_Type__c = srvtype.value;
+        theEmail.Number_of_Requests__c = nrReq.value;
+        theEmail.Channel__c = cha.value;
+        theEmail.RunUDFValidation__c = false;
+        //flag to start the case age with support
+        theEmail.hWasEmailToCaseAction__c = true;
+        //***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+        //theEmail.User_Code__c = userCode;
+        theEmail.Account_Number__c = accNr;
+        
+        //update case
+        var result = sforce.connection.update([theEmail]);
+        
+        
+        //if successful navigate user to the edit page of the new updated Case
+        if (result[0].getBoolean('success')) {
+            sforce.console.getFocusedPrimaryTabId(curTabId);
+        }else{
+            alert('The Case could not be created at this stage');
+            alert('Send this additional INFO to your Salesforce Admin:\n' + result[0]);
+        }
+    };
+    
+    var curTabId = function curTabId(result) {
+        //Open updated case in a new Console primary tab
+        sforce.console.getFocusedPrimaryTabId(closetab);
+        if(theEmail.Service_Type__c != 'Log Complaint'){
+            sforce.console.openPrimaryTab(null, '/apex/CSC_Support_Case_Main?id=' + caseId + '&isclone=true' , true, 'New-' + caseNumber);
+        }else{
+            sforce.console.openPrimaryTab(null, '/apex/CM_New_Manual_Case?id=' + caseId + '&action=edit&comptaint=1', true, 'New-' + caseNumber);
+        }
+    };
+    
+    var closetab = function closetab(result) {
+        //sforce.console.refreshNavigationTab();
+        //Now that we have the tab ID, we can close it
+        var tabId = result.id;
+        sforce.console.closeTab(tabId);
+    };
+    function updateStyle(veld){
+        
+        if(document.getElementById('{!$Component.newCaseForm.opsblock.reloptsec.relops}') != null){
+            if(veld.id == '{!$Component.newCaseForm.opsblock.reloptsec.relops}'){
+                document.getElementById('regId').style.borderColor = '#e6e6e6';
+                document.getElementById('regId').style.backgroundColor = '#ffffff';
+                document.getElementById('regId').placeholder = '';
+            }
+        }
+        
+        veld.style.borderColor = '#e6e6e6';
+        veld.style.backgroundColor = '#ffffff';
+        veld.placeholder = '';
+        
+    };
+    
+    //get the lookup field record ID
+    //function getLookUpId(str) {
+    //	return document.getElementById(str+'_lkid').value;
+    //};
+    
+    function infoBox(fname){
+        alert('You cannot update the ' + fname + ' value. Please use the Transfer Quick Action to move this Email to a different Queue');
+    };
+    
+    function searchSF(rname,qtype){ 
+        //to ensure we populate the field user code on teh case
+        //***NB : DO NOT DELETE OUT COMMENTED CODE - BUSINESS STILL DECIDING ******
+        //if(qtype == 'ucode'){
+        //    userCode = rname;
+        //}
+        if(qtype == 'accountNumber'){
+            accNr = rname;
+        }
+        CallApexMethod(qtype,rname);
+    };
+    </script>
+</apex:page>

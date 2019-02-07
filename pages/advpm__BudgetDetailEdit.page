@@ -1,0 +1,24 @@
+<apex:page standardController="advpm__Budget__c">
+<apex:form >
+    <apex:sectionHeader title="{!$ObjectType.advpm__Detail_Budget__c.Label} Edit" subtitle="{!advpm__Budget__c.Name & ': ' & advpm__Budget__c.Matter__r.Name}" rendered="{!$User.UITheme != 'Theme4d'}" />
+    <apex:outputPanel layout="none" rendered="{!$User.UITheme != 'Theme4d'}">
+        <apex:outputLink target="_top" value="/{!advpm__Budget__c.Id}/e">&laquo;Back to {!LOWER($ObjectType.Budget__c.Label)}</apex:outputLink>
+        <br /><br />
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!$User.UITheme == 'Theme4d'}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="{!advpm__Budget__c.Name & ': ' & advpm__Budget__c.Matter__r.Name}" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Budget__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Budget__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Budget__c.Name}" 
+                            parentRecordID="{!advpm__Budget__c.ID}">
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    
+    <apex:outputField value="{!advpm__Budget__c.Matter__r.Name}" rendered="false" />
+    <apex:outputField value="{!advpm__Budget__c.RecordTypeId}" rendered="false" />
+    <apex:outputField value="{!advpm__Budget__c.RecordType.Name}" rendered="false" />
+    
+    <c:BudgetDetail readOnly="false" detailViewPage="false" detailEditPage="true" />
+</apex:form>
+</apex:page>

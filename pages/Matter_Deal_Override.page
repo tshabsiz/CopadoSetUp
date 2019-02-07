@@ -1,0 +1,175 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 20/08/2017 - PG    - Created VF page.
+ 08/11/2017 - PG    - Added 2 new and new section for deal information.
+ 09/11/2017 - PG    - Added CD/ Vault, Zippal etc fields.
+ 12/12/2017 - PG    - Updated so Product label is dynamic. 
+ 02/02/2018 - TdB   - Change Product functionality to use 3 the 3 new TMG Product Objects
+                                                           
+--> 
+<apex:page standardController="advpm__Matter__c" extensions="Matter_Deal_Override" tabStyle="advpm__Matter__c">
+    
+    <!-- SECTION HEADER -->
+    <apex:sectionHeader title="{!$ObjectType.advpm__Matter__c.Label} Edit" subtitle="New {!$ObjectType.advpm__Matter__c.Label}" /> 
+    
+    <!-- FORM -->
+    <apex:form >
+    
+    <!-- PAGE BLOCK -->  
+    <apex:pageBlock title="{!$ObjectType.advpm__Matter__c.Label} Edit" mode="Edit"> 
+        <apex:pageMessages ></apex:pageMessages>
+        
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Save" action="{!actionSave}" />
+             <apex:commandButton value="Cancel" action="{!cancel}" />
+        </apex:pageBlockButtons>
+        
+        <!-- PAGE BLOCK SECTION -->  
+        <apex:pageBlockSection title="Deal Information">
+            
+            <apex:inputField value="{!objectRecord.Name}" required="true" /> 
+            <apex:inputField value="{!objectRecord.Private__c}" /> 
+            <apex:outputField value="{!objectRecord.OwnerId}" /> 
+            <apex:inputField value="{!objectRecord.Standard__c}" />
+            <apex:inputField value="{!objectRecord.advpm__Primary_Account__c}" required="true" />
+            <apex:inputField value="{!objectRecord.advpm__Status__c}" required="true" />
+            <apex:inputField value="{!objectRecord.CurrencyIsoCode}" required="true" />
+            <apex:inputField value="{!objectRecord.advpm__Type__c}" required="true" /> 
+            
+            <!-- SPACER -->
+            <apex:pageBlockSectionItem />
+            <apex:pageBlockSectionItem />
+            
+            <!-- DIVISION -->
+            <!--<apex:inputField value="{!objectRecord.Division__c}" required="true" />-->
+            <apex:pageBlockSectionItem id="section0"> 
+                <apex:outputLabel value="{!$ObjectType.advpm__Matter__c.fields.Division__c.Label}" for="divisionField"/> 
+                <apex:actionRegion >
+                    <apex:inputField value="{!objectRecord.Division__c}" id="divisionField" required="true">
+                        <apex:actionSupport event="onchange" action="{!actionClearCoverageArea}" reRender="coverageAreaField,productAreaField,productField" />   
+                    </apex:inputField>
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <!-- DIVISION -->
+            
+            <apex:inputField value="{!objectRecord.Start_Date__c}" required="true" />
+            
+            <!-- COVERAGE AREA -->
+            <!--<apex:pageBlockSectionItem id="section1"> 
+                <apex:outputLabel value="Coverage Area" for="coverageAreaField"/> 
+                <apex:actionRegion >
+                    <apex:inputField value="{!objectRecord.Coverage_Area__c}" id="coverageAreaField" required="true">
+                        <apex:actionSupport event="onchange" action="{!actionClearProduct}" reRender="productField" />   
+                    </apex:inputField>
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem> -->
+            <apex:pageBlockSectionItem id="section1"> 
+                
+                <apex:outputLabel value="{!$ObjectType.advpm__Matter__c.fields.TMG_Product_Level_1__c.Label}" for="coverageAreaField"/> 
+                <apex:actionRegion >
+                <apex:selectList value="{!coverageAreaSelected}" multiselect="false" id="coverageAreaField" required="true" size="1" disabled="{!coverageAreaDisabled}">  
+                    <apex:selectOptions value="{!CoverageArea}"/>
+                    <apex:actionSupport event="onchange" action="{!actionClearProductArea}" reRender="productAreaField,productField" />  
+                </apex:selectList>
+                     </apex:actionRegion>
+
+            </apex:pageBlockSectionItem> 
+            <!-- / COVERAGE AREA -->
+
+            <apex:inputField value="{!objectRecord.End_Date__c}" />
+            
+            <!-- PRODUCT AREA -->
+            <!--<apex:pageBlockSectionItem id="section2"> 
+                <apex:outputLabel value="Product Area" for="productAreaField"/> 
+                <apex:actionRegion >
+                    <apex:inputField value="{!objectRecord.Product_Area__c}" label="Coverage Area" required="true">
+                        <apex:actionSupport event="onchange" action="{!actionUpdateProducts}"  reRender="productField" />
+                    </apex:inputField>
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem> -->
+            
+            <apex:pageBlockSectionItem id="section2"> 
+                
+                <apex:outputLabel value="{!$ObjectType.advpm__Matter__c.fields.TMG_Product_Level_2__c.Label}" for="productAreaField"/> 
+                <apex:actionRegion >
+                <apex:selectList value="{!productAreaSelected}" multiselect="false" id="productAreaField" required="true" size="1" disabled="{!productAreaDisabled}">  
+                    <apex:selectOptions value="{!ProductArea}"/>
+                     <apex:actionSupport event="onchange" action="{!actionClearProduct}" reRender="productField" /> 
+                </apex:selectList>
+                </apex:actionRegion>
+
+            </apex:pageBlockSectionItem> 
+            <!-- PRODUCT AREA -->
+
+            <apex:inputField value="{!objectRecord.Early_Settlement__c}" />            
+            
+            <!-- SPACER 
+            <apex:pageBlockSectionItem />-->  
+            
+            <!-- PRODUCT SELECT LIST -->
+            <apex:pageBlockSectionItem id="section3"> 
+                
+                <apex:outputLabel value="{!$ObjectType.advpm__Matter__c.fields.TMG_Product_Level_3__c.Label}" for="productField"/> 
+                <apex:selectList value="{!selectedProduct}" multiselect="false" id="productField" required="true" size="1" disabled="{!productDisabled}">  
+                    <apex:selectOptions value="{!Products}"/>
+                </apex:selectList>
+
+            </apex:pageBlockSectionItem> 
+            <!-- / PRODUCT SELECT LIST -->
+
+            <apex:inputField value="{!objectRecord.Extension__c}" />
+
+            <!-- SPACER -->
+            <apex:pageBlockSectionItem />
+
+            <apex:inputField value="{!objectRecord.Availability__c}" />
+            
+            <!-- SPACER -->
+            <apex:inputField value="{!objectRecord.Zippel__c}" />
+            
+
+            <apex:inputField value="{!objectRecord.Availability_Period__c}" />
+            
+            
+            <apex:inputField value="{!objectRecord.Vault__c}" />
+           <apex:pageBlockSectionItem />
+            
+            <apex:inputField value="{!objectRecord.CD_USB__c}" />
+             <apex:pageBlockSectionItem />
+            
+            <apex:inputField value="{!objectRecord.Original_Docs__c}" />
+            <apex:pageBlockSectionItem />
+            
+            <apex:inputField value="{!objectRecord.ECA_backed__c}" />
+            <apex:pageBlockSectionItem />
+
+        </apex:pageBlockSection>
+        <!-- / PAGE BLOCK SECTION -->  
+
+        <!-- PAGE BLOCK SECTION -->
+        <apex:pageBlockSection title="Deal Description" columns="1">
+            <apex:inputTextarea value="{!objectRecord.Deal_Description__c}" cols="40" rows="5" />
+        </apex:pageBlockSection>
+        <!-- / PAGE BLOCK SECTION --> 
+        
+        <!-- PAGE BLOCK SECTION --> 
+        <apex:pageBlockSection title="System Information">
+            <apex:outputField value="{!objectRecord.RecordTypeId}" />
+        </apex:pageBlockSection>
+        <!-- / PAGE BLOCK SECTION --> 
+        
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK -->  
+    
+    </apex:form>
+    <!-- / FORM -->
+
+</apex:page>

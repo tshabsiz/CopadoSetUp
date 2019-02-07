@@ -1,0 +1,241 @@
+<apex:page controller="SDOC.SDEmailController" 
+showHeader="false" tabstyle="SDOC__SDTemplate__c" standardStylesheets="true" sidebar="false" action="{!onLoad}"> 
+<apex:styleSheet value="{!URLFOR($Resource.SDOC__SDoc,'skin.css')}" />
+<apex:includeScript value="{!URLFOR($Resource.SDOC__SDoc,'yahoo-dom-event.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.SDOC__SDoc,'container-min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.SDOC__SDoc,'animation-min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.SDOC__ckEditor,'/ckeditor/ckeditor.js')}"/>
+<apex:stylesheet value="/sCSS/24.0/sprites/1297816277000/Theme3/default/gc/versioning.css" />   
+<style>
+.buttonStyle { width:75px; height:30px; }
+.buttonStyleL { width:150px; height:30px; }
+</style>
+
+<script type="text/javascript">
+function resizeEditor() {
+
+  var defaultHeight = 300;
+  var newHeight = window.innerHeight-200; 
+  var height = defaultHeight > newHeight ? defaultHeight: newHeight;
+  var CKEDITOR   = window.CKEDITOR;
+        for ( var i in CKEDITOR.instances ){
+            var currentInstance = i;
+             break;
+        }
+	 CKEDITOR.instances[currentInstance].resize('100%',height);
+}
+
+var AgreementForm = document.getElementById("blur");
+//AgreementForm.style.height = window.screen.availHeight + "px";
+//AgreementForm.style.width = window.screen.availWidth + "px";
+
+var ContainerElem = document.getElementById("StatusBox");
+//ContainerElem.style.display = "block";
+AlignToCenter(ContainerElem);
+
+function AlignToCenter(Element)
+{
+var availableHeight = 0;
+var availableWidth = 0;
+if (Element.ownerDocument)
+{
+var docElement = Element.ownerDocument.documentElement;
+availableHeight = parseInt(docElement.clientHeight);
+if (availableHeight == "NaN") availableHeight = 0;
+
+availableWidth = parseInt(docElement.clientWidth);
+if (availableWidth == "NaN") availableWidth = 0;
+}
+
+if (availableHeight == 0 || availableHeight == "NaN")
+availableHeight = window.screen.availHeight - 200;
+if (availableWidth == 0 || availableWidth == "NaN")
+availableWidth = window.screen.availWidth - 100;
+
+var msgBoxTop = parseInt((availableHeight - parseInt(Element.clientHeight))/2);
+var msgBoxleft = parseInt((availableWidth - parseInt(Element.style.width))/2);
+
+if (msgBoxTop == "NaN" || msgBoxTop == 0)
+msgBoxTop = 100;
+
+Element.style.left = msgBoxleft + "px";
+Element.style.top = msgBoxTop + window.pageYOffset + "px";
+}
+
+function reposition(){
+if(navigator.appName == 'Window Internet Explorer') AgreementForm.style.top = document.body.scrollTop;
+else AgreementForm.style.top = window.pageYOffset+"px";
+AlignToCenter(ContainerElem);
+}
+</script>
+<script>
+	function getQuerystring(key, default_)
+		{
+		  if (default_==null) default_="";
+		  key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		  var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+		  var qs = regex.exec(window.location.href);
+		  if(qs == null)
+		    return default_;
+		  else
+		    return qs[1];
+	}   
+
+    var newwindow;
+
+</script>
+
+
+<body>
+<apex:actionStatus id="statLoad">
+    <apex:facet name="start">
+        <div id="blur" style="position:absolute; left:1px; top:1px; width:100%; height:100%; text-align:center; vertical-align: middle; background-color: #dcdcdc; opacity:0.7;filter:alpha(opacity=70)">
+        </div>
+        <div id="StatusBox" style="position:absolute; left:50%; top:300px; width: 120px; height:50px; opacity:1;filter:alpha(opacity=100)">
+        <table border="1" cellpadding="0" cellspacing="0" style="border-left-color: #336699;
+        border-bottom-color: #336699; width: 120px; border-top-color: #336699; height:50px;
+        border-right-color:#336699; background-color:#ffffff;">
+        <tr>
+        <td align="left" valign="top"> 
+        <table border="0" cellpadding="4" cellspacing="0" style="width: 100%; height: 100%">
+        <tr>
+        <td style="border-bottom-color:#336699; border-bottom-width:0px; border-bottom-style:solid;vertical-align:middle;">
+        <img src="{!URLFOR($Resource.SDoc,'spinner_large.gif')}"/></td>
+        <td style="border-bottom-color:#336699; border-bottom-width:0px; border-bottom-style:solid;vertical-align:middle;color:darkred;font-size:11pt;font-weight:bold;">
+        &nbsp;Loading...</td>
+        </tr>
+        </table>
+        </td>
+        </tr>
+        </table>
+        </div>
+    </apex:facet>
+</apex:actionStatus>
+
+<apex:sectionHeader title="Edit Document:" subtitle="{!docName}"/>
+      <apex:form >
+        <apex:pageBlock >
+        <apex:outputPanel id="BtnsTopPanel">
+            <div style="text-align: right;" >
+                <apex:actionStatus id="statTop">
+                    <apex:facet name="start">
+                        Creating attachments, please wait...
+                        <img src="{!URLFOR($Resource.SDoc,'spinner_large.gif')}" />
+                    </apex:facet>
+                 </apex:actionStatus>
+                 <apex:commandButton value="Save" action="{!saveDoc}" status="statTop" styleClass="buttonStyle"/>
+					<a href="{!docLink}" target="_blank" class="btn" style="text-decoration:none;padding:8px;">Preview</a>
+					<apex:commandButton onClick="window.top.close();"  value="Close" styleClass="buttonStyle"/>
+            </div>
+        </apex:outputPanel> 
+         <apex:outputPanel id="emailSubPanel" >
+          <apex:outputpanel id="loading" rendered="{!EmailTo=='Loading...'}">
+           <center><img src="{!URLFOR($Resource.SDoc,'spinner.gif')}" />&nbsp;please wait...</center>
+          </apex:outputpanel>
+          </apex:outputPanel>
+          <apex:outputPanel id="editor">
+          <apex:pageBlockSection columns="1" rendered="{!NOT(EmailLockBody)}">
+                <apex:pageBlockSectionItem >
+                   <apex:inputTextarea id="editor1" value="{!docEdit}" styleClass="ckeditor1" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:outputPanel>        
+        </apex:pageBlock>
+
+      </apex:form>
+
+
+</body>
+<script type="text/javascript">
+rebind = function() {
+    var CKEDITOR   = window.CKEDITOR;
+        for ( var i in CKEDITOR.instances ){
+            var currentInstance = i;
+             break;
+        }
+        delete CKEDITOR.instances[currentInstance];
+        bind();
+    };
+
+bind = function(){
+        var CKEDITOR_BASEPATH = '{!URLFOR($Resource.ckEditor,'ckeditor/')}';
+        CKEDITOR.editorConfig = function( config )
+            {
+            config.height = '100%';
+            config.disableNativeSpellChecker = false;
+            // Define changes to default configuration here. For example:
+            config.language = 'en';
+            config.filebrowserBrowseUrl = '{!$Page.SDFileList}';
+            config.filebrowserUploadUrl = '{!$Page.SDFileUpload}';
+            config.filebrowserImageBrowseUrl = '{!$Page.SDFileList}';
+            config.filebrowserImageUploadUrl = '{!$Page.SDFileUpload}'; 
+            config.enterMode = CKEDITOR.ENTER_BR;
+            config.shiftEnterMode = CKEDITOR.ENTER_P;
+            config.allowedContent = true;
+//            config.fullPage = true;
+            config.removePlugins = 'liststyle,tabletools,scayt,menubutton,contextmenu';
+            config.toolbar =
+            [
+            ['Undo','Redo'],
+            ['Styles','Format','Font','FontSize'],
+            ['TextColor','BGColor'],        
+            ['Bold','Italic','Underline','Strike','-',],
+            ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']
+            ];
+            };
+        
+        if (!document.getElementsByClassName) {
+            document.getElementsByClassName = function (cn) { 
+                var rx = new RegExp("(?:^|\\s)" + cn+ "(?:$|\\s)");
+                var allT = document.getElementsByTagName("*"), allCN = [], ac="", i = 0, a;
+                    while (a = allT[i=i+1]) {
+                      ac=a.className;
+                      if ( ac && ac.indexOf(cn) !==-1) {
+                        if(ac===cn){ allCN[allCN.length] = a; continue;   }
+                        rx.test(ac) ? (allCN[allCN.length] = a) : 0;
+                      }
+                    }
+                return allCN;
+            }
+        }
+        
+        if (document.getElementsByClassName){
+            var e = document.getElementsByClassName( 'ckeditor1' );
+            for(var i=0;i<e.length;i++)
+                {
+                var editor1 = CKEDITOR.replace( e[i],
+						  {  
+						    on:
+						    {
+						      instanceReady: function(ev)
+						      {
+						        setTimeout(resizeEditor, 500);
+						      }
+						    }
+						  });
+                }
+           }
+        };
+    
+windowonload = function(){
+        bind();
+}
+
+window.onresize = function() {
+  resizeEditor();
+}
+
+addEvent(window, 'load', function(){ windowonload() });
+function addEvent(element, event, fn) {
+    if (element.addEventListener)
+        element.addEventListener(event, fn, false);
+    else if (element.attachEvent)
+        element.attachEvent('on' + event, fn);
+}
+</script>
+<apex:form >
+<apex:actionFunction name="attach" action="{!updateAtt}"  
+                    status="stat1"/>
+
+</apex:form>
+</apex:page>

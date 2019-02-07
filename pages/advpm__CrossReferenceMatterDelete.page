@@ -1,0 +1,29 @@
+<apex:page standardController="advpm__Cross_Reference_Matter__c" tabStyle="advpm__Cross_Reference_Matter__c" extensions="advpm.CrossReferenceMatterController">
+    
+    <apex:sectionHeader title="Cross_Reference_Matter__c Delete" subtitle="{!advpm__Cross_Reference_Matter__c.Name}" rendered="{!$User.UITheme != 'Theme4d'}" />
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!$User.UITheme == 'Theme4d'}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="{!$ObjectType.advpm__Cross_Reference_Matter__c.Label} Delete" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Cross_Reference_Matter__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Cross_Reference_Matter__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Cross_Reference_Matter__c.Name}" 
+                            parentRecordID="{!advpm__Cross_Reference_Matter__c.ID}">
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    
+    <apex:Form id="theForm" styleClass="{!IF($User.UITheme == 'Theme4d','slds','')}">
+        <apex:actionFunction name="doCancel" action="{!cancel}" immediate="true" />
+        <apex:actionFunction name="doDelete" action="{!deleteMR}" />
+        
+        <apex:pageMessages />
+        <apex:pageMessage summary="Please click below button to confirm and continue with the deletion of the cross-reference matter relationship." severity="warning" strength="3" />
+        <apex:outputPanel layout="block" style="text-align:center;">
+            <button onclick="doDelete();return false;" class="{!IF($User.UITheme == 'Theme4d','slds-button slds-button--brand','btnPrimary publishersharebutton cxchattersubmit btn')}">Proceed Delete?</button>
+            <button onclick="doCancel();return false;" class="{!IF($User.UITheme == 'Theme4d','slds-button slds-button--neutral','btn')}">Back</button>
+        </apex:outputPanel>
+        
+        <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Parent_Relationship__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Cross_Reference_Matter__c.advpm__Matter1__c}" rendered="false" />
+    </apex:Form>
+</apex:page>

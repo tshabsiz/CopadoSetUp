@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>true</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Banker_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Banker Name</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Client_On_Boarding1</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>CSM_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>CSM Name</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Client_On_Boarding</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Case_Category__c</fullName>
+        <externalId>false</externalId>
+        <label>Case Category</label>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <valueSet>
+            <controllingField>Type__c</controllingField>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>DAY 1 TEMPLATE</fullName>
+                    <default>false</default>
+                    <label>DAY 1 TEMPLATE</label>
+                </value>
+                <value>
+                    <fullName>Exemption 4</fullName>
+                    <default>false</default>
+                    <label>Exemption 4</label>
+                </value>
+                <value>
+                    <fullName>Client Introductory Certificate (CIC)</fullName>
+                    <default>false</default>
+                    <label>Client Introductory Certificate (CIC)</label>
+                </value>
+                <value>
+                    <fullName>Syndicated Loan</fullName>
+                    <default>false</default>
+                    <label>Syndicated Loan</label>
+                </value>
+                <value>
+                    <fullName>Group Introductory Certificate</fullName>
+                    <default>false</default>
+                    <label>Group Introductory Certificate</label>
+                </value>
+                <value>
+                    <fullName>New Product</fullName>
+                    <default>false</default>
+                    <label>New Product</label>
+                </value>
+                <value>
+                    <fullName>Additional product</fullName>
+                    <default>false</default>
+                    <label>Additional product</label>
+                </value>
+                <value>
+                    <fullName>Refresh FICA documents/ Trigger event</fullName>
+                    <default>false</default>
+                    <label>Refresh FICA documents/ Trigger event</label>
+                </value>
+                <value>
+                    <fullName>Closure of account</fullName>
+                    <default>false</default>
+                    <label>Closure of account</label>
+                </value>
+                <value>
+                    <fullName>Migration in</fullName>
+                    <default>false</default>
+                    <label>Migration in</label>
+                </value>
+                <value>
+                    <fullName>Migration out</fullName>
+                    <default>false</default>
+                    <label>Migration out</label>
+                </value>
+                <value>
+                    <fullName>Update Resolution</fullName>
+                    <default>false</default>
+                    <label>Update Resolution</label>
+                </value>
+                <value>
+                    <fullName>Update Product mandate</fullName>
+                    <default>false</default>
+                    <label>Update Product mandate</label>
+                </value>
+                <value>
+                    <fullName>Annual Refresh</fullName>
+                    <default>false</default>
+                    <label>Annual Refresh</label>
+                </value>
+                <value>
+                    <fullName>PEP</fullName>
+                    <default>false</default>
+                    <label>PEP</label>
+                </value>
+                <value>
+                    <fullName>Entire Relationship</fullName>
+                    <default>false</default>
+                    <label>Entire Relationship</label>
+                </value>
+                <value>
+                    <fullName>An Account Keep Relationship</fullName>
+                    <default>false</default>
+                    <label>An Account Keep Relationship</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>New to bank on-boarding (NTB)</controllingFieldValue>
+                <valueName>DAY 1 TEMPLATE</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>New to bank on-boarding (NTB)</controllingFieldValue>
+                <valueName>Exemption 4</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>New to bank on-boarding (NTB)</controllingFieldValue>
+                <valueName>Client Introductory Certificate (CIC)</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>New to bank on-boarding (NTB)</controllingFieldValue>
+                <valueName>Syndicated Loan</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Group Introductory Certificate</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>New Product</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Additional product</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Refresh FICA documents/ Trigger event</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Closure of account</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Migration in</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Migration out</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Update Resolution</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <valueName>Update Product mandate</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Existing Client</controllingFieldValue>
+                <controllingFieldValue>Exit</controllingFieldValue>
+                <valueName>PEP</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Migration</controllingFieldValue>
+                <valueName>Annual Refresh</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Exit</controllingFieldValue>
+                <valueName>Entire Relationship</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Exit</controllingFieldValue>
+                <valueName>An Account Keep Relationship</valueName>
+            </valueSettings>
+        </valueSet>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Case_Origin__c</fullName>
+        <externalId>false</externalId>
+        <label>Case Origin</label>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Email</fullName>
+                    <default>false</default>
+                    <label>Email</label>
+                </value>
+                <value>
+                    <fullName>Meeting</fullName>
+                    <default>false</default>
+                    <label>Meeting</label>
+                </value>
+                <value>
+                    <fullName>Phone</fullName>
+                    <default>false</default>
+                    <label>Phone</label>
+                </value>
+                <value>
+                    <fullName>Walk-In</fullName>
+                    <default>false</default>
+                    <label>Walk-In</label>
+                </value>
+                <value>
+                    <fullName>Letter</fullName>
+                    <default>false</default>
+                    <label>Letter</label>
+                </value>
+                <value>
+                    <fullName>Fax</fullName>
+                    <default>false</default>
+                    <label>Fax</label>
+                </value>
+                <value>
+                    <fullName>Face to Face</fullName>
+                    <default>false</default>
+                    <label>Face to Face</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Client_Contact__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <inlineHelpText>The contact person that will be handing the on-boarding process</inlineHelpText>
+        <label>Client Contact</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Client On-Boarding</relationshipLabel>
+        <relationshipName>Client_On_Boarding</relationshipName>
+        <required>true</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>32768</length>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>ESP_ID__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <description>This ID is captured by the On-boarding Manger once the Client has been loaded on ESP.
+This will help with matching back to ESP accounts</description>
+        <externalId>false</externalId>
+        <label>ESP ID</label>
+        <length>20</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>On_Boarding_Manager__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>On-Boarding Manager</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Client_On_Boarding3</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <externalId>false</externalId>
+        <label>Priority</label>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>High</fullName>
+                    <default>false</default>
+                    <label>High</label>
+                </value>
+                <value>
+                    <fullName>Medium</fullName>
+                    <default>false</default>
+                    <label>Medium</label>
+                </value>
+                <value>
+                    <fullName>Low</fullName>
+                    <default>false</default>
+                    <label>Low</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Product_Partner__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Product Partner</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Client_On_Boarding2</relationshipName>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relationship_Name__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship Name</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Client On-Boarding (Relationship Name)</relationshipLabel>
+        <relationshipName>Client_On_Boarding</relationshipName>
+        <required>true</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Responsible_Department__c</fullName>
+        <externalId>false</externalId>
+        <label>Responsible Department</label>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>New to Bank</fullName>
+                    <default>true</default>
+                    <label>New to Bank</label>
+                </value>
+                <value>
+                    <fullName>Maintenance</fullName>
+                    <default>false</default>
+                    <label>Maintenance</label>
+                </value>
+                <value>
+                    <fullName>Mandates</fullName>
+                    <default>false</default>
+                    <label>Mandates</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Subject__c</fullName>
+        <externalId>false</externalId>
+        <label>Subject</label>
+        <length>255</length>
+        <required>true</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>New to bank on-boarding (NTB)</fullName>
+                    <default>true</default>
+                    <label>New to bank on-boarding (NTB)</label>
+                </value>
+                <value>
+                    <fullName>Existing Client</fullName>
+                    <default>false</default>
+                    <label>Existing Client</label>
+                </value>
+                <value>
+                    <fullName>Migration</fullName>
+                    <default>false</default>
+                    <label>Migration</label>
+                </value>
+                <value>
+                    <fullName>Exit</fullName>
+                    <default>false</default>
+                    <label>Exit</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Client On-Boarding</label>
+    <listViews>
+        <fullName>Client_On_Boarding</fullName>
+        <columns>NAME</columns>
+        <columns>Relationship_Name__c</columns>
+        <columns>CREATED_DATE</columns>
+        <columns>OWNER.FIRST_NAME</columns>
+        <columns>Priority__c</columns>
+        <columns>On_Boarding_Manager__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Client On-Boarding</label>
+    </listViews>
+    <listViews>
+        <fullName>My_Client_On_Boarding</fullName>
+        <columns>NAME</columns>
+        <columns>Relationship_Name__c</columns>
+        <columns>Responsible_Department__c</columns>
+        <columns>Subject__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Banker_Name__c</field>
+            <operation>equals</operation>
+        </filters>
+        <filters>
+            <field>CSM_Name__c</field>
+            <operation>equals</operation>
+        </filters>
+        <filters>
+            <field>On_Boarding_Manager__c</field>
+            <operation>equals</operation>
+        </filters>
+        <filters>
+            <field>Product_Partner__c</field>
+            <operation>equals</operation>
+        </filters>
+        <label>My Client On-Boarding</label>
+    </listViews>
+    <nameField>
+        <displayFormat>ONB{00000}</displayFormat>
+        <label>On-Boarding Number</label>
+        <trackFeedHistory>true</trackFeedHistory>
+        <trackHistory>true</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Client On-Boarding</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

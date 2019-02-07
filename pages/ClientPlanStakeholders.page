@@ -1,0 +1,121 @@
+<apex:page controller="ClientPlanStakeholdersController" standardStylesheets="false" sidebar="false" docType="html-5.0">
+    
+    <apex:stylesheet value="{!URLFOR($Resource.bootstrap_slider, 'bootstrap-slider.min.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.bootstrap_slider, 'bootstrap-slider.min.js')}"/>
+    
+    <script>
+    
+        $('document').ready(function() {
+        
+            selectLabel(5);
+            //renderSliders();
+            //prepareSaveButtonFixation();
+             
+        });
+        
+        function renderSliders() {
+            $('.slider').slider({
+                tooltip: 'hide'
+            });
+        }
+        
+        function prepareSaveButtonFixation() {
+            var elem = $('#saveButton');
+            
+            if ($(elem).offset() != undefined) {
+                saveButtonFixed = true;
+                var eTop = $(elem).offset().top - 10;
+                var eLeft = $(elem).offset().left;
+                
+                $(window).scroll(function() {
+                    if (eTop - $(window).scrollTop() < 0) {
+                        $(elem).removeClass('saveButton');
+                        $(elem).addClass('saveButtonFixed');
+                        $(elem).css('left', eLeft);
+                    } else {
+                        $(elem).removeClass('saveButtonFixed');
+                        $(elem).addClass('saveButton');
+                        $(elem).removeAttr('style');
+                    }
+                });
+            }
+        }
+        
+        function onContactsPanelRerendered() {
+            refreshHierarchy();
+            renderSliders();
+            addErrorMarking();
+            prepareSaveButtonFixation();
+            endLoading();
+            
+        }
+        
+        function addErrorMarking() {
+            $('.errorMsg').each( function() {
+                var row = $(this).closest('tr');
+                $(row).addClass('danger');
+            });
+        }
+    
+    </script>
+
+    <style>
+        .slds {
+            background-color: #F4F6F9 !important;
+        }
+        .slds-tabs--default {
+            background-color: white;
+        }
+    </style>
+
+    <div class="slds">
+    
+        <c:ClientPlanHeader />
+
+        <c:ProgressBarLightning />
+        
+        <c:LightningToast />
+        
+        <c:LightningAlert />
+    
+      <div style="display:inline-block ; margin: 5px;">
+          <apex:form >
+           <apex:outputPanel rendered="{!isGlobalParent}">
+           <label   class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                {!$Label.lblUnderlyingClientPlans}</b>
+            </label><br/>
+            <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                <apex:selectOptions value="{!ChildClientPlans}" />
+            </apex:SelectList><br/>
+           </apex:outputPanel>
+              </apex:form>
+        </div>
+    <apex:outputPanel rendered="{!!planLoaded}">
+         
+        <div class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"/>
+            <span><apex:outputText value="{!$Label.errMsg_WrongId}"/></span>
+        </div>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!planLoaded}">
+        
+        <c:ClientPlanStakeholdersHierarchy planId="{!$CurrentPage.parameters.planId}" orgId="{!plan.Relationship__c}"/>
+        
+        <apex:form >
+            
+        <apex:actionFunction action="{!remove}" name="removeRel" oncomplete="onContactsPanelRerendered();" 
+                reRender="contactsPanelsWrapper">
+            <apex:param name="contactId" assignTo="{!contactId}" value=""/>
+        </apex:actionFunction>
+    
+        <div class="pageCenter" id="contactsPanelsMsgsWrapper">
+            <apex:pageMessages id="contactsPanelsMsgs" /> 
+        </div>
+
+        </apex:form>
+    </apex:outputPanel>
+    
+    </div>
+
+</apex:page>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Details of venues for Events</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Address__c</fullName>
+        <externalId>false</externalId>
+        <label>Address</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Address_formatted__c</fullName>
+        <externalId>false</externalId>
+        <formula>SUBSTITUTE( Address__c ,SUBSTITUTE($Label.linebreak, &quot;-&quot;, &quot;&quot;),&quot;&lt;br/&gt;&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Address (formatted)</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Alternate_Contact__c</fullName>
+        <externalId>false</externalId>
+        <label>Alternate Contact</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Alternate_Email__c</fullName>
+        <description>Alternate Venue Email Address</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Alternate Venue Email Address</inlineHelpText>
+        <label>Alternate Email</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Alternate_Phone__c</fullName>
+        <externalId>false</externalId>
+        <label>Alternate Phone</label>
+        <length>15</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Capacity__c</fullName>
+        <externalId>false</externalId>
+        <label>Capacity</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>City__c</fullName>
+        <externalId>false</externalId>
+        <label>City</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Country__c</controllingField>
+            <restricted>true</restricted>
+            <valueSetName>Cities_For_Events</valueSetName>
+            <valueSettings>
+                <controllingFieldValue>United Kingdom of Great Britain and Northern Ireland</controllingFieldValue>
+                <valueName>London</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>United States of America</controllingFieldValue>
+                <valueName>Washington DC</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Vatican City</controllingFieldValue>
+                <valueName>Other</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Bloemfontein</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Cape Town</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Durban</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>East London</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Johannesburg</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Mafikeng</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Nelspruit</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Polokwane</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Port Elizabeth</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Pretoria</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>South Africa</controllingFieldValue>
+                <valueName>Somerset West</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Contact__c</fullName>
+        <externalId>false</externalId>
+        <label>Contact</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Country__c</fullName>
+        <externalId>false</externalId>
+        <label>Country</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Countries_For_Events</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>32000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Email__c</fullName>
+        <description>Venue Email Address</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Venue Email Address</inlineHelpText>
+        <label>Email</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Email</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fax__c</fullName>
+        <externalId>false</externalId>
+        <label>Fax</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Kiosk__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Kiosk</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Map__c</fullName>
+        <externalId>false</externalId>
+        <label>Map</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Phone__c</fullName>
+        <externalId>false</externalId>
+        <label>Phone</label>
+        <length>15</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Venue</label>
+    <listViews>
+        <fullName>All_Venues</fullName>
+        <columns>NAME</columns>
+        <columns>Address__c</columns>
+        <columns>City__c</columns>
+        <columns>Contact__c</columns>
+        <columns>Email__c</columns>
+        <columns>Phone__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All Venues</label>
+    </listViews>
+    <listViews>
+        <fullName>Johannesburg_Venues</fullName>
+        <columns>NAME</columns>
+        <columns>Address__c</columns>
+        <columns>City__c</columns>
+        <columns>Contact__c</columns>
+        <columns>Email__c</columns>
+        <columns>Phone__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>City__c</field>
+            <operation>equals</operation>
+            <value>Johannesburg</value>
+        </filters>
+        <label>Johannesburg Venues</label>
+    </listViews>
+    <nameField>
+        <label>Venue Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Venues</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Address__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>City__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Capacity__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Contact__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Email__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Phone__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

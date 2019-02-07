@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Call_Report_GC_Segment_with_GC_and_Internal_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Call reports where Share with Banker is true owned by any role containing GC or where the owner&apos;s team = GC should be shared with ZAF - CIB - Coverage - Global Clients - GDO and internal subordinates</description>
+        <label>Call Report -GC Segment with GC and Internal Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>GC</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Call_Reports_shared_with_Central_if_shared_with_Banker</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Call Reports shared with Central if shared with Banker</label>
+        <sharedTo>
+            <role>Central</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>Share_C_R_with_Relationship_Owner__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Financial_Services_Africa_NBFI</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Financial Services Africa - NBFI</label>
+        <sharedTo>
+            <role>ZAF_CIB_Coverage_Financial_Services_Africa_NBFI</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Financial Services</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Financial Services - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>GDO_Segment_with_GDO_and_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>All call reports linked to clients owned by Users with Role containing &quot;GDO&quot; shared with ZAF - CIB - Coverage - Global Clients - GDO and subordinates</description>
+        <label>GDO Segment with GDO and Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>GDOs</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>GDO</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Global_Clients</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Global Clients</label>
+        <sharedTo>
+            <role>Global_Corporate</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Public_Sector</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Public Sector</label>
+        <sharedTo>
+            <role>South_Africa_Public_Sector</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Public Sector</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Public Sector - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>RAISS_Call_reports_shared_with_RAISS_public_group</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>RAISS Call reports shared with RAISS public group</label>
+        <sharedTo>
+            <group>META_Group</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>META - Call Report</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Sharing_with_Market_Institution</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>When Share With Markets Institution is true Share with ZAF - CIB - Markets - Institutions role</description>
+        <label>Sharing with Market Institution</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>SA_Markets_Institutions</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Share_With_Markets_Institu__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingOwnerRules>
+        <fullName>Call_Report_GC_Segment_with_GC_and_Internal_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Call reports where Share with Banker is true owned by any role containing GC or where the owner&apos;s team = GC should be shared with ZAF - CIB - Coverage - Global Clients - GDO and internal subordinates</description>
+        <label>Call Report -GC Segment with GC and Internal Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <role>Global_Clients_Global_Corporates</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>GC_and_GDO_with_Corridors</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>CIBDIGSALP-2725 Global Parent sharing rules update</description>
+        <label>GC and GDO with Corridors</label>
+        <sharedTo>
+            <group>ZAF_CoverageCorridors_and_GlobalClients</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>SA_GC_RoA_GC_GDO</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Global_CLients_SA_management_sharing_CR</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Global CLients SA management sharing rule for CR</description>
+        <label>Global CLients SA management sharing - CR</label>
+        <sharedTo>
+            <role>Global_Corporate</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>Global_Corporate</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>IBS_Central_to_International_Banking</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>IBS Central to International Banking</label>
+        <sharedTo>
+            <role>ZAF_CIB_International_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_Gauteng_Corporate</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>IBS_GN_to_International_Banking</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>IBS GN to International Banking</label>
+        <sharedTo>
+            <role>ZAF_CIB_International_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_and_Trade_Gauteng_North</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Markets_Call_Reports_with_Research</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Markets Call Reports with Research</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>ZAF_CIB_Markets_Research</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>SA_Markets_Institutions</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Markets_shared_with_Markets_Role</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Markets shared with Markets Role</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Markets</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>South_Africa_CIB_Markets</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>ROA_Debt_team_and_GF</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>ROA Debt team and GF</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Global_Finance_RoA_Debt</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <group>ROA_Debt_team</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_Call_Reports_to_all_members_of_Markets_team</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Share Call Reports to all members of Markets team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>SA_Markets_Institutions</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>SA_Markets_Institutions</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_Call_Reports_with_ZAF_CIB_Banking</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all ZAF - CIB - Banking Call Reports with ZAF - CIB - Banking</description>
+        <label>Share Call Reports with ZAF - CIB - Banking</label>
+        <sharedTo>
+            <role>ZAF_CIB_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>ZAF_CIB_Banking</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_FX_Call_Reports_with_FX_Team</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share FX Call Reports with the FX Team</description>
+        <label>Share FX Call Reports with FX Team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>FX_Sales</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>FX_Sales</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Wealth_RD_BM_View_all_Call_Report</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Shares Call Reports to RD/BM when owned by any Wealth user (Read Only)</description>
+        <label>Wealth -  RD/BM View all - Call Reports</label>
+        <sharedTo>
+            <group>Wealth_Management</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>Wealth_All</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>ZAF_CIB_Markets_Research</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>CR sharing rule for ZAF - CIB - Markets - Research</description>
+        <label>ZAF - CIB - Markets - Research</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>ZAF_CIB_Markets_Research</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <role>ZAF_CIB_Markets_Research</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

@@ -1,0 +1,87 @@
+<apex:page standardController="advpm__Timekeeper__c" extensions="advpm.TimekeeperQuotaController" tabStyle="advpm__Timekeeper__c">
+<apex:form >
+	<style type="text/css">
+		body .pbBody table.addQuota tr th, body .pbBody table.addQuota tr td {
+		    border: 0px solid #EDEDED;
+		}
+	</style>
+	<apex:sectionHeader title="Timekeeper" subtitle="{!advpm__Timekeeper__c.Name}" />
+	<apex:pageBlock mode="edit">
+		<apex:pageMessages />
+		<apex:pageBlockButtons location="top">
+			<apex:commandButton action="{!saveTimekeeperQuota}" value="  Save  " />
+			<apex:commandButton action="{!cancel}" value="  Cancel  " />
+		</apex:pageBlockButtons>
+		<apex:pageBlockSection title="Information" columns="2">
+			<apex:inputField value="{!advpm__Timekeeper__c.Name}" required="true" />
+			<apex:inputField value="{!advpm__Timekeeper__c.OwnerId}" />
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__Alias__c}" required="true" />
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__Initials__c}" />
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__Staff__c}" />
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__Role__c}" />
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__External_Resource__c}" />
+		</apex:pageBlockSection>
+		<apex:pageBlockSection title="Hours Quota" columns="1">
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Type" />
+				<apex:outputPanel style="display:inline;" id="opType">
+					<apex:actionRegion >
+						<apex:inputField value="{!advpm__Timekeeper__c.advpm__Type__c}" required="true">
+							<apex:actionSupport action="{!changeType}" event="onchange" rerender="tbQuotas,rowVar" status="loadType" />
+						</apex:inputField>
+					</apex:actionRegion>
+					<apex:actionStatus id="loadType" startText="(loading...)" />
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+			<apex:inputField value="{!advpm__Timekeeper__c.advpm__Use_Fiscal_Year__c}" />
+		</apex:pageBlockSection>
+		<apex:pageBlockSection title="Quotas" columns="1" />
+		<apex:variable var="rowIndex" value="{!-1}" id="rowVar" />
+		<apex:pageBlockTable value="{!Quotas}" var="q" id="tbQuotas">
+			<apex:column headerValue="Type">
+				<apex:outputField value="{!advpm__Timekeeper__c.advpm__Type__c}" />
+				<apex:variable var="rowIndex" value="{!(rowIndex+1)}" />
+			</apex:column>
+			<apex:column headerValue="Name">
+				<apex:outputField value="{!q.Name}" />
+			</apex:column>
+			<apex:column headerValue="Start Date">
+				<apex:outputField value="{!q.advpm__Start_Date__c}" />
+			</apex:column>
+			<apex:column headerValue="End Date">
+				<apex:outputField value="{!q.advpm__End_Date__c}" />
+			</apex:column>
+			<apex:column headerValue="Hours">
+				<apex:outputField value="{!q.advpm__Hours__c}" />
+			</apex:column>
+			<apex:column headerValue="Action">
+                <apex:commandLink action="{!delQuota}" status="addQuotasLoading" rerender="tbQuotas,rowVar" >
+                    <apex:param name="qId" value="{!q.Id}" />
+                    <apex:param name="ind" value="{!rowIndex}" />
+                    
+                    <apex:image height="16" width="16" url="{!URLFOR($Resource.advpm__images, 'img/delete_16.png')}" title="Remove Quota Entry" />
+                </apex:commandLink>
+            </apex:column>
+			<apex:facet name="footer">
+				<apex:outputPanel style="display:inline;">
+					<table class="addQuota">
+						<tr>
+							<td nowrap="nowrap" align="right" style="vertical-align:middle;">Rows To Add</td>
+							<td><apex:inputText value="{!addRows}" style="width:35px;" /></td>
+							<td nowrap="nowrap" align="right" style="vertical-align:middle;">Hours</td>
+							<td><apex:inputField value="{!newQuota.advpm__Hours__c}" style="width:35px;" /></td>
+							<td nowrap="nowrap" align="right" style="vertical-align:middle;">Start</td>
+							<td><apex:inputField value="{!newQuota.advpm__Start_Date__c}" /></td>
+							<td nowrap="nowrap" align="right" style="vertical-align:middle;">End</td>
+							<td><apex:inputField value="{!newQuota.advpm__End_Date__c}" /></td>
+						</tr>
+						<tr>
+							<td colspan="8" nowrap="nowrap"><apex:commandLink action="{!addQuota}" value="Add Rows" rerender="tbQuotas,rowVar" status="addQuotasLoading" />&nbsp;&nbsp;<apex:actionStatus id="addQuotasLoading" startText="(loading...)" /></td>
+						</tr>
+					</table>
+				</apex:outputPanel>
+			</apex:facet>
+		</apex:pageBlockTable>
+	</apex:pageBlock>
+</apex:form>
+</apex:page>

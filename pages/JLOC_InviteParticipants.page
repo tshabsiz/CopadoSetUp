@@ -1,0 +1,157 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_InviteParticipantsController" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+
+	<style>
+		.panel-grid-columns {
+			width: 50%;
+		}
+		.grid-view {
+			border-collapse: collapse;
+			margin-right: 10%;
+			width: 90%;
+		}
+		.grid-view td, th {
+			border: 1px solid #999;
+  			padding: 4px;
+  			text-align: left;
+		}
+		.grid-view th {
+			background-color: whitesmoke;
+			font-weight: bold;
+		}
+		.grid-view caption {
+			text-align: left;
+		}
+		.title {
+            margin-bottom: 4px;
+            font-size: 18px;
+		}
+		.label {
+			font-weight: bold;
+			margin-left: 10%;
+			margin: 12px;
+			color: #999;
+		}
+		.header {
+			margin: 12px;
+			font-weight: bold;
+		}
+		.field {
+			margin: 12px;
+		}
+		.inline-button {
+			margin-left: 10%;
+			margin: 12px !important;
+		}
+	</style>
+	<apex:form >
+		<apex:pageBlock id="pb" mode="maindetail">
+			<apex:pageMessages id="pageMsg"/>
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+				border: 'none', 
+				padding: '15px', 
+				backgroundColor: '#000', 
+				'-webkit-border-radius': '10px', 
+				'-moz-border-radius': '10px', 
+				opacity: .5, 
+				color: '#fff' 
+			} });" onstop="$.unblockUI();" />
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Next" action="{!next}" rendered="{!areChaterGroupsCongigured && NOT(areChatterGroupsSelected)}" status="processing" reRender="pb"/>
+				<apex:commandButton value="Send to Committee" action="{!save}" rendered="{!areChaterGroupsCongigured && areChatterGroupsSelected}" status="processing" reRender="pb"/>
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+			<apex:outputPanel id="chatter-groups-panel" rendered="{!areChaterGroupsCongigured && NOT(areChatterGroupsSelected)}">
+				<apex:panelGrid >
+					<apex:panelGroup >
+						<div class="header">
+        					<apex:inputCheckbox value="{!allGroupsSelected}"/>
+        					<span>All</span>
+    					</div>
+						<apex:repeat value="{!chatterGroups}" var="group">
+							<div class="field">
+        						<apex:inputCheckbox value="{!group.isSelected}"/>
+        						<span>{!group.name}</span>
+    						</div>
+						</apex:repeat>
+						<script type="text/javascript"> 
+							$('div.header input:checkbox').click(function(e) {
+								$('div.field input:checkbox').prop('checked', this.checked);
+							});
+						</script>
+					</apex:panelGroup>
+				</apex:panelGrid>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!areChaterGroupsCongigured && areChatterGroupsSelected}">
+				<apex:panelGrid columns="2" width="100%" columnClasses="panel-grid-columns">
+					<apex:panelGroup id="chatter-group-members-panel">
+						<apex:repeat value="{!chatterGroups}" var="group">
+						<apex:outputPanel rendered="{!group.isSelected}">
+							<table class="grid-view">
+								<caption class="label">{!group.chatterGroup.Name}</caption>
+								<tr>
+									<th width="5%"><apex:inputCheckbox value="{!group.allGroupMembersSelected}" /></th>
+									<th width="45%">Group Name</th>
+    								<th width="50%">User Name</th>
+								</tr>
+								<apex:repeat value="{!group.chatterGroupMembers}" var="member">
+    								<tr>
+    									<td width="10%"><apex:inputCheckbox value="{!member.isSelected}" /></td>
+    									<td width="45%"><apex:outputText value="{!group.name}" /></td>
+    									<td width="50%"><apex:outputText value="{!member.chatterGroupMember.Member.Name}" /></td>
+    								</tr>
+    							</apex:repeat>
+							</table>
+						</apex:outputPanel>
+						</apex:repeat>
+					</apex:panelGroup>
+					<apex:panelGroup id="other-attendees-panel">
+						<div class="label">Other Attendees</div>
+						<apex:outputPanel rendered="{!NOT(isOtherJlocAttendeesEmpty)}">
+						<table class="grid-view">
+							<tr>
+								<th>Action</th>
+								<th>{!$ObjectType.JLOC_Attendee__c.fields.User__c.Label}</th>
+							</tr>
+							<apex:repeat value="{!otherJlocAttendees}" var="attendee">
+    							<tr>
+    								<td>
+    									<apex:commandLink value="Remove" action="{!removeOtherAttendee}" immediate="true" status="processing" reRender="other-attendees-panel,pageMsg">
+                            				<apex:param name="efId" value="{!attendee.order}" assignTo="{!otherJlocAttendeeToDel}"/>
+                        				</apex:commandLink>
+                        			</td>
+    								<td><apex:inputField value="{!attendee.otherJlocAttendee.User__c}" required="true" /></td>
+    							</tr>
+    						</apex:repeat>
+						</table>
+						</apex:outputPanel>
+						<apex:commandButton id="add-other-attendee-btn" styleClass="inline-button" value="Add New Participant" action="{!addOtherAttendee}" immediate="true" status="processing" reRender="other-attendees-panel,pageMsg"/>
+					</apex:panelGroup>
+					<apex:panelGroup id="deal-team-members-panel">
+						<table class="grid-view">
+							<caption class="label">Deal Team</caption>
+							<tr>
+								<th width="5%"><apex:inputCheckbox value="{!allDealTeamMembersSelected}" /></th>
+								<th width="45%">Team Role</th>
+    							<th width="50%">User Name</th>
+							</tr>
+							<apex:repeat value="{!dealTeamMembers}" var="member">
+    							<tr>
+    								<td width="10%"><apex:inputCheckbox value="{!member.isSelected}" /></td>
+    								<td width="45%"><apex:outputText value="{!member.dealTeamMember.TeamMemberRole}" /></td>
+    								<td width="50%"><apex:outputText value="{!member.dealTeamMember.User.Name}" /></td>
+    							</tr>
+    						</apex:repeat>
+						</table>
+					</apex:panelGroup>
+				</apex:panelGrid>
+				<script type="text/javascript"> 
+					$('th input:checkbox').click(function(event) {
+						$(this).closest('table').find('td input:checkbox').prop('checked', this.checked);
+					});
+				</script>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

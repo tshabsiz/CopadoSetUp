@@ -1,0 +1,94 @@
+<apex:page standardController="Account" extensions="BuyingGroupConfigController" tabStyle="Account" docType="html-5.0" >
+    <style>
+        td, th {
+            padding-top: 10px;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+    </style>
+
+    <apex:pageBlock id="pb">
+    <apex:form >
+        <apex:pageMessages id="pageMsg"/>
+
+        <apex:actionFunction name="searchServer" action="{!runSearch}" rerender="search_results,add_btn" />
+        <apex:actionFunction name="refreshSearchPanel" action="{!setShowSearchResults}" rerender="search_text,search_results,add_btn" />
+        <apex:actionFunction name="refreshPortfolioPanel" rerender="portfolioItemsPanel,portfolioItemsTable,pageMsg" />
+        
+        <table width="100%">
+            <tr>
+                <th>
+                    <apex:outputText value="Relationship Group:" />&nbsp;
+                    <apex:outputLink value="/{!Account.Id}">{!Account.Name}</apex:outputLink>
+                </th>
+                <th>
+                    <apex:outputText value="Search for Relationship:"/>&nbsp;
+                    <apex:inputText id="search_text" value="{!accountName}" onkeyup="doSearch();"/>
+                </th>
+            </tr>
+            <tr>
+                <td width="50%">
+                <apex:outputPanel id="portfolioItemsPanel">
+                    <apex:outputText style="color:blue" value="{!$Label.msg_EmptyBuyingGroup}" rendered="{!portfolioItems.empty}"/>
+                    <apex:pageBlockTable value="{!portfolioItems}" var="item" id="portfolioItemsTable" rendered="{!NOT(portfolioItems.empty)}">
+                        <apex:column >
+                            <apex:commandLink value="Remove" action="{!removePortfolioItem}" immediate="true" rerender="portfolioItemsPanel,portfolioItemsTable,pageMsg">
+                                <apex:param name="clientId" value="{!item.Id}"/>  
+                            </apex:commandLink>
+                        </apex:column>
+                        <apex:column value="{!item.name}"/>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+                </td>
+                <td width="50%">
+                    <p>
+                        <apex:outputPanel id="search_results">
+                            <apex:pageBlockTable value="{!accounts}" var="item" rendered="{!showSearchResults}">
+                                <apex:column headerValue="Relationship Name">
+                                    <apex:outputPanel layout="block">{!item.name}
+                                        <apex:actionSupport event="onclick" oncomplete="drawSdsHierarchyTree('{!item.Id}');refreshSearchPanel();" reRender="sds_hierarchy_tree"/>
+                                    </apex:outputPanel>
+                                </apex:column>
+                                <apex:column headerValue="Owner" value="{!item.Owner.Name}" />
+                                <apex:column headerValue="Buying Group" value="{!item.Parent.Name}" />
+                            </apex:pageBlockTable>
+                        </apex:outputPanel>
+                    </p>
+                    <p>
+                        <apex:outputPanel id="add_btn">
+                            <apex:outputText value="{!$Label.lbl_BuyingGroupConfigNote}" rendered="{!showAddBtn}"/><br/>
+                            <apex:commandButton value="{!$Label.btn_AddSelectedOrganisations}" onclick="addClients()" reRender="portfolioItemsPanel,portfolioItemsTable" rendered="{!showAddBtn}"/>
+                        </apex:outputPanel>
+                    </p>
+                    <p>
+                        <c:HierarchyTreeView Checkboxes="true" />
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </apex:form>
+    </apex:pageBlock>
+
+    <script>
+
+        function doSearch() {
+            $.jstree.destroy();
+            searchServer();
+        }
+
+        function addClients(){
+            var selected = $("#sds_hierarchy_tree").jstree("get_selected");
+            //console.log(selected);
+            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BuyingGroupConfigController.addClientsToPortfolio}',
+            selected, '{!Account.Id}',
+                function(result, event) {
+                    //console.log('JSON: '+result);
+                    refreshPortfolioPanel();
+                },
+                { escape: false }
+            );
+        }
+
+    </script>
+</apex:page>

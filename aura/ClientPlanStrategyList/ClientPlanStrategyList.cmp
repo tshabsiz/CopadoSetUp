@@ -1,0 +1,68 @@
+<aura:component controller="ClientPlanStrategyControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="timestamp" type="String" required="true" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    
+    <ltng:require scripts="/resource/jquery_1_11" />
+    
+    <div class="slds">
+    
+        <c:ClientPlanHeader tabId="6" planId="{!v.planId}"/>
+        
+        <div id="{!v.timestamp}">
+            
+            <div id="searchStrategyWrapper" class="slds-form-element">
+                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right" 
+                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    
+                    <ui:inputText aura:id="searchStrategyInput" class="slds-input" keyup="{!c.searchStrategies}"/>
+                </div>
+            </div>
+            
+            <aura:iteration items="{!v.strategies}" var="s">
+                <aura:if isTrue="{!s.isPlaceholder}">
+                    
+                    <div class="padding05">
+                        <div id="noStrategiesPlaceholder">
+                            <div class="alignCenter">
+                                <div>
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/action-sprite/svg/symbols.svg#new_task" />
+                                </div>
+                                <div id="noStrategiesPlaceholderLabel">
+                                    No strategies found,<br/>tap below to add one.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <aura:set attribute="else">
+                        <div id="{!s.Id}" class="slds-tile slds-hint-parent strategyItem">
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                <p class="slds-tile__title slds-truncate">{!s.Name}</p>
+                                <button class="slds-button slds-button--icon-bare">
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronright" />
+                                </button>
+                            </div>
+                            <div class="slds-tile__detail slds-text-body--small">
+                                <p class="slds-truncate">
+                                    <ui:outputDate value="{!s.LastModifiedDate}"/>
+                                </p>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:iteration>
+            
+            <div class="padding05">
+            	<button id="addStrategyButton" class="slds-button slds-button--brand" onclick="{!c.onAddStrategyButtonClicked}">Add strategy</button>
+            </div>
+        </div>
+        
+    </div>    
+    
+</aura:component>

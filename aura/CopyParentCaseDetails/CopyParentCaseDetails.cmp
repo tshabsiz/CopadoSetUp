@@ -1,0 +1,13 @@
+<aura:component access="global" implements="force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId">
+    <aura:attribute name="record" type="Case"/>
+    
+    <force:recordData layoutType="FULL"
+                  	  recordId="{!v.recordId}"
+                  	  targetFields="{!v.record}"
+                      recordUpdated="{!c.loadParent}"
+    />
+    
+    <lightning:button label="Go to Create Child Case Window" onclick="{!c.createChildWindow}" variant="brand" />
+    <lightning:button label="Create Child Case Directly" onclick="{!c.createChildDirect}" variant="brand" />
+    <lightning:flow aura:id="flowData" onstatuschange="{!c.handleStatusChange}" />
+</aura:component>

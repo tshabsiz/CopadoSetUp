@@ -1,0 +1,87 @@
+<messaging:emailTemplate subject="{!relatedTo.Email_Setup_To_Use__r.Email_Subject__c}" recipientType="Contact" relatedToType="Delegate__c">
+    <messaging:htmlEmailBody >
+        <body>
+            <table>
+                <tr>
+                 
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+            <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c}; background-color: #FFF;">
+                <tr>
+                    <td>
+                      <a href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}"> 
+                          <img width="600" src="{!relatedTo.Email_Setup_To_Use__r.Banner_URL__c}"/>
+                       </a> 
+                       
+                     </td>
+                </tr>   
+               <!-- <tr width="600" style= "-color: #fa551e padding: 100px 20px;">
+                  <td>
+                     <h1 style="text-align: center; color:#640032; font-size: 60px; padding: 100px 20px;"><apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.header__c}" escape="false" /></h1>
+                  </td>
+                </tr> -->
+                <tr>
+                    <td style="padding-top: 25px; padding-bottom: 25px">
+                    
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Heading__c}" escape="false" />
+                        <apex:outputPanel rendered="{!relatedTo.Contact__r.Salutation == ''}" layout="none">
+                        Dear {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName},<br/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!relatedTo.Contact__r.Salutation != ''}" layout="none">
+                            Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},<br/>
+                        </apex:outputPanel> 
+                        
+                        <apex:outputText value="{!SUBSTITUTE(relatedTo.Email_Setup_To_Use__r.Body__c, '<p><br></p>', '')}" escape="false" />
+                        
+                        <table width="100%">
+                         <tr style="padding-top:10px; padding-bottom:10px; margin-top:10px;"></tr>
+                         <tr style="padding-top:10px; padding-bottom:10px; background-color: #ff780f;"><td></td></tr>
+                        </table>
+                  
+                        <table border="0" width="100%" cellspacing="0" cellpadding="0" style= "padding-top: 20px; font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c};">
+                            <tr>
+                                <th align="left" width="100" valign="top">
+                                   RSVP:
+                                </th>
+                                <td>
+                                Kindly RSVP via the following links <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=Yes"><strong>Yes</strong></a> / <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=No"><strong>No</strong></a> <!--/ <a style="color: {!relatedTo.Email_Setup_To_Use__r.Link_Color__c}; text-decoration:none" href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}&rsvp=Maybe"><strong>Maybe</strong></a>-->
+                                    <br/>
+                                    <br/>
+                                  
+                                    <apex:outputPanel rendered="{!relatedTo.Event__r.RSVP_Date__c != null}" layout="none">
+                                        <strong>Please note:</strong> This invitation is valid until 
+                                        <apex:outputText value="{0,date, MMMM d', 'yyyy}">
+                                            <apex:param value="{!relatedTo.Event__r.RSVP_Date__c}" /> 
+                                        </apex:outputText>
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/><br/> 
+                      <apex:outputPanel rendered="{!relatedTo.Email_Setup_To_Use__r.Add_to_Outlook__c == true}" layout="none">
+                            <a href="http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]=10/15/2018 07:30 AM&e[0][date_end]=10/15/2018 11:00 AM&e[0][timezone]=Africa%2FJohannesburg&e[0][title]={!relatedTo.Event__r.Name}&e[0][description]=&e[0][location]={!relatedTo.Event__r.Venue__r.Name}&e[0][organizer]={!relatedTo.Event__r.Calendar_Organiser_Name__c}&e[0][organizer_email]={!relatedTo.Event__r.Calendar_Organiser_Email__c}&e[0][privacy]=public">
+                                <img src="https://c.eu5.content.force.com/servlet/servlet.ImageServer?id=01524000002Q56a&oid=00D24000000ajGo&lastMod=1488973782000" style="margin-bottom:4px;"/>
+                            </a><br/>
+                        </apex:outputPanel>
+
+                      <table width="100%" style= "background-color: #ff780f; padding-bottom: 15px;padding-top: 15px;padding-left: 30px; padding-right: 30px ">
+                       <tr width="100%"><td> <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Footer__c}" escape="false" /></td></tr>
+                       </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; font-size: 12px;">
+                       <!-- <img width="560px" src="{!relatedTo.Email_Setup_To_Use__r.Disclaimer_Banner_URL__c}" />-->
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Disclaimer__c}" escape="false" />
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+        </body>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

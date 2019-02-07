@@ -1,0 +1,82 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" controller="NewsletterController" access="global" >
+    <aura:handler name="init" value="{! this }" action="{! c.onInit }"/>
+    <aura:attribute name="newsletterDetails" type="NewsletterDetails" required="false" />
+    
+    <div class="c-container">
+        <lightning:recordEditForm aura:id="recordViewForm"
+                                  recordId="{! v.recordId }"
+                                  objectApiName="Newsletter__c"
+                                  onsuccess="{! c.onSuccess }"
+                                  class="slds-m-bottom_xx-large">
+            <lightning:messages />
+            
+            <lightning:layout horizontalAlign="space" verticalAlign="space" pullToBoundary="large">
+                
+                <lightning:layoutItem size="7" padding="horizontal-large">
+                    
+                    <h1 class="slds-text-heading_large">Newsletter details</h1>
+                    <lightning:inputField fieldName="Name" />
+                    <lightning:inputField fieldName="Date__c" />
+                    <lightning:inputField fieldName="Editorial__c" />
+                    
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem size="5" padding="horizontal-large">
+                    
+                    <h1 class="slds-text-heading_large">Send to</h1>
+                    <lightning:inputField fieldName="Distribution_list_1__c" />
+                    <lightning:inputField fieldName="Distribution_list_2__c" />
+                    <lightning:inputField fieldName="Distribution_list_3__c" />
+
+                </lightning:layoutItem>
+
+            </lightning:layout>
+
+            <h1 class="slds-text-heading_large">Pick your Chatter posts</h1>
+            <!-- aura:if isTrue="{! v.newsletterDetails.newsletter.Id != null }" -->
+                <aura:iteration var="groupDetailsAndQuestions" items="{! v.newsletterDetails.groupsDetailsAndQuestions }">
+                    <h2 class="slds-text-heading_medium">{! groupDetailsAndQuestions.groupName }</h2>
+                    <lightning:layout horizontalAlign="space" multipleRows="true">
+                        <aura:iteration var="question" items="{! groupDetailsAndQuestions.questions }">
+                            <lightning:layoutItem flexibility="grow" size="6" padding="around-small">
+                                <article class="slds-card zslds-card_boundary">
+                                    <div class="slds-card__header slds-grid">
+                                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                            <div class="slds-media__figure">
+
+                                                <span class="slds-avatar slds-avatar_large">
+                                                    <img alt="news picture" src="{! question.pictureUrl }" title="" />
+                                                </span>
+
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <h2>
+                                                    <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="{! question.title }">
+                                                        <span class="slds-text-heading_small">{! question.title }</span>
+                                                    </a>
+                                                </h2>
+                                            </div>
+                                        </header>
+                                    </div>
+                                    <div class="slds-card__body slds-card__body_inner">{! question.body }</div>
+                                    <footer class="slds-card__footer slds-align_absolute-center">
+                                        <lightning:input type="checkbox-button" name="{! question.id }" aura:id="selectedQuestions" checked="{! question.isSelected }" onchange="{! c.onQuestionSelectionChange }" label="" value="approve" />
+                                    </footer>
+                                </article>
+                            </lightning:layoutItem>
+                        </aura:iteration>
+                    </lightning:layout>
+                </aura:iteration>
+            <!-- /aura:if -->
+
+            <div class="slds-clearfix">
+                <aura:if isTrue="{! v.newsletterDetails.newsletter.Sent__c != true }">
+                    <lightning:button aura:id="send" type="button" label="Send" onclick="{! c.sendNewsletter }" class="slds-m-top_medium slds-m-left_xx-large slds-float_right" variant="destructive" iconName="utility:email" />
+                    <lightning:button aura:id="submit" type="submit" label="Save" class="slds-m-top_medium slds-float_right" variant="brand" iconName="utility:save" />
+                </aura:if>
+                <lightning:button aura:id="cancel" type="button" label="Back" onclick="{! c.navigateToObjectHome }" class="slds-m-top_medium slds-float_right slds-m-right_small" iconName="utility:undo" />
+            </div>
+
+        </lightning:recordEditForm>
+    </div>
+</aura:component>

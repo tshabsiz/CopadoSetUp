@@ -1,0 +1,228 @@
+<apex:page standardController="advpm__Export_Template__c" tabStyle="advpm__Export_Template__c" extensions="advpm.ExportTemplateController">
+	
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS />
+        <style type="text/css">
+            body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+            body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+            body .apexp .pbBody table.list {border-top-width: 0px;}
+            .dateInput input {width:85px!important;}
+            .pbBody .slds-table.list th {border-top: 1px solid #e0e3e5!important;}
+            
+            label.slds-checkbox {display:inline;}
+            input[type="checkbox"]{box-sizing: border-box;padding: 0}
+            .slds-checkbox {display: inline-block}
+            .slds-checkbox .slds-checkbox--faux {width: 10px;height: 10px;display: inline-block;position: relative;vertical-align: middle;border: 1px solid #d8dde6;border-radius: 0.125rem;background: #fff;-webkit-transition: border 0.1s linear, background-color 0.1s linear;transition: border 0.1s linear, background-color 0.1s linear}
+            .slds-checkbox[type="checkbox"] {width: 1px;height: 1px;border: 0;clip: rect(0 0 0 0);margin: -1px;overflow: hidden;padding: 0;position: absolute}
+            .slds-checkbox[type="checkbox"]:checked ~ .slds-checkbox--faux:after {display: block;content: '';height: 2px;width: 5px;position: absolute;top: 42%;left: 50%;-webkit-transform: translate3d(-50%, -50%, 0) rotate(-45deg);transform: translate3d(-50%, -50%, 0) rotate(-45deg);border-bottom: 2px solid #1589ee;border-left: 2px solid #1589ee}
+            .slds-checkbox[type="checkbox"]:focus ~ .slds-checkbox--faux {content: '';border-color: #1589ee;box-shadow: 0 0 3px #0070D2}
+            .slds-checkbox[type="checkbox"]:focus:checked ~ .slds-checkbox--faux {border-color: #1589ee;background-color: #fff}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:sectionHeader title="Export Template" subtitle="{!IF(advpm__Export_Template__c.Id == null, 'New', advpm__Export_Template__c.Name + ' Edit')}" rendered="{!!isLightning}" />
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="{!IF(ISBLANK(advpm__Export_Template__c.Id),'New', advpm__Export_Template__c.Name + ' Edit')}" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Export_Template__c.labelPlural)}" 
+                            parentEntityLink="{!$ObjectType.advpm__Export_Template__c.keyPrefix}" 
+                            parentRecordName="{!advpm__Export_Template__c.Name}" 
+                            parentRecordID="{!advpm__Export_Template__c.Id}">
+            <div class="" style="margin-top:-45px;">
+                <div class="slds-button-group" role="group">
+                    <input type="button" class="slds-button slds-button--neutral slds-button--brand" value="  Save  " onClick="doSave();return false;" />
+                    <input type="button" class="slds-button slds-button--neutral" value="  Cancel  " onClick="doRedirect();return false;" />
+                </div>
+            </div>
+        </c:slds_pageheader>
+    </apex:outputPanel>
+    
+	<style type="text/css">
+		.labelCol {/*width: 10% !important;*/}
+		.data2Col {width: 90% !important;}
+		.textFieldWidth {width: 250px;}
+	</style>
+	<apex:form id="theForm">
+        <apex:actionFunction name="doSave" action="{!save}" />
+        <apex:actionFunction name="doRedirect" action="{!cancel}" />
+        
+        <apex:pageBlock mode="edit" rendered="{!!isLightning}">
+        	<apex:pageMessages />
+        	<apex:pageBlockButtons >
+        		<apex:commandButton value="  Save  " action="{!save}" />
+	        	<apex:commandButton value=" Cancel " action="{!cancel}" />
+        	</apex:pageBlockButtons>
+        	<table border="0" width="100%">
+				<tbody>
+					<tr>
+						<td width="45%" valign="top" style="vertical-align: top" class="slds-form--horizontal">
+				       		<table border="0">
+								<tbody>
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Export Template Name" for="name_field" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:outputPanel styleClass="requiredInput" layout="block">
+							                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+							                    <apex:inputField value="{!advpm__Export_Template__c.Name}" styleClass="textFieldWidth" required="false" id="name_field" />
+							                </apex:outputPanel>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Related Object" for="relobj_field" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:outputPanel styleClass="requiredInput" layout="block">
+							                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+							                    <apex:selectList value="{!advpm__Export_Template__c.advpm__Related_Object__c}" size="1" id="relobj_field">
+													<apex:selectOptions value="{!ObjectList}" />
+													<apex:actionSupport event="onchange" rerender="apexTree,booleanFields,datetimeFields,userFields" status="loadingTree" action="{!ChangeRelatedObject}" />
+						       					</apex:selectList>
+						       					<apex:actionStatus id="loadingTree" startText="(loading) ..." />
+							                </apex:outputPanel>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Description" for="descr_field" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:inputTextArea value="{!advpm__Export_Template__c.advpm__Description__c}" cols="40" rows="6" styleClass="textFieldWidth" id="descr_field" />
+										</td>
+									</tr>
+									<!-- <tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Format Date As" for="formatdateas" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:actionRegion >
+												<apex:inputField value="{!Export_Template__c.Format_Date_As__c}" id="formatdateas">
+													<apex:actionSupport event="onchange" rerender="sampleDateFormat" />
+						       					</apex:inputField>
+						       				</apex:actionRegion>
+						       				<apex:outputPanel layout="block" id="sampleDateFormat">
+						       					<apex:outputPanel layout="block" styleClass="errorMsg" rendered="{!Export_Template__c.Format_Date_As__c != ''}">{!SampleDateFormat}</apex:outputPanel>
+						       				</apex:outputPanel>
+										</td>
+									</tr> -->
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Field To Mark Record As Exported" for="booleanFields" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Mark_Record_As_Exported__c}" size="1" id="booleanFields">
+												<apex:selectOptions value="{!BooleanMarkExportFields}" />
+					       					</apex:selectList>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Field To Record Exported By User" for="datetimeFields" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Record_Exported_By_User__c}" size="1" id="datetimeFields">
+												<apex:selectOptions value="{!UserMarkExportFields}" />
+					       					</apex:selectList>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Field To Record Timestamp Of Exported Record" for="userFields" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Record_Timestamp_Of_Record__c}" size="1" id="userFields">
+												<apex:selectOptions value="{!DatetimeMarkExportFields}" />
+					       					</apex:selectList>
+										</td>
+									</tr><!--
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Format Date As" for="formatDateAs" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:inputField value="{!Export_Template__c.Format_Date_As__c}" id="formatDateAs" />
+										</td>
+									</tr>-->
+									<tr>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap"><apex:outputLabel value="Use Field Labels as Column Headers" for="useFieldLabels" /></td>
+										<td valign="top" class="labelCol dataCol" nowrap="nowrap">
+											<apex:inputField value="{!advpm__Export_Template__c.advpm__Use_Field_Labels_As_Column_Headers__c}" id="useFieldLabels" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+						<td width="55%" valign="top" style="vertical-align: top">
+							<apex:outputPanel style="width:100%" id="apexTree">
+								<c:ApexTree selectable="true" ObjectName="{!advpm__Export_Template__c.advpm__Related_Object__c}" value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" containerHeight="500" />
+						        <apex:outputText value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" id="selectedValueDisplay" rendered="false" />
+					        </apex:outputPanel>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+        </apex:pageBlock>
+        <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+            <div class="slds-grid slds-p-top--medium">
+                <div class="slds-col" style="padding-right: 20px;">
+                    <div class="slds-form--horizontal">
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" for="name_field2">
+                                <abbr class="slds-required" title="required">*</abbr> Export Template Name
+                            </apex:outputLabel>
+                            <div class="slds-form-element__control">
+                                <apex:inputField value="{!advpm__Export_Template__c.Name}" styleClass="slds-input textFieldWidth" required="true" id="name_field2" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" for="name_field2">
+                                <abbr class="slds-required" title="required">*</abbr> Related Object
+                            </apex:outputLabel>
+                            <div class="slds-form-element__control">
+                                <apex:actionRegion >
+                                    <apex:selectList value="{!advpm__Export_Template__c.advpm__Related_Object__c}" size="1" id="relobj_field2" styleClass="slds-input">
+                                        <apex:selectOptions value="{!ObjectList}" />
+                                        <apex:actionSupport event="onchange" rerender="apexTree2,booleanFields2,datetimeFields2,userFields2" status="loadingTree2" action="{!ChangeRelatedObject}" />
+                                    </apex:selectList>
+                                </apex:actionRegion>
+                                <apex:actionStatus id="loadingTree2" startText="(loading) ..." />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" value="Description" for="descr_field2" />
+                            <div class="slds-form-element__control">
+                                <apex:inputTextArea value="{!advpm__Export_Template__c.advpm__Description__c}" cols="40" rows="3" styleClass="slds-input textFieldWidth" id="descr_field2" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" value="Field To Mark Record As Exported" for="booleanFields2" />
+                            <div class="slds-form-element__control">
+                                <apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Mark_Record_As_Exported__c}" size="1" id="booleanFields2" styleClass="slds-input">
+                                    <apex:selectOptions value="{!BooleanMarkExportFields}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" value="Field To Record Exported By User" for="userFields2" />
+                            <div class="slds-form-element__control">
+                                <apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Record_Exported_By_User__c}" size="1" id="userFields2" styleClass="slds-input">
+                                    <apex:selectOptions value="{!UserMarkExportFields}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" value="Field To Record Timestamp Of Exported Record" for="datetimeFields2" />
+                            <div class="slds-form-element__control">
+                                <apex:selectList value="{!advpm__Export_Template__c.advpm__Field_To_Record_Timestamp_Of_Record__c}" size="1" id="datetimeFields2" styleClass="slds-input">
+                                    <apex:selectOptions value="{!DatetimeMarkExportFields}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <apex:outputLabel styleClass="slds-form-element__label" value="Use Field Labels as Column Headers" for="useFieldLabels2" />
+                            <div class="slds-form-element__control">
+                                <label class="slds-checkbox" for="{!$Component.theForm.useFieldLabels2}" style="margin-top: 6px;">
+                                    <apex:inputField styleClass="slds-checkbox" value="{!advpm__Export_Template__c.advpm__Use_Field_Labels_As_Column_Headers__c}" id="useFieldLabels2" />
+                                    <span class="slds-checkbox--faux"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <apex:outputPanel style="width:100%" id="apexTree2">
+                        <c:ApexTree selectable="true" ObjectName="{!advpm__Export_Template__c.advpm__Related_Object__c}" value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" containerHeight="500" />
+                        <apex:outputText value="{!advpm__Export_Template__c.advpm__Export_Field_Set__c}" id="selectedValueDisplay2" rendered="false" />
+                    </apex:outputPanel>
+                </div>
+            </div>
+        </apex:outputPanel>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Complaints Case Escalation 1</name>
+    <style>freeForm</style>
+    <subject>{!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Thank you for your email.
+
+This is an auto-generated escalation notification to inform you
+that there is a case pending for resolution.
+
+Case Created: {!Case.CreatedDate}
+
+Case Details: {case_number}, {customer_full_name}
+
+{service_category}, {service_type_name}
+
+
+Escalation Level: {escalation_level}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

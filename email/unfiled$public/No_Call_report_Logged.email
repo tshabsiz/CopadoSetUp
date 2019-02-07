@@ -1,0 +1,23 @@
+<messaging:emailTemplate subject="Relationship Activity Notification" recipientType="User" relatedToType="Account">
+<messaging:htmlEmailBody >
+
+<html>
+
+     <body>
+     
+     <img border="0" bEditID="r1sp1" bLabel="headerImage" id="r1sp1" src="https://barclaysafrica--c.eu5.content.force.com/servlet/servlet.ImageServer?id=01524000000JyRq&oid=00D1l0000008age"/>
+<br/><br/>
+  <p>Hi {!relatedTo.Owner.FirstName},<br/><br/>
+  
+  No Call Reports have been logged against {!relatedTo.Name} for three months. <br/><br/>
+
+Please consider reaching out to the appropriate contact to continue to build upon this relationship. <br/><br/>
+
+You can review this Relationship by clicking <a href="https://barclaysafrica--sfdev.cs81.my.salesforce.com/{!relatedTo.Id}">here</a>.</p>
+</body>
+  </html>
+
+    </messaging:htmlEmailBody>
+
+
+</messaging:emailTemplate>

@@ -1,0 +1,73 @@
+<apex:page controller="APT_PendingApprovalInboxController" tabStyle="Pending_Approvals__tab" showHeader="true" sidebar="true">
+	<apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+	<apex:form >
+		<apex:pageBlock id="pb">
+			<apex:pageMessages id="pgMsg"/>
+			<apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+				border: 'none', 
+				padding: '15px', 
+				backgroundColor: '#000', 
+				'-webkit-border-radius': '10px', 
+				'-moz-border-radius': '10px', 
+				opacity: .5, 
+				color: '#fff' 
+			} });" onstop="$.unblockUI();" />
+
+			<apex:pageBlockButtons >
+				<apex:commandButton action="{!submit}" value="Submit" status="processing" reRender="pgMsg"/>
+			</apex:pageBlockButtons>
+
+			<apex:repeat value="{!annualPricings}" var="ap">
+				<apex:pageBlockSection columns="1" title="{!ap.annualPricing.Name}">
+					<apex:outputField value="{!ap.annualPricing.Organisation__r.Name}" />
+					<apex:outputField value="{!ap.annualPricing.Pricing_Template__r.Year__c}" />
+					<apex:pageBlockTable id="approval-items-table" value="{!ap.workItems}" var="wi" rendered="{!isPendingApproval}">
+						<apex:column >
+							<apex:facet name="header">
+								<apex:inputCheckbox styleClass="all-selected" value="{!ap.isSelected}" />
+							</apex:facet>
+							<apex:inputCheckbox styleClass="selected" value="{!wi.isSelected}" />
+						</apex:column>
+						<apex:column width="5%" headerValue="{!$ObjectType.Annual_Pricing_Item__c.fields.Name.Label}">
+							<apex:outputLink value="/{!wi.annualPricingItem.Id}" target="_blank">{!wi.annualPricingItem.Name}</apex:outputLink>
+						</apex:column>
+						<apex:column value="{!wi.annualPricingItem.Pricing_Group__c}"/>
+						<apex:column value="{!wi.annualPricingItem.Pricing_Deal_Product_Name__c}"/>
+						<apex:column value="{!wi.annualPricingItem.Standard_Price__c}"/>
+						<apex:column value="{!wi.annualPricingItem.Standard_VAT_Inclusive__c}"/>
+						<apex:column value="{!wi.annualPricingItem.Final_Price__c}"/>
+						<apex:column value="{!wi.annualPricingItem.Request_Comments__c}"/>
+						<apex:column headerValue="Approve/Reject">
+							<apex:inputHidden value="{!wi.action}" />
+							<apex:selectList styleClass="editable" size="1" disabled="true">
+								<apex:selectOptions value="{!actions}" />
+							</apex:selectList>
+						</apex:column>
+						<apex:column headerValue="Approve/Reject Comments">
+							<apex:inputTextArea styleClass="editable" value="{!wi.comments}" rows="3" disabled="true"/>
+						</apex:column>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+			</apex:repeat>
+
+			<script type="text/javascript"> 
+				$('td select.editable').change(function(e) {
+					$(this).closest('td').find('input:hidden').val($(this).val());
+				});
+
+				$('th input:checkbox').click(function(e) {
+					$(this).closest('table').find('td input.selected').prop('checked', this.checked);
+					$(this).closest('table').find('td select.editable').prop('disabled', !this.checked);
+					$(this).closest('table').find('td textarea.editable').prop('disabled', !this.checked);
+				});
+
+				$('td input.selected').click(function(e) {
+					$(this).closest('tr').find('td select.editable').prop('disabled', !this.checked);
+					$(this).closest('tr').find('td textarea.editable').prop('disabled', !this.checked);
+				});
+			</script>
+
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

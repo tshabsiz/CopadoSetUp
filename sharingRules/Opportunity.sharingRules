@@ -1,0 +1,1046 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Agri_Opportunities</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>CIBDIGSALP-2403 Sharing rule &amp; Trigger Update - Agri</description>
+        <label>Agri Opportunities</label>
+        <sharedTo>
+            <role>ZAF_CIB_Coverage_Inland_LLC_Midcorp_Midcorp_Agri</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>Industry__c</field>
+            <operation>equals</operation>
+            <value>Agriculture</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Cash_Sharing_Rule</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Cash Sharing Rule</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Liquidity_and_Working_Capital</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>contains</operation>
+            <value>Deposits,Working Capital</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>South Africa</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Corporate_Money_Market_Desk_Sharing_Rule</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>CIBDIGSALP-1940: Team head and team members should see all deals linked to their product set</description>
+        <label>Corporate Money Market Desk Sharing Rule</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Markets_Corporate_MM</roleAndSubordinatesInternal>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Money Market Short Term Lending ( Corp )</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Corporate Money Markets Deposits</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>DCM_Pipelines_Sharing_Rule</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>DCM Pipelines Sharing Rule</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_DCM_Bonds</role>
+        </sharedTo>
+        <booleanFilter>1</booleanFilter>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Debt Capital</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Debt_Finance</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>All opps where level 2 product name debt finance is share ZAF - CIB - Global FInance - SA Debt only</description>
+        <label>Debt Finance</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_SA_Debt</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Debt Finance</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>South Africa</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Financial_Institution_Opportunities</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Financial Institution with ZAF - CIB - Coverage - Financial Services Africa</description>
+        <label>Financial Institution Opportunities</label>
+        <sharedTo>
+            <role>Financial_Services_Africa</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Financial Institution</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Financial_Institution_Opportunities_RoA</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Financial Institution AND country &lt;&gt; South Africa with ZAF - CIB - Coverage - Financial Services Africa - RoA and subordinates</description>
+        <label>Financial Institution Opportunities RoA</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Financial_Services_Africa_RoA</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Financial Institution</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Mozambique,Togo,Uganda,Zambia,Zimbabwe,Cameroon,Cote d’Ivoire,Congo (DRC),Botswana,Egypt,Ghana,Kenya,Mauritius,Namibia,Nigeria,Seychelles,Gabon,Rwanda,Senegal,Tanzania</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Financial_Services_Africa_NBFI</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Financial Services Africa - NBFI</label>
+        <sharedTo>
+            <role>ZAF_CIB_Coverage_Financial_Services_Africa_NBFI</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Financial Services</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Financial Services - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Financial_Solutions_Group</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>All opps where level 2 product name is Financial Solutions Group share with ZAF - CIB - Global Finance - FSG role only</description>
+        <label>Financial Solutions Group</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_FSG</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Financial Solutions Group</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Foreign_Exchange_Opps_shared_with_FX_sales_team</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Public side only</description>
+        <label>Foreign Exchange Opps shared with FX sales team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>FX_Sales</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Foreign</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>BB_CIB_user__c</field>
+            <operation>equals</operation>
+            <value>CIB User</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Foreign_Exchange_Opps_shared_with_Markets_Leadership</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Public side only</description>
+        <label>Foreign Exchange Opps shared with Markets Leadership</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Markets</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Foreign</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>GDO_Opportunities_GDO</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Global Development Organisation (GDO) with ZAF - CIB - Coverage - Global Clients - GDO and subordinates</description>
+        <label>GDO Opportunities GDO</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>GDOs</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Global Development Organisation</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>GDO_Opportunities_Global_Clients</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Global Development Organisation (GDO) with ZAF - CIB - Coverage - Global Clients</description>
+        <label>GDO Opportunities Global Clients</label>
+        <sharedTo>
+            <role>Global_Corporate</role>
+        </sharedTo>
+        <booleanFilter>(1 AND 2) OR 3 OR 4</booleanFilter>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Global Development Organisation</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Global_Corporate_Opportunities</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is  Global Corporate AND country &lt;&gt; South Africa with ZAF - CIB - Coverage - Global Clients - RoA - Global Corporates and subordinates</description>
+        <label>Global Corporate Opportunities</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_RoA_Global_Corporates</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Global Corporate</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Mozambique,Togo,Uganda,Zambia,Zimbabwe,Cameroon,Cote d’Ivoire,Congo (DRC),Botswana,Egypt,Ghana,Kenya,Mauritius,Namibia,Nigeria,Seychelles,Gabon,Rwanda,Senegal,Tanzania</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Global_Corporate_Opportunities_RoA</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Share all Opps where segment is  Global Corporate with ZAF - CIB - Coverage - Global Clients - Global Corporates - Corridors and subordinates for all Opportunity Countries</description>
+        <label>Global Corporate Opportunities RoA</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates_Corridors</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Global Corporate</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Mozambique,Togo,Uganda,Zambia,Zimbabwe,Cameroon,Cote d’Ivoire,Congo (DRC),Botswana,Egypt,Ghana,Kenya,Mauritius,Namibia,Nigeria,Seychelles,South Africa,Gabon,Rwanda,Senegal,Tanzania</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Global_Finance_Product</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>All opps where product name is Global Finance share with ZAF - CIB - Global Finance role only</description>
+        <label>Global Finance Product</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2 OR 3</booleanFilter>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>contains</operation>
+            <value>Global Finance</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>contains</operation>
+            <value>Debt</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>contains</operation>
+            <value>Trade</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>NBFI_and_GC_Coastal</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>NBFI and GC Coastal</label>
+        <sharedTo>
+            <role>Global_Clients_SA_Global_Corporates</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Cape Global Corporates - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Opp_GC_Segment_with_GC_and_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>All Opportunity linked to clients owned by Users with Role containing &quot;GC&quot; shared with ZAF - CIB - Coverage - Global Clients - GC and subordinates</description>
+        <label>Opp- GC Segment with GC and Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>GC</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Opp_GDO_Segment_with_GDO_and_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>All Opportunity linked to clients owned by Users with Role containing &quot;GDO&quot; shared with ZAF - CIB - Coverage - Global Clients - GDO and subordinates</description>
+        <label>Opp- GDO Segment with GDO and Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>GDOs</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>GDO</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Product_level_3_to_International_Banking_Team</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Create sharing rule where product level 3 = fx, international payments, TROs, TRIs and CFC</description>
+        <label>Product level 3 to International Banking Team</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductLevel3List__c</field>
+            <operation>contains</operation>
+            <value>FX,International Payments,foreign currency</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Project_Finance_Sharing_Rule</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Project Finance Sharing Rule</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_Resources_Project_Finance</role>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Resource and Project Finance</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Project_Resource_Finance</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>All opps where level 3 product name is Project finance or Resource Finance share with ZAF - CIB - Global Finance - Resources Project Finance role only</description>
+        <label>Project Resource Finance</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_Resources_Project_Finance</role>
+        </sharedTo>
+        <booleanFilter>(1 OR 2)</booleanFilter>
+        <criteriaItems>
+            <field>ProductLevel3List__c</field>
+            <operation>contains</operation>
+            <value>Project Finance</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>ProductLevel3List__c</field>
+            <operation>contains</operation>
+            <value>Resource Finance</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Public_Sector_Opportunities</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Public Sector with ZAF - CIB - Coverage - Public Sector</description>
+        <label>Public Sector Opportunities</label>
+        <sharedTo>
+            <role>South_Africa_Public_Sector</role>
+        </sharedTo>
+        <booleanFilter>(1 AND 2) OR 3 OR 4</booleanFilter>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Public Sector</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Public Sector</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Coastal Regions - Public Sector - TM</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Public_Sector_Opportunities_RoA</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Share all Opps where segment is Public Sector AND country &lt;&gt; South Africa with ZAF - CIB - Coverage - Public Sector - RoA and subordinates</description>
+        <label>Public Sector Opportunities RoA</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Public_Sector_RoA</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>Segment__c</field>
+            <operation>equals</operation>
+            <value>Public Sector</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Mozambique,Togo,Uganda,Zambia,Zimbabwe,Cameroon,Cote d’Ivoire,Congo (DRC),Botswana,Egypt,Ghana,Kenya,Mauritius,Namibia,Nigeria,Seychelles,Gabon,Rwanda,Senegal,Tanzania</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_OPP_To_RoA_Debt</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Share RoA Opportunities to ZAF - CIB - Global Finance - RoA Debt and Internal Subordinates</description>
+        <label>Share OPP To  RoA Debt</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Global_Finance_RoA_Debt</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductLevel2List__c</field>
+            <operation>contains</operation>
+            <value>Debt Finance</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>,Mozambique,Togo,Uganda,Zambia,Zimbabwe,Tanzania BBT,Tanzania NBC,Cameroon,Cote d’Ivoire,Congo (DRC),Botswana,Egypt,Ghana,Kenya,Mauritius,Namibia,Nigeria,Seychelles,Gabon,Rwanda,Senegal</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_OPP_To_Trade_SA</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Sharing Opps to Trade SA role and subordinates when there is Trade product on the OPP.</description>
+        <label>Share OPP To Trade SA</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_and_Trade</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>contains</operation>
+            <value>Trade</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_OPP_To_Transactional_Bankers</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Shares public opportunities with Transactional Bankers</description>
+        <label>Share OPP To Transactional Bankers</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>South_Africa_CIB_Cash_Management_Transactional_Banking</roleAndSubordinatesInternal>
+        </sharedTo>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Share_Opp_to_Central</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Share Opp to Central</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Central</roleAndSubordinatesInternal>
+        </sharedTo>
+        <booleanFilter>1 OR (2 AND 3)</booleanFilter>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>notEqual</operation>
+            <value>Private opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Tanzania NBC,Tanzania BBT</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Sharing_Debt_Deal_with_KEN</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sharing Debt Deal with KEN</label>
+        <sharedTo>
+            <roleAndSubordinates>Kenya_CIB_Debt</roleAndSubordinates>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>equals</operation>
+            <value>Global Finance</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Uganda,Tanzania BBT,Kenya,Tanzania NBC</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>TCSM_Ops</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>TCSM Ops</label>
+        <sharedTo>
+            <group>TCSM_Ops</group>
+        </sharedTo>
+        <criteriaItems>
+            <field>ProductList__c</field>
+            <operation>equals</operation>
+            <value>Trade,Deposits,Transactions,Working Capital,Foreign Exchange,Fixed Income</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Uganda_regional_team_v2</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>This rule will allow  Emmanuel Mensah and Abena Oseu-Poku to view non-Private Uganda opportunities of CIB users.</description>
+        <label>Uganda regional team v2</label>
+        <sharedTo>
+            <group>Uganda_regional_team</group>
+        </sharedTo>
+        <booleanFilter>1 AND 2 and 3</booleanFilter>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Opportunity_Country__c</field>
+            <operation>equals</operation>
+            <value>Uganda</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>BB_CIB_user__c</field>
+            <operation>equals</operation>
+            <value>CIB User</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>ZAF_CIB_Coverage_Global_Clients</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>CIBDIGSALP-2725 - Global Parent sharing rules update</description>
+        <label>ZAF - CIB - Coverage - Global Clients</label>
+        <sharedTo>
+            <role>Global_Corporate</role>
+        </sharedTo>
+        <booleanFilter>(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24) AND 25</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>BWA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>BWA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>GHA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>GHA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>KEN - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>KEN - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>MOZ - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>MOZ - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>SYC - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>SYC - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - BBT - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - BBT - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - NBC - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - NBC - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>UGA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>UGA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZMB - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZMB - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZWE - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZWE - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - PUI</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Inland LLC Midcorp - PUI - TM</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Private opportunity,Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>ZAF_CIB_Coverage_Global_Clients_Global_Corporates_Corridors</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>CIBDIGSALP-2725 - Global Parent sharing rules update</description>
+        <label>ZAF - CIB - Coverage - Global Clients - Global Corporates - Corridors</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates_Corridors</roleAndSubordinatesInternal>
+        </sharedTo>
+        <booleanFilter>(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9 OR 10 OR 11 OR 12 OR 13 OR 14 OR 15 OR 16 OR 17 OR 18 OR 19 OR 20 OR 21 OR 22 OR 23 OR 24) AND 25</booleanFilter>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>BWA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>BWA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>GHA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>GHA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>KEN - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>KEN - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>MOZ - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>MOZ - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>SYC - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>SYC - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - BBT - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - BBT - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - NBC - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>TZA - NBC - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>UGA - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>UGA - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZMB - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZMB - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZWE - CIB - Coverage - GC</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZWE - CIB - Coverage - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>contains</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - GDO</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - Global Corporates</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Global Clients - PUI</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RelationshipOwnerRoleName__c</field>
+            <operation>equals</operation>
+            <value>ZAF - CIB - Coverage - Inland LLC Midcorp - PUI - TM</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Public opportunity</value>
+        </criteriaItems>
+    </sharingCriteriaRules>
+    <sharingOwnerRules>
+        <fullName>Global_CLients_SA_management_sharing_Opp</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Global CLients SA management sharing for Opp</description>
+        <label>Global CLients SA management sharing - Opp</label>
+        <sharedTo>
+            <role>Global_Corporate</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>Global_Corporate</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Global_Finance_Trade_products_shared_to_Role_GF</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Global Finance &amp; Trade products shared to Role GF</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_and_Trade</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>IBS_Central_to_International_Banking</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>IBS Central to International Banking</label>
+        <sharedTo>
+            <role>ZAF_CIB_International_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_Gauteng_Corporate</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Opp_GC_Segment_with_GC_and_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>All Opportunity linked to clients owned by Users with Role containing &quot;GC&quot; shared with ZAF - CIB - Coverage - Global Clients - GC and subordinates</description>
+        <label>Opp- GC Segment with GC and Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>Global_Clients_Global_Corporates</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <role>Global_Clients_Global_Corporates</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Opp_GDO_Segment_with_GDO_and_Subordinates</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>All Opportunity linked to clients owned by Users with Role containing &quot;GDO&quot; shared with ZAF - CIB - Coverage - Global Clients - GDO and subordinates</description>
+        <label>Opp- GDO Segment with GDO and Subordinates</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>GDOs</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <role>GDOs</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Opportunity_Sharing_Debt</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>ZAF - CIB - Global Finance - SA Debt must share with ZAF - CIB - Global Finance - SA Debt </description>
+        <label>Opportunity Sharing Debt K</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Global_Finance_SA_Debt</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>South_Africa_CIB_Global_Finance_SA_Debt</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>RoA_Opps_shared_with_Strategic_Markets_Origination</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>RoA Opps shared with Strategic  Markets Origination</label>
+        <sharedTo>
+            <roleAndSubordinatesInternal>ZAF_CIB_Markets_Strategic_Markets_Origination</roleAndSubordinatesInternal>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>Rest_of_Africa</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_Banking_Opportunity</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>This rule will share all opportunities for ZAF - CIB - Banking with ZAF - CIB - Banking</description>
+        <label>Share Banking Opportunity</label>
+        <sharedTo>
+            <role>ZAF_CIB_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>ZAF_CIB_Banking</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>TB_sharing_rule</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Managers from TB in the role hierarchy to have read AND write access to opportunities owned by their subordinates (for SA TB team heads and their subordinates)&apos;SFAFRICA-363&apos;</description>
+        <label>TB sharing rule</label>
+        <sharedTo>
+            <role>South_Africa_CIB_Cash_Management_Transactional_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <role>ZAF_CIB_Cash_Management_Transactional_Banking_Other</role>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Wealth_RD_BM_View_all</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Allows RD and BM to view all opportunities (Read Only)</description>
+        <label>Wealth -  RD/BM View all</label>
+        <sharedTo>
+            <group>Wealth_Management</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>Wealth_All</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Wealth_Support_Share</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Shares Opportunities owned by Support users with other support Users</description>
+        <label>Wealth - Support Share</label>
+        <sharedTo>
+            <group>Wealth_Support_Assist</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>Wealth_Support_Assist</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Wealth_WB_share_With_Support</fullName>
+        <accessLevel>Read</accessLevel>
+        <description>Shares all WB opportunities with Support &amp; Advice</description>
+        <label>Wealth - WB share With Support</label>
+        <sharedTo>
+            <group>Wealth_Support_Assist</group>
+        </sharedTo>
+        <sharedFrom>
+            <group>Wealth_WB</group>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>ZAF_CIB_International_Banking_and_Trade</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>ZAF – CIB – International Banking and Trade</label>
+        <sharedTo>
+            <role>ZAF_CIB_International_Banking</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>ZAF_CIB_International_Banking_and_Trade</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

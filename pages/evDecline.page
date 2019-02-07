@@ -1,0 +1,49 @@
+<apex:page applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false" standardStylesheets="false" controller="evRSVP_Controller" action="{!HandleResponse}" >
+    
+    <apex:composition template="evTemplateSocial">
+        
+        <apex:define name="title">
+            <title>RSVP | {!thisEvent.name}</title>
+        </apex:define>
+        
+        <apex:define name="body">
+            
+            <apex:form styleclass="form-horizontal" > 
+                
+                <!-- BODY: Content -->
+                <h1>RSVP | {!thisEvent.name}</h1>
+                
+                <apex:pageMessages ></apex:pageMessages>
+                <apex:outputPanel rendered="{!HasErrorsLevel1}">
+                    <div class="alert alert-danger">
+                        {!ErrorsLevel1}
+                    </div>  
+                </apex:outputPanel>
+              <!--   
+                <apex:outputPanel rendered="{!thisDelegate.RSVP_Status__c == 'Invited'|| thisDelegate.RSVP_Status__c == 'Maybe'}">
+                    <p>Please confirm if you would like to decline or accept the invitation</p>
+                    <form  class="form-horizontal">
+                        <div class="btn-row">
+                            <div class="btn-row">
+                                 <apex:commandButton action="{!Decline}" styleclass="btn btn-primary" value="Confirm"/>
+                              &nbsp; If you would like to attend click 
+                                <apex:commandLink action="{!CancelDecline}" value="here"/>.
+                            </div>
+                        </div>
+                    </form>
+                </apex:outputPanel> -->
+                <apex:outputPanel rendered="{!thisDelegate.RSVP_Status__c == 'No'}">
+                    Thank you for your response, we hope to see you at the next one.If you would still like to attend click 
+                                <apex:commandLink action="{!CancelDecline}" value="here"/>. 
+                </apex:outputPanel> 
+                <apex:outputPanel rendered="{!(RSVP != 'No' && RSVP != 'Yes' &&  RSVP != null)  ||  RSVP == null}">
+                    <p>Invalid page link or parameters.</p>
+                </apex:outputPanel>
+                
+                <!-- BODY: Content END -->
+                
+            </apex:form>
+            
+        </apex:define>
+    </apex:composition>  
+</apex:page>

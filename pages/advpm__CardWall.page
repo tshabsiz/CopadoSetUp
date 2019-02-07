@@ -1,0 +1,473 @@
+<apex:page standardController="advpm__Matter__c" extensions="advpm.CardWallController" tabStyle="advpm__Matter__c" sidebar="false" showHeader="false" standardStylesheets="false" cache="false" readOnly="true">
+
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}"></apex:includeScript>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Cookie, 'js/jquery.cookie.js')}"></apex:includeScript>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'js/bootstrap.2.3.2.js')}"></apex:includeScript>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_TouchUI, 'js/jquery.ui.touch-punch.js')}"></apex:includeScript>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_BlockUI, 'blockui/jquery.blockUI.js')}"></apex:includeScript>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_BlockUI, 'blockui/block.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap.2.3.2.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap-responsive.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.8/select2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.8/select2.css')}" />
+    <script type="text/javascript">
+        function AdjustIframeHeight(i, frmName) {
+            document.getElementById(frmName).style.height = parseInt(i) + "px";
+            try {
+                if (typeof parent.AdjustIframeHeight == 'function') {
+                    var ht = document.getElementById("container-fluid").scrollHeight + 40;
+                    //if (ht < 650)
+                        //ht = 650;
+                    parent.AdjustIframeHeight( ht ); 
+                }
+            } catch(err){} 
+        }
+    </script>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        var isLightning = {!isLightning};
+        var isSF1 = {!isSF1};
+        $j(document).ready(function(){
+            loadMattersList();
+            init_headerTabLinks();
+            changeCardWallTab('cardwall');
+            if ( isSF1 && (typeof sforce != 'undefined') && (sforce != null) ) {
+                $j('.select-matter-container').css('display', 'none');
+            }
+            resizeHeader();
+            var inlayout = true;
+            try {
+                var tmp_w = window.parent.document;
+                inlayout = false;
+            } catch(err){
+                inlayout = true;
+            }
+            if (inlayout) {
+                $j('.header-matter, .header-title, .header-nav').addClass('hide slds-hide');
+                $j('table.header-table td').css('height','30px');
+                if (!isLightning)
+                    $j('.btn-tab-grp').css('bottom','-2px');
+                $j('.slds-page-header').css('padding-top','0px');
+                $j('#header').css('padding','0px');
+            }
+            
+        });
+        
+        function loadMattersList()
+        {
+            $j("#mat-record").select2({
+                placeholder: 'Select a matter...',
+                minimumInputLength: 3,
+                query: function (query) {
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.CardWallController.getMatters}',query.term,
+                        function(result, event){
+                            if(event.status){
+                                var data = {results: []}
+                                data.results = result;
+                                query.callback( data );
+                            }
+                            else{
+                                alert('Matters list loading Error: '+event.message);
+                            }
+                        }, 
+                        {escape: true}
+                    );
+                },
+                initSelection: function(element, callback) {
+                    var id=$j(element).val();
+                    if (id != '') {
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.CardWallController.getMatter}',id,
+                            function(result, event){
+                                if(event.status){
+                                    var data = {results: []}
+                                    data.results = result;
+                                    callback( data.results[0] );
+                                }
+                                else{
+                                    alert('Matter loading Error: '+event.message);
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    }
+                },
+                escapeMarkup: function(m) { return m; }
+            }).on("change", function(e) {
+                var sel = $j(this).select2('data');
+                $j.cookie("apex__advpmMatterId", sel.id, {expires: 365,path: "/",secure: true});
+                var sf1m = '';
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sf1m            = '&isdtp=p1';
+                }
+                if ( isSF1 && (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToURL('{!$Site.Prefix}/apex/advpm__CardWall?id='+sel.id+'&heading=1&nohead=1'+sf1m);
+                }
+                else if ( isLightning && (typeof sforce != 'undefined') && (sforce != null) ) {
+                    sforce.one.navigateToURL('{!$Site.Prefix}/apex/advpm__CardWall?ltng={!IF(isLightning,'1','0')}&id='+sel.id+'&heading=1&nohead=1'+sf1m);
+                }
+                else {
+                    location.href = "{!$Site.Prefix}/apex/advpm__CardWall?ltng={!IF(isLightning,'1','0')}&id="+sel.id+"&heading=1&nohead=1"+sf1m;
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function blockIFrameUI(msg)
+        {
+            $j('#data_processing').text(msg).css('visibility','visible');
+            /*$j('#view').block({ 
+                message: '<div ><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">'+msg+'</span></div>', 
+                css: { padding: '10px' } 
+            });*/
+        }
+        function blockTaskUI()
+        {
+            $j('#data_processing').text(msg).css('visibility','visible');
+            /*$j('#view').block({ 
+                message: '<div ><img width="16" height="16" title="Processing..." alt="Processing..." src="/img/loading.gif" /><span class="loadingText" style="font-weight:bold;padding-left:10px;">Loading...</span></div>', 
+                css: { padding: '10px' } 
+            });*/
+        }
+        function unblockTaskUI()
+        {
+            $j('#data_processing').css('visibility','hidden');
+            //$j('#view').unblock();
+        }
+        
+        function jq(myid) { 
+            var i = '#' + myid.replace(/(:|\\.)/g,'\\\\$1');
+            return i;
+        }
+        $j(window).resize(function() {
+            resizeHeader();
+        });
+        function resizeHeader(){
+            var viewportwidth = $j('.header-content-td').width()-70;
+            $j(".header-content-subtitle").css('width', viewportwidth + "px");
+        }
+        function init_headerTabLinks() {
+            /*$j('#header-bar-button-container .tab a').each(function() {
+                var $this = $j(this);
+                $this.click(function (e) {
+                    //e.preventDefault();
+                    try {
+                        $j('html, body', window.parent.document).animate({scrollTop:0},0);
+                    }
+                    catch(err){}
+                    $this.tab('show');
+                    var t = $this.attr('data-type');
+                    changeCardWallTab( t );
+                });
+            });*/
+            $j('.btn-tab-grp button').each(function() {
+                var $this = $j(this);
+                $this.click(function (e) {
+                    e.preventDefault();
+                    try {
+                        $j('html, body', window.parent.document).animate({scrollTop:0},0);
+                    }
+                    catch(err){}
+                    var t = $this.attr('data-type');
+                    selectWallTab($this, t);
+                    changeCardWallTab( t );
+                });
+            });
+            $j('.cardwall-toggle-panel button.btn-steps').click(function(e) {
+                e.preventDefault();
+                $this = $j(this);
+                
+                if ($j('.cardwall-toggle-panel button.btn-users-setup').hasClass('slds-is-selected'))
+                    $j('.cardwall-toggle-panel button.btn-users-setup').click();
+                
+                if ($this.hasClass('slds-is-selected'))
+                    $this.removeClass('slds-is-selected');
+                else {
+                    $this.addClass('slds-is-selected');
+                }
+                
+                var t = $this.attr('data-key');
+                document.getElementById('cardwall_iframe_panel').contentWindow.toggleSidepanel( t );
+            });
+            $j('.cardwall-toggle-panel button.btn-users-setup').click(function(e) {
+                e.preventDefault();
+                $this = $j(this);
+                
+                if ($j('.cardwall-toggle-panel button.btn-steps').hasClass('slds-is-selected'))
+                    $j('.cardwall-toggle-panel button.btn-steps').click();
+                
+                if ($this.hasClass('slds-is-selected'))
+                    $this.removeClass('slds-is-selected');
+                else
+                    $this.addClass('slds-is-selected');
+                
+                var t = $this.attr('data-key');
+                document.getElementById('cardwall_iframe_panel').contentWindow.toggleSidepanel( t );
+            });
+        }
+        function toggleSidebarButtons() {
+            $j('.cardwall-toggle-panel button').each(function() {
+                var $this = $j(this);
+                
+                if ($this.hasClass('slds-is-selected'))
+                    $this.click();
+            });
+        }
+        function selectWallTab(el, t) {
+            $j('.btn-tab-grp button').each(function(){
+                $j(this).removeClass('slds-is-selected');
+            });
+            el.addClass('slds-is-selected');
+            $j('div.tab-content .tab-pane').each(function(){
+                $j(this).removeClass('active');
+            });
+            $j('#'+t+'-view').addClass('active');
+        }
+        function changeCardWallTab(t) {
+            var sf1m            = '';
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                sf1m            = '&isdtp=p1&gotoURL={!URLENCODE($CurrentPage.URL)}';
+            }
+            var a = $j('#mat-record').val();
+            var cardwallPage    = '{!SalesforceBaseUrl}{!$Site.Prefix}/apex/advpm__CardWall_Main?ltng={!IF(isLightning,'1','0')}&nohead=1&cardwall=1&id=' + a + sf1m;
+            //var cardwallPage    = '{!SalesforceBaseUrl}{!$Site.Prefix}/apex/advpm__CW1?ltng={!IF(isLightning,'1','0')}&nohead=1&cardwall=1&id=' + a + sf1m;
+            var calendarPage    = '{!SalesforceBaseUrl}{!$Site.Prefix}/apex/advpm__Calendar_Main?ltng={!IF(isLightning,'1','0')}&nohead=1&cardwall=1&id=' + a + sf1m;
+            var ganttPage       = '{!SalesforceBaseUrl}{!$Site.Prefix}/apex/advpm__MatterGantt_Main?ltng={!IF(isLightning,'1','0')}&nohead=1&cardwall=1&p=1&id=' + a + sf1m;
+            var chartsPage      = '{!SalesforceBaseUrl}{!$Site.Prefix}/apex/advpm__MatterCharts?ltng={!IF(isLightning,'1','0')}&nohead=1&cardwall=1&p=1&id=' + a + sf1m;
+            
+            if (t == "cardwall")
+            {
+                blockIFrameUI('Please wait! Kanban is loading...');
+                $j("#cardwall_iframe_panel").contents().empty();
+                $j("#cardwall_iframe_panel").attr("src", cardwallPage);
+            }
+            else if (t == "calendar")
+            {
+                blockIFrameUI('Please wait! Calendar is loading...');
+                $j("#calendar_iframe_panel").contents().empty();
+                $j("#calendar_iframe_panel").attr("src", calendarPage);
+            }
+            else if (t == "gantt")
+            {
+                blockIFrameUI('Please wait! Gantt View is loading...');
+                $j("#gantt_iframe_panel").contents().empty();
+                $j("#gantt_iframe_panel").attr("src", ganttPage);
+            }
+            else if (t == "chart")
+            {
+                blockIFrameUI('Please wait! Charts are loading...');
+                $j("#chart_iframe_panel").contents().empty();
+                $j('#chart_iframe_panel').prop('src', chartsPage);
+            }
+        }
+    </script>
+    <style type="text/css">
+        body {overflow: hidden !important}
+        #header {padding: 10px 10px 10px 10px;border-bottom:1px solid #ddd}
+        #header-bar-button-container {border-bottom:0px;margin-bottom:-10px}
+        #header-bar-button-container li {font-weight:bold}
+        .ellipsis{overflow:hidden;text-overflow:ellipsis;-o-text-overflow:ellipsis;-ms-text-overflow:ellipses;white-space:nowrap;word-wrap:normal}
+        .navbar .nav {display: inline-block;float: none}
+        .tab-content{margin-top:3px}
+        /*.matter-planner-icon{vertical-align:top;height:50px;width:50px}*/
+        .matter-planner-icon {display: inline;top: -15px;position: relative;}
+        .header-content {color:#4a4a56}
+        .header-content-block { display:inline-block}
+        .header-content-title { display:inline-block;font-size:.9em;font-weight:bold;color:#4a4a56;padding-left:1px}
+        .header-content-subtitle { display:inline-block;font-size:1.8em;font-weight:normal;line-height:1.1em;width:200px}
+        a.backLink, a.backLink:hover { text-decoration:none; }
+        * {
+          -webkit-border-radius: 0 !important;
+             -moz-border-radius: 0 !important;
+                  border-radius: 0 !important;
+        }
+        .data_processing {position: absolute;top: 50%;left: 50%;width: 250px;height: 30px;margin-left: -125px;margin-top: -15px;padding: 14px 0 2px 0;border: 1px solid #ddd;text-align: center;color: #999;font-size: 14px;background-color: white;}
+        .cardwall-toggle-panel .slds-button--neutral {background-color: #eee!important;border: 1px solid #d8dde6!important;color: currentColor;}
+        .cardwall-toggle-panel .slds-button--neutral.slds-is-selected {background-color: #fff!important;}
+    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <style type="text/css">
+            .btn-tab{width:120px!important;}
+            .btn-tab.slds-is-selected{width:120px!important;background-color:#ffffff!important;border:1px solid #d8dde6!important;border-bottom-width:0px!important;}
+            .btn-tab:hover, .btn-tab:focus {background-color: #ffffff!important;}
+            .btn-tab.slds-is-selected:hover, .btn-tab.slds-is-selected:focus {background-color: #ffffff!important;color: #005fb2!important;}
+            .btn-tab-grp{margin:0 auto;position: relative;bottom: -13px;}
+            .slds .slds-button:focus, .slds .slds-button:active, .btn-tab:focus, .btn-tab:active {outline: none!important;}
+            a.select2-choice {text-decoration:none;}
+            .select2-container .select2-choice {height: 28px;}
+            .select2-results .select2-no-results, .select2-results .select2-searching, .select2-results .select2-selection-limit {background: #fff;}
+            .select2-results {font-size: 14px;}
+            .btn-tab.slds-is-selected {border-left-width: 0px!important;}
+            .slds .slds-button-group .slds-button:first-child {border-left: 1px solid #d8dde6!important;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <style type="text/css">
+            body {font: 100%/1.5 "Salesforce Sans", Arial, sans-serif!important;}
+        </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isAloha}">
+        <style type="text/css">
+            .slds, .slds h1, .slds h2, .slds h3, .slds h4, .slds h5, .slds h6, .slds th, .slds td {font-family: Arial,Helvetica,sans-serif!important;}
+            .btn-tab{width:120px!important;height:36px!important;background-color:#eee;border:1px solid #d8dde6!important;}
+            .slds .slds-button-group .slds-button--icon-border.slds-is-selected:first-child {border-left: 1px solid #d8dde6;}
+            .btn-tab.slds-is-selected{width:120px!important;background-color:#ffffff!important;border:1px solid #d8dde6!important;border-bottom-width:0px!important;}
+            .btn-tab:hover, .btn-tab:focus {background-color: #ffffff!important;}
+            .btn-tab.slds-is-selected:hover, .btn-tab.slds-is-selected:focus {background-color: #ffffff!important;color: #005fb2!important;}
+            .btn-tab-grp{margin:0 auto;position: relative;bottom: -12px;}
+            .slds .slds-button:focus, .slds .slds-button:active, .btn-tab:focus, .btn-tab:active {outline: none!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <div id="container-fluid">
+        <apex:outputPanel layout="block" styleClass="{!IF(isLightning,'slds row-fluid',' row-fluid')}" rendered="{!!isLightning}">
+            <div id="header" class="navbar">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <table width="100%" class="header-table">
+                            <tr>
+                                <td nowrap="nowrap" height="80px;" valign="middle" width="30%" class="header-content-td">
+                                    <div class="pull-left header-nav">
+                                        <div class="header-content">
+                                            <img src="{!imageLogoId}" height="32" width="32" class="matter-planner-icon" title="Matter" alt="Matter" />
+                                            <div class="header-content-block">
+                                                <div class="header-content-title">Matter Planner</div><br />
+                                                <div class="header-content-subtitle ellipsis" title="{!selectedMatterName}">{!selectedMatterName}</div>
+                                            </div>
+                                        </div>
+                                        <apex:outputPanel layout="block" rendered="{!!(JSINHTMLENCODE($CurrentPage.parameters.id) == null)}" styleClass="ptBreadcrumb">
+                                            &#171;&nbsp;<apex:outputLink value="/{!JSINHTMLENCODE($CurrentPage.parameters.id)}" styleClass="backLink" target="_top">Back to matter</apex:outputLink>
+                                        </apex:outputPanel>
+                                    </div>
+                                </td>
+                                <td nowrap="nowrap" align="center" valign="bottom" width="450px" style="min-width:450px;">
+                                    <div class="{!IF(isLightning,'slds','')}">
+                                        <div class="slds-button-group btn-tab-grp">
+                                            <button class="slds-button slds-button--icon-border slds-is-selected btn-tab" data-type="cardwall">
+                                                <span class="slds-text-heading--label">Kanban</span>
+                                            </button>
+                                            <button class="slds-button slds-button--icon-border btn-tab" data-type="calendar" style="margin-left: -5px;margin-right: -5px;">
+                                                <span class="slds-text-heading--label">Calendar</span>
+                                            </button>
+                                            <button class="slds-button slds-button--icon-border btn-tab" data-type="gantt">
+                                                <span class="slds-text-heading--label">Gantt View</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td nowrap="nowrap" height="80px;" valign="middle" width="30%">
+                                    <div class="pull-right select-matter-container header-matter">
+                                        <input id="mat-record" type="hidden" data-placeholder="Select a matter..." value="{!selectedMatterId}" style="width: 250px;" />
+                                    </div>
+                                    <!-- <div class="pull-right slds cardwall-toggle-panel">
+                                        <button class="slds-button slds-button--neutral btn-steps" data-key="steps">
+                                            <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#filter')}" />
+                                            <span class="slds-assistive-text">Selected Steps</span>
+                                            Steps
+                                        </button>
+                                        <button class="slds-button slds-button--neutral btn-users-setup" data-key="users">
+                                            <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#user_role')}" />
+                                            <span class="slds-assistive-text">Users</span>
+                                            Users
+                                        </button>
+                                    </div> -->
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+            <div class="slds-page-header" role="banner">
+                <nav class="slds-m-bottom--xx-small header-nav" role="navigation">
+                    <ol class="slds-breadcrumb slds-list--horizontal" aria-labelledby="bread-crumb-label">
+                        <li class="slds-list__item slds-text-heading--label"><apex:outputLink value="/{!$ObjectType.advpm__Matter__c.keyPrefix}">{!JSINHTMLENCODE($ObjectType.advpm__Matter__c.labelPlural)}</apex:outputLink></li>
+                        <li class="slds-list__item slds-text-heading--label"><apex:outputLink value="/{!advpm__Matter__c.id}">{!advpm__Matter__c.Name}</apex:outputLink></li>
+                    </ol>
+                </nav>
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate header-title">
+                        <h1 class="slds-text-heading--medium slds-truncate" title="Matter Planner">Matter Planner</h1>
+                    </div>
+                    <div class="slds-col">
+                        <div class="slds-grid">
+                            <div class="slds-button-group btn-tab-grp">
+                                <button class="slds-button slds-button--icon-border slds-is-selected btn-tab" data-type="cardwall">
+                                    <span class="slds-text-heading--label">Kanban</span>
+                                </button>
+                                <button class="slds-button slds-button--icon-border btn-tab" data-type="calendar">
+                                    <span class="slds-text-heading--label">Calendar</span>
+                                </button>
+                                <button class="slds-button slds-button--icon-border btn-tab" data-type="gantt">
+                                    <span class="slds-text-heading--label">Gantt View</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-no-flex slds-align-bottom">
+                        <div class="slds-grid header-matter">
+                            <div class="pull-right select-matter-container">
+                                <input id="mat-record" type="hidden" data-placeholder="Select a matter..." value="{!selectedMatterId}" style="width:250px;top:-18px;" />
+                            </div>
+                        </div>
+                        <div class="pull-right slds cardwall-toggle-panel">
+                            <!-- <button class="slds-button slds-button--neutral btn-steps" data-key="steps">
+                                <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#filter')}" />
+                                <span class="slds-assistive-text">Selected Steps</span>
+                                Steps
+                            </button>
+                            <button class="slds-button slds-button--neutral btn-users-setup" data-key="users">
+                                <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#user_role')}" />
+                                <span class="slds-assistive-text">Users</span>
+                                Users
+                            </button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <div class="tab-content" id="view">
+            <div id="cardwall-view" class="tab-pane active" data-type="cardwall">
+                <apex:outputPanel id="cardwall-frame" layout="block" styleClass="">
+                    <iframe id="cardwall_iframe_panel" frameborder="0" height="500px" scrolling="no" title="Kanban" width="100%" src="about:blank"></iframe>
+                </apex:outputPanel>
+            </div>
+            <div id="calendar-view" class="tab-pane" data-type="calendar">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <apex:outputPanel id="calendar-frame" layout="block" styleClass="span12">
+                            <iframe id="calendar_iframe_panel" frameborder="0" height="700px" scrolling="no" title="Calendar Main" width="100%" src="about:blank"></iframe>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </div>
+            <div id="gantt-view" class="tab-pane" data-type="gantt">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <apex:outputPanel id="gantt-frame" layout="block" styleClass="span12">
+                            <iframe id="gantt_iframe_panel" frameborder="0" height="500px" scrolling="no" title="Gantt View" width="100%" src="about:blank"></iframe>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div id="chart-view" class="tab-pane" data-type="chart">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <apex:outputPanel id="chart-frame" layout="block" styleClass="span12">
+                            <iframe id="chart_iframe_panel" frameborder="0" height="500px" scrolling="no" title="Chart View" width="100%" src="about:blank"></iframe>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+            </div> 
+            -->
+        </div>
+        <div id="data_processing" class="data_processing" style="visibility:visible;">Processing...</div>
+    </div>
+    
+</apex:page>
