@@ -1,0 +1,24 @@
+<apex:page standardController="OpportunityTeamMember"> 
+
+
+<apex:sectionHeader title="Opportunity Team"/> 
+<apex:form > 
+<apex:pageBlock title="" mode="edit"> 
+<apex:pageBlockButtons title="Opportunity Team Member Edit"> 
+<apex:messages style="color:#CC0000;font-weight:bold;"/> 
+<apex:commandButton value="Save" action="{!save}"/> 
+<apex:commandButton value="Cancel" action="{!URLFOR('/'&NULLVALUE($CurrentPage.Parameters.retURL,OpportunityTeamMember.OpportunityId))}" immediate="TRUE"/> 
+</apex:pageBlockButtons> 
+<apex:pageblockSection title="Information" collapsible="FASLE"> 
+<apex:outputField value="{!OpportunityTeamMember.UserId}" /> 
+<apex:outputField value="{!OpportunityTeamMember.OpportunityId}" /> 
+<apex:pageBlockSectionItem /> 
+<apex:inputField value="{!OpportunityTeamMember.TeamMemberRole}" required="TRUE"/> 
+<apex:pageBlockSectionItem /> 
+<apex:inputField value="{!OpportunityTeamMember.OpportunityAccessLevel}" required="TRUE"/> 
+</apex:pageblockSection> 
+</apex:pageBlock> 
+
+</apex:form> 
+
+</apex:page>

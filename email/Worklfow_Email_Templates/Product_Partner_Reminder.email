@@ -1,0 +1,42 @@
+<messaging:emailTemplate subject="{!relatedTo.Name} pending your approval." recipientType="User" relatedToType="Opportunity">
+<messaging:htmlEmailBody >
+
+<style>
+    .my_text
+    {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+    }
+    .tableText td
+    {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+    }
+</style>
+
+<div class='my_text'>
+
+<p>Good Day {!relatedTo.ProductPartner__r.Name}</p>
+
+<p>Please note that an opportunity was added with you as the Product Partner.</p>
+
+<p>The Opportunity details are as follows:</p>
+
+
+<table class="tableText">
+<tr><td>Name:</td><td>{!relatedTo.Name}</td></tr>
+<tr><td>Relationship Group:</td><td>{!relatedTo.Account.Name}</td></tr>
+<tr><td>Coverage Banker:</td><td>{!relatedTo.Account.Owner.Name}</td></tr>
+<tr><td>Date Created:</td><td>{!relatedTo.CreatedDate}</td></tr>
+</table>
+
+
+<p>To approve or reject this opportunity, please copy this &nbsp;<apex:outputlink value="{!LEFT($Api.Partner_Server_URL_140,FIND('.com',$Api.Partner_Server_URL_140)+4)+relatedTo.Id}">link</apex:outputlink> on to Google Chrome</p> 
+
+<p>These reminder emails will continue to be sent until the opportunity has been approved or rejected.</p>
+
+</div>
+
+<apex:image value="https://barclaysafrica.my.salesforce.com/servlet/servlet.ImageServer?id=01524000001uPoX&oid=00D24000000JOMz"/>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

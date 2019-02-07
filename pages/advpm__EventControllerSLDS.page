@@ -1,0 +1,336 @@
+<apex:page standardController="Event" tabStyle="Event" extensions="advpm.CardWallEventController" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStyleSheets="true">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <title>
+        <apex:outputPanel layout="none" rendered="{!ISBLANK(Event.Id)}">Create {!$ObjectType.Event.label}</apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(Event.Id))}">Edit {!Event.Subject}</apex:outputPanel>
+    </title>
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__StandardElements, 'js/Activity.min.js')}" />
+    <c:includeSLDS sldsV2="true" />
+    <style type="text/css">
+        .slds .slds-modal--large .slds-modal__container{width:90%;max-width:960px;min-width:640px;}
+        .slds #editModal .slds-pill{display:block;}
+        .slds #editModal .slds-pill:hover{background-color:#fff;}
+        .slds #editModal .slds-pill__label{max-width:15.5rem;}
+        .slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+        .slds .slds-form-element__static {line-height: 1.75;}
+        .slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+        .slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+        .modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+        .slds-modal__close {right: -.8rem;}
+        .frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+        .lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+        .date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+        .datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+        .hourPicker{z-index: 99999;}
+        input[type=checkbox]{clear: both;display: block;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+        .uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+        .uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+        .user-input select {width: 20%;}
+        .user-input input {width: 80%;}
+    </style>
+    <script type="text/javascript">
+        $j = jQuery.noConflict();
+        var $j = jQuery.noConflict();
+        $j(document).ready(function(){
+            if ('{!Event.Id}' == '' || '{!Event.WhatId}' == '' || '{!Event.WhoId}' == '') {
+                if ('{!Event.WhatId}' == '') {
+                    $j( "div.matterField input[name$='_lktp']" ).val( '{!$ObjectType.advpm__Matter__c}' );
+                    //$j( "div.matterField select[name$='_mlktp']" ).val( '{!$ObjectType.advpm__Matter__c}' ).change();
+                    $j( "div.matterField select[name$='_mlktp']" ).val( '{!$ObjectType.advpm__Matter__c}' );
+                    $j( "div.matterField select[name$='_lktp']" ).val( '{!$ObjectType.advpm__Matter__c}' );
+                }
+                if ('{!Event.WhoId}' == '') {
+                    $j( "div.contactField input[name$='_lktp']" ).val( '{!$ObjectType.Contact}' );
+                    //$j( "div.contactField select[name$='_mlktp']" ).val( '{!$ObjectType.Contact}' ).change();
+                    $j( "div.contactField select[name$='_mlktp']" ).val( '{!$ObjectType.Contact}' );
+                    $j( "div.contactField select[name$='_lktp']" ).val( '{!$ObjectType.Contact}' );
+                }
+            }
+            if( {!saveSuccess} )
+            {
+                if ( (typeof sforce != 'undefined') && (sforce != null) ) 
+                {
+                    //sforce.one.navigateToSObject('{!Event.Id}', 'detail');
+                    sforce.one.navigateToURL('#/sObject/{!Event.Id}/view', true);
+                }
+            }
+            $j('#save-button').click(function(e){
+                e.preventDefault();
+                
+                doUpdateDateVal('{!$Component.theForm.f_StartDateTime}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}');
+                doUpdateDateVal('{!$Component.theForm.f_EndDateTime}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');
+                
+                doSaveEvent();
+            });
+            toggleEventReminderOptions('{!$Component.theForm.reminder_set}','{!$Component.theForm.reminder_lt}');
+            fixLookups();
+            
+            if ({!Event.IsAllDayEvent})
+            {
+                SimpleTimePicker.pickTime('{!$Component.theForm.StartDateTime_time}');
+                SimpleTimePicker.timePicker.selectTimeItem(0);
+                SimpleTimePicker.timePicker.hide('{!$Component.theForm.StartDateTime_time}');
+                SimpleTimePicker.pickTime('{!$Component.theForm.EndDateTime_time}');
+                SimpleTimePicker.timePicker.selectTimeItem(0);
+                SimpleTimePicker.timePicker.hide('{!$Component.theForm.EndDateTime_time}');
+            }
+            //ActivityFunction.adjustEventReminderOptions(false, '{!$Component.theForm.AllDayEvent}', false, 'IsRecurrence', 'reminder_dt_time');
+            ActivityFunction.saveStartTime('{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}');
+            ActivityFunction.checkDuration('IsRecurrence', '{!$Component.theForm.AllDayEvent}', '{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');
+            ActivityFunction.clearTimeElements('{!$Component.theForm.AllDayEvent}','IsRecurrence','evt13','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}',true);
+            
+            
+        });
+        function doUpdateDateVal(a, b, c)
+        {
+            document.getElementById(a).value = document.getElementById(b).value + ' ' + document.getElementById(c).value;
+        }
+        function toggleEventReminderOptions(a, b) {
+            var c = document.getElementById(a),
+                d = document.getElementById(b);
+            if (c && d) {
+                d.disabled = !c.checked;
+            }
+        }
+        function fixLookups() {
+            $j('.slds-form-element .lookupInput a').removeClass('slds-input');
+            
+            $j('.slds-form-element .user-input select').addClass('slds-select');
+            $j('.slds-form-element .user-input .lookupInput input[type=text]').addClass('slds-input');
+            $j('.slds-form-element .user-input').removeClass('slds-input');
+        }
+        function doCancel() {
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                $j('#editModal form')[0].reset();
+                $j('#editModal .slds-modal').removeClass('slds-fade-in-open');
+                $j('#editModal .slds-modal-backdrop').removeClass('slds-modal-backdrop--open');
+                sforce.one.back();
+            }
+        }
+    </script>
+</head>
+<body class="slds">
+<div id="editModal">
+<apex:form id="theForm">
+    <apex:actionFunction name="doSaveEvent" action="{!saveEvent}" />
+    
+    <apex:inputField value="{!Event.IsAllDayEvent}" rendered="false" />
+    <apex:inputField value="{!Event.ActivityDate}" rendered="false" />
+    <apex:inputField value="{!Event.ReminderDateTime}" rendered="false" />
+    <div style="display:none;">
+        <apex:inputField id="f_StartDateTime" value="{!Event.StartDateTime}" rendered="true" />
+        <apex:inputField id="f_EndDateTime" value="{!Event.EndDateTime}" rendered="true" />
+    </div>
+    
+    <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open {!IF(saveSuccess,'slds-hide','')}">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">
+                    <apex:outputPanel layout="none" rendered="{!ISBLANK(Event.Id)}">Create {!$ObjectType.Event.label}</apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!NOT(ISBLANK(Event.Id))}">Edit {!Event.Subject}</apex:outputPanel>
+                </h2>
+                <span class="slds-hint-parent">
+                    <button class="slds-button slds-modal__close form-close-action" onClick="doCancel();return false">
+                        <svg aria-hidden="true" class="slds-button__icon slds-button__icon--inverse slds-button__icon--hint modal-icon-close">
+                            <use xlink:href="{!URLFOR($Resource.SLDS0112, 'assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                </span>
+            </div>
+            <div class="slds-modal__content">
+                <div class="pg-msgs">
+                    <apex:messages styleClass="slds-notify slds-notify--alert slds-theme--error" />
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <fieldset class="slds-form--compound">
+                        <h2 class="slds-form-element__label frm-sec-header">Information</h2>
+                        <div class="form-element__group">
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="assig_to"><abbr class="slds-required" title="required">*</abbr>Assigned To</apex:outputLabel>
+                                    <apex:inputField id="assig_to" value="{!Event.OwnerId}" styleClass="assignedField slds-input" required="true" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="rel_loc">Location</apex:outputLabel>
+                                    <apex:inputField id="rel_loc" value="{!Event.Location}" styleClass="slds-input" required="false" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="rel_subj"><abbr class="slds-required" title="required">*</abbr>Subject</apex:outputLabel>
+                                    <apex:inputText id="rel_subj" value="{!Event.Subject}" styleClass="slds-input" required="true" label="Subject" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="StartDateTime"><abbr class="slds-required" title="required">*</abbr>Start</apex:outputLabel>
+                                    <div class="slds-form-element__control dateInput dateOnlyInput startDate">
+                                        <apex:inputField id="StartDateTime" 
+                                                         value="{!startDate.ActivityDate}"
+                                                         onchange="ActivityFunction.updateDates('{!$Component.theForm.StartDateTime}', ['{!$Component.theForm.EndDateTime}'], true);ActivityFunction.updateCalendar(['{!$Component.theForm.StartDateTime}','{!$Component.theForm.EndDateTime}']);ActivityFunction.saveStartTime('{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}');ActivityFunction.checkDuration('IsRecurrence','{!$Component.theForm.AllDayEvent}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');"
+                                                         style="width:110px;"
+                                                         styleClass="slds-input" />
+                                        <span class="timeInput">
+                                            <apex:inputText id="StartDateTime_time"
+                                                            value="{!startTime}"
+                                                            onchange="ActivityFunction.updateEndTime('{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');ActivityFunction.checkDuration('IsRecurrence','{!$Component.theForm.AllDayEvent}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');" 
+                                                            onfocus="ActivityFunction.saveStartTime('{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}');ActivityFunction.showTimePicker('{!$Component.theForm.StartDateTime_time}')"
+                                                            style="width:80px;"
+                                                            styleClass="slds-input" /> 
+                                            <span class="dateFormat">
+                                                [ <a href="#" onclick="var inputField = getElementByIdCS('{!$Component.theForm.StartDateTime_time}');if (inputField && !inputField.disabled && inputField.value != '{!JSENCODE(selectTimeLink)}') { inputField.value = '{!JSENCODE(selectTimeLink)}'; if (inputField.onchange) {inputField.onchange();}}return false;">{!selectTimeLink}</a> ]
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="rel_to">Related To</apex:outputLabel>
+                                    <apex:inputField id="rel_to" value="{!Event.WhatId}" styleClass="matterField slds-input user-input" required="false" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="EndDateTime"><abbr class="slds-required" title="required">*</abbr>End</apex:outputLabel>
+                                    <div class="slds-form-element__control dateInput dateOnlyInput endDate">
+                                        <apex:inputField id="EndDateTime" 
+                                                            value="{!endDate.ActivityDate}" 
+                                                            onchange="ActivityFunction.checkDuration('IsRecurrence','{!$Component.theForm.AllDayEvent}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');" 
+                                                            style="width:110px;"
+                                                            styleClass="slds-input" />
+                                        <span class="timeInput">
+                                            <apex:inputText id="EndDateTime_time" 
+                                                            value="{!endTime}"
+                                                            onchange="ActivityFunction.checkDuration('IsRecurrence','{!$Component.theForm.AllDayEvent}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');" 
+                                                            onfocus="ActivityFunction.showTimePicker('{!$Component.theForm.EndDateTime_time}')" 
+                                                            style="width:80px;"
+                                                            styleClass="slds-input" />
+                                            <span class="dateFormat">
+                                                [ <a href="#" onclick="var inputField = getElementByIdCS('{!$Component.theForm.EndDateTime_time}');if (inputField && !inputField.disabled && inputField.value != '{!JSENCODE(selectTimeLink)}') { inputField.value = '{!JSENCODE(selectTimeLink)}'; if (inputField.onchange) {inputField.onchange();}}return false;">{!selectTimeLink}</a> ]
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="rel_name">Name</apex:outputLabel>
+                                    <apex:inputField id="rel_name" value="{!Event.WhoId}" styleClass="contactField slds-input" required="false" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="AllDayEvent">All-Day Event</apex:outputLabel>
+                                    <apex:inputField id="AllDayEvent" required="false" value="{!Event.IsAllDayEvent}" onclick="$j(this).blur();ActivityFunction.clearTimeElements('{!$Component.theForm.AllDayEvent}','IsRecurrence','evt13','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}',true);ActivityFunction.adjustEventReminderOptions(false,'{!$Component.theForm.AllDayEvent}',false,'IsRecurrence','reminder_dt_time');ActivityFunction.checkDuration('IsRecurrence','{!$Component.theForm.AllDayEvent}','{!$Component.theForm.StartDateTime}','{!$Component.theForm.StartDateTime_time}','{!$Component.theForm.EndDateTime}','{!$Component.theForm.EndDateTime_time}');" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="show_as">Show Time As</apex:outputLabel>
+                                    <apex:inputField id="show_as" value="{!Event.ShowAs}" styleClass="slds-select" required="false" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="isprivate">Private</apex:outputLabel>
+                                    <apex:inputField id="isprivate" required="false" value="{!Event.IsPrivate}" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="f_type">Type</apex:outputLabel>
+                                    <apex:inputField id="f_type" value="{!Event.Type}" styleClass="slds-select" required="false" />
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="chkLogTime">Log Time</apex:outputLabel>
+                                    <apex:inputField id="chkLogTime" required="false" value="{!Event.advpm__Log_Time__c}" />
+                                </div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded uiInput--checkbox">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="reminder_set">Reminder</apex:outputLabel>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-float--left"><apex:inputCheckbox id="reminder_set" value="{!Event.IsReminderSet}" title="Set reminder on/off" style="margin-top: 8px;" onclick="$j(this).blur();toggleEventReminderOptions('{!$Component.theForm.reminder_set}','{!$Component.theForm.reminder_lt}');" /></span>
+                                        <span class="slds-float--left">
+                                        <apex:selectList id="reminder_lt" styleClass="slds-select" value="{!remTime}" title="Reminder lead time before the event" multiselect="false" size="1" style="display:inline;width:100px;padding:0px 0px;margin-left:5px;">
+                                            <apex:selectOption itemValue="0" itemLabel="0 minutes" />
+                                            <apex:selectOption itemValue="5" itemLabel="5 minutes" />
+                                            <apex:selectOption itemValue="10" itemLabel="10 minutes" />
+                                            <apex:selectOption itemValue="15" itemLabel="15 minutes" />
+                                            <apex:selectOption itemValue="30" itemLabel="30 minutes" />
+                                            <apex:selectOption itemValue="60" itemLabel="1 hour" />
+                                            <apex:selectOption itemValue="120" itemLabel="2 hours" />
+                                            <apex:selectOption itemValue="180" itemLabel="3 hours" />
+                                            <apex:selectOption itemValue="240" itemLabel="4 hours" />
+                                            <apex:selectOption itemValue="300" itemLabel="5 hours" />
+                                            <apex:selectOption itemValue="360" itemLabel="6 hours" />
+                                            <apex:selectOption itemValue="420" itemLabel="7 hours" />
+                                            <apex:selectOption itemValue="480" itemLabel="8 hours" />
+                                            <apex:selectOption itemValue="540" itemLabel="9 hours" />
+                                            <apex:selectOption itemValue="600" itemLabel="10 hours" />
+                                            <apex:selectOption itemValue="660" itemLabel="11 hours" />
+                                            <apex:selectOption itemValue="720" itemLabel="0.5 days" />
+                                            <apex:selectOption itemValue="1080" itemLabel="18 hours" />
+                                            <apex:selectOption itemValue="1440" itemLabel="1 day" />
+                                            <apex:selectOption itemValue="2880" itemLabel="2 days" />
+                                            <apex:selectOption itemValue="4320" itemLabel="3 days" />
+                                            <apex:selectOption itemValue="5760" itemLabel="4 days" />
+                                            <apex:selectOption itemValue="10080" itemLabel="1 week" />
+                                            <apex:selectOption itemValue="20160" itemLabel="2 weeks" />
+                                        </apex:selectList>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element slds-size--1-of-2 slds-col--padded">&nbsp;</div>
+                            </div>
+                            
+                            <div class="slds-form-element__row">
+                                <div class="slds-form-element slds-size--1-of-1 slds-col--padded">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="fld_descr">Description</apex:outputLabel>
+                                    <apex:inputField id="fld_descr" value="{!Event.Description}" styleClass="slds-input" required="false" />
+                                </div>
+                            </div>
+                            
+                            <apex:outputPanel layout="none" id="additionalSectionBlock" rendered="{!$ObjectType.Event.FieldSets.advpm__fieldSet_CardWall.size > 0}">
+                                <apex:repeat value="{!$ObjectType.Event.FieldSets.advpm__fieldSet_CardWall}" var="f">
+                                    <div class="slds-form-element__row">
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type == 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt1"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt1" value="{!Event[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" style="height:60px;" />
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" styleClass="slds-form-element slds-size--1-of-1 slds-col--padded {!IF(f.type=='boolean','uiInput--checkbox','')}" rendered="{!f.Type != 'textarea' && NOT(CONTAINS(f,'.'))}">
+                                            <apex:outputLabel styleClass="slds-form-element__label" for="fld_addt2"><apex:outputPanel layout="none" rendered="{!f.Required}"><abbr class="slds-required" title="required">*</abbr></apex:outputPanel>{!f.label}</apex:outputLabel>
+                                            <apex:inputField id="fld_addt2" value="{!Event[f]}" required="{!f.Required}" styleClass="{!IF(f.type=='boolean','','slds-input')}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:repeat>
+                            </apex:outputPanel>
+                            
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <apex:actionStatus id="loadingStatus" onstop="fixLookups()">
+                    <apex:facet name="start"><img src="{!URLFOR($Resource.SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Loading..." width="32px" height="32px" /></apex:facet>
+                </apex:actionStatus>
+                <input type="button" class="slds-button slds-button--neutral" value="  Cancel  " onClick="doCancel();return false;" />
+                <input id="save-button" type="button" class="slds-button slds-button--neutral slds-button--brand" value="  Save  " />
+            </div>
+        </div>
+    </div>
+    <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+</apex:form>
+</div>
+</body>
+</html>
+</apex:page>

@@ -1,0 +1,42 @@
+<apex:page controller="evAddEventTeamMembers_Controller">
+    <apex:form >
+        <apex:pageBlock id="MultiContact" title="Add Team Members">
+            <apex:pageMessages ></apex:pageMessages>
+            <div >
+                <!--<apex:selectList size="1" value="{!selectedEvent}" id="selectLst" > 
+                    <apex:selectOptions value="{!eventOptions}" />
+                </apex:selectList>-->
+                <b>{!eventRec.name}</b>
+                <br/>
+                <br/>
+                <br/>
+                <table>
+                    <apex:repeat var="newTeamMember" value="{!teamMembersToInsert}">
+                        <tr>
+                            <!-- <th>Remove</th>-->
+                            <th>Team Member/User</th>
+                            <th>Role</th>
+                            <th>Maximum Guests</th>
+                            <th>Maximum Invitees</th> 
+                            
+                        </tr>
+                        <tr>
+                            <!--<td>
+<apex:commandLink value="X"   immediate="true" action="{!RemoveRow}" rerender="MultiContact">
+<apex:param assignTo="{!SelectedTeamMember}"  value="{!newTeamMember}" />
+</apex:commandLink>{!SelectedTeamMember}  
+</td> -->
+                            <td> <apex:inputField required="true" value="{!teamMembersToInsert[newTeamMember].Team_member__C}"/> </td>
+                            <td> <apex:inputField required="true" value="{!teamMembersToInsert[newTeamMember].Event_Team_Member_Role__c}"/> </td>
+                            <td> <apex:inputField required="true" value="{!teamMembersToInsert[newTeamMember].Maximum_Number_of_Actual_Invitees__c}"/> </td>
+                            <td> <apex:inputField required="true" value="{!teamMembersToInsert[newTeamMember].Maximum_Number_of_Proposed_Invitees__c}"/> </td>
+                        </tr>
+                    </apex:repeat> 
+                </table> 
+            </div>
+            <apex:commandButton value="Add Row"   styleClass="btn btn-INFO" immediate="true" action="{!AddTeamMemberRow}" />
+            <apex:commandButton value="Confirm"   styleClass="btn btn-INFO" action="{!CreateTeamMembers}" />
+            <apex:commandButton value="Cancel"   styleClass="btn btn-INFO" action="{!Cancel}" />
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

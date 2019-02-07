@@ -1,0 +1,169 @@
+<apex:page standardController="JLOC__c" extensions="JLOC_ViewController" showHeader="true" sidebar="true">
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.blockUI, 'jquery.blockUI.js')}"/>
+
+    <style>
+        .panel-grid-2-columns {
+            width: 50%;
+        }
+        .panel-grid-3-columns {
+            width: 33%;
+        }
+        .grid-view {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .grid-view tbody {
+            border: 1px solid lightgrey;
+        }
+        .grid-view td, th {
+            border: 1px solid #999;
+            padding: 4px;
+            text-align: left;
+        }
+        .grid-view th {
+            background-color: whitesmoke;
+            font-weight: bold;
+        }
+        .grid-view caption {
+            text-align: left;
+        }
+        .field {
+            margin: 12px;
+        }
+        .label {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #999;
+        }
+        .text {
+            width: 25%;
+        }
+        .text-area {
+            width: 100%;
+            resize: vertical;
+        }
+        .inline-button {
+            margin: 12px !important;
+        }
+        .popup-panel{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popup-background{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        .marginTop2em {
+            margin-top: 2em;
+        }
+        .width10 {
+            width: 10em;
+        }
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function openDocuments() {
+            window.open('/servlet/servlet.FileDownload?file={!JLOC__c.JLOC_Document_ID__c}', '_self');
+        }
+
+        <apex:outputText rendered="{!$CurrentPage.parameters.saved != null}">
+            //Generate PDF on load when parameter Saved is set
+            $(document).ready(function() {
+                $('[id*=generatePdfButton]').trigger('click');
+            });
+        </apex:outputText>
+    </script>
+
+    <apex:pageMessages id="pageMsg"/>
+    <apex:detail title="true" showChatter="true" relatedList="false" relatedListHover="true"/>
+    <br/>
+    <apex:outputPanel id="attachments">
+        <apex:relatedList list="CombinedAttachments" subject="{!JLOC__c}" />
+        <!--apex:relatedList list="Notes" subject="{!JLOC__c}" /-->
+    </apex:outputPanel>
+    <apex:form id="theForm">
+        <!--chatter:feedWithFollowers entityId="{!JLOC__c.Id}" /-->
+        <apex:inputHidden value="{!JLOC__c.JLOC_Status__c}" />
+        <apex:inputHidden id="jlocDocumentId" value="{!JLOC__c.JLOC_Document_ID__c}" />
+        <apex:inputHidden value="{!JLOC__c.Pricing_and_Returns_Document_ID__c}" />
+
+        <apex:pageBlock mode="maindetail">
+            <apex:actionStatus id="processing" onstart="$.blockUI({ css: { 
+                border: 'none', 
+                padding: '15px', 
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .5, 
+                color: '#fff' 
+            } });" onstop="$.unblockUI();"/>
+            <apex:pageBlockButtons location="top" id="btnSection">
+                <apex:commandButton value="Edit" action="{!edit}" rendered="{!isDraft}" status="processing" reRender="pageMsg"/>
+                <apex:commandButton value="Clone" action="{!cloneJLOC}" id="cloneJLOCButton"/>
+                <apex:commandButton value="Generate Document" action="{!generatePdf}" rendered="{!isDraft}" id="generatePdfButton" status="processing" reRender="attachments,jlocDocumentId,pageMsg,JLOCPdfView,theForm"/>
+                <!--<apex:commandButton action="{!URLFOR($Action.JLOC__c.Print_View, Id)}" id="printView" value="Print View" reRender="newWindow" />-->
+                <apex:commandButton value="Sharing" action="{!sharing}" />
+                 <apex:commandButton value="Send to Team" id="sendToTeam" action="{!SendToTeam}" rendered="{!JLOC__c.JLOC_Document_ID__c!= null}" />
+                <apex:commandButton value="Submit to Secretary" action="{!submitToSecretary}" rendered="{!isDraft}" status="processing" reRender="pageMsg"/>
+                <apex:commandButton value="Sent to Committee" action="{!sentToCommittee}" rendered="{!isSubmittedToSecretary && isSecretary}"/>
+                <apex:commandButton value="Reject" action="{!reject}" rendered="{!isSubmittedToSecretary && isSecretary}"/>
+                <apex:commandButton value="Approve" action="{!approve}" rendered="{!isSentToCommittee && isJlocCommitteeAttendee && NOT(voted)}" reRender="popup"/>
+                <apex:commandButton value="Approve Subject to" action="{!approveSubjectTo}" rendered="{!isSentToCommittee && isJlocCommitteeAttendee && NOT(voted)}" reRender="popup"/>
+                <apex:commandButton value="Decline" action="{!decline}" rendered="{!isSentToCommittee && isJlocCommitteeAttendee && NOT(voted)}" reRender="popup"/>
+                <apex:commandButton value="Approve" action="{!finalApprove}" rendered="{!(isSentToCommittee || isDeferred) && isSecretary}"/>
+                <apex:commandButton value="Decline" action="{!finalDecline}" rendered="{!(isSentToCommittee || isDeferred) && isSecretary}"/>
+                <apex:commandButton value="Defer" action="{!finalDefer}" rendered="{!isSentToCommittee && isSecretary}"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection id="JLOCPdfView">
+                <apex:iframe src="{!URLFOR($Action.Attachment.Download, JLOC__c.JLOC_Document_ID__c)}" scrolling="true" width="1100px" rendered="{!JLOC__c.JLOC_Document_ID__c != null}" />
+            </apex:pageBlockSection>
+
+            <apex:outputPanel id="popup">
+                <apex:outputPanel styleClass="popup-background" layout="block" rendered="{!displayPopup}" />
+                <apex:outputPanel styleClass="popup-panel" layout="block" rendered="{!displayPopup}">
+                    <apex:panelGrid columns="1" width="100%">
+                        <apex:panelGroup >
+                            <div class="field">
+                                <div class="label">{!status}</div>
+                                <apex:inputTextarea value="{!comments}" rows="15" cols="100" styleClass="text-area" />
+                            </div>
+                        </apex:panelGroup>
+                        <apex:panelGroup >
+                            <div style="width: 100%; margin-left: auto; margin-right: auto;">
+                                <apex:commandButton value="Confirm" action="{!jlocAttendeeVote}" styleClass="inline-button" reRender="popup,pageMsg" />
+                                <apex:commandButton value="Cancel" action="{!closePopup}" styleClass="inline-button" reRender="popup" />
+                            </div>
+                        </apex:panelGroup>
+                    </apex:panelGrid>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+        </apex:pageBlock>
+    </apex:form>
+    <apex:relatedList list="JLOC_Attendees__r" subject="{!JLOC__c}" rendered="{!isSentToCommittee || isApproved || isDeclined || isDeferred}" />
+    <!--apex:relatedList list="JLOC__History__r" subject="{!JLOC__c}" /-->
+</apex:page>

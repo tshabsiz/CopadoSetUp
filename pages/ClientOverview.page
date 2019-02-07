@@ -1,0 +1,801 @@
+<apex:page controller="ClientOverviewController" standardStylesheets="false" sidebar="false" docType="html-5.0" id="thepageid">
+    
+    <apex:includeScript value="{!URLFOR($Resource.ckeditor, 'ckeditor/ckeditor.js')}"/> 
+    
+    <script>
+        String.prototype.replaceAll = function(search, replacement) {
+            var target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        $('document').ready(function() {
+            console.log('Document Ready');
+            selectLabel(2);
+            setPageMinHeight();
+            
+            //This will also impact the ability to copy & paste images
+            CKEDITOR.config.forcePasteAsPlainText = true;
+            CKEDITOR.config.pasteFromWordNumberedHeadingToList = true;
+            CKEDITOR.config.pasteFromWordRemoveFontStyles = true;
+            CKEDITOR.config.pasteFromWordRemoveStyles = true;
+            CKEDITOR.config.pasteFromWordPromptCleanup = false;
+
+            var planLoaded = {!planLoaded};
+            if(planLoaded) {
+                prepareScoreAreaBullets();
+            }            
+        });
+
+        CKEDITOR.on("instanceReady",function() {
+            console.log('CKEDITOR Instance Ready');
+
+            var planLoaded = {!planLoaded};
+            if(planLoaded) {
+                prepareExecutiveSummary();
+                prepareSector();
+                replaceNewLines();
+            }
+        });
+        
+        function setPageMinHeight() {
+            var height = window.innerHeight - 230;
+            $('.slds').css('min-height', height);
+        }
+        
+        //functions for preparing richtext content
+        function prepareSector() {
+            ClientOverviewController.getSectorOverview('{!plan.Id}', function(result, event) {
+                //console.log(result);
+                if (result == null || result.status == false) {
+                    showLoadingErrorMessage('{!$Label.errMsg_ErrorLoadingData}');
+                } else {
+                    CKEDITOR.instances['thepageid:theformid:sectorOverviewEditor'].setData(result, {
+                        callback: function() {
+                            prepareClient();
+                        }
+                    });
+                    //$('.sectorOverviewEditor').html(result);
+                }
+            },
+            { escape: false });
+        }
+        
+        function prepareClient() {
+            ClientOverviewController.getClientOverview('{!plan.Id}', function(result, event) {
+                if (result == null || result.status == false) {
+                    showLoadingErrorMessage('{!$Label.errMsg_ErrorLoadingData}');
+                } else {
+                    CKEDITOR.instances['thepageid:theformid:clientOverviewEditor'].setData(result);
+                    
+                }
+                prepareOnChangeEvents();
+            },
+            { escape: false });
+        }
+        function prepareExecutiveSummary() {
+            ClientOverviewController.getExecutiveSummary('{!plan.Id}', function(result, event) {
+                if (result == null || result.status == false) {
+                    showLoadingErrorMessage('{!$Label.errMsg_ErrorLoadingData}');
+                } else {
+                    CKEDITOR.instances['thepageid:theformid:executiveSummary'].setData(result);
+                    //$('.clientOverviewEditor').html(result);
+                }
+                prepareOnChangeEvents();
+            },
+            { escape: false });
+        }
+        function prepareOnChangeEvents() {
+            for(var i in CKEDITOR.instances) {
+                CKEDITOR.instances[i].on('blur', function() {
+                    saveSector();
+                });
+
+                /*
+                // Clean-up the text on Paste
+                CKEDITOR.instances[i].on('paste', function(e) {
+                    var editor = e.editor;
+
+                    //Detail on what is pasted
+                    var pastedContent = e.data.dataValue;
+                    var pastedType = e.data.type;
+
+                    //If this is a CKEDITOR internal copy/paste let it go through
+                    if(e.data.dataTransfer.getTransferType(editor) == CKEDITOR.DATA_TRANSFER_INTERNAL ) {
+                        return;
+                    }
+
+                    //Detect if this is an image or not
+                    var chromeImage = (e.data.dataTransfer.getFilesCount() > 0);
+                    var safariImage = (pastedContent.indexOf('webkit-fake-url') > -1);
+                    if(chromeImage || safariImage) {
+                        return;
+                    }
+
+                    //It's not an internal paste, and not an image, let's clean it up where possible
+                    pastedContent = decodeHtml(pastedContent);
+                    console.log('Before data: ' + pastedContent);
+                    var cleanedUpPastedContent = pastedContent.replaceAll('<[^>]+>',' ') + '    @JW';
+                    console.log('After data: ' + cleanedUpPastedContent);
+
+                    e.data.dataValue = cleanedUpPastedContent;
+                    //var oldContent = editor.getData();
+                    //editor.setData(oldContent);
+                });
+                */
+            }
+        
+            endLoading();
+        }
+        
+        function showLoadingErrorMessage(message) {
+            $('#topMsgsText').text(message);
+            $('#topMsgs').show();
+        }
+        
+        
+        //functions for saving richtexts
+        
+        function saveSector() {
+            $('#topMsgs').hide();
+            startLoading('{!$Label.lbl_Saving}');
+            
+            var sectorContent = CKEDITOR.instances['thepageid:theformid:sectorOverviewEditor'].getData();
+            
+            ClientOverviewController.saveRichtext('{!plan.Id}', sectorContent, true, function(result) {
+                if (result == null || result.status == false || result == true) {
+                    showLoadingErrorMessage('{!$Label.errMsg_SectorOverviewTooBig}');
+                }
+                saveClient();
+                saveExecutiveSummary();
+            },
+            { escape: false });
+        }
+        
+        function saveClient() {
+            var clientContent = CKEDITOR.instances['thepageid:theformid:clientOverviewEditor'].getData();
+            
+            ClientOverviewController.saveRichtext('{!plan.Id}', clientContent, false, function(result) {
+                if (result == null || result.status == false || result == true) {
+                    showLoadingErrorMessage('{!$Label.errMsg_ClientOverviewTooBig}');
+                }
+                endLoading();
+            },
+            { escape: false });
+        }
+        function saveExecutiveSummary(){
+            var executiveSummary = CKEDITOR.instances['thepageid:theformid:executiveSummary'].getData();
+            
+            ClientOverviewController.saveExecutiveSummary('{!plan.Id}', executiveSummary, function(result) {
+                if (result == null || result.status == false || result == true) {
+                    showLoadingErrorMessage('{!$Label.errMsg_ClientOverviewTooBig}');
+                }
+                endLoading();
+            },
+            { escape: false });
+        }
+        
+        //score functions
+        function replaceNewLines() {
+            $('.description').each( function() {
+                var content = $(this).html();
+                content = content.replace(new RegExp('\n', 'g'), '<br>');
+                $(this).html(content);
+            });
+        }
+        
+        function replaceNewLinesAfterRerender() {
+            $('.description').each( function() {
+                var content = $(this).html();
+                
+                content = content.replace(new RegExp('•', 'g'), '<br>•');
+                if (content.indexOf('<br>') == 0) {
+                    content = content.substring(4);
+                }
+                
+                $(this).html(content);
+            });
+        }
+        
+        function onBeforeRemoveScore(id, scoreType) {
+            var proceed;
+            
+            if (scoreType == 'Strength') {
+                proceed = confirm('{!$Label.msg_DeleteStrengthConfirm}');
+            } else if (scoreType == 'Weakness') {
+                proceed = confirm('{!$Label.msg_DeleteWeaknessConfirm}');
+            } else if (scoreType == 'Opportunity') {
+                proceed = confirm('{!$Label.msg_DeleteOpportunityConfirm}');
+            } else {
+                proceed = confirm('{!$Label.msg_DeleteThreatConfirm}');
+            }
+            
+            if (proceed) {
+                startLoading('{!$Label.lbl_Removing}');
+                removeScore(scoreType, id);
+            }
+        }
+        
+        
+        //score modal functions
+        var scoreType;
+        var scoreId;
+        
+        function prepareScoreAreaBullets() {
+            $('#scoreDescriptionArea').on('keydown',function(e){
+                var t = $(this);
+                switch(e.which) {
+                    case 13:
+                        t.val(t.val()+'\n• ');
+                        return false;
+                }  
+            });
+        }
+        
+        function showScoreModal(scoreTyp, id) {
+            scoreType = scoreTyp;
+            scoreId = id;
+            
+            prepareScoreModalLabels(scoreTyp, id);
+            
+            if (id == '') {
+                cleanScoreModal();
+            } else {
+                fillScoreModal(id);
+            }
+            
+            closeAlert();
+            $('#scoreModal').show();
+        }
+        
+        function prepareScoreModalLabels(scoreTyp, id) {
+            var modalLabel;
+            var descriptionLabel;
+            console.log(scoreTyp);
+            
+            if (scoreTyp == 'Strength') {
+                if (id == '') {
+                    modalLabel = '{!$Label.lbl_AddClientStrength}';
+                } else {
+                    modalLabel = '{!$Label.lbl_EditClientStrength}';
+                }
+                descriptionLabel = '{!$Label.lbl_StrengthDescription}';
+                
+            } else if (scoreTyp == 'Weakness') {
+                if (id == '') {
+                    modalLabel = '{!$Label.lbl_AddClientWeakness}';
+                } else {
+                    modalLabel = '{!$Label.lbl_EditClientWeakness}';
+                }
+                descriptionLabel = '{!$Label.lbl_WeaknessDescription}';
+
+            } else if (scoreTyp == 'Opportunity') {
+                if (id == '') {
+                    modalLabel = '{!$Label.lbl_AddClientOpportunity}';
+                } else {
+                    modalLabel = '{!$Label.lbl_EditClientOpportunity}';
+                }
+                descriptionLabel = '{!$Label.lbl_OpportunityDescription}';
+            } else {
+                if (id == '') {
+                    modalLabel = '{!$Label.lbl_AddClientThreat}';
+                } else {
+                    modalLabel = '{!$Label.lbl_EditClientThreat}';
+                }
+                descriptionLabel = '{!$Label.lbl_ThreatDescription}';
+            } 
+            
+            $('#scoreModalHeaderLabel').text(modalLabel);
+            $('#scoreDescription').text(descriptionLabel);
+        }
+        
+        function cleanScoreModal() {
+            $('#scoreName').val('');
+            $('#scoreDescriptionArea').val('• ');
+        }
+        
+        function fillScoreModal(id) {
+            var name = $('#' + id + ' .scoreName').text();
+            var description = $('#' + id + ' .description').html();
+            
+            description = description.replace(new RegExp('<br>', 'g'), '\n');
+            
+            $('#scoreName').val(name);
+            $('#scoreDescriptionArea').val(description);
+        }
+        
+        function closeScoreModal() {
+            closeToast();
+            $('#scoreModal').hide();
+        }
+        
+        function onBeforeModifyScore() {
+            var name = $('#scoreName').val();
+            if (name.length == 0) {
+                showToast('{!$Label.errMsg_NameRequired}');
+                return;
+            } else if (name.length > 80) {
+                showToast('{!$Label.errMsg_NameTooLong}');
+                return;
+            }
+            
+            closeScoreModal();
+            startLoading('{!$Label.lbl_Saving}');
+            
+            var description = $('#scoreDescriptionArea').val();
+            modifyScore(scoreType, scoreId, name, description);
+            console.log(scoreType);
+        }
+        
+        
+        //error messages functions
+        function checkErrorMessage() {
+            var content = $('.errorMessagePanel').text();
+            if (content != '') {
+                showAlert(content);
+            }
+        }
+    
+    </script>
+    
+    <style>
+        @media (min-width: 48em) {
+            #scoreModal .slds-modal__container {
+                width: 30em;
+            }
+            
+            .pageCenter {
+                width: 1000px;
+                margin: auto;
+                padding-top: 3em;
+            }
+            
+            .scorePanel {
+                padding-top: 0em;
+                padding-bottom: 3em;
+            }
+        }
+        
+        .slds {
+            background-color: #F4F6F9 !important;
+        }
+        
+        .slds-tabs--default {
+            background-color: white;
+        }
+        
+        .slds-form-element__label {
+            font-size: inherit !important;
+        }
+        
+        .marginBottom15 {
+            margin-bottom: 15px;
+        }
+        
+        .marginBottom30 {
+            margin-bottom: 30px;
+        }
+
+        .marginTop30 {
+            margin-top: 30px;
+        }
+        
+        .marginLeft1em {
+            margin-left: 0.5em;
+        }
+
+        .richTextAlert {
+            color: red;
+            font-size: 10px;
+        }
+        
+        .inline {
+            display: inline-block;
+        }
+        
+        .score {
+            background-color: white;
+            color: #16325c;
+            border: 1px solid #d8dde6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 1em;
+        }
+        
+        .notResizable {
+            resize: none;
+        }
+        
+        .bold {
+            font-weight: bold !important;
+        }
+        
+        .marginTop1em {
+            margin-top: 1em !important;
+        }
+        
+        .floatRight {
+            float: right;
+        }
+        
+        .scoreOptionsButton {
+            line-height: 1em !important;
+        }
+        
+        #strengthsIcon {
+            fill: #7DC37D;
+        }
+        
+        #weaknessesIcon {
+            transform: rotate(180deg);
+        }
+
+        #threatIcon {
+            fill: #e50000;
+            height: 1.5em;        
+        }
+
+        #opportunitiesIcon {
+            fill: #1000cc;
+            height: 1.5em;  
+        }
+        
+        #strengths,
+        #weaknesses,
+        #opportunities,
+        #threats {
+            width: 48%;
+            vertical-align: top;
+        }
+        
+        #strengths,
+        #opportunities {
+            margin-right: 3%;
+        }
+        
+        .alignRight {
+            text-align: right;
+        }
+        
+        #addImageButton {
+            margin: 1em;
+        }
+        
+        #imageModal .slds-button {
+            margin-right: 0.2em;
+        }
+        
+        .marginBottom1em {
+            margin-bottom: 1em !important;
+        }         
+    	.jloc-reference
+            {
+                border-style: ridge;
+                border-color: #960528;
+                border-width: 1px
+            }
+    </style>
+    
+    <div class="slds"> 
+    
+        <c:ClientPlanHeader />
+        
+        <c:ProgressBarLightning />
+        
+        <c:LightningToast />
+        
+        <c:LightningAlert />
+        
+        <apex:form id="theformid">
+            <div style="display:inline-block ; margin: 5px;">
+            <apex:outputPanel rendered="{!isGlobalParent}">
+           <label   class="slds-form-element__label inputLabel" for="ClientPlans" ><b>
+                {!$Label.lblUnderlyingClientPlans}</b>
+            </label><br/>
+            <apex:SelectList size="1" id="ClientPlans" styleClass="slds-select" value="{!selectedClientPlans}" title="Select Client" onChange="window.open(this.value,'_blank', 'toolbar=0,location=0,menubar=0')">
+                <apex:selectOptions value="{!ChildClientPlans}" />
+            </apex:SelectList><br/>
+           </apex:outputPanel>
+        </div>
+            <apex:outputPanel id="wholePage" layout="block" rendered="{!planLoaded}" styleClass="pageCenter">
+            
+                <div id="topMsgs" class="alert alert-danger" role="alert" style="display:none;">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span id="topMsgsText" />
+                </div>
+                <div class="bold">
+                    <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Executive_Summary__c.Label}" />
+                </div>
+                <div class="">
+                    <apex:inputtextarea id="executiveSummary" styleClass="ckeditor sectorOverviewEditor" richtext="false" />
+                </div>
+                <div>
+                    <apex:outputText styleClass="richTextAlert" value="{!$Label.lbl_CopyPasteRichTextAlert}"/>
+                </div>
+                <div class="bold">
+                    <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Sector_Overview__c.Label}" />
+                </div>
+                <div class="">
+                    <apex:inputtextarea id="sectorOverviewEditor" styleClass="ckeditor sectorOverviewEditor" richtext="false" />
+                </div>
+                <div>
+                    <apex:outputText styleClass="richTextAlert" value="{!$Label.lbl_CopyPasteRichTextAlert}"/>
+                </div>
+                
+                <div class="bold marginTop30">
+                    <apex:outputText value="{!$ObjectType.Client_Plan__c.fields.Client_Overview__c.Label}" />
+                </div>
+                <div class="jloc-reference">
+                    <apex:inputtextarea id="clientOverviewEditor" styleClass="ckeditor clientOverviewEditor" richtext="false" />
+                </div>
+                <div>
+                    <apex:outputText styleClass="richTextAlert" value="{!$Label.lbl_CopyPasteRichTextAlert}"/>
+                </div> 
+                
+            </apex:outputPanel>
+        </apex:form>
+        
+        <apex:outputPanel id="scoreModalPanel">
+            <div id="scoreModal" style="display:none;">
+                <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h2 id="scoreModalHeaderLabel" class="slds-text-heading--medium" />
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeScoreModal();return false;">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                            </button>
+                        </div>
+                  
+                        <div class="slds-modal__content">
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label bold">
+                                        <apex:outputText value="{!$ObjectType.Client_Score__c.fields.Name.Label}" />
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <input id="scoreName" class="slds-input" type="text" />
+                                    </div>
+                                </div>
+                                <div class="slds-form-element marginTop1em">
+                                    <label id="scoreDescription" class="slds-form-element__label bold" />
+                                    <div class="slds-form-element__control">
+                                        <textarea id="scoreDescriptionArea" rows="5" class="slds-input notResizable" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button--neutral" onclick="closeScoreModal();return false;">{!$Label.lbl_Cancel}</button>
+                            <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyScore();return false;">{!$Label.lbl_Save}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+            </div>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="errorMessagePanel" styleClass="errorMessagePanel hidden">{!ErrorMessage}</apex:outputPanel>
+       
+        <apex:outputPanel id="scorePanel" layout="block" rendered="{!planLoaded}" styleClass="pageCenter scorePanel marginTop30">
+            <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div>
+                    <h2 id="pageLabel" class="bold marginBottom1em">{!$Label.lbl_SwotAnalysis}</h2>
+                </div> 
+                            
+                <div id="strengths" class="inline">
+                    <span class="slds-icon__container">
+                        <svg id ="strengthsIcon" aria-hidden="true" class="slds-icon">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/standard-sprite/svg/symbols.svg#endorsement')}"></use>
+                        </svg>
+                    </span>
+                    <span class="marginLeft1em">
+                        <apex:outputText value="{!$Label.lbl_StrengthsOfClient}" />
+                    </span>
+                    
+                    <apex:repeat value="{!Strengths}" var="s">
+                        <div id="{!s.Id}" class="score">
+                            <div>
+                                <div class="bold inline scoreName">{!s.Name}</div>
+                                <div class="inline floatRight">
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                    <a onclick="showScoreModal('Strength', '{!s.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Edit}
+                                                    </a>
+                                                </li>
+                                                <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                    <a onclick="onBeforeRemoveScore('{!s.Id}', 'Strength');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Remove}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">{!s.Description__c}</div>
+                        </div>
+                    </apex:repeat>
+                    
+                    <div>
+                        <button class="slds-button" onclick="showScoreModal('Strength', '');return false;">{!$Label.lbl_AddStrength}</button>
+                    </div>
+                </div>
+                
+                <div id="weaknesses" class="inline">
+                    <span class="slds-icon__container">
+                        <svg id="weaknessesIcon" aria-hidden="true" class="slds-icon slds-icon-text-warning">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/standard-sprite/svg/symbols.svg#endorsement')}"></use>
+                        </svg>
+                    </span>
+                    <span class="marginLeft1em">
+                        <apex:outputText value="{!$Label.lbl_WeaknessesOfClient}" />
+                    </span>
+                    
+                    <apex:repeat value="{!Weaknesses}" var="w">
+                        <div id="{!w.Id}" class="score">
+                            <div>
+                                <div class="inline bold scoreName">{!w.Name}</div>
+                                <div class="inline floatRight">
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                    <a onclick="showScoreModal('Weakness', '{!w.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Edit}
+                                                    </a>
+                                                </li>
+                                                <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                    <a onclick="onBeforeRemoveScore('{!w.Id}', 'Weakness');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Remove}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">{!w.Description__c}</div>
+                        </div>
+                    </apex:repeat>
+                    
+                    <div>
+                        <button class="slds-button" onclick="showScoreModal('Weakness', '');return false;">{!$Label.lbl_AddWeakness}</button>
+                    </div>
+                </div>
+
+                <div id="opportunities" class="inline">
+                    <span class="slds-icon__container">
+                        <svg id ="opportunitiesIcon" aria-hidden="true" class="slds-icon">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#world')}"></use>
+                        </svg>
+                    </span>
+                    <span class="marginLeft1em">
+                        <apex:outputText value="{!$Label.lbl_OpportunitiesOfClient}" />
+                    </span>
+                    
+                    <apex:repeat value="{!Opportunities}" var="o">
+                        <div  id="{!o.Id}" class="score">
+                            <div>
+                                <div class="bold inline scoreName">{!o.Name}</div>
+                                <div class="inline floatRight">
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                    <a onclick="showScoreModal('Opportunity', '{!o.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Edit}
+                                                    </a>
+                                                </li>
+                                                <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                    <a onclick="onBeforeRemoveScore('{!o.Id}', 'Opportunity');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Remove}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">{!o.Description__c}</div>
+                        </div>
+                    </apex:repeat>
+                    
+                    <div>
+                        <button class="slds-button" onclick="showScoreModal('Opportunity', '');return false;">{!$Label.lbl_AddClientOpportunity}</button>
+                    </div>
+                </div>
+                
+                <div id="threats" class="inline">
+                    <span class="slds-icon__container">
+                        <svg id="threatIcon" aria-hidden="true" class="slds-icon slds-icon-text-warning">
+                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#frozen')}"></use>
+                        </svg>
+                    </span>
+                    <span class="marginLeft1em">
+                        <apex:outputText value="{!$Label.lbl_ThreatsOfClient}" />
+                    </span>
+                    
+                    <apex:repeat value="{!Threats}" var="t">
+                        <div id="{!t.Id}" class="score">
+                            <div>
+                                <div class="inline bold scoreName">{!t.Name}</div>
+                                <div class="inline floatRight">
+                                    <div class="slds-dropdown-trigger">
+                                        <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                            <svg aria-hidden="true" class="slds-button__icon">
+                                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                            </svg>
+                                        </button>
+                                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                            <ul class="slds-dropdown__list" role="menu">
+                                                <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                    <a onclick="showScoreModal('Threat', '{!t.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Edit}
+                                                    </a>
+                                                </li>
+                                                <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                    <a onclick="onBeforeRemoveScore('{!t.Id}', 'Threat');return false;" class="slds-truncate" role="menuitem">
+                                                        {!$Label.lbl_Remove}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">{!t.Description__c}</div>
+                        </div>
+                    </apex:repeat>
+                    
+                    <div>
+                        <button class="slds-button" onclick="showScoreModal('Threat', '');return false;">{!$Label.lbl_AddClientThreat}</button>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        
+        <apex:form >
+            <apex:actionFunction action="{!modifyScore}" name="modifyScore" reRender="errorMessagePanel,scorePanel" onComplete="checkErrorMessage();replaceNewLinesAfterRerender();endLoading();onWindowLoad();" >
+                <apex:param name="ScoreType" assignTo="{!scoreType}" value="" />
+                <apex:param name="scoreId" assignTo="{!scoreId}" value="" />
+                <apex:param name="name" assignTo="{!scoreName}" value="" />
+                <apex:param name="description" assignTo="{!description}" value="" />
+            </apex:actionFunction>
+            
+            <apex:actionFunction action="{!removeScore}" name="removeScore" reRender="errorMessagePanel,scorePanel" onComplete="checkErrorMessage();replaceNewLinesAfterRerender();endLoading();onWindowLoad();" >
+                <apex:param name="ScoreType" assignTo="{!scoreType}" value="" />
+                <apex:param name="scoreId" assignTo="{!scoreId}" value="" />
+            </apex:actionFunction>
+        </apex:form>
+            <apex:outputPanel id="organogramWrapperPanel" layout="block" rendered="{!planLoaded}">
+                
+                <c:ClientPlanOrgStructure planId="{!plan.Id}"/>
+                
+            </apex:outputPanel>  
+    </div>
+</apex:page>

@@ -1,0 +1,1533 @@
+<apex:page standardController="advpm__Assignment_Rule__c" extensions="advpm.AssignmentRulesController">
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" /> 
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jQuery_UI, 'jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.js')}" /> -->
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Select2, 'select2-3.4.3/select2.css')}" />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'DataTables-1.10.12/css/jquery.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Buttons-1.2.2/css/buttons.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'FixedColumns-3.2.2/css/fixedColumns.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'FixedHeader-3.1.2/css/fixedHeader.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Responsive-2.1.0/css/responsive.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'RowReorder-1.1.2/css/rowReorder.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Scroller-1.4.2/css/scroller.dataTables.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Tooltipster, 'v4.1.5/dist/css/tooltipster.bundle.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_Tooltipster, 'v4.1.5/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'DataTables-1.10.12/js/jquery.dataTables.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Buttons-1.2.2/js/dataTables.buttons.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'FixedColumns-3.2.2/js/dataTables.fixedColumns.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'FixedHeader-3.1.2/js/dataTables.fixedHeader.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Responsive-2.1.0/js/dataTables.responsive.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'RowReorder-1.1.2/js/dataTables.rowReorder.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'Scroller-1.4.2/js/dataTables.scroller.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables2, 'ConditionalPaging-1.0.0/dataTables.conditionalPaging.js')}" />
+    <!--<apex:includeScript value="{!URLFOR($Resource.jQuery_DataTables2, 'CellEdit-1.0.19/js/dataTables.cellEdit.js')}" />-->
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Tooltipster, 'v4.1.5/dist/js/tooltipster.bundle.min.js')}" />
+    
+    <!-- For SLDS Process: Wizard -->
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS_ADV, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    <style type="text/css">
+        /*.adv-slds * {font-family: "Salesforce Sans", Arial, sans-serif!important;}*/
+        .adv-slds:not(html), .slds body {font-size: 13px;}
+        
+        ul li, ol li { margin-left: 0px !important; }
+        table.dataTable td {border-left: 1px solid #ddd;}
+        table.dataTable td:last-child {border-right: 1px solid #ddd;}
+        table.dataTable thead tr.headergroup th {border-top: 1px solid #ddd;text-align: center;}
+        table.dataTable thead tr.headergroup th:not(:first-child) {background-color: #dedede;border-color: #ccc;}
+        
+        table.dataTable thead th {padding: 10px;background-color: #eee;border-bottom: 1px solid #ddd;border-left: 1px solid #ddd;}
+        table.dataTable thead th:last-child {border-right: 1px solid #ddd;}
+        table.dataTable.no-footer {border-bottom: 1px solid #ddd;}
+        table.dataTable td.action_column {text-align: center;}
+        table.dataTable td.action_column .action_move {cursor: move;}
+        table.dataTable td.action_column .action_add, table.dataTable td.action_column .action_del, table.dataTable td.action_column .action_move_up {/*padding-left: 8px;*/}
+        table.dataTable td.action_column .action_move_down {/*padding-left: 2px;*/}
+        table.dataTable td {max-width:100px;}
+        table.dataTable thead th {padding: 8px 10px;padding-bottom: 6px;}
+        table.dataTable tbody td {padding: 8px 10px 5px 10px;}
+        /** hide edit cell apply/cancel buttons in grid **/
+        /*table.dataTable td .multi-confirm-btn {display:none;}*/
+        
+        table.dataTable thead tr.headergroup th.header_assign {background-color:#1797c0;color:#fff;}
+        table.dataTable thead tr.headergroup th.header_criteria {background-color:#e69939;color:#fff;}
+        table.dataTable thead tr.headercell th.header_assign_column {background-color:#cfeef8;}
+        table.dataTable thead tr.headercell th.header_criteria_column {background-color:#FFD8B2;}
+        
+        ul.select2-results > li > div.select2-result-label {/*font-weight: bold;*/}
+        .select2-container-multi .select2-choices .select2-search-field input {padding: 1px 4px;}
+        .select2-container .select2-choice abbr {top:7px;right:18px;}
+        .select2-container .select2-choice {background-image: none;}
+        .select2-container-active .select2-choice, .select2-container-active .select2-choices {border: 1px solid #aaa;outline: none;-webkit-box-shadow: none;box-shadow: none;}
+        .select2-drop-active {border: 1px solid #aaa;}
+        .select2-container .select2-choice .select2-arrow {border-left: 0px solid #aaa;background: none;background-image: none;}
+        
+        body .bPageTitle .ptBody .links {padding-top: 7px;}
+        .bPageTitle .ptBody .links {padding-right: 0px;}
+        .pageType, .pageDescription {margin-left: 0px!important;}
+        .pageTitleIcon {display:none!important;}
+        .pageType {font-size: 1em!important;color: rgb(84, 105, 141)!important;padding-bottom: 3px!important;}
+        .bPageTitle .ptBody .content {width: 60%;}
+
+        #contentLoading{width: 100%;height: 100%;top: 0px;left: 0px;position: fixed;display: block;opacity: 0.6;background-color: #fff;z-index: 10001;text-align: center;}
+        #contentLoading1{position: relative;top:300px;z-index: 10000;}
+        .adv-slds .slds-dropdown-trigger > [class*="slds-button--icon"] ~ .slds-dropdown--right[class*="slds-nubbin"] {right: -16px;}
+        .adv-slds .slds-dropdown[class*="slds-nubbin--top"] {margin-top: 14px;}
+        .headergroup .slds-dropdown {min-width:300px!important;}
+        .headergroup .slds-dropdown__item {font-weight: normal;}
+        .slds-page-header .slds-dropdown {min-width:150px!important;}
+        
+        .template-select {width:300px;}
+        .bPageBlock .detailList th.template-label, .bPageBlock .detailList td.template-label {vertical-align: middle;}
+        .bPageBlock .detailList tr th.template-label, .bPageBlock .detailList tr td.template-label {border-bottom-width: 0px;}
+        #gridrows .cData {display:none;}
+        
+        .template-container label {margin-left:1px;font-weight:bold;font-size:12px}
+        .rule-button {width:100px!important;height:30px!important;font-size: 12px!important;}
+        .rule-button-brand {color:white!important; background:#2f8daf!important;}
+        a.export, a.export:visited {
+            color:#333;
+            border: 1px solid #b5b5b5;
+            border-bottom-color: #7f7f7f;
+            padding:7px 10px;
+        }
+        a.export, a.export:hover, a.export:active, a.export:visited, body .bPageTitle .ptBody .links a {
+            text-decoration: none!important;
+            color:#333;
+        }
+        
+        .legend_action, .legend_assign, .legend_criteria {color:#222;}
+        .legend_action label, .legend_assign label, .legend_criteria label {font-weight:bold;}
+        .legend_assign label {color:#1797c0}
+        .legend_criteria label {color:#e69939}
+        .col-menu {top:-2px;}
+        #maingrid .adv-slds .slds-nubbin--top-right:before {background-color: #f4f6f9!important;}
+        #maingrid .adv-slds .slds-dropdown {padding: 0rem 0!important;}
+        
+        .adv-error .slds-icon_container svg {fill:#f77e75;vertical-align:sub;}/*#ffb75d*/
+        .adv-error .slds-icon_container img {vertical-align:sub;}/*#ffb75d*/
+        
+        .tooltipster-sidetip.tooltipster-shadow.tooltipster-shadow-customized .tooltipster-box { background: #f77e75;border-color: red; }
+        .tooltipster-sidetip.tooltipster-shadow.tooltipster-shadow-customized .tooltipster-content { color: #fff; }
+        .tooltipster-sidetip.tooltipster-shadow.tooltipster-shadow-customized .tooltipster-arrow-border { border-left-color: #f77e75; }
+        .tooltip_templates { display: none; }
+        svg.tooltip-icon, img.tooltip-icon { vertical-align: sub!important; }
+    </style>
+    <c:AssignmentRulesJS />
+    
+    <style type="text/css">
+        .adv-slds .slds-wizard__progress {z-index: 0;}
+        .adv-slds .slds-wizard .slds-is-active .slds-wizard__marker {background: #2f8daf;}
+        .adv-slds .slds-wizard__progress-bar {background: #2f8daf;}
+        .adv-slds .header {border-bottom: 1px solid rgb(244, 246, 249);}
+        .adv-slds .step-content {height: 390px;}
+        .adv-slds .footer {background: rgb(244, 246, 249);border-top: 1px solid rgb(216, 221, 230);box-shadow: 0 1px 2px 0 rgba(0,0,0,.16);height: 57px;margin-top: 0;padding: .75rem 1rem;}
+        .new-rule-field-selection .hidden-field-list {display:none;}
+    </style>
+    <apex:outputPanel layout="none" rendered="{!!isLightning}">
+    <style type="text/css">
+        .adv-slds {font-family: Arial,Helvetica,sans-serif!important;}
+    </style>
+    </apex:outputPanel>
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+    <style type="text/css">
+        html body.sfdcBody {padding:0px;min-height: 700px;}
+        .adv-slds .slds-page-header {padding: 24px 24px 12px;}
+        .adv-slds .slds-button-group .slds-button.firstbutton {border-top-left-radius: 4px;border-bottom-left-radius: 4px;}
+        a.export, a.export:visited, 
+        a.export, a.export:hover, a.export:active, a.export:visited, body .bPageTitle .ptBody .links a {font-weight:normal;border: 0px!important;background-color: transparent!important;padding-left: 16px!important;color: #005fb2!important;}
+        .import-btn {border: 0px!important;background-color: transparent!important;width:100%!important;text-align:left!important;}
+        table.dataTable td.action_column .action_move_down {margin-left: 0px;}
+    </style>
+    </apex:outputPanel>
+    
+    <apex:form id="frm" styleClass="{!IF(isLightning,'adv-slds','')}">
+        <apex:actionStatus id="loading" onstart="loading(true)" onstop="loading(false);initEmailTemplatePicker()"/>
+        
+        <apex:actionFunction name="SaveRule" action="{!saveRule}" status="loading" reRender="frm" />
+        <apex:actionFunction name="newRuleStepAction" action="{!newRuleStepAction}" status="newrule-loading-status" reRender="frm" oncomplete="init_NewRuleFieldSelection();initEmailTemplatePicker()">
+            <apex:param name="step" value="" />
+        </apex:actionFunction>
+        
+        <!-- Header Part -->
+        <apex:outputPanel layout="none" rendered="{!!isLightning}">
+        <div class="bPageTitle">
+            <div class="ptBody">
+                <div class="content">
+                    <img src="/s.gif" alt="{!JSINHTMLENCODE($ObjectType.Assignment_Rule__c.label)}" class="pageTitleIcon" title="{!JSINHTMLENCODE($ObjectType.Assignment_Rule__c.label)}" />
+                    <h1 class="pageType">{!IF(isNewRuleBlank,'New '+$ObjectType.advpm__Assignment_Rule__c.label,$ObjectType.advpm__Assignment_Rule__c.label+' Edit')}<span class="titleSeparatingColon">:</span></h1>
+                    <h2 class="pageDescription">{!advpm__Assignment_Rule__c.Name}</h2>
+                    <div class="blank">&nbsp;</div>
+                </div>
+                <apex:outputPanel layout="block" styleClass="links" rendered="{!!isNewRuleBlank}">
+                    <div style="display:inline-block;">
+                        <apex:commandButton value="Import Rules" action="{!URLFOR($Page.AssignmentRulesImport,Assignment_Rule__c.Id,[id=Assignment_Rule__c.Id,retURL=URLFOR($Page.AssignmentRulesGridView,Assignment_Rule__c.Id,[id=Assignment_Rule__c.Id])])}" styleClass="rule-button" />    
+                        <a href="#" class="export btn rule-button" style="margin-left:-1px;">Export Rules</a>
+                    </div>
+                    <div style="display:inline-block;margin-left:20px;">
+                        <apex:commandButton value="Save" onclick="doTextSave();" oncomplete="return false;" styleClass="rule-button rule-button-brand" />    
+                        <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="rule-button" />
+                    </div>
+                </apex:outputPanel>
+            </div>
+        </div>
+        <div class="adv-slds"><div class="slds-has-divider--top-space"></div></div>
+        </apex:outputPanel>
+        
+        <apex:outputPanel layout="block" rendered="{!isLightning}" styleClass="adv-slds">
+            <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                                headerTitle="{!IF(isNewRuleBlank,'New '+$ObjectType.advpm__Assignment_Rule__c.label,$ObjectType.advpm__Assignment_Rule__c.label+' Edit')}" 
+                                parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Assignment_Rule__c.labelPlural)}" 
+                                parentEntityLink="{!$ObjectType.advpm__Assignment_Rule__c.keyPrefix}" 
+                                parentRecordName="{!advpm__Assignment_Rule__c.Name}" 
+                                parentRecordID="{!advpm__Assignment_Rule__c.Id}">
+                <apex:outputPanel layout="block" rendered="{!!isNewRuleBlank}" style="margin-top:-45px;">
+                    <div class="slds-button-group" role="group">
+                        <apex:commandButton value="Save" onclick="doTextSave();" oncomplete="return false;" styleClass="slds-button slds-button--brand firstbutton" />    
+                        <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="slds-button slds-button--neutral" />
+                        <div class="slds-dropdown-trigger slds-dropdown-trigger--click slds-button--last" aria-expanded="false">
+                            <button class="slds-button slds-button--icon-border-filled" aria-haspopup="true" title="More Actions" onclick="javascript:void(0);">
+                                <c:svg styleClass="slds-button__icon" path="{!URLFOR($Resource.advpm__SLDS_ADV,'assets/icons/utility-sprite/svg/symbols.svg#down')}" />
+                                <span class="slds-assistive-text">More Actions</span>
+                            </button>
+                            <div class="slds-dropdown slds-dropdown--right">
+                                <ul class="slds-dropdown__list" role="menu">
+                                    <li class="slds-dropdown__item" role="presentation">
+                                        <apex:commandButton value="Import Rules" action="{!URLFOR($Page.AssignmentRulesImport,Assignment_Rule__c.Id,[id=Assignment_Rule__c.Id,retURL=URLFOR($Page.AssignmentRulesGridView,Assignment_Rule__c.Id,[id=Assignment_Rule__c.Id])])}" styleClass="slds-button slds-button--neutral import-btn" />
+                                    </li>
+                                    <li class="slds-dropdown__item" role="presentation">    
+                                        <a href="#" class="export btn slds-button slds-button--neutral">Export Rules</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>    
+                </apex:outputPanel>
+            </c:slds_pageheader>
+        </apex:outputPanel>
+        
+        <div id="contentLoading" style="display:none;">
+            <img id="contentLoading1" src="/img/loading32.gif" alt="loading..." />
+        </div>
+        
+        <!-- Error TOOLTIP markup -->
+        <div class="tooltip_templates">
+            <span id="tooltip_content">
+                <span class="adv-slds slds-icon_container">
+                    <!-- <c:svg styleClass="slds-icon slds-icon--x-small tooltip-icon" path="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}" /> -->
+                    <img alt="Error" class="slds-icon slds-icon--x-small tooltip-icon" src="{!URLFOR($Resource.images, 'img/warning_white_60.png')}" />
+                </span>
+                <span class="err-label">Record not found</span>
+            </span>
+        </div>
+        
+        <!-- Hidden fields to maintain Visualforce standard library of salesforce on the page for useful utility functions -->
+        <span style="display:none">
+        <apex:inputField value="{!matter.advpm__Closed_Date__c}" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.Name}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Status__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Base_Object__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Category__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Assignment_Template__c}" rendered="false" />
+        <apex:inputField value="{!advpm__Assignment_Rule__c.advpm__Additional_Notification_Template__c}" rendered="false" />
+        </span>
+        <div style="display:none;">
+        <apex:inputTextArea id="fldAssign" value="{!advpm__Assignment_Rule__c.advpm__Assignment_Body__c}" style="width:45%;height:100px;" />
+        <apex:inputTextArea id="fldCriteria" value="{!advpm__Assignment_Rule__c.advpm__Criteria_Body__c}" style="width:45%;height:100px;" />
+        <apex:inputTextArea id="fldAssign_tmp" value="{!advpm__Assignment_Rule__c.advpm__Assignment_Body__c}" style="width:45%;height:100px;" />
+        <apex:inputTextArea id="fldCriteria_tmp" value="{!advpm__Assignment_Rule__c.advpm__Criteria_Body__c}" style="width:45%;height:100px;" />
+        </div>
+        
+        <apex:pagemessages />
+        <!-- Not a blank rule  -->
+        <apex:outputPanel layout="block" rendered="{!!isNewRuleBlank}" styleClass="slds-p-vertical--small slds-p-horizontal--large">
+            <div class="adv-slds">
+                <apex:outputPanel layout="block" styleClass="slds-text-align--left slds-m-top--xxx-small slds-m-bottom--medium slds-m-left--medium slds-float--right template-container">
+                    <apex:outputLabel value="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Additional_Notification_Template__c.label}" />
+                    <br />
+                    <apex:inputHidden value="{!notificationTemplate}" />
+                    <input type="text" class="template-select" value="{!notificationTemplate}" />
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="slds-text-align--left slds-m-top--xxx-small slds-m-bottom--medium slds-m-left--medium slds-float--right template-container">
+                    <apex:outputLabel value="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Assignment_Template__c.label}" />
+                    <br />
+                    <apex:inputHidden value="{!assignmentTemplate}" />
+                    <input type="text" class="template-select" value="{!assignmentTemplate}" />
+                </apex:outputPanel>
+            </div>
+            
+            <table id="maingrid" class="display {!IF(isLightning,'slds-table','')}" cellspacing="0" width="100%">
+                <thead id="gridhead">
+                    <tr class="headergroup {!IF(isLightning,'slds-text-title--caps','')}"></tr>
+                    <tr class="headercell {!IF(isLightning,'slds-text-title--caps','')}"></tr>
+                </thead>
+                <tbody id="gridrows">
+                    
+                </tbody>
+            </table>
+            
+            <div class="adv-slds">
+                <div class="slds-m-top--small">
+                    <div class="slds-grid slds-grid--align-center">
+                        <div class="slds-p-horizontal--xx-large legend_action">
+                            <apex:outputLabel value="Action" />
+                            <p>Add, delete and reposition<br />this rule.</p>
+                        </div>
+                        <div class="slds-p-horizontal--xx-large legend_assign">
+                            <apex:outputLabel value="Assignment" />
+                            <p>To whom should this rule<br />assign the record?</p>
+                        </div>
+                        <div class="slds-p-horizontal--xx-large legend_criteria">
+                            <apex:outputLabel value="Criteria" />
+                            <p>What conditions must be<br />met for this rule?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        
+        <!-- A blank rule  -->
+        <apex:outputPanel layout="block" styleClass="adv-slds" rendered="{!isNewRuleBlank}">
+            <div class="slds-p-vertical--medium slds-p-horizontal--large">
+                <div class="slds-wizard" role="navigation">
+                    <ol class="slds-wizard__list">
+                        <li class="slds-wizard__item {!IF(newRuleStep >= 1,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="Assignment">Assignment</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item {!IF(newRuleStep >= 2,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="Criteria">Criteria</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item {!IF(newRuleStep >= 3,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Assignment_Template__c.label}">Owner Template</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item {!IF(newRuleStep >= 4,'slds-is-active','')}">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate" title="{!$ObjectType.advpm__Assignment_Rule__c.fields.advpm__Additional_Notification_Template__c.label}">User Template</span>
+                            </a>
+                        </li>
+                    </ol>
+                    <span class="slds-wizard__progress">
+                        <span class="slds-wizard__progress-bar" style="width:{!((newRuleStep-1)*100)/3}%;"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="slds-p-vertical--medium slds-p-horizontal--large header">
+                <div class="content">
+                    <h3 class="slds-text-heading--medium slds-text-align--center">{!IF(newRuleStep == 1,'Select Assignment Fields',IF(newRuleStep == 2,'Select Criteria Fields',IF(newRuleStep == 3,'Select Owner Assignment Email Template','Select Additional User Assignment Email Template')))}</h3>
+                    <apex:outputPanel layout="none" rendered="{!newRuleStep == 1}">
+                        <p class="slds-text-align--center slds-m-top--small">Select the fields you would like to assign a value when each rule is met.</p>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!newRuleStep == 2}">
+                        <p class="slds-text-align--center slds-m-top--small">Select the fields you would like to evaluate when determining an assignment.</p>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!newRuleStep == 3}">
+                        <p class="slds-text-align--center slds-m-top--small">Select an email template to use when notifying the Owner of a new record assignment.</p>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!newRuleStep == 4}">
+                        <p class="slds-text-align--center slds-m-top--small">Select an email template to use when notifying user assignments, other than the Owner.</p>
+                    </apex:outputPanel>
+                </div>
+            </div>
+            <div class="step-content slds-p-horizontal--large">
+                <!-- Step 1: Assignment fields selection -->
+                <apex:outputPanel layout="block" styleClass="{!IF(newRuleStep == 1,'','slds-hide')}">
+                    <div class="new-rule-field-selection content slds-p-top--medium">
+                        <div class="slds-dropdown slds-dropdown-trigger slds-is-open">
+                            <div class="" style="margin:5px 10px;">
+                                <div class="slds-input-has-icon slds-input-has-icon--left">
+                                    <img class="slds-input__icon slds-icon-text-default" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/search_60.png')}" />
+                                    <input id="search-droplist" class="slds-input search-droplist" type="text" placeholder="Search fields..." onkeyup="doFieldsSearch(this);" />
+                                </div>
+                            </div>
+                            <ul class="dropdown__list slds-scrollable--y wizard-fields-list-assign" role="menu" style="max-height: 300px;overflow-y: auto;">
+                                <li class="slds-dropdown__header" role="separator">
+                                    <span class="slds-text-title--caps">User Fields</span>
+                                </li>
+                                <apex:repeat value="{!assignFields}" var="fl">
+                                    <apex:outputPanel layout="none" rendered="{!fl.datatype == 'USER'}">
+                                    <li class="slds-dropdown__item" data-key="{!fl.name}" data-label="{!fl.label}">
+                                        <a href="javascript:void(0)" role="menuitemradio" onclick="action_NewRuleFieldSelection(this, '{!fl.name}');return false;">
+                                            <span class="slds-truncate">
+                                                <img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/check_60.png')}" />
+                                                <span class="opt-text">{!fl.label}</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                                <li class="slds-dropdown__header" role="separator">
+                                    <span class="slds-text-title--caps">Other Fields</span>
+                                </li>
+                                <apex:repeat value="{!assignFields}" var="fl">
+                                    <apex:outputPanel layout="none" rendered="{!fl.datatype == ''}">
+                                    <li class="slds-dropdown__item" data-key="{!fl.name}" data-label="{!fl.label}">
+                                        <a href="javascript:void(0)" role="menuitemradio" onclick="action_NewRuleFieldSelection(this, '{!fl.name}');return false;">
+                                            <span class="slds-truncate">
+                                                <img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/check_60.png')}" />
+                                                <span class="opt-text">{!fl.label}</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    </apex:outputPanel>
+                                </apex:repeat>
+                            </ul>
+                        </div>
+                        <span class="hidden-field-list">
+                            <apex:selectList size="10" multiselect="true" value="{!selectedAssignment}" id="wizard-fields-list-hd-assign">
+                                <apex:selectOptions value="{!assignFields_SO}" />
+                            </apex:selectList>
+                        </span>
+                    </div>
+                </apex:outputPanel>
+                <!-- Step 2: Criteria fields selection -->
+                <apex:outputPanel layout="block" styleClass="{!IF(newRuleStep == 2,'','slds-hide')}">
+                    <div class="new-rule-field-selection content slds-p-top--medium">
+                        <div class="slds-dropdown slds-dropdown-trigger slds-is-open">
+                            <div class="" style="margin:5px 10px;">
+                                <div class="slds-input-has-icon slds-input-has-icon--left">
+                                    <img class="slds-input__icon slds-icon-text-default" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/search_60.png')}" />
+                                    <input id="search-droplist" class="slds-input search-droplist" type="text" placeholder="Search fields..." onkeyup="doFieldsSearch(this);" />
+                                </div>
+                            </div>
+                            <ul class="dropdown__list slds-scrollable--y wizard-fields-list-criteria" role="menu" style="max-height: 300px;overflow-y: auto;">
+                                <apex:repeat value="{!criteriaFields}" var="fl">
+                                    <li class="slds-dropdown__item" data-key="{!fl.value}" data-label="{!fl.label}">
+                                        <a href="javascript:void(0)" role="menuitemradio" onclick="action_NewRuleFieldSelection(this, '{!fl.value}');return false;">
+                                            <span class="slds-truncate">
+                                                <img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/check_60.png')}" />
+                                                <span class="opt-text">{!fl.label}</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </apex:repeat>
+                            </ul>
+                        </div>
+                        <span class="hidden-field-list">
+                            <apex:selectList size="10" multiselect="true" value="{!selectedCriteria}" id="wizard-fields-list-hd-criteria">
+                                <apex:selectOptions value="{!criteriaFields}" />
+                            </apex:selectList>
+                        </span>
+                    </div>
+                </apex:outputPanel>
+                <!-- Step 3: Assignment Template selection -->
+                <apex:outputPanel layout="block" styleClass="{!IF(newRuleStep == 3,'','slds-hide')}">
+                    <div class="content slds-p-top--medium">
+                        <div class="slds-text-align--center slds-m-top--small">
+                            <apex:inputHidden value="{!assignmentTemplate}" />
+                            <input type="text" class="template-select" value="{!assignmentTemplate}" />
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <!-- Step 4: Notification Template selection -->
+                <apex:outputPanel layout="block" styleClass="{!IF(newRuleStep == 4,'','slds-hide')}">
+                    <div class="content slds-p-top--medium">
+                        <div class="slds-text-align--center slds-m-top--small">
+                            <apex:inputHidden value="{!notificationTemplate}" />
+                            <input type="text" class="template-select" value="{!notificationTemplate}" />
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </div>
+            <div class="footer">
+                <apex:actionStatus id="newrule-loading-status">
+                    <apex:facet name="start">
+                        <apex:outputPanel >
+                            <div class="slds-float--left">
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="rule-button" rendered="{!newRuleStep > 1}" />
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="rule-button" style="margin-left:0.4em;" />
+                            </div>
+                            <div class="slds-float--right">
+                                <apex:commandButton value="{!$Label.advpm__button_processing}" disabled="true" styleClass="rule-button" />
+                            </div>
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <apex:facet name="stop">
+                        <apex:outputPanel >
+                            <div class="slds-float--left">
+                                <apex:commandButton value="Back" onclick="newRuleStepAction(-1);return false;" styleClass="rule-button" rendered="{!newRuleStep > 1}" />
+                                <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="rule-button" style="margin-left:0.4em;" />
+                            </div>
+                            <div class="slds-float--right">
+                                <apex:commandButton value="{!IF(newRuleStep == 4,'Finish','Next')}" onclick="newRuleStepAction(1);return false;" styleClass="rule-button rule-button-brand" />
+                            </div>
+                        </apex:outputPanel>
+                    </apex:facet>
+                </apex:actionStatus>
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    
+    <div style="display:none;">
+        <table id="maingrid_export" cellspacing="0" width="100%">
+            <thead id="gridhead_export">
+                <tr class="headergroup_export"></tr>
+                <tr class="headercell_export"></tr>
+            </thead>
+            <tbody id="gridrows_export">
+                
+            </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">
+        function generateTableHtml_export() {
+            init_tableStructure_export();
+            addTableHeaderGroup_export();
+            for (var i = 0; i < colsAssign.columns.length; i++) {
+                addTableHeaderColumn_export( colsAssign.columns[i], 'header_assign_column' );
+            }
+            for (var i = 0; i < colsCriteria.columns.length; i++) {
+                addTableHeaderColumn_export( colsCriteria.columns[i], 'header_criteria_column' );
+            }
+            for (var i = 0; i < colsAssign.dataRows.length; i++) {
+                var newRow = $('<tr>', { "id": "row-"+i });
+                for(var j = 0;j<(colsAssign.columns.length);j++) {
+                    var col = colsAssign.columns[j];
+                    var d = [''];
+                    if (j < colsAssign.dataRows[i].length)
+                        d = colsAssign.dataRows[i][j].split('#advseperator#');
+                    newRow.append('<td >'+d[0]+'</td>');
+                }
+                for(var j = 0;j<(colsCriteria.columns.length);j++) {
+                    var col = colsCriteria.columns[j];
+                    var d = [''];
+                    if (j < colsCriteria.dataRows[i].length)
+                        d = colsCriteria.dataRows[i][j].split('#advseperator#');
+                    newRow.append('<td >'+d[0]+'</td>');
+                }
+                $("#maingrid_export tbody").append(newRow);
+            }
+            if ($("#maingrid_export tbody tr").length==0) {
+                var newRow = $('<tr>', { "id": "row-0" });
+                for(var j=0;j<(colsAssign.columns.length);j++) {
+                    newRow.append('<td></td>');
+                }
+                for(var j=0;j<(colsCriteria.columns.length);j++) {
+                    newRow.append('<td></td>');
+                }
+                $("#maingrid_export tbody").append(newRow);
+            }
+        }
+        function addTableHeaderGroup_export(){
+            for (var i = 0; i < colsAssign.columns.length; i++) {
+                var h = '';
+                if (i == 0)
+                    h = 'Assignment';
+                $('.headergroup_export').append('<th>'+h+'</th>');
+            }
+            for (var i = 0; i < colsCriteria.columns.length; i++) {
+                var h = '';
+                if (i == 0)
+                    h = 'Criteria';
+                $('.headergroup_export').append('<th>'+h+'</th>');
+            }
+        }
+        function init_tableStructure_export() {
+            $('.headergroup_export').html('');
+            $('.headercell_export').html('');
+            $('#gridrows_export').html('');
+        }
+        function addTableHeaderColumn_export(col, cls){
+            $('.headercell_export').append('<th class="'+cls+'">'+col.label+'</th>');
+        }
+        function exportTableToCSV($table, filename) {
+            var $headers = $table.find('tr:has(th)')
+                ,$rows = $table.find('tr:has(td)')
+
+                // Temporary delimiter characters unlikely to be typed by keyboard
+                // This is to avoid accidentally splitting the actual contents
+                ,tmpColDelim = String.fromCharCode(11) // vertical tab character
+                ,tmpRowDelim = String.fromCharCode(0) // null character
+
+                // actual delimiter characters for CSV format
+                ,colDelim = '","'
+                ,rowDelim = '"\r\n"';
+
+                // Grab text from table into CSV formatted string
+                var csv = '"';
+                csv += formatRows($headers.map(grabRow));
+                csv += rowDelim;
+                csv += formatRows($rows.map(grabRow)) + '"';
+
+                // Data URI
+                var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+            // For IE (tested 10+)
+            if (window.navigator.msSaveOrOpenBlob) {
+                var blob = new Blob([decodeURIComponent(encodeURI(csv))], {
+                    type: "text/csv;charset=utf-8;"
+                });
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                $(this)
+                    .attr({
+                        'download': filename
+                        ,'href': csvData
+                        //,'target' : '_blank' //if you want it to open in a new window
+                });
+            }
+
+            //------------------------------------------------------------
+            // Helper Functions 
+            //------------------------------------------------------------
+            // Format the output so it has the appropriate delimiters
+            function formatRows(rows){
+                return rows.get().join(tmpRowDelim)
+                    .split(tmpRowDelim).join(rowDelim)
+                    .split(tmpColDelim).join(colDelim);
+            }
+            // Grab and format a row from the table
+            function grabRow(i,row){
+                 
+                var $row = $(row);
+                //for some reason $cols = $row.find('td') || $row.find('th') won't work...
+                var $cols = $row.find('td'); 
+                if(!$cols.length) $cols = $row.find('th');  
+
+                return $cols.map(grabCol)
+                            .get().join(tmpColDelim);
+            }
+            // Grab and format a column from the table 
+            function grabCol(j,col){
+                var $col = $(col),
+                    $text = $col.text();
+                return $text.replace('"', '""'); // escape double quotes
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $.fn.removeDuplicates = function () {
+            this.each(function (i, element) {
+                var arr = [],
+                classList = $(element).attr("class").split(" ");
+                $.each(classList, function (i, item) {
+                    if (arr.indexOf(item) < 0)
+                        arr.push(item);
+                });
+                $(this).attr("class", arr.join(" "));
+            });
+        }
+        Array.prototype.removeItem = function(name, value){
+            var array = $.map(this, function(v,i){
+                return v[name] === value ? null : v;
+            });
+            this.length = 0; //clear original array
+            this.push.apply(this, array); //push all elements except the one we want to delete
+        }
+        Array.prototype.moveItem = function(old_index, new_index) {
+            var temp = this[indexA];
+            this[indexA] = this[indexB];
+            this[indexB] = temp;
+        };
+        Array.prototype.moveUp = function (value, by) {
+            var index = this.indexOf(value),
+                newPos = index - (by || 1);
+            if (index === -1)
+                throw new Error("Element not found in array");
+            if (newPos < 0)
+                newPos = 0;
+            this.splice(index, 1);
+            this.splice(newPos, 0, value);
+        };
+        Array.prototype.moveDown = function (value, by) {
+            var index = this.indexOf(value),
+                newPos = index + (by || 1);
+            if (index === -1)
+                throw new Error("Element not found in array");
+            if (newPos >= this.length)
+                newPos = this.length;
+            this.splice(index, 1);
+            this.splice(newPos, 0, value);
+        };
+        
+        function loading(showLoading) {
+            document.getElementById('contentLoading').style.display = (showLoading ? 'inline-block' : 'none');
+        }
+        function action_NewRuleFieldSelection(ele, val) {
+            var $options = $(ele).parent().parent().parent().parent().find('.hidden-field-list select option');
+            var sel = $(ele).parent().hasClass('slds-is-selected');
+            $options.filter('[value="'+val+'"]').prop('selected', !sel);
+            if (sel == true)
+                $(ele).parent().removeClass('slds-is-selected');
+            else
+                $(ele).parent().addClass('slds-is-selected');
+        }
+        function init_NewRuleFieldSelection() {
+            $('.new-rule-field-selection').each(function(i, el){
+                var $options = $(el).find('.hidden-field-list select option');
+                var $li = $(el).find('.dropdown__list li');
+                for(i=0; i < $options.length; i++){
+                    var sel = $($options[i]).prop('selected');
+                    if (sel == true)
+                        $li.filter('[data-key="'+$options[i].value+'"]').addClass('slds-is-selected');
+                    else
+                        $li.filter('[data-key="'+$options[i].value+'"]').removeClass('slds-is-selected');
+                }
+            });
+        }
+        function refreshFieldsJSONData() {
+            colsAssign.dataRows.length = 0;
+            colsCriteria.dataRows.length = 0;
+            
+            table.rows().every( function ( rowIndex, tableLoop, rowLoop ){
+                var data = this.data();
+                var rowNode = this.node();
+                var cells = $(rowNode).find('td');
+                
+                var colsAssignData = [];
+                for (var i=0; i<colsAssign.columns.length; i++) {
+                    if (colsAssign.columns[i].datatype=="reference" || colsAssign.columns[i].datatype=="picklist" || colsAssign.columns[i].datatype=="multipicklist") {
+                        var refdata = $('<span>'+data[2+i]+'</span>');
+                        var title = refdata.find('.cLabel').not('.adv-error').text();
+                        var refid = refdata.find('.cData').text();
+                        var cdata = refid;
+                        if (colsAssign.columns[i].datatype=="reference" && title != '' && title != 'undefined')
+                            cdata += '#advseperator#' + title;
+                        colsAssignData.push( cdata );
+                    }
+                    else
+                        colsAssignData.push( data[2+i] );
+                }
+                colsAssign.dataRows.push( colsAssignData );
+                
+                var colsCriteriaData = [];
+                for (var i=0; i<colsCriteria.columns.length; i++) {
+                    if (colsCriteria.columns[i].datatype=="reference") {
+                        var refdata = $('<span>'+data[2+colsAssign.columns.length+i]+'</span>');
+                        var title = refdata.find('.cLabel').not('.adv-error').text();
+                        var refid = refdata.find('.cData').text();
+                        var cdata = refid;
+                        if (title != '' && title != 'undefined')
+                            cdata += '#advseperator#' + title;
+                        colsCriteriaData.push( cdata );
+                    }
+                    else
+                        colsCriteriaData.push( data[2+colsAssign.columns.length+i] );
+                }
+                colsCriteria.dataRows.push( colsCriteriaData );
+                
+            });
+            
+            document.getElementById('{!$Component.frm.fldAssign_tmp}').value = JSON.stringify(colsAssign);
+            document.getElementById('{!$Component.frm.fldCriteria_tmp}').value = JSON.stringify(colsCriteria);
+        }
+        function doTextSave() {
+            _isDirty = false;
+            refreshFieldsJSONData();
+            
+            document.getElementById('{!$Component.frm.fldAssign}').value = document.getElementById('{!$Component.frm.fldAssign_tmp}').value;
+            document.getElementById('{!$Component.frm.fldCriteria}').value = document.getElementById('{!$Component.frm.fldCriteria_tmp}').value;
+            
+            SaveRule();
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            _isDirty = false;
+            initEmailTemplatePicker();
+            initRuleEditor();
+            init_NewRuleFieldSelection();
+            $(".export").on('click', function (event) {
+                generateTableHtml_export();
+                exportTableToCSV.call(this, $('#maingrid_export'), 'AssignmentRuleSet ({!advpm__Assignment_Rule__c.Id}).csv');
+            });
+            
+            $('.slds-page-header').on('click', '.slds-dropdown-trigger--click', function(e){
+                e.preventDefault();
+                showDropMenu($(this));
+            });
+            $('.slds-page-header').on('click', '.slds-dropdown', function(e){
+                e.stopPropagation();
+            });
+            $(document).on('click', function(e) {
+                if($(e.target).closest('.slds-is-open').length != 0) return false;
+                $('.slds-is-open').removeClass('slds-is-open');
+            });
+        });
+        $(window).on('beforeunload', function () {
+            if (_isDirty) {
+                return 'Changes you made will not be saved.';
+            }
+        });
+        
+        var rule_assignBody,
+            rule_criteriaBody,
+            colsAssign,
+            colsCriteria,
+            jsonPicklists,
+            jsonFieldsAssign,
+            jsonFieldsCriteria,
+            colsDef,
+            rowTemplate,
+            colsEditType,
+            table,
+            colsAssign_added,
+            colsCriteria_added,
+            _isDirty;
+        
+        function initJSONVars() {
+            rule_assignBody = document.getElementById('{!$Component.frm.fldAssign}').value;
+            rule_criteriaBody = document.getElementById('{!$Component.frm.fldCriteria}').value;
+            
+            if (rule_assignBody == '' || rule_assignBody == 'null' || rule_assignBody == null) {
+                rule_assignBody = '{"columns":[],"dataRows":[]}';
+            }
+            if (rule_criteriaBody == '' || rule_criteriaBody == 'null' || rule_criteriaBody == null) {
+                rule_criteriaBody = '{"columns":[],"dataRows":[]}';
+            }
+            
+            colsAssign = JSON.parse( rule_assignBody );
+            colsCriteria = JSON.parse( rule_criteriaBody );
+            jsonPicklists = JSON.parse("{!JSENCODE(jsonPicklists)}");
+            jsonFieldsAssign = JSON.parse("{!JSENCODE(jsonFieldsAssign)}");
+            jsonFieldsCriteria = JSON.parse("{!JSENCODE(jsonFieldsCriteria)}");
+            
+            colsDef  = [{
+                            "class": "index_column noedit",
+                            "targets": 0,
+                            "visible": false
+                        },{
+                            "class": "action_column noedit",
+                            "width": "70px",
+                            "targets": 1,
+                            "data": null,
+                            "defaultContent": 
+                                '<div class="adv-slds">'+ 
+                                '<a href="javascript:void(0);" class="action_add slds-button slds-button--icon" title="Add Rule"><img class="slds-button__icon" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/add_60.png')}" style="vertical-align:middle;"></a>' +
+                                '<a href="javascript:void(0);" class="action_del slds-button slds-button--icon" title="Delete Rule"><img class="slds-button__icon" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/close_60.png')}" style="vertical-align:middle;"></a>' +
+                                '<a href="javascript:void(0);" class="action_move_up slds-button slds-button--icon" title="Move Up"><img class="slds-button__icon" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/arrowup_60.png')}" style="vertical-align:middle;"></a>' +
+                                '<a href="javascript:void(0);" class="action_move_down slds-button slds-button--icon" title="Move Down"><img class="slds-button__icon" src="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/arrowdown_60.png')}" style="vertical-align:middle;"></a>' +
+                                '</div>'
+                        }/*,
+                        { 
+                            "targets": "_all", 
+                            "width": "'"+(100/(2 + colsAssign.columns.length + colsCriteria.columns.length))+"%'"
+                        }*/];
+            
+            rowTemplate = ['',''];
+            colsEditType = [];
+            table;
+            colsAssign_added = {};
+            colsCriteria_added = {};
+        }
+        
+        function initDataTable() {
+            table = $('#maingrid').DataTable({
+                        "autoWidth": false,
+                        "info": false,
+                        "ordering": false,
+                        "searching": false,
+                        "lengthChange": false,
+                        "conditionalPaging": true,
+                        "pageLength": 50,
+                        "rowReorder": {
+                            selector: 'tr td a.action_move'//,
+                            //update: false
+                        },
+                        "columnDefs": colsDef,
+                        "drawCallback": function ( settings ) {
+                            initTooltips( $('#maingrid .adv-error img[title][data-datatype=reference]') );
+                        }
+                    });
+            table.MakeCellsEditable({
+                "onUpdate": myCellUpdateCallbackFunction,
+                "inputTypes": colsEditType
+            });
+            $("#maingrid tbody tr td:first-child").removeDuplicates();
+        }
+        function initTooltips(selector) {
+            var mult = selector.hasClass('tooltipstered');
+            if (mult) {
+                selector.tooltipster('content', selector.attr('title'));
+            }
+            selector.tooltipster({
+                //theme: 'tooltipster-shadow',
+                theme: ['tooltipster-shadow', 'tooltipster-shadow-customized'],
+                distance: 1,
+                delay: 200,
+                animationDuration: 200,
+                side: 'left',
+                multiple: mult,
+                interactive: true,
+                content: $('#tooltip_content'),
+                contentCloning: true
+            });
+        }
+        function initArrayData() {
+            rowTemplate.length = 0;
+            rowTemplate = ['',''];
+            colsEditType.length = 0;
+            colsAssign_added = {};
+            colsCriteria_added = {};
+            
+            for (var i=0; i<colsAssign.columns.length; i++) {
+                rowTemplate.push('');
+                var col = colsAssign.columns[i];
+                colsAssign_added[col.field] = true;
+                if (col.datatype=="picklist") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "list",
+                                    "options": jsonPicklists[col.field]
+                                });
+                }
+                else if (col.datatype=="multipicklist") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "multilist",
+                                    "options": jsonPicklists[col.field]
+                                });
+                }
+                else if (col.datatype=="reference") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "select2",
+                                    "options": [{"objname":col.objname, "field": col.field, "sobjtype": 'advpm__Matter__c'}]
+                                });
+                }
+                else if (col.datatype=="boolean") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "boolean",
+                                    "options": null
+                                });
+                }
+                
+                else if (col.datatype=="date") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "date",
+                                    "options": null
+                                });
+                }
+                else if (col.datatype=="datetime") {
+                    colsEditType.push({
+                                    "column": 2+i, 
+                                    "type": "datetime",
+                                    "options": null
+                                });
+                }
+            }
+            for (var i=0; i<colsCriteria.columns.length; i++) {
+                rowTemplate.push('');
+                var col = colsCriteria.columns[i];
+                colsCriteria_added[col.field] = true;
+                if (col.datatype=="picklist") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "list",
+                                    "options": jsonPicklists[col.field],
+                                    "showOperator": true
+                                });
+                }
+                else if (col.datatype=="multipicklist") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "multilist",
+                                    "options": jsonPicklists[col.field],
+                                    "showOperator": true
+                                });
+                }
+                else if (col.datatype=="reference") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "select2",
+                                    "options": [{"objname":col.objname, "field": col.field, "sobjtype": 'advpm__Matter__c'}]
+                                });
+                }
+                else if (col.datatype=="currency" || col.datatype=="percent" || col.datatype=="number" || col.datatype=="double" || col.datatype=="integer") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "number",
+                                    "options": null,
+                                    "showOperator": true
+                                });
+                }
+                else if (col.datatype=="boolean") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "boolean",
+                                    "options": null
+                                });
+                }
+                else if (col.datatype=="date") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "date",
+                                    "options": null,
+                                    "showOperator": true
+                                });
+                }
+                else if (col.datatype=="datetime") {
+                    colsEditType.push({
+                                    "column": 2+colsAssign.columns.length+i, 
+                                    "type": "datetime",
+                                    "options": null,
+                                    "showOperator": true
+                                });
+                }
+            }
+        }
+        function showDropMenu(ele){
+            var opened = false;
+            if($(ele).hasClass('slds-is-open')){
+                $(ele).removeClass('slds-is-open');
+                opened = true;
+            }
+            $('.slds-dropdown-trigger--click').each(function(){
+                if($(this).hasClass('slds-is-open')){
+                    $(this).removeClass('slds-is-open');
+                }
+            });
+            if(!opened){
+                $(ele).addClass('slds-is-open');
+                $(ele).find('.slds-dropdown').find('input.slds-input').focus();
+            }
+        }
+        function initEmailTemplatePicker(){
+            $('.template-select').select2({
+                placeholder: 'Select ...',
+                minimumInputLength: 0,
+                allowClear: true,
+                ajax: {
+                    url: "{!$Page.JSONData}",
+                    quietMillis: 100,
+                    data: function (term, page) {
+                        return {
+                            q: term,
+                            obj: 'EmailTemplate',
+                            page_limit: 5,
+                            page: 1
+                        };
+                    },
+                    results: function (data, page) { 
+                        return {results: data.results, more: false};
+                    }
+                },
+                initSelection: function(element, callback) {
+                    var id=$(element).val();
+                    if (id != '') { $.ajax("{!$Page.JSONData}", { data: { objid: id, obj: 'EmailTemplate' } }).done(function(data) {var d = JSON.parse(data); callback( d.results[0] ); }); }
+                }
+            }).on("change", function(e) {
+                $(this).siblings('input:hidden').val( $(this).val() );
+            });
+        }
+        function initRuleEditor(){
+            if ({!!isNewRuleBlank}) {
+                initJSONVars();
+                initArrayData();
+                generateTableHtml();
+                initDataTable();
+                
+                $('#maingrid').on('click', '.slds-dropdown-trigger--click', function(e){
+                    e.preventDefault();
+                    showDropMenu($(this));
+                });
+                $('#maingrid').on('click', '.slds-dropdown', function(e){
+                    e.stopPropagation();
+                });
+                
+                var counter = 1;
+                
+                $('#maingrid').on( 'click', 'a.action_add', function(){
+                    _isDirty = true;
+                    var currentPage = table.page();
+                    var index = table.row( $(this).closest('tr') ).index();
+                    
+                    table.MakeCellsEditable("destroy");
+                    table.destroy();
+                    
+                    var rowid = addNewRow(index);
+                    initDataTable();
+                    $('tr#row-'+rowid+' td:eq(1)').trigger("click");
+                    
+                    //refresh the page
+                    table.page(currentPage).draw( false );
+                });
+                
+                $('#maingrid').on( 'click', 'a.action_del', function(){
+                    if (confirm('Are you sure you want to delete this rule?')) { _isDirty = true; table.row( $(this).closest('tr') ).remove().draw( false ); }
+                });
+                
+                $('#maingrid').on( 'click', 'a.action_move_up', function(){
+                    _isDirty = true;
+                    var currentPage = table.page();
+                    var index = table.row( $(this).closest('tr') ).index();
+                    if (index <= 0) return;
+                    
+                    var row = $(this).closest('tr');
+                    
+                    //console.log('moving row up ... '+index);
+                    //console.log(row);
+                    row.prev().before(row);
+                    //row.next().after(row);
+                    
+                    //console.log(colsAssign.dataRows[index]);
+                    
+                    colsAssign.dataRows.moveUp(colsAssign.dataRows[index]);
+                    colsCriteria.dataRows.moveUp(colsCriteria.dataRows[index]);
+                    
+                    //console.log(colsAssign.dataRows[index]);
+                    var row1Data = table.row(index-1).data();
+                    var row2Data = table.row(index).data();
+                    
+                    var row1Cells = $(table.row(index-1).node()).find('td[data-datatype=reference]');
+                    var row2Cells = $(table.row(index).node()).find('td[data-datatype=reference]');
+                    
+                    table.row(index-1).data(row2Data);
+                    table.row(index).data(row1Data);
+                    
+                    row2Cells.each(function(idx, ele){
+                        var row1Tip = $(row1Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content');
+                        var row2Tip = $(row2Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content');
+                        $(row1Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content', row2Tip);
+                        $(row2Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content', row1Tip);
+                    });
+                    
+                    //refresh the page
+                    table.page(currentPage).draw( false );
+                });
+                
+                $('#maingrid').on( 'click', 'a.action_move_down', function(){
+                    _isDirty = true;
+                    var currentPage = table.page();
+                    var index = table.row( $(this).closest('tr') ).index();
+                    if (index >= table.data().count()-1) return;
+                    
+                    var row = $(this).closest('tr');
+                    
+                    //console.log('moving row up ... '+index);
+                    //console.log(row);
+                    //row.prev().before(row);
+                    row.next().after(row);
+                    
+                    //console.log(colsAssign.dataRows[index]);
+                    
+                    colsAssign.dataRows.moveDown(colsAssign.dataRows[index]);
+                    colsCriteria.dataRows.moveDown(colsCriteria.dataRows[index]);
+                    
+                    var row1Data = table.row(index+1).data();
+                    var row2Data = table.row(index).data();
+                    
+                    var row1Cells = $(table.row(index+1).node()).find('td[data-datatype=reference]');
+                    var row2Cells = $(table.row(index).node()).find('td[data-datatype=reference]');
+                    
+                    table.row(index+1).data(row2Data);
+                    table.row(index).data(row1Data);
+                    
+                    row2Cells.each(function(idx, ele){
+                        var row1Tip = $(row1Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content');
+                        var row2Tip = $(row2Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content');
+                        $(row1Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content', row2Tip);
+                        $(row2Cells[idx]).find('img[title][data-datatype=reference]').tooltipster('content', row1Tip);
+                    });
+                    
+                    //refresh the page
+                    table.page(currentPage).draw( false );
+                });
+                
+                $('#maingrid').on('row-reorder.dt', function(e, diff, edit) {
+                    _isDirty = true;
+                    console.log(diff[0].node);
+                    var oldIndex = diff[0].oldPosition;
+                    var newIndex = diff[0].newPosition;
+                    var tr = $(diff[0].node);
+                    
+                    for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+                        console.log(  'row #'+diff[i].node._DT_RowIndex+
+                                      ' moved from pos '+diff[i].oldPosition+
+                                      ' to pos '+diff[i].newPosition  );
+                    }
+                });
+            }
+        }
+        function myCellUpdateCallbackFunction(updatedCell, updatedRow, oldValue) {
+            //console.log("The new value for the cell is: " + updatedCell.data());
+            //console.log("The old value for that cell was: " + oldValue);
+            //console.log("The values for each cell in that row are: " + updatedRow.data());
+            setTimeout(refreshFieldsJSONData, 100);
+        }
+    </script>
+    <script type="text/javascript">
+        function generateTableHtml() {
+            addTableHeaderGroup();
+            for (var i = 0; i < colsAssign.columns.length; i++) {
+                addTableHeaderColumn( colsAssign.columns[i], 'header_assign_column' );
+            }
+            for (var i = 0; i < colsCriteria.columns.length; i++) {
+                addTableHeaderColumn( colsCriteria.columns[i], 'header_criteria_column' );
+            }
+            
+            for (var i = 0; i < colsAssign.dataRows.length; i++) {
+                var newRow = $('<tr>', { "id": "row-"+i });
+                newRow.append('<td>'+(i)+'</td>');//index column
+                newRow.append('<td nowrap="nowrap"></td>');//action column
+                for(var j = 0;j<(colsAssign.columns.length);j++) {
+                    var col = colsAssign.columns[j];
+                    var d = [''];
+                    if (j < colsAssign.dataRows[i].length)
+                        d = colsAssign.dataRows[i][j].split('#advseperator#');
+                    if (col.datatype === 'reference') {
+                        if (d.length>1)
+                            newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel">'+d[1]+'</div></td>');
+                        else {
+                            var im_sv = '<svg aria-hidden="true" class="slds-icon slds-icon--x-small">' +
+                                        '    <use xlink:href="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}"></use>' +
+                                        '</svg>';
+                            var im = "<img class=\"slds-icon slds-icon--x-small slds-icon-text-default\" src=\"{!URLFOR($Resource.images, 'img/warning_brickred_60.png')}\" data-datatype=\""+col.datatype+"\" title=\"Error: Record not found\" data-title=\"Error: Record not found\" />";
+                            var icn = '';
+                            if (d[0] != '')
+                                icn = '<span class="adv-slds slds-icon_container">'+im+'</span>&nbsp;';
+                            if (icn != '')
+                                newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel adv-error adv-error-nomatch">'+icn+d[0]+'</div></td>');
+                            else
+                                newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel">'+d[0]+'</div></td>');
+                        }
+                    }
+                    else
+                        newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'" '+(d.length>1 ? 'title="'+d[1]+'" data-title="'+d[1]+'"' : '')+'>'+d[0]+'</td>');
+                }
+                for(var j = 0;j<(colsCriteria.columns.length);j++) {
+                    var col = colsCriteria.columns[j];
+                    var d = [''];
+                    if (j < colsCriteria.dataRows[i].length)
+                        d = colsCriteria.dataRows[i][j].split('#advseperator#');
+                    if (col.datatype === 'reference') {
+                        if (d.length>1)
+                            newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel">'+d[1]+'</div></td>');
+                        else {
+                            var im_sv = '<svg aria-hidden="true" class="slds-icon slds-icon--x-small">' +
+                                        '    <use xlink:href="{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}"></use>' +
+                                        '</svg>';
+                            var im = "<img class=\"slds-icon slds-icon--x-small slds-icon-text-default\" src=\"{!URLFOR($Resource.images, 'img/warning_brickred_60.png')}\" data-datatype=\""+col.datatype+"\" title=\"Error: Record not found\" data-title=\"Error: Record not found\" />";
+                            var icn = '';
+                            if (d[0] != '')
+                                icn = '<span class="adv-slds slds-icon_container">'+im+'</span>&nbsp;';
+                            if (icn != '')
+                                newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel adv-error adv-error-nomatch">'+icn+d[0]+'</div></td>');
+                            else
+                                newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'"><div class="cData">'+d[0]+'</div><div class="cLabel">'+d[0]+'</div></td>');
+                        }
+                    }
+                    else
+                        newRow.append('<td nowrap="nowrap" data-datatype="'+col.datatype+'" '+(d.length>1 ? 'title="'+d[1]+'" data-title="'+d[1]+'"' : '')+'>'+d[0]+'</td>');
+                }
+                $("#maingrid tbody").append(newRow);
+            }
+            if ($("#maingrid tbody tr").length==0) {
+                var newRow = $('<tr>', { "id": "row-0" });
+                newRow.append('<td>0</td>');//index column
+                newRow.append('<td nowrap="nowrap"></td>');//action column
+                for(var j=0;j<(colsAssign.columns.length);j++) {
+                    newRow.append('<td nowrap="nowrap" data-datatype="'+colsAssign.columns[j].datatype+'"></td>');
+                }
+                for(var j=0;j<(colsCriteria.columns.length);j++) {
+                    newRow.append('<td nowrap="nowrap" data-datatype="'+colsCriteria.columns[j].datatype+'"></td>');
+                }
+                $("#maingrid tbody").append(newRow);
+                setTimeout(function(){
+                    $('tr#row-0 td:eq(1)').trigger("click");
+                },100);
+            }
+        }
+        function addTableHeaderGroup(){
+            $('.headergroup').append('<th rowspan="2" class="header_index">#</th>')
+                             .append('<th rowspan="2" class="header_action">Action</th>')
+                             .append('<th colspan="'+colsAssign.columns.length+'" class="header_assign"><span class="adv-slds" id="col_setup_assign" style="float:right;"></span>Assignment</th>')
+                             .append('<th colspan="'+colsCriteria.columns.length+'" class="header_criteria"><span class="adv-slds" id="col_setup_criteria" style="float:right;"></span>Criteria</th>');
+            AddColumnMenu();
+        }
+        function addTableHeaderColumn(col, cls){
+            $('.headercell').append('<th class="'+cls+'">'+col.label+'</th>');
+        }
+        function addNewRow(index) {
+            var max = 0;
+            $('.index_column').each(function() {
+               $this = parseInt( $(this).text() );
+               if ($this > max) max = $this;
+            });
+            
+            var newRow = $('<tr>', { "id": "row-"+(max+1) });
+            newRow.append('<td>'+(max+1)+'</td>');//index column
+            newRow.append('<td nowrap="nowrap"></td>');//action column
+            for(var j=0;j<colsAssign.columns.length;j++) {
+                newRow.append('<td nowrap="nowrap" data-datatype="'+colsAssign.columns[j].datatype+'"></td>');
+            }
+            for(var j=0;j<colsCriteria.columns.length;j++) {
+                newRow.append('<td nowrap="nowrap" data-datatype="'+colsCriteria.columns[j].datatype+'"></td>');
+            }
+            $("#maingrid tbody tr").eq(index).after(newRow);
+            
+            var newRowA = [];
+            for (var i = 0; i < colsAssign.columns.length; i++) {
+                newRowA.push('');
+            }
+            colsAssign.dataRows.push(newRowA);
+            
+            var newRowC = [];
+            for (var i = 0; i < colsCriteria.columns.length; i++) {
+                newRowC.push('');
+            }
+            colsCriteria.dataRows.push(newRowC);
+            
+            document.getElementById('{!$Component.frm.fldAssign_tmp}').value = JSON.stringify( colsAssign );
+            document.getElementById('{!$Component.frm.fldCriteria_tmp}').value = JSON.stringify( colsCriteria );
+            
+            return (max+1);
+        }
+        function doFieldsSearch(obj) {
+            var valThis = obj.value.toLowerCase();
+            
+            $(obj).parent().parent().parent().find('.dropdown__list > li.slds-dropdown__item').each(function () {
+                var text  = $(this).attr('data-label'),
+                    textL = text.toLowerCase();
+                (textL.indexOf(valThis) == 0) ? $(this).show() : $(this).hide();
+            });
+        }
+        function searchInputHtml(inputId) {
+            var search_img = '{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/search_60.png')}';
+            
+            var searchBox  = '<div class="" style="margin:5px;">';
+            searchBox     += '  <div class="slds-input-has-icon slds-input-has-icon--left">';
+            searchBox     += '    <img class="slds-input__icon slds-icon-text-default" src="'+search_img+'" />';
+            searchBox     += '    <input id="'+inputId+'" class="slds-input '+inputId+'" type="text" placeholder="Search fields..." onkeyup="doFieldsSearch(this);" />';
+            searchBox     += '  </div>';
+            searchBox     += '</div>';
+            
+            return searchBox;
+        }
+        function AddColumnMenu() {
+            var gear_img   = "{!URLFOR($Resource.images, 'img/settings_white_60.png')}";
+            var check_img  = '{!URLFOR($Resource.SLDS_ADV, 'assets/icons/utility/check_60.png')}';
+            
+            var col_menu_a = '<div class="slds-dropdown-trigger slds-dropdown-trigger--click">'+
+                                '<button class="slds-button slds-button--icon col-menu" aria-haspopup="true" title="Add/Remove Assignment Field">'+
+                                  '<img class="slds-button__icon" src="'+gear_img+'" style="vertical-align:middle;" />'+
+                                  '<span class="slds-assistive-text">Settings</span>'+
+                                '</button>'+
+                                '<div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right"><h3 class="slds-section-title--divider">Assignment Fields</h3>' + searchInputHtml('searchAssignFields') + 
+                                  '<ul class="dropdown__list slds-scrollable--y" role="menu" style="max-height: 400px;overflow-y: auto;">';
+            
+            
+            //Add User Assignment fields
+            col_menu_a  += '<li class="slds-dropdown__header slds-text-align--left" role="separator"><span class="slds-text-title--caps">User Fields</span></li>';
+            $.each(jsonFieldsAssign, function(i, el){
+                if (el.objname.toLowerCase() == 'user' || el.objname.toLowerCase() == 'user,group') {
+                    var li = '<li class="slds-dropdown__item '+(colsAssign_added[el.field]==true?'slds-is-selected':'')+'" data-label="'+el.label+'">'+
+                                '<a href="javascript:void(0)" role="menuitemradio" data-id="'+el.id+'" data-field="'+el.field+'" onclick="addColumnToDOM_assign(this, '+i+', true);return false;">'+
+                                    '<span class="slds-truncate">'+
+                                        '<img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="'+check_img+'" />'+
+                                        '<span class="opt-text">'+el.label+'</span>'+
+                                    '</span>'+
+                                '</a>'+
+                             '</li>';
+                    
+                    col_menu_a += li;
+                }
+            });
+            //Add Other Assignment fields
+            col_menu_a  += '<li class="slds-dropdown__header slds-text-align--left" role="separator"><span class="slds-text-title--caps">Other Fields</span></li>';
+            $.each(jsonFieldsAssign, function(i, el){
+                if (el.objname.toLowerCase() != 'user' && el.objname.toLowerCase() != 'user,group') {
+                    var li = '<li class="slds-dropdown__item '+(colsAssign_added[el.field]==true?'slds-is-selected':'')+'" data-label="'+el.label+'">'+
+                                '<a href="javascript:void(0)" role="menuitemradio" data-id="'+el.id+'" data-field="'+el.field+'" onclick="addColumnToDOM_assign(this, '+i+', true);return false;">'+
+                                    '<span class="slds-truncate">'+
+                                        '<img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="'+check_img+'" />'+
+                                        '<span class="opt-text">'+el.label+'</span>'+
+                                    '</span>'+
+                                '</a>'+
+                             '</li>';
+                    
+                    col_menu_a += li;
+                }
+            });
+            
+            col_menu_a +=         '</ul>'+
+                                '</div>'+
+                             '</div>';
+            
+            $('#col_setup_assign').html('');
+            $('#col_setup_assign').append( col_menu_a );
+            
+            var col_menu_c = '<div class="slds-dropdown-trigger slds-dropdown-trigger--click">'+
+                                '<button class="slds-button slds-button--icon col-menu" aria-haspopup="true" title="Add/Remove Criteria Field">'+
+                                  '<img class="slds-button__icon" src="'+gear_img+'" style="vertical-align:middle;" />'+
+                                  '<span class="slds-assistive-text">Settings</span>'+
+                                '</button>'+
+                                '<div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right"><h3 class="slds-section-title--divider">Criteria Fields</h3>' + searchInputHtml('searchCriteriaFields') +
+                                  '<ul class="dropdown__list slds-scrollable--y" role="menu" style="max-height: 400px;overflow-y: auto;">';
+                                    
+            $.each(jsonFieldsCriteria, function(i, el){
+                var li = '<li class="slds-dropdown__item '+(colsCriteria_added[el.field]==true?'slds-is-selected':'')+'" data-label="'+el.label+'">'+
+                            '<a href="javascript:void(0)" role="menuitemradio" data-id="'+el.id+'" data-field="'+el.field+'" onclick="addColumnToDOM_criteria(this, '+i+', false);return false;">'+
+                                '<span class="slds-truncate">'+
+                                    '<img class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" src="'+check_img+'" />'+
+                                    '<span class="opt-text">'+el.label+'</span>'+
+                                '</span>'+
+                            '</a>'+
+                         '</li>';
+                
+                col_menu_c += li;
+            });
+            col_menu_c +=         '</ul>'+
+                                '</div>'+
+                             '</div>';
+
+            $('#col_setup_criteria').html('');
+            $('#col_setup_criteria').append( col_menu_c );
+        }
+        function findColumnArrayIndex(array, attr, value) {
+            for(var i = 0; i < array.length; i += 1) {
+                if(array[i][attr] === value) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        function addColumnToDOM_assign(obj, index) {
+            _isDirty = true;
+            var parentObj = $(obj).parent();
+            var alreadyAdded = parentObj.hasClass('slds-is-selected');
+            var col = jsonFieldsAssign[index];
+            
+            if (alreadyAdded) {
+                if (colsAssign.columns.length <= 1) {
+                    alert('At least 1 field must remain in Assignment.');
+                    return;
+                }
+                
+                $(parentObj).removeClass('slds-is-selected');
+                
+                colsAssign_added[col.field] = false;
+                for (var i = 0; i < colsAssign.columns.length; i++) {
+                    if (col.field === colsAssign.columns[i].field) {
+                        for (var j = 0; j < colsAssign.dataRows.length; j++) {
+                            colsAssign.dataRows[j][i] = '';
+                            colsAssign.dataRows[j].splice(i, 1);
+                        }
+                    }
+                }
+                colsAssign.columns.removeItem( 'field', col.field );
+                
+                
+                initArrayData();
+                
+                var currentPage = table.page();
+                
+                table.MakeCellsEditable("destroy");
+                table.destroy();
+                
+                $('.headergroup').html('');
+                $('.headercell').html('');
+                $('#gridrows').html('');
+                
+                generateTableHtml();
+                initDataTable();
+                table.page(currentPage).draw( false );
+            }
+            else {
+                $(parentObj).addClass('slds-is-selected');
+                
+                colsAssign_added[col.field] = true;
+                colsAssign.columns.push( col );
+                for (var i = 0; i < colsAssign.dataRows.length; i++) {
+                    colsAssign.dataRows[i].push('');
+                }
+                
+                initArrayData();
+                
+                var currentPage = table.page();
+                
+                table.MakeCellsEditable("destroy");
+                table.destroy();
+                
+                $('.headergroup').html('');
+                $('.headercell').html('');
+                $('#gridrows').html('');
+                
+                generateTableHtml();
+                initDataTable();
+                table.page(currentPage).draw( false );
+            }
+        }
+        function addColumnToDOM_criteria(obj, index) {
+            _isDirty = true;
+            var parentObj = $(obj).parent();
+            var alreadyAdded = parentObj.hasClass('slds-is-selected');
+            var col = jsonFieldsCriteria[index];
+            
+            if (alreadyAdded) {
+                if (colsCriteria.columns.length <= 1) {
+                    alert('At least 1 field must remain in Criteria.');
+                    return;
+                }
+                
+                $(parentObj).removeClass('slds-is-selected');
+                
+                colsCriteria_added[col.field] = false;
+                for (var i = 0; i < colsCriteria.columns.length; i++) {
+                    if (col.field === colsCriteria.columns[i].field) {
+                        for (var j = 0; j < colsCriteria.dataRows.length; j++) {
+                            colsCriteria.dataRows[j][i] = '';
+                            colsCriteria.dataRows[j].splice(i, 1);
+                        }
+                    }
+                }
+                colsCriteria.columns.removeItem( 'field', col.field );
+                
+                initArrayData();
+                
+                var currentPage = table.page();
+                
+                table.MakeCellsEditable("destroy");
+                table.destroy();
+                
+                $('.headergroup').html('');
+                $('.headercell').html('');
+                $('#gridrows').html('');
+                
+                generateTableHtml();
+                initDataTable();
+                table.page(currentPage).draw( false );
+            }
+            else {
+                $(parentObj).addClass('slds-is-selected');
+                
+                colsCriteria_added[col.field] = true;
+                colsCriteria.columns.push( col );
+                for (var i = 0; i < colsCriteria.dataRows.length; i++) {
+                    colsCriteria.dataRows[i].push('');
+                }
+                
+                initArrayData();
+                
+                var currentPage = table.page();
+                
+                table.MakeCellsEditable("destroy");
+                table.destroy();
+                
+                $('.headergroup').html('');
+                $('.headercell').html('');
+                $('#gridrows').html('');
+                
+                generateTableHtml();
+                initDataTable();
+                table.page(currentPage).draw( false );
+            }
+        }
+        
+    </script>
+    
+</apex:page>

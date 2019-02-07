@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Requests approval/rejection from assigned Accountable Banker</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>Accountable Banker Approval/Rejection</name>
+    <style>freeForm</style>
+    <subject>You have been assigned as the Accountable Banker on Opportunity: {!Opportunity.Name}</subject>
+    <textOnly>Dear {!Opportunity.Accountable_Banker__c}
+
+You have been assigned as the Accountable Banker in Salesforce on Opportunity: {!Opportunity.Name}
+
+Opportunity owner: {!Opportunity.OwnerFullName}
+Client: {!Account.Name}
+Stage: {!Opportunity.StageName}
+Description: {!Opportunity.Description}
+
+Please acknowledge that you are aware of this Opportunity and that you are the Accountable Banker for this Opportunity.
+
+Simply reply to this email with APPROVE or REJECT in the first line of the email to complete the process.
+
+Alternatively paste the link below into your Chrome Browser and scroll down to approve the assignment.
+{!Opportunity.Link}
+
+This Opportunity will remain locked in Salesforce (and will not be editable) until you approve it.
+
+Please note the responsibility of the Accountable Banker as attached.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

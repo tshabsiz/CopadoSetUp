@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Notified of an Information Undertaking 7 days before it becomes due</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Upcoming Condition (7 Days Before)  - Email Notification</name>
+    <style>freeForm</style>
+    <subject>{!Condition__c.RecordType} {!Condition__c.Name} will be due for {!Condition__c.Matter__c} on {!Condition_Occurrence__c.Due_Date__c}</subject>
+    <textOnly>Good Day
+{!Condition_Occurrence__c.Participant_User__c},
+
+{!Condition_Occurrence__c.RecordType}
+{!Condition_Occurrence__c.Condition__c}
+will be due for: {!Condition_Occurrence__c.Deal__c} on
+{!Condition_Occurrence__c.Due_Date__c}
+
+Deal Name :  {!Condition__c.Deal__c}
+Relationship : {!Condition__c.Relationship__c}
+Agreement Name : {!Condition__c.Agreement__c}
+Condition Type: {!Condition__c.RecordType}
+Condition Name: {!Condition__c.Name}
+Clause : {!Condition__c.Clause__c}
+Condition Status : {!Condition_Occurrence__c.Status__c}
+Condition Due Date  : {!Condition_Occurrence__c.Due_Date__c}
+
+
+Click on the below link to view the Condition:
+{!Condition_Occurrence__c.Link}
+
+Kind regards,
+Transaction Management Group
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Auto_Number__c</fullName>
+        <displayFormat>{0}</displayFormat>
+        <externalId>false</externalId>
+        <label>Auto Number</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>AutoNumber</type>
+    </fields>
+    <fields>
+        <fullName>Clause__c</fullName>
+        <externalId>false</externalId>
+        <label>Clause</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Date__c</fullName>
+        <description>The relative date field for a condition recurrence to be based on.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The relative date field for a condition recurrence to be based on.</inlineHelpText>
+        <label>Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Condition_Relative_Dates</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Days</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Condition_Days</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Number_of_Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Number of Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Recurrence__c</fullName>
+        <externalId>false</externalId>
+        <label>Recurrence</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Condition_Recurrence</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Template_Code__c</fullName>
+        <externalId>false</externalId>
+        <label>Template Code</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Condition Template</label>
+    <nameField>
+        <label>Condition Template Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Condition Templates</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Condition_Precedent</fullName>
+        <active>true</active>
+        <description>A condition precedent is an event or state of affairs that is required before something else will occur. In contract law, a condition precedent is an event which must occur, unless its non-occurrence is excused.</description>
+        <label>Condition Precedent</label>
+        <picklistValues>
+            <picklist>Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Recurrence__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Condition_Subsequent</fullName>
+        <active>true</active>
+        <description>A condition subsequent is an event or state of affairs that brings an end to something else. A condition subsequent is often used in a legal context as a marker bringing an end to one&apos;s legal rights or duties</description>
+        <label>Condition Subsequent</label>
+        <picklistValues>
+            <picklist>Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Recurrence__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Financial_Covenant</fullName>
+        <active>true</active>
+        <description>Covenants in finance most often relate to terms in a financial contracting, such as a loan document stating the limits at which the borrower can further lend.</description>
+        <label>Financial Covenant</label>
+        <picklistValues>
+            <picklist>Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Recurrence__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Governance_Check</fullName>
+        <active>true</active>
+        <description>Internal governance checks against a deal</description>
+        <label>Governance Check</label>
+        <picklistValues>
+            <picklist>Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Recurrence__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Information_Undertaking</fullName>
+        <active>true</active>
+        <description>Guaranty, promise, or stipulation that creates an obligation.</description>
+        <label>Information Undertaking</label>
+        <picklistValues>
+            <picklist>Date__c</picklist>
+            <values>
+                <fullName>Effective Date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Financial Year End</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Signature Date</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Days__c</picklist>
+            <values>
+                <fullName>Days After</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Days Before</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Recurrence__c</picklist>
+            <values>
+                <fullName>Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bi-Annually</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Monthly</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Once Off</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>Quarterly</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <customTabListAdditionalFields>CREATED_DATE</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Days__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Number_of_Days__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Recurrence__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>RECORDTYPE</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>Template_Code__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Clause__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Days__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Number_of_Days__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Recurrence__c</lookupDialogsAdditionalFields>
+        <lookupFilterFields>NAME</lookupFilterFields>
+        <lookupFilterFields>Date__c</lookupFilterFields>
+        <lookupFilterFields>Days__c</lookupFilterFields>
+        <lookupFilterFields>Number_of_Days__c</lookupFilterFields>
+        <lookupFilterFields>Recurrence__c</lookupFilterFields>
+        <lookupPhoneDialogsAdditionalFields>Clause__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Days__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Number_of_Days__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Recurrence__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Date__c</searchFilterFields>
+        <searchFilterFields>Days__c</searchFilterFields>
+        <searchFilterFields>Number_of_Days__c</searchFilterFields>
+        <searchFilterFields>Recurrence__c</searchFilterFields>
+        <searchResultsAdditionalFields>Clause__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Days__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Number_of_Days__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Recurrence__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

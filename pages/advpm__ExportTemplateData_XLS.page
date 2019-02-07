@@ -1,0 +1,22 @@
+<apex:page controller="advpm.ExportTemplateDataController" language="en-US"  showHeader="false" sidebar="false"  cache="true" contentType="application/x-excel#dataExport.xls">
+    <table>
+        <thead>
+            <tr>
+            <apex:repeat value="{!columnValues}" var="c">
+                <apex:outputPanel layout="none" rendered="{!c.isAddress==false}"><th>{!c.label}</th></apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!c.isAddress==true}"><th>{!c.label} Line 1</th><th>{!c.label} Line 2</th><th>{!c.label} Line 3</th></apex:outputPanel>
+            </apex:repeat>
+            </tr>
+        </thead>
+        <tbody>
+        <apex:repeat value="{!ExportData}" var="e">
+            <tr>
+            <apex:repeat value="{!columnValues}" var="c">
+                <apex:outputPanel layout="none" rendered="{!c.isAddress==false}"><td><apex:outputText rendered="{!c.datatype=='DATE'}" value="{0,date,yyyy-MM-dd}"><apex:param value="{!e[c.name]}" /></apex:outputText><apex:outputText rendered="{!c.datatype=='DATETIME'}" value="{0,date,yyyy-MM-dd'T'hh:mm:ssZ}"><apex:param value="{!e[c.name]}" /></apex:outputText><apex:outputPanel layout="none" rendered="{!(c.datatype!='DATE' && c.datatype!='DATETIME')}">{!e[c.name]}</apex:outputPanel></td></apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!c.isAddress==true}"><apex:repeat value="{!map_addr_values[e.Id]}" var="addr"><td>{!addr}</td></apex:repeat></apex:outputPanel>
+            </apex:repeat>
+            </tr>
+        </apex:repeat>
+        </tbody>
+    </table>
+</apex:page>

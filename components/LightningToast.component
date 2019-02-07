@@ -1,0 +1,38 @@
+<apex:component >
+
+    <script>
+        
+        function showToast(message) {
+            $('#toastMessageContent').text(message);
+            $('#lightningToastPanel').show();
+        }
+        
+        function closeToast() {
+            $('#lightningToastPanel').hide();
+        }
+        
+    </script>
+
+    <div id="lightningToastPanel" class="slds-notify-container" style="display:none;" xmlns="http://www.w3.org/2000/svg" 
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+      <div class="slds-notify slds-notify--toast slds-theme--error" role="alert">
+      
+        <button class="slds-button slds-button--icon-inverse slds-notify__close" onclick="closeToast();return false;">
+          <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+          </svg>
+        </button>
+        
+        <div class="notify__content slds-grid">
+          <svg aria-hidden="true" class="slds-icon slds-icon--small slds-m-right--small slds-col slds-no-flex">
+            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}"></use>
+          </svg>
+          <div class="slds-col slds-align-middle">
+            <h2 id="toastMessageContent" class="slds-text-heading--small" />
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+</apex:component>

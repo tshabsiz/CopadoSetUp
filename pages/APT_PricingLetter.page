@@ -1,0 +1,324 @@
+<apex:page standardController="Annual_Pricing__c" readOnly="true" extensions="APT_PricingLetterController" contentType="application/msword" cache="true" applyHtmlTag="false" applyBodyTag="false" showHeader="false" sidebar="false">
+<html xmlns="http://www.w3.org/TR/REC-html40" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+    <link rel="File-List" href="mydocument_files/filelist.xml" />
+    <apex:stylesheet value="{!URLFOR($Resource.PricingLetter, 'style.css')}"/>
+
+    <style>
+        body {
+            font-family: "Arial";
+            font-size: 10pt;
+        }
+
+        @page Main {
+            mso-header-margin: 0in;
+            mso-footer-margin: 0in;
+            mso-facing-pages: no; /* different header or footer for odd and even pages */
+            mso-header: h1;
+            mso-even-header: eh1;
+            mso-footer: f1;
+        	mso-first-footer: ff1;
+            mso-paper-source: 0;
+        	mso-title-page: yes;
+        }
+
+        div.Main{
+            page:Main;
+        }
+        p.MsoHeader, li.MsoHeader, div.MsoHeader {
+            margin-top: 0pt;
+            mso-pagination:widow-orphan;
+            tab-stops:center 3.0in right 6.0in;
+        }
+        p.MsoFooter, li.MsoFooter, div.MsoFooter, td.MsoFooter {
+        	font-family: "Arial";
+            font-size: 6pt;
+            margin-bottom: 10pt;
+            mso-pagination:widow-orphan;
+            tab-stops:center 3.0in right 6.0in;
+        }
+        div.footer-text {
+            font-family: "Arial";
+            font-size: 6pt;
+            /*margin-bottom: 1.25cm;*/
+        }
+        p.header-text-red {
+            font-family: "Arial";
+            font-size: 9pt;
+            font-weight: bold;
+            color: rgb(236,34,42);
+        }
+        p.header-text {
+            font-family: "Arial";
+            font-size: 8pt;
+            color: rgb(127,127,127);
+        }
+        p.title-text {
+            font-family: "Calibri";
+            font-size: 12pt;
+            font-weight: bold;
+        }
+        p.main-text, span.main-text, li.main-text {
+            font-family: "Calibri";
+            font-size: 10pt;
+        }
+        p.main-text-bold, span.main-text-bold, li.main-text-bold {
+            font-family: "Calibri";
+            font-size: 10pt;
+            font-weight: bold;
+        }
+        p.regular-text, span.regular-text {
+            font-size: 9pt;
+        }
+        p.bold-text, span.bold-text {
+            font-size: 9pt;
+            font-weight: bold;
+        }
+        p.italic-text, span.italic-text {
+            font-size: 9pt;
+            font-style: italic;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        .standard-cell {
+            font-size: 8pt;
+            border: 1px solid black;
+        }
+        .header-cell {
+            font-size: 8pt;
+            font-weight: bold;
+            vertical-align: top;
+            border: 1px solid black;
+        }
+        .standard-header-cell {
+            font-size: 8pt;
+            vertical-align: top;
+            border: 1px solid black;
+        }
+        table#hrdftrtbl{
+                margin:0in 0in 0in 15in;
+        }
+    </style>
+</head> 
+
+<div class="Main">
+    <div id="page-1">
+        <table width="100%">
+            <tr>
+                <td width="70%"  valign="top">
+                    <img src="{!headerLeftUrl}" />
+                </td>
+                <td width="30%">
+                    <img src="{!headerRightUrl}" />
+    				<p class="header-text-red"><apex:outputText value="{!$Label.lbl_Confidential}" /></p>
+                    <p class="header-text"><apex:outputField value="{!pricingTemplate.Address__c}" /></p>
+                    <p class="header-text"><apex:outputField value="{!pricingTemplate.Phone_Fax__c}" /></p>
+                    <p class="header-text"><apex:outputField value="{!pricingTemplate.Website__c}" /></p>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+        <p>{!currentDate}</p>
+        <p>
+            <apex:outputText value="{!$Label.lbl_Directors}" />
+            <br/>
+            <apex:outputText styleClass="bold-text" value="{!Annual_Pricing__c.Organisation__r.Name}" />
+            <br/>
+            <apex:outputField styleClass="text" value="{!Annual_Pricing__c.Billing_Street__c}" />
+            <br/>
+            <apex:outputField styleClass="text" value="{!Annual_Pricing__c.Billing_City__c}" />
+            <br/>
+            <apex:outputField styleClass="text" value="{!Annual_Pricing__c.Billing_Zip_Postal_Code__c}" />
+        </p>
+        <p class="italic-text"><apex:outputText value="{!$Label.lbl_WithoutPrejudice}" /></p>
+        <p class="bold-text"><apex:outputText value="{!$Label.lbl_StrictlyPrivateAndConfidential}" /></p>
+        <p class="regular-text"><apex:outputField value="{!Annual_Pricing__c.Greeting__c}" /></p>
+        <p class="title-text"><apex:outputField value="{!pricingTemplate.Title__c}" /></p>
+        <p class="main-text">
+            <apex:outputField value="{!pricingTemplate.Section_1__c}" />
+        </p>
+    </div>
+    <div id="page-2">
+        <br clear="all" style="mso-special-character:line-break;page-break-before:always;"/>
+        <p class="main-text">
+            <apex:outputField value="{!pricingTemplate.Section_2__c}" />
+        </p>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <p class="main-text"><apex:outputText value="{!$Label.lbl_YoursSincerely}" /></p>
+        <br/>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td width="60%">________________________</td>
+                <td>________________________</td>
+            </tr>
+            <tr>
+                <td width="60%">
+                    <span class="main-text"><apex:outputField value="{!pricingTemplate.On_Behalf__c}" /></span>
+                </td>
+                <td>
+                    <span class="main-text"><apex:outputField value="{!pricingTemplate.On_Behalf__c}" /></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="60%">
+                    <span class="main-text-bold"><apex:outputField value="{!Annual_Pricing__c.Signer_1__r.Name}" /></span>
+                </td>
+                <td>
+                    <span class="main-text-bold"><apex:outputField value="{!Annual_Pricing__c.Signer_2__r.Name}" /></span>
+                </td>
+            </tr>
+            <tr>
+                <td width="60%">
+                    <span class="main-text-bold"><apex:outputField value="{!Annual_Pricing__c.The_Signer_Role_1__c}" /></span>
+                </td>
+                <td>
+                    <span class="main-text-bold"><apex:outputField value="{!Annual_Pricing__c.The_Signer_Role_2__c}" /></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="page-3">
+        <br clear="all" style="mso-special-character:line-break;page-break-before:always;"/>
+        <p class="main-text-bold"><apex:outputField value="{!pricingTemplate.Title_for_Group_Entities__c}" /></p>
+        <ul>
+            <apex:repeat value="{!groupEntities}" var="groupEntity">
+                <li class="main-text-bold">{!groupEntity.Name}</li>
+            </apex:repeat>
+        </ul>
+        <p class="main-text"><apex:outputField value="{!pricingTemplate.Title_for_Pricing_Groups__c}" /></p>
+        <ul>
+            <apex:repeat value="{!pricingGroups}" var="pricingGroup">
+                <li class="main-text-bold">{!pricingGroup.record.Name}</li>
+            </apex:repeat>
+        </ul>
+        <p class="main-text">
+            <apex:outputField value="{!pricingTemplate.Section_3__c}" />
+        </p>
+    </div>
+    <apex:repeat value="{!pricingGroups}" var="pricingGroup">
+        <div>
+            <br clear="all" style="mso-special-character:line-break;page-break-before:always;"/>
+            <br/>
+            <table class="products" width="100%">
+                <apex:repeat value="{!pricingGroup.productCategories}" var="productCategory">
+                    <apex:repeat value="{!productCategory.productTypes}" var="productType">
+                        <apex:repeat value="{!productType.annualPricingItems}" var="annualPricingItem">
+                        <apex:outputPanel layout="block" rendered="{!productCategory.isFirst && productType.isFirst && annualPricingItem.isFirst}">
+                        <tr>
+                            <td class="header-cell" width="15%" rowspan="{!pricingGroup.rowspan+1}">
+                                <apex:outputText value="{!pricingGroup.record.Name}" />
+                            </td>
+                            <td class="header-cell" width="15%"></td>
+                            <td class="header-cell" width="15%"></td>
+                            <td class="header-cell" width="25%"></td>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_To_Previous_Year_Prices__c && Annual_Pricing__c.Show_Previous_Comparative__c}">
+                            <td class="header-cell">
+                                <apex:outputText value="{!Annual_Pricing__c.Previous_Year__c} {!IF(pricingGroup.record.VAT_Inclusive__c,'Incl. VAT','Excl. VAT')}" />
+                            </td>
+                            </apex:outputPanel>
+                            <td class="header-cell">
+                                <apex:outputText value="{!Annual_Pricing__c.Year__c} {!IF(pricingGroup.record.VAT_Inclusive__c,'Incl. VAT','Excl. VAT')}" />
+                            </td>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_Excl_Incl_VAT_Prices__c}">
+                            <td class="header-cell">
+                                <apex:outputText value="VAT" />
+                            </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_Excl_Incl_VAT_Prices__c}">
+                            <td class="header-cell">
+                                <apex:outputText value="{!Annual_Pricing__c.Year__c} Incl. VAT" />
+                            </td>
+                            </apex:outputPanel>
+                        </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <apex:outputPanel layout="none" rendered="{!productType.isFirst && annualPricingItem.isFirst}">
+                            <td class="standard-header-cell" rowspan="{!productCategory.rowspan}">
+                                <apex:outputText value="{!productCategory.Name}" />
+                            </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!annualPricingItem.isFirst}">
+                            <td class="standard-header-cell" rowspan="{!productType.rowspan}">
+                                <apex:outputText value="{!productType.Name}" />
+                            </td>
+                            </apex:outputPanel>
+                            <td class="standard-cell">
+                                <apex:outputField value="{!annualPricingItem.record.Pricing_Deal_Product_Name__c}" />
+                            </td>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_To_Previous_Year_Prices__c && Annual_Pricing__c.Show_Previous_Comparative__c}">
+                            <td class="standard-cell" style="text-align: {!IF(ISNUMBER(annualPricingItem.previousRecord.Final_Price__c), 'right', 'left')};">
+                                <apex:outputField value="{!annualPricingItem.previousRecord.Final_Price__c}" />
+                            </td>
+                            </apex:outputPanel>
+                            <td class="standard-cell" style="text-align: {!IF(ISNUMBER(annualPricingItem.record.Final_Price__c), 'right', 'left')};">
+                                <apex:outputField value="{!annualPricingItem.record.Final_Price__c}" />
+                            </td>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_Excl_Incl_VAT_Prices__c}">
+                            <td class="standard-cell">
+                                <apex:outputField value="{!annualPricingItem.record.VAT_Amount__c}" />
+                            </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_Excl_Incl_VAT_Prices__c}">
+                            <td class="standard-cell">
+                                <apex:outputField value="{!annualPricingItem.record.Final_Price_VAT_Incl__c}" />
+                            </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!pricingGroup.record.Compare_To_Previous_Year_Prices__c && Annual_Pricing__c.Show_Previous_Comparative__c}">
+                            <td></td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!NOT(pricingGroup.record.Compare_To_Previous_Year_Prices__c && Annual_Pricing__c.Show_Previous_Comparative__c) && NOT(pricingGroup.record.Compare_Excl_Incl_VAT_Prices__c)}">
+                            <td></td>
+                            <td></td>
+                            </apex:outputPanel>
+                        </tr>
+                        </apex:repeat>
+                    </apex:repeat>
+                </apex:repeat>
+            </table>
+        </div>
+    </apex:repeat>
+    <table id='hrdftrtbl' border='1' cellspacing='0' cellpadding='0'>
+        <tr>
+            <td>
+                <div id="eh1" style="mso-element:header">
+                    <p class="MsoHeader"></p>
+                </div>
+                <div id="h1" style="mso-element:header">
+                    <p class="MsoHeader"></p>
+                </div>
+            </td>
+            <td>
+                <div id="f1" style="mso-element:footer">
+                	<table width="100%" cellpadding="0" cellspacing="0">
+                    	<tr>
+                        	<td align="left" width="80%" class="MsoFooter">
+                            	<div class="footer-text"><apex:outputField value="{!pricingTemplate.Legal_Info__c}" /></div>
+                            </td>
+                            <td align="right" width="20%" class="MsoFooter">
+                            	Page <span style='mso-field-code:" PAGE "'></span> of <span style='mso-field-code:" NUMPAGES "'></span>
+                            </td>
+                        </tr>
+                	</table>
+                </div>
+        		<div id="ff1" style="mso-element:footer">
+                	<table width="100%" cellpadding="0" cellspacing="0">
+                    	<tr>
+                        	<td align="left" class="MsoFooter">
+                            	<div class="footer-text"><apex:outputField value="{!pricingTemplate.Legal_Info__c}" /></div>
+                            </td>
+                        </tr>
+                	</table>
+        		</div>
+            </td>
+        </tr>
+	</table>
+</div>
+</html>
+</apex:page>

@@ -1,0 +1,68 @@
+<aura:component controller="ClientPlanPreseceControllerMobile">
+    
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="countryId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">
+                    <ui:outputText value="{!v.country.Banking_Country__c}" />
+                    <div id="countryMenu" class="slds-dropdown-trigger">
+                        <button class="slds-button slds-button--icon-container" onclick="return false;">
+                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#settings" />
+                        </button>
+                        <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                            <ul class="slds-dropdown__list" role="menu">
+                                <li class="slds-dropdown__item" onclick="{!c.onEditCountryClicked}">
+                                    <a href="javascript:void(0)" role="menuitem">
+                                        <p class="slds-truncate">Edit</p>
+                                    </a>
+                                </li>
+                                <li class="slds-dropdown__item" onclick="{!c.onRemoveCountryClicked}">
+                                    <a href="javascript:void(0)" role="menuitem">
+                                        <p class="slds-truncate">Remove</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="wholePage">
+                    <div class="slds-tile slds-hint-parent item teamMember">
+                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                            <p class="slds-tile__title slds-truncate">Engaged</p>
+                        </div>
+                        <div class="slds-tile__detail slds-text-body--small">
+                            <p class="slds-truncate">{!v.country.Engaged__c}</p>
+                        </div>
+                    </div>
+                    <div class="slds-tile slds-hint-parent item teamMember">
+                        <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                            <p class="slds-tile__title slds-truncate">Primary bank</p>
+                        </div>
+                        <div class="slds-tile__detail slds-text-body--small">
+                            <p class="slds-truncate">{!v.country.Primary_Bank__c}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button id="moveBackButton" class="slds-button slds-button--neutral" onclick="{!c.onMoveBackClicked}">
+                            Back to list
+                        </button>
+                    </div>
+                </div>
+                
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

@@ -1,0 +1,72 @@
+<apex:page controller="advpm.GeneratePDFController" cache="{!LOWER(type)!='docx'}" 
+           renderAs="{!IF((LOWER(type)=='docx' || LOWER(type)=='doc'),'','pdf')}" contentType="{!IF((LOWER(type)=='docx' || LOWER(type)=='doc'),'application/msWord#document.doc','')}"
+           action="{!ParseAndSave}" sidebar="false" showHeader="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false"><!--
+ --><html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style type="text/css" media="print">
+            @page {
+                size: A4 portrait; 
+            }
+            .content{
+                margin-top: {!template.Margin_Top__c}mm;
+                margin-left: {!template.Margin_Left__c}mm;
+                margin-right: {!template.Margin_Right__c}mm;
+                margin-bottom: {!template.Margin_Bottom__c}mm;
+            }
+            body {font-family: Arial,Helvetica,sans-serif;font-size: 12px;}
+        </style>
+        <style type="text/css" media="print">
+            span.col-label {display: none;}
+            
+            /*
+             * Stacked (With Borders)
+             */
+            /* Hide the table header */
+            table.stacked thead {display: none;}
+            table.stacked tr:first-child {display: none;}
+            
+            /* Vertically stack the table elements */
+            table.stacked tbody th {display: block;}
+            table.stacked tbody td {display: block;}
+            
+            /* Make all cell column span tags visible and change them from inline-block to block or apply css to col-label/col-data to show in same row with left/right aligned */
+            table.stacked td span {display: block;}
+            
+            /* Make all cell labels look like column headers  */
+            table.stacked td span.col-label {font-weight: bold;display: block;}
+            
+            /* Make stacked rows display with delimited border/spacing */
+            table.stacked tr td.last-child {border-bottom: 1px solid #ccc;margin-bottom: 5px;padding-bottom: 10px;}
+            
+            /*
+             * Stacked (Without Borders)
+             */
+            /* Hide the table header */
+            table.stacked-noborder thead {display: none;}
+            table.stacked-noborder tr:first-child {display: none;}
+            
+            /* Vertically stack the table elements */
+            table.stacked-noborder tbody th {display: block;}
+            table.stacked-noborder tbody td {display: block;}
+            
+            /* Make all cell column span tags visible and change them from inline-block to block or apply css to col-label/col-data to show in same row with left/right aligned */
+            table.stacked-noborder td span {display: block;}
+            
+            /* Make all cell labels look like column headers  */
+            table.stacked-noborder td span.col-label {font-weight: bold;display: block;}
+            
+            /* Make stacked rows display without borders */
+            table.stacked-noborder tr td.last-child {margin-bottom: 5px;padding-bottom: 10px;}
+            
+            /* Hide header if disabled in Template*/
+            table.no-header tr.no-header th {display:none;}
+            table.no-header th span.col-label {display:none;} 
+            table.no-header td span.col-label {display:none;}
+        </style>
+    </head>
+    <body class="content">
+        <apex:outputText escape="false" value="{!Body}"/>
+    </body>
+</html>
+</apex:page>

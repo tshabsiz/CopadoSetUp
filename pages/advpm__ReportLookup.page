@@ -1,0 +1,58 @@
+<apex:page tabStyle="Report" controller="advpm.ReportLookupController" showHeader="false" sidebar="false" standardStylesheets="true">
+    <style type="text/css">
+        body.lookupTab .lksrch {
+            margin: 0 .65em 0 0;
+        }
+        body.lookupTab .lksrchbtn {
+            margin: 0 .65em 0 0;
+        }
+    </style>
+    <body class="hasMotif lookupTab  LookupSearchFrame  brandNoBgrImg">
+        <apex:form id="theForm">
+            <div class="lookup">
+                <apex:sectionHeader title="Report Lookup" />
+                <div class="pBody" style="width:350px;">
+                    <apex:outputLabel value="Search" for="searchTxt" />
+                    <apex:inputText value="{!searchText}" id="searchTxt" styleClass="lksrch" />
+                    <apex:commandButton value="Go" action="{!doSearch}" styleClass="lksrchbtn" rerender="theForm" status="loading" />
+                    <apex:actionStatus id="loading" startText="(loading...)" />
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <apex:pageBlock id="thePageBlockSearch" mode="edit">
+                <apex:facet name="header">
+                    <apex:panelGrid columns="2" columnClasses="pbTitle,pbButton">
+                        <h2 class="mainTitle">Showing Records [{!reportsList.size}]</h2>
+                    </apex:panelGrid>
+                </apex:facet>
+                <apex:pageMessages />
+                <apex:pageBlockTable value="{!reportsList}" var="o" rendered="{!IF(reportsList.size > 0,true,false)}">
+                    <apex:column headerValue="Name">
+                        <a href="#" onclick="top.window.opener.document.getElementById('{!JSINHTMLENCODE($CurrentPage.parameters.lkcid)}').value='{!JSINHTMLENCODE(o.reportId)}';top.window.opener.document.getElementById('{!JSINHTMLENCODE($CurrentPage.parameters.lkcn)}').value='{!JSINHTMLENCODE(o.reportName)}';top.window.opener.document.getElementById('{!JSINHTMLENCODE($CurrentPage.parameters.lkfid)}').value='{!JSINHTMLENCODE(o.reportFilter)}';top.window.close();">{!o.reportName}</a>
+                    </apex:column>
+                    <apex:column headerValue="ID" value="{!o.reportId}" rendered="false" />
+                    <apex:column headerValue="Filter" value="{!o.reportFilter}" rendered="false" />
+                </apex:pageBlockTable>
+                <apex:outputPanel layout="none" rendered="{!NOT(IF(reportsList.size > 0,true,false))}">
+                    <table class="list" border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                            <tr class="">
+                                <td scope="col" class="noRowsHeader">No records were found based on your criteria</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+            <script type="text/javascript">
+                window.onload = function() {
+                    var input = document.getElementById("{!$Component.theForm.searchTxt}");
+                    input.focus();
+                    input.select();
+                }
+            </script>
+        </apex:form>
+    </body>
+
+</apex:page>

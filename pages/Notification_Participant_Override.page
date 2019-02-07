@@ -1,0 +1,38 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ *** CHANGE LOG ***
+ 
+ 14/01/2018 - PG    - Create VF page.  
+                                                           
+-->
+<apex:page standardController="Notification_Participant__c" extensions="Notification_Participant_Override" showHeader="true" sidebar="true">
+	
+	<apex:sectionHeader title="Notification Participant Edit" subtitle="New Notification Participant" />
+	<apex:form >
+		<apex:pageBlock title="Notification Participant Edit" mode="edit">
+
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!save}" />
+				<apex:commandButton value="Cancel" action="{!cancel}" />
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockSection title="Information">
+
+				<apex:inputField value="{!objectRecord.Fit_To_Lend_Checklist__c}" rendered="{!NOT(ISBLANK(objectRecord.Fit_To_Lend_Checklist__c))}" required="true" />
+				<apex:inputField value="{!objectRecord.Drawdown__c}" rendered="{!NOT(ISBLANK(objectRecord.Drawdown__c))}" required="true" />
+				<apex:inputField value="{!objectRecord.Participant__c}" required="true" />
+				<apex:outputField value="{!objectRecord.OwnerId}" />
+				<apex:outputField value="{!objectRecord.RecordTypeId}" />
+
+			</apex:pageBlockSection> 
+
+		</apex:pageBlock>
+	</apex:form>
+	
+</apex:page>

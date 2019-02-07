@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Diversified 1, Diversified 2, Diversified 3, Diversified 4, Diversified 5, FI 1, FI 2, FI 3, Global 1, Global 2, Global 3, Mining/Natural R, NBFI 1, NBFI 2, NBFI 3, PS 1, PS 2, PS 3, PS 4, Retail 1, Retail 2, Retail 3, Telecoms 1, Telecoms 2, RSC Corporate PTA,</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>CSC_Letterhead</letterhead>
+    <name>RSC - Corporate Inland - Case Closure</name>
+    <style>freeForm</style>
+    <subject>Case #{!Case.CaseNumber}: {!Case.Subject}: {!Case.Thread_Id}</subject>
+    <textOnly>Dear {!Case.Email_Sender_Name__c}
+
+Please be advised that your request relating to
+case number: #{!Case.CaseNumber} has been
+successfully resolved.
+
+Thank you
+
+{!User.Name} {!User.Surname}
+Regional Service Centre - Corporate Coastal
+
+Telephone: {!User.CSC_Phone__c}
+Email:  {!User.CSC_email__c}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

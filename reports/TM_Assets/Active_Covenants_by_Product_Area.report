@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>advpm__Matter__c$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Name</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Breached,Condoned,Condoned Breaches,Deferred,Met,Not Condoned Breaches,Outstanding,Received,Upcoming,Waived,Compliant</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>advpm__Matter__c.Agreements1__r.Conditions__r$Active__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+    </filter>
+    <format>Matrix</format>
+    <groupingsAcross>
+        <dateGranularity>Day</dateGranularity>
+        <field>advpm__Matter__c$Product_Area__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsAcross>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>advpm__Matter__c.Agreements1__r.Conditions__r.Conditions_Due__r$Status__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Active Covenants by Product Area</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Matters_Deal_with_Agreements_and_Cond_Occurrences__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>advpm__Matter__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CURFY</interval>
+    </timeFrameFilter>
+</Report>

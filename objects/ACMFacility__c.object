@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Holds all the facilities that come out of ACM linked to a client plan</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ACMUTILIZATIONAMOUNT__c</fullName>
+        <externalId>false</externalId>
+        <label>Utilization Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>ACMUTILIZATIONCURRENCY__c</fullName>
+        <externalId>false</externalId>
+        <label>Utilization Currency</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Arrang_Fee__c</fullName>
+        <externalId>false</externalId>
+        <label>Arrang. Fee</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>BANKRISKTAKER__c</fullName>
+        <externalId>false</externalId>
+        <label>Bank Risk Taker</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Bank_Application_Key__c</fullName>
+        <externalId>false</externalId>
+        <label>Bank Application Key</label>
+        <length>30</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CLIENTPLAN__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The client plan attached to this facility record</description>
+        <externalId>false</externalId>
+        <label>Client Plan</label>
+        <referenceTo>Client_Plan__c</referenceTo>
+        <relationshipLabel>ACM Facilities</relationshipLabel>
+        <relationshipName>ACM_Facilities</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>COM_FEES__c</fullName>
+        <externalId>false</externalId>
+        <label>Com. Fees (%)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CPTYID__c</fullName>
+        <description>The SDS of the facility record in question</description>
+        <externalId>false</externalId>
+        <label>SDS</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CPTYLABEL__c</fullName>
+        <description>Label for user to recognise which SDS this facility is for.</description>
+        <externalId>false</externalId>
+        <label>CPTYLABEL</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Country__c</fullName>
+        <externalId>false</externalId>
+        <label>Country</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetName>Country</valueSetName>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>EXPIRYDATE__c</fullName>
+        <externalId>false</externalId>
+        <label>Maturity Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>FACILITYACTIVE__c</fullName>
+        <description>Specifies whether a facility is active or not</description>
+        <externalId>false</externalId>
+        <label>Facility Active</label>
+        <length>1</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FACILITYAMOUNT__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FACILITYCURRENCY__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Currency</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FACILITYPRODUCTDESCRIPTION__c</fullName>
+        <description>The description of the product on this facility</description>
+        <externalId>false</externalId>
+        <label>Product Description</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FACILITYPRODUCT__c</fullName>
+        <description>Facility Product for the Facility in question</description>
+        <externalId>false</externalId>
+        <label>Product</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>FTP_bps__c</fullName>
+        <externalId>false</externalId>
+        <label>FTP (bps)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Facility_Id__c</fullName>
+        <externalId>false</externalId>
+        <label>Facility Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>GROSS_MARGIN__c</fullName>
+        <externalId>false</externalId>
+        <label>GROSS MARGIN</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>LOSSGIVENDEFAULT__c</fullName>
+        <description>LGD retrieved from ACM</description>
+        <externalId>false</externalId>
+        <label>LGD</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MODIFIEDBY__c</fullName>
+        <externalId>false</externalId>
+        <label>Modified By</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MODIFIEDTIMESTAMP__c</fullName>
+        <externalId>false</externalId>
+        <label>Modified Time Stamp</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Net_Margin__c</fullName>
+        <externalId>false</externalId>
+        <label>Net Margin (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>PARENTFACILITYID__c</fullName>
+        <externalId>false</externalId>
+        <label>Parent Facility ID</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RETRIEVEDVIAACM__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Field to specify whether this record was added manually or via an ACM pull</description>
+        <externalId>false</externalId>
+        <label>Retrieved via ACM</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Relationship__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Account</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>ACM Facilities</relationshipLabel>
+        <relationshipName>ACM_Facilities1</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>RoRWA__c</fullName>
+        <externalId>false</externalId>
+        <label>RoRWA (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>STARTDATE__c</fullName>
+        <externalId>false</externalId>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>TENORUNIT__c</fullName>
+        <externalId>false</externalId>
+        <label>Tenor Unit</label>
+        <length>1</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>TENORVALUE__c</fullName>
+        <externalId>false</externalId>
+        <label>Tenor Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>ACM Facility</label>
+    <nameField>
+        <label>ACM Facility ID</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>ACM Facilities</pluralLabel>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>FACILITYPRODUCTDESCRIPTION__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Bank_Application_Key__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>FACILITYCURRENCY__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>ACMUTILIZATIONAMOUNT__c</lookupDialogsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

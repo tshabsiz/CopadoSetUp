@@ -1,0 +1,136 @@
+<apex:page standardController="Supporting_Agreement__c">
+    
+    <apex:form >
+        
+        <apex:pageBlock mode="maindetail">
+            
+            <apex:pageBlockSection columns="1">
+                
+                <!--<apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Supporting_Agreement__c.fields.Bank_Collateral_Threshold_Fixed_Amount__c.Label}" />
+                    <apex:outputField label="Bank Collateral Threshold Fixed Amount" value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Fixed_Amount__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Bank Collateral Threshold Amount Eligible Currency" />
+                    <apex:outputField label="Bank Collateral Threshold Amount Eligible Currency" value="{!Supporting_Agreement__c.Bank_Collateral_Threshold_Amount_Eligibl__c}" />
+                </apex:pageBlockSectionItem>
+                
+                <br/><br/>-->
+                
+                <table class="list">
+                    <thead class="rich-table-thead">
+                        <tr class="headerRow">
+                            <th class="headerRow" scope="col" colspan="1">
+                                <div>Collateral Threshold Ratings Based - Fitch</div>
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                <div>Collateral Threshold Ratings Based - Moody's</div>
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                <div>Collateral Threshold Ratings Based - Standard &amp; Poor's</div>
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                <div>Bank Collateral Threshold Ratings Based</div>
+                            </th>
+                            <th class="headerRow" scope="col" colspan="1">
+                                <div>Counterparty Collateral Threshold Ratings Based</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>AAA</span></td>
+                        <td class="dataCell" colspan="1"><span>Aaa</span></td>
+                        <td class="dataCell" colspan="1"><span>AAA</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_AAA_M_Aaa_S_P_AAA__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_AAA_M_Aaa_S_P_AAA__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>AA+</span></td>
+                        <td class="dataCell" colspan="1"><span>Aa1</span></td>
+                        <td class="dataCell" colspan="1"><span>AA+</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa1_S_P_AA__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa1_S_P_AA__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>AA</span></td>
+                        <td class="dataCell" colspan="1"><span>Aa2</span></td>
+                        <td class="dataCell" colspan="1"><span>AA</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa2_S_P_AA__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa2_S_P_AA__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>AA-</span></td>
+                        <td class="dataCell" colspan="1"><span>Aa3</span></td>
+                        <td class="dataCell" colspan="1"><span>AA-</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_AA_M_Aa3_S_P_AA__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_AA_M_Aa3_S_P_AA__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>A+</span></td>
+                        <td class="dataCell" colspan="1"><span>A1</span></td>
+                        <td class="dataCell" colspan="1"><span>A+</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_A_M_A1_S_P_A__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_A_M_A1_S_P_A__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>A</span></td>
+                        <td class="dataCell" colspan="1"><span>A2</span></td>
+                        <td class="dataCell" colspan="1"><span>A</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_A_M_A2_S_P_A__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_A_M_A2_S_P_A__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>A-</span></td>
+                        <td class="dataCell" colspan="1"><span>A3</span></td>
+                        <td class="dataCell" colspan="1"><span>A-</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_A_M_A3_S_P_A__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_A_M_A3_S_P_A__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>BBB+</span></td>
+                        <td class="dataCell" colspan="1"><span>Baa1</span></td>
+                        <td class="dataCell" colspan="1"><span>BBB+</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa1_S_P_BBB__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa1_S_P_BBB__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>BBB</span></td>
+                        <td class="dataCell" colspan="1"><span>Baa2</span></td>
+                        <td class="dataCell" colspan="1"><span>BBB</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa2_S_P_BBB__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa2_S_P_BBB__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>BBB-</span></td>
+                        <td class="dataCell" colspan="1"><span>Baa3</span></td>
+                        <td class="dataCell" colspan="1"><span>BBB-</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_BBB_M_Baa3_S_P_BBB__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_BBB_M_Baa3_S_P_BBB__c}</span></td>
+                    </tr>
+                    <tr class="dataRow odd">
+                        <td class="dataCell" colspan="1"><span>Below BB</span></td>
+                        <td class="dataCell" colspan="1"><span>Below Ba1</span></td>
+                        <td class="dataCell" colspan="1"><span>Below BB</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.BCTRB_F_Below_B_M_Below_Ba1_S_P_A__c}</span></td>
+                        <td class="dataCell" colspan="1"><span>{!Supporting_Agreement__c.CCTRB_F_BelowB_M_BelowBa1_S_P_BelowB__c}</span></td>
+                    </tr>
+                </table> 
+                
+                <!--<br/><br/>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Counterparty Collateral Threshold Fixed Amount" />
+                    <apex:outputField label="Counterparty Collateral Threshold Fixed Amount" value="{!Supporting_Agreement__c.Counterparty_Collateral_Threshold_Amount__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Counterparty Collateral Threshold Amount Eligible Currency" />
+                    <apex:outputField label="Counterparty Collateral Threshold Amount Eligible Currency" value="{!Supporting_Agreement__c.Counterparty_Collateral_Threshold_Fixed__c}" />
+                </apex:pageBlockSectionItem>-->
+                
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        
+    </apex:form>    
+    
+</apex:page>

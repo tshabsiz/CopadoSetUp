@@ -1,0 +1,42 @@
+<apex:page controller="advpm.TimelineLegacyController" showHeader="false" sidebar="false" >
+<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v3.2.0/js/bootstrap.min.js')}" />
+<apex:styleSheet value="{!URLFOR($Resource.advpm__adv_bootstrap, 'v3.2.0/css/bootstrap.min.css')}" />
+
+<div class="advwrap">
+<apex:form id="myForm">
+    <apex:pageMessages />
+    
+    <apex:outputpanel layout="block" styleclass="panel panel-success" rendered="{!!saveSuccess}">
+        <div class="panel-heading"><h3 class="panel-title">Disable Legacy Timeline</h3></div>
+        <div class="panel-body">
+            <p>
+                AdvoLogix has replaced the old Legacy Timeline by a new dynamic Timeline Visualforce component with improved functionality and no storage requirements. 
+                <br /><br />
+                Please refer to this documentation for transition to the new Matter Timeline:<br />
+                <a href="http://advologixpm.screenstepslive.com/s/1905/m/14140/l/472589" target="_blank">http://advologixpm.screenstepslive.com/s/1905/m/14140/l/472589</a>
+            </p>
+            <br />
+            <p align="center">
+                <input id="saveBtn" type="button" value=" Disable Legacy Timeline " class="btn btn-success btn-sm" onclick="doSave();" />
+                <input id="closeBtn" type="button" value=" Close " class="btn btn-sm" onclick="window.close();" />
+            </p>
+        </div>
+    </apex:outputpanel>
+    <apex:outputPanel layout="block" styleClass="panel panel-success" rendered="{!saveSuccess}">
+        <div class="panel-heading"><h3 class="panel-title">Disable Legacy Timeline</h3></div>
+        <div class="panel-body">
+            <p>
+                Legacy Timeline has been <strong>disabled</strong> successfully.
+            </p>
+            <br />
+            <p align="center">
+                <input id="closeBtn" type="button" value=" Close " class="btn btn-success btn-sm" onclick="window.close();" />
+            </p>
+        </div>
+    </apex:outputPanel>
+    <apex:actionFunction name="doSave" action="{!DisableLegacyTimeline}" />
+
+</apex:form>
+</div>
+</apex:page>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Name</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Owner</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Meeting_Date__c</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Relationship__c</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Subject__c</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Meeting_Reason__c</field>
+    </columns>
+    <columns>
+        <field>User.Call_Report__c$CreatedById$Description__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>Scheduled report for the Insto team. Based on Insto team call report ownership (does not include attendees)</description>
+    <filter>
+        <booleanFilter>1 or 2</booleanFilter>
+        <criteriaItems>
+            <column>User.Call_Report__c$CreatedById$Owner.UserRole</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>ZAF - CIB - Markets,ZAF - CIB - Markets - Institutions,ZAF - CIB - Markets - Institutions - TM,ZAF - CIB - Markets - Research,ZAF - CIB - Markets - Research - TM</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>User.Call_Report__c$CreatedById$Owner</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>contains</operator>
+            <value>Tito Namu,Anthony Wangari,Garth Klintworth</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Call Reports CY - SA Insts &amp; Markets</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Call_Reports_by_Country__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>User.Call_Report__c$CreatedById$Meeting_Date__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>User.Call_Report__c$CreatedById$Meeting_Date__c</dateColumn>
+        <interval>INTERVAL_CURY</interval>
+    </timeFrameFilter>
+</Report>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Account$Name</field>
+    </columns>
+    <columns>
+        <field>Account$Type</field>
+    </columns>
+    <columns>
+        <field>Account$Owner.Team__c</field>
+    </columns>
+    <columns>
+        <field>Account$Country_of_Operation__c</field>
+    </columns>
+    <columns>
+        <field>Account$Country_of_Incorporation__c</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <booleanFilter>((1 AND 2) OR 3)</booleanFilter>
+        <criteriaItems>
+            <column>Account$RecordType</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Account.Relationship_Group</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Account$Owner.Hub__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Coverage Kenya,Markets Kenya</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Account$Country_of_Operation__c</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Kenya</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Account$Owner.Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Clients Loaded 22 Jun</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Organisations_with_Owner__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Account$CreatedDate</dateColumn>
+        <endDate>2015-06-23</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2015-06-22</startDate>
+    </timeFrameFilter>
+</Report>

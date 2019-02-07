@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Notify Lead Owner and Manager 2 weeks prior to Review Date</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>ABSA_internal_notification</letterhead>
+    <name>LEAD - Notify of Review Date</name>
+    <style>freeForm</style>
+    <subject>Lead Review Date coming up</subject>
+    <textOnly>Dear {!Lead.OwnerFirstName}
+
+Your lead {!Lead.Name} has been tagged for review on {!Lead.Review_Date__c}.
+
+Please open this link in Salesforce to record any activity with the lead:
+{!Lead.Link}</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,106 @@
+<aura:component implements="force:appHostable" controller="ClientPlanListControllerMobile">
+    
+    <aura:attribute name="timestamp" type="String" required="false" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <ltng:require scripts="/resource/jquery_1_11" /> 
+    
+    <div class="slds">
+        
+        <div id="{!v.timestamp}">
+            
+            <aura:if isTrue="{!v.showProgressBar}">
+                <c:ProgressBarLightningMobile />
+                
+                <aura:set attribute="else">
+                    
+                    <div id="searchInputWrapper" class="slds-form-element">
+                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right" 
+                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            
+                            <ui:inputText aura:id="searchAccInput" class="slds-input" keyup="{!c.searchAccounts}"/>
+                        </div>
+                    </div>
+                    
+                    <aura:iteration items="{!v.accounts}" var="a">
+                        <aura:if isTrue="{!a.isPlaceholder}">
+                            
+                            <div class="padding05">
+                                <div id="noStrategiesPlaceholder">
+                                    <div class="alignCenter">
+                                        <div>
+                                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                   svgPath="/resource/SLDS/assets/icons/action-sprite/svg/symbols.svg#new_task" />
+                                        </div>
+                                        <div id="noStrategiesPlaceholderLabel">
+                                            No records found
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <aura:set attribute="else">
+                                <div id="{!a.Id}" class="slds-tile slds-hint-parent account" onclick="{!c.onAccountClicked}">
+                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                        <p class="slds-tile__title slds-truncate blue">{!a.Name}</p>
+                                        <div class="slds-dropdown-trigger">
+                                            <button class="slds-button slds-button--icon-container accountMenuButton" onclick="{!c.stopPropagation}">
+                                                <c:SVG class="slds-button__icon slds-button__icon--large"
+                                                       svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                                            </button>
+                                            <div class="slds-dropdown slds-dropdown--right slds-nubbin--top-right slds-dropdown--menu">
+                                                <ul class="slds-dropdown__list" role="menu">
+                                                    <li class="slds-dropdown__item" onclick="{!c.onBeforeCreateNewPlan}">
+                                                        <a href="javascript:void(0)" role="menuitem">
+                                                            <p class="slds-truncate">Add new plan</p>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-tile__detail slds-text-body--small">
+                                        <ul class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                            <li class="slds-truncate slds-list__item">{!a.Owner.Name}</li>
+                                            <li class="slds-truncate slds-list__item">
+                                                <span class="slds-badge">
+                                                    {!if(a.ClientPlans__r, a.ClientPlans__r.length, '0')}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="clientPlans" style="display:none;">
+                                        <aura:if isTrue="{!and(a.ClientPlans__r, a.ClientPlans__r.length > 0)}">
+                                            <aura:iteration items="{!a.ClientPlans__r}" var="plan">
+                                                <div id="{!plan.Id}" class="slds-tile clientPlan" onclick="{!c.onPlanClicked}">
+                                                    <p class="slds-tile__title slds-truncate blue">{!plan.Name}</p>
+                                                    <div class="slds-tile__detail slds-list--horizontal slds-has-dividers slds-text-body--small">
+                                                        <li class="slds-truncate slds-list__item">
+                                                            {!if(plan.Status__c, plan.Status__c, 'Status undefined')}
+                                                        </li>
+                                                        <li class="slds-truncate slds-list__item"><ui:outputDate value="{!plan.CreatedDate}"/></li>
+                                                    </div>
+                                                </div>
+                                            </aura:iteration>
+                                        </aura:if>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </aura:set>
+                        </aura:if>
+                    </aura:iteration>
+                    
+                    <div id="loadMoreButtonWrapper">
+                        <button id="loadMoreButton" class="slds-button slds-button--neutral" onclick="{!c.loadMore}">Load more</button>
+                    </div>
+                    
+                </aura:set>
+            </aura:if>
+            
+        </div>
+    </div>
+    
+</aura:component>

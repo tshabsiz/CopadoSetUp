@@ -1,0 +1,374 @@
+<apex:page standardController="Case" extensions="Payments_QA_Statements_Ext" showHeader="false" sidebar="false" action="{!searchDeal}">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm">
+        <apex:messages ></apex:messages>  
+        <div class="slds-scrollable--x" id="deallist">
+            <table width="100%" id="bicclients" class="slds-table slds-table--bordered ">
+                <tr class="slds-text-heading--label">
+                    <th class="slds-cell-shrink">Deal</th>
+                    <th class="slds-cell-shrink">Customer</th>
+                    <th class="slds-cell-shrink">Type</th>
+                    <th class="slds-cell-shrink">Deal Date</th>
+                    <th class="slds-cell-shrink">Value Date</th>
+                    <th class="slds-cell-shrink">Purchase</th>
+                    <th class="slds-cell-shrink">Amount</th>
+                    <th class="slds-cell-shrink">Sell</th>
+                    <th class="slds-cell-shrink">Amount</th>
+                </tr>
+                <apex:repeat value="{!dealList.PODETAIL}" var="rc" id="lst">
+                    <tr class="slds-hint-parent slds-is-selected">
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_PREF}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_CNAM}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_RECI}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_DDAT}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_VDAT}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_SRCE}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_SAMT}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_SRCE}" /></td>
+                        <td class="slds-cell-shrink"><apex:outputText value="{!rc.IP_RAMT}" /></td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+    </apex:form>
+     <apex:form id="deatailFrm" style="width:700px">
+        <apex:outputPanel id="src" style="padding:10px;">
+            <apex:actionStatus startText="Busy Searching...." stopText="" id="searchSta" startStyle="color: grey;font-weight: bold;font-size:large;"/>    
+            <table width="60%" >
+                <tr>
+                    <td width="50%">
+                        <div class="slds" style="padding:10px;">
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Payment Ref</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_PREF}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Customer Short Des</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_CSSN} {!dealList.PODETAIL.IP_CRTN} {!dealList.PODETAIL.IP_CRNM}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Source</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_SRCE}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Rand Value Amount</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_RRVL}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Reference</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_FRNT}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Booking Code</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_BOKC}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Reportable Code</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_BREP}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">BOP Category</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_BCAT}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/><br/>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Sender (Purchase)</label>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Nostro</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_SND1}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Account</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_SACC}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_SNAM}" styleclass="slds-input" style="border-style: none;"></apex:outputText> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Value</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_SAMT}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td width="50%">
+                        <div class="slds" style="padding:10px;">
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Originating Client</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_CNAM}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Profit Centre</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_PRFC}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Value / Deal Date</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_VDAT} / {!dealList.PODETAIL.IP_DDAT}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">&nbsp;</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">&nbsp;</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Beneficiary Info</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_BNC1}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">&nbsp;</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">&nbsp;</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/><br/>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Reciever (Sell)</label>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Nostro</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_RBNK}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Account</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_RACC}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_RNAM}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form--stacked">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Value</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:outputText value="{!dealList.PODETAIL.IP_RAMT}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table width="60%">
+                <tr>
+                <td>
+                    <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">References</label>
+                            </div>
+                        </div>
+                </td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Related Payment ref</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_RLPR}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Related Ref 1</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_RDL1}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Related Ref 2</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_RDL2}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div> 
+                    </td>
+                </tr>
+            </table >
+             <table width="60%">
+                <tr>
+                <td>
+                    <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Input and Authorisers</label>
+                            </div>
+                        </div>
+                </td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Type</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="Input" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    <apex:outputText value="Authoriser" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Profile</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_USR1}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_AUP1}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Name</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_BOKD}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_BOKD}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" style="font-weight: bold;color:#404040">Date and Time</label>
+                                <div class="slds-form-element__control">
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_TMST}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                    <apex:outputText value="{!dealList.PODETAIL.IP_TMST}" styleclass="slds-input" style="border-style: none;"></apex:outputText>
+                                </div>
+                            </div>
+                        </div> 
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:form>
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+    var dealref = '';
+    function request(){
+        //alert(document.getElementById('{!$Component.mainFrm.fdateval}').value);
+        //reqAction();
+        //openSubTab();
+    };
+    function openSubTab() {
+        sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+    };
+    var primaryTabId2 = function primaryTabId2(result2) {
+        sforce.console.openSubtab(result2.id , '/apex/Payments_Tier_View?dealref=' + dealref, true, dealref, null);
+    };    
+    function RefreshPrimaryTab(){
+        if (sforce.console.isInConsole()){
+            sforce.console.getFocusedPrimaryTabId(showTabId);
+        }else{
+            window.top.location.href = '/' + consoleCaseId;
+        }
+    };
+    
+    var showTabId = function showTabId(result){
+        var tabId = result.id;
+        sforce.console.refreshPrimaryTabById(tabId, true);
+    };
+    </script>
+</apex:page>

@@ -1,0 +1,1836 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Object that captures actions to be taken when the usr hits a specific URL/type of page.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>lightningbuddy__Action_Text__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Action Text</label>
+        <length>100000</length>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Enabled_Profiles__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Comma separated list of profiles that should have this action triggered.</inlineHelpText>
+        <label>Enabled Profiles</label>
+        <length>100000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__External_Id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>External Id</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__File_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>File Id</label>
+        <length>20</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Image_Carousel_Config__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Image Carousel Config</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Lightning_Flow_API_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Lightning Flow API Name</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Object__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Object</label>
+        <length>255</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Page_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Page Type</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Home</fullName>
+                    <default>false</default>
+                    <label>Home</label>
+                </value>
+                <value>
+                    <fullName>Record Home</fullName>
+                    <default>false</default>
+                    <label>Record Home</label>
+                </value>
+                <value>
+                    <fullName>Chatter Group Detail</fullName>
+                    <default>false</default>
+                    <label>Chatter Group Detail</label>
+                </value>
+                <value>
+                    <fullName>Dashboards Home</fullName>
+                    <default>false</default>
+                    <label>Dashboards Home</label>
+                </value>
+                <value>
+                    <fullName>Record Detail</fullName>
+                    <default>false</default>
+                    <label>Record Detail</label>
+                </value>
+                <value>
+                    <fullName>Reports Home</fullName>
+                    <default>false</default>
+                    <label>Reports Home</label>
+                </value>
+                <value>
+                    <fullName>Task Detail From List</fullName>
+                    <default>false</default>
+                    <label>Task Detail From List</label>
+                </value>
+                <value>
+                    <fullName>Task home</fullName>
+                    <default>false</default>
+                    <label>Task home</label>
+                </value>
+                <value>
+                    <fullName>Record Update</fullName>
+                    <default>false</default>
+                    <label>Record Update</label>
+                </value>
+                <value>
+                    <fullName>Chatter</fullName>
+                    <default>false</default>
+                    <label>Chatter</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Popover_Text__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Popover Text</label>
+        <length>100000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Quick_Action_API_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Quick Action API Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Record_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Record Id</label>
+        <length>20</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Record_Type_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>RecordType.DeveloperName</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Record Type Name</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Record_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Record Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Record_Update_Criteria__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Record Update Criteria</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Recurrence_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Recurrence Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Recurrence_Days__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Recurrence Days</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Recurrence__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Recurrence</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Days after certain date</fullName>
+                    <default>false</default>
+                    <label>Days after certain date</label>
+                </value>
+                <value>
+                    <fullName>Only once</fullName>
+                    <default>false</default>
+                    <label>Only once</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Duration__c</fullName>
+        <defaultValue>5</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Duration in seconds after which the alert will dismiss itself.</inlineHelpText>
+        <label>Toaster Alert Duration</label>
+        <precision>2</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Icon__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Icon displayed when type=&apos;other&apos;</inlineHelpText>
+        <label>Toaster Alert Icon</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Message__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>A message to display on the toaster alert action. Can also be a parameterized message.</inlineHelpText>
+        <label>Toaster Alert Message</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Mode__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Toaster Alert Mode</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>dismissible</fullName>
+                    <default>true</default>
+                    <label>dismissible</label>
+                </value>
+                <value>
+                    <fullName>sticky</fullName>
+                    <default>false</default>
+                    <label>sticky</label>
+                </value>
+                <value>
+                    <fullName>pester</fullName>
+                    <default>false</default>
+                    <label>pester</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Param_Config__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Toaster Alert Param Config</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Title__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Toaster Alert Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Toaster_Alert_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Toaster Alert Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>other</fullName>
+                    <default>true</default>
+                    <label>other</label>
+                </value>
+                <value>
+                    <fullName>info</fullName>
+                    <default>false</default>
+                    <label>info</label>
+                </value>
+                <value>
+                    <fullName>warning</fullName>
+                    <default>false</default>
+                    <label>warning</label>
+                </value>
+                <value>
+                    <fullName>success</fullName>
+                    <default>false</default>
+                    <label>success</label>
+                </value>
+                <value>
+                    <fullName>error</fullName>
+                    <default>false</default>
+                    <label>error</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Rich Text</fullName>
+                    <default>false</default>
+                    <label>Rich Text</label>
+                </value>
+                <value>
+                    <fullName>File</fullName>
+                    <default>false</default>
+                    <label>File</label>
+                </value>
+                <value>
+                    <fullName>Popover</fullName>
+                    <default>false</default>
+                    <label>Popover</label>
+                </value>
+                <value>
+                    <fullName>Image Carousel</fullName>
+                    <default>false</default>
+                    <label>Image Carousel</label>
+                </value>
+                <value>
+                    <fullName>Video</fullName>
+                    <default>false</default>
+                    <label>Video</label>
+                </value>
+                <value>
+                    <fullName>Object Quick Action</fullName>
+                    <default>false</default>
+                    <label>Object Quick Action</label>
+                </value>
+                <value>
+                    <fullName>Flow</fullName>
+                    <default>false</default>
+                    <label>Flow</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Video_Link__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Video Link</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Video_Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Video Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Youtube</fullName>
+                    <default>false</default>
+                    <label>Youtube</label>
+                </value>
+                <value>
+                    <fullName>Vimeo</fullName>
+                    <default>false</default>
+                    <label>Vimeo</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Welcome_Mat_Background_Image__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Welcome Mat Background Image</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Welcome_Mat_Body__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Welcome Mat Body</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Welcome_Mat_Main_Image__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Welcome Mat Main Image</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Welcome_Mat_Tile_Config__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Welcome Mat Tile Config</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>lightningbuddy__Welcome_Mat_Title__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Welcome Mat Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Actions</label>
+    <listViews>
+        <fullName>lightningbuddy__All</fullName>
+        <columns>NAME</columns>
+        <columns>lightningbuddy__Object__c</columns>
+        <columns>lightningbuddy__Page_Type__c</columns>
+        <columns>CREATED_DATE</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Guideme Actions Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Actions</pluralLabel>
+    <recordTypes>
+        <fullName>lightningbuddy__File</fullName>
+        <active>true</active>
+        <label>File</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Flow</fullName>
+        <active>true</active>
+        <label>Flow</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Image_Carousel</fullName>
+        <active>true</active>
+        <label>Image Carousel</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Object_Quick_Action</fullName>
+        <active>true</active>
+        <label>Object Quick Action</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Popover</fullName>
+        <active>true</active>
+        <label>Popover</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Rich_Text</fullName>
+        <active>true</active>
+        <label>Rich Text</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Toaster_Alert</fullName>
+        <active>true</active>
+        <label>Toaster Alert</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Video</fullName>
+        <active>true</active>
+        <label>Video</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>lightningbuddy__Welcome_Mat</fullName>
+        <active>true</active>
+        <label>Welcome Mat</label>
+        <picklistValues>
+            <picklist>lightningbuddy__Page_Type__c</picklist>
+            <values>
+                <fullName>Chatter</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Chatter Group Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Dashboards Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Detail</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Record Update</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Reports Home</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task Detail From List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Task home</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Recurrence__c</picklist>
+            <values>
+                <fullName>Days after certain date</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Only once</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Mode__c</picklist>
+            <values>
+                <fullName>dismissible</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>pester</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>sticky</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Toaster_Alert_Type__c</picklist>
+            <values>
+                <fullName>error</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>info</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>other</fullName>
+                <default>true</default>
+            </values>
+            <values>
+                <fullName>success</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>warning</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Type__c</picklist>
+            <values>
+                <fullName>File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Flow</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Image Carousel</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Object Quick Action</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Popover</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rich Text</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Video</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>lightningbuddy__Video_Type__c</picklist>
+            <values>
+                <fullName>Vimeo</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

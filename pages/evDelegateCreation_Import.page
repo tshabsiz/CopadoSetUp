@@ -1,0 +1,470 @@
+<apex:page sidebar="False" controller="evDelegateCreation_Controller" standardStylesheets="true">
+    <head>
+        <apex:slds />
+        <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />-->
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" /> 
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" />
+        
+        <script type="text/javascript">
+        var j$ = $.noConflict();
+        
+        function checkIt(){
+            console.log('checkit Called');
+            if (j$('.message').length > 0){
+                // Error exists
+                j$('#promptPanel').css('display','block');
+                console.log('Check it called');
+            }
+            else{
+                j$('#promptPanel').css('display','none');
+            }
+        }
+        
+        </script>  
+        
+        <style>
+            
+            .slds-scoped-notification {
+            padding: 0.75rem; }
+            
+            .slds-scoped-notification_dark {
+            background-color: #706e6b;
+            color: white; }
+            
+            .slds-scoped-notification_light {
+            background-color: #fafaf9;
+            }
+            
+            .slds-scoped-notification_dark a {
+            color: white;
+            text-decoration: underline; }
+            
+            .slds-scoped-notification_dark a:hover, .slds-scoped-notification_dark a:active {
+            text-decoration: none; }
+            
+            #spinnerLoader {
+            display: none;
+            }
+            
+            
+        </style>
+        
+    </head>
+    
+    <div class="slds-page-header" style="">
+        <div class="slds-media">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-opportunity" title="Prioritise Delegates">
+                    <svg class="slds-icon" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/standard-sprite/svg/symbols.svg#orders')}"></use>
+                    </svg>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Prioritise Delegates">Import Delegates</h1>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-p-around_small">
+        
+        <apex:outputPanel layout="none" rendered="{!if(hasItems,false,true)}">
+            <div class="slds-scoped-notification slds-media slds-media_center slds-scoped-notification_light" role="status">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-utility-announcement" title="information">
+                        <svg class="slds-icon slds-icon-text-default slds-icon_small" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.LDS2, 'assets/icons/standard-sprite/svg/symbols.svg#announcement')}" />
+                        </svg>
+                        <span class="slds-assistive-text">information</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p>No delegate records have been loaded for processing.</p>
+                </div>
+            </div>
+            
+            <div class="slds-m-top_medium">
+                <div style="width: 48rem;">
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <div>
+                                <a href="{!importFileTemplateURL}" class="slds-box slds-box_link slds-box_x-small slds-media">
+                                    <div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                                        <span class="slds-icon_container slds-icon-utility-knowledge_base" title="Download the Import Template">
+                                            <svg class="slds-icon slds-icon-text-default" aria-hidden="true">
+                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#drafts" />
+                                            </svg>
+                                            <span class="slds-assistive-text">Download the Import Template</span>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body slds-border_left slds-p-around_small">
+                                        <h2 class="slds-truncate slds-text-heading_small" title="Share the knowledge">Download the Import Template</h2>
+                                        <p class="slds-m-top_small">Download the import template and rename the file to include the csv extension.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="width: 24rem;">
+                                <a href="{!dataImportWizardURL}" class="slds-box slds-box_link slds-box_x-small slds-media">
+                                    <div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                                        <span class="slds-icon_container slds-icon-utility-knowledge_base" title="Import Records">
+                                            <svg class="slds-icon slds-icon-text-default" aria-hidden="true">
+                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#product_request" />
+                                            </svg>
+                                            <span class="slds-assistive-text">Import Records</span>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body slds-border_left slds-p-around_small">
+                                        <h2 class="slds-truncate slds-text-heading_small" title="Share the knowledge">Import Records</h2>
+                                        <p class="slds-m-top_small">Import records into the pending delegates object. Return to this page after the import. </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </apex:outputPanel>
+        
+        <apex:form id="theForm">   
+            <apex:actionStatus id="pnlStatus1" startText="Loading..." stopText="" >
+                <apex:facet name="start">
+                    <div class="slds-spinner_container">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            
+            
+            <apex:outputPanel rendered="{!if(hasItems,true,false)}">  
+                
+                <apex:outputPanel layout="none" id="pnlMessages">
+                    <p><apex:pageMessages id="pnlPageMessages"  ></apex:pageMessages></p>
+                    <div id="errordiv">
+                        <apex:dataTable value="{!ContactUpsertErrorList}" var="Error">
+                            <apex:column >
+                                &nbsp;
+                            </apex:column>
+                            <apex:column >
+                                &nbsp;&nbsp;&nbsp;&nbsp;<apex:outputText style="color:red" value="{!Error}"/>
+                            </apex:column>
+                      </apex:dataTable>
+                    </div>
+                </apex:outputPanel>
+                
+                <div class=" slds-grid">
+                    <div class="slds-p-horizontal_small slds-size_1-of-2 slds-medium-size_6-of-6 slds-large-size_3-of-12">
+                        <div class="slds-panel ">
+                            <div class="slds-form slds-form_stacked">
+                                <div class="slds-panel__section slds-border_bottom">
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-truncate slds-text-heading_small" title="Select Event/Host">Select Event/Host</h2>
+                                    </div>
+                                </div>
+                                <div class="slds-panel__section">
+                                    <apex:outputPanel id="pnlPageBlockSection" >
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="select-01">Please select the event you would like to add delegates to:</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <apex:selectList value="{!selectedEvent}" size="1" styleClass="slds-select" onchange="javascript: j$('[id$=pnlNumInvites]').hide();j$('[id$=pnlNumInvitesUsed]').hide(); j$('[id$=hidNumberOfInvites]').val('0'); if (j$(this).val() == ''){j$('input[id$=chkImport]').each(function(){j$(this).prop('checked',false); j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)'); })} j$('[id$=pdTable]').find('select').each(function(){ j$(this).val('Select');});j$('[id$=selTeamMembers]').val('');"><!--onchange="getteammembers();"-->
+                                                        <apex:selectOptions value="{!EventsList}"></apex:selectOptions>
+                                                    </apex:selectList>
+                                                    <apex:actionSupport event="onchange" action="{!GetTeamMembersList}" oncomplete="checkIt();" reRender="pnlPageBlockSection2,pnlMessages,pnlButtons" status="pnlStatus1" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel id="pnlPageBlockSection2" >
+                                        <div class="slds-form-element">
+                                            <apex:outputPanel id="pnlTeamMembers" rendered="{!If(TeamMembersList!=null, true, false)}" style="width:100%;clear:right;">
+                                                <div class="slds-border_top slds-m-top_medium">
+                                                    <div class="slds-p-top_medium">
+                                                        <label class="slds-form-element__label" for="select-01">Please select the person who will be hosting the delegates:</label>   
+                                                        <div class="slds-form-element__control">
+                                                            <apex:selectList id="selTeamMembers" value="{!selectedTeamMember}" size="1" styleClass="slds-select" onchange="javascript:j$('input[id=chkImport]').each(function(){j$(this).prop('checked',false);j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)'); });"><!--onchange="getInvites();"-->
+                                                                <apex:selectOptions value="{!TeamMembersList}"></apex:selectOptions>
+                                                            </apex:selectList>
+                                                            <apex:actionSupport event="onchange" action="{!TeamMemberSelected}" reRender="pnlPageBlockSection3,pnlPageBlockSection4,pnlButtons" status="pnlStatus1">                           
+                                                            </apex:actionSupport>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel> 
+                                        </div>
+                                    </apex:outputPanel>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-p-horizontal_small slds-size_2-of-2 slds-medium-size_6-of-6 slds-large-size_9-of-12">
+                        <div class="slds-panel ">
+                            <div class="slds-panel__section slds-border_bottom">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-truncate slds-text-heading_small" title="Select Delegates to Import">Select Delegates to Import</h2>
+                                </div>
+                            </div>
+                            <apex:outputPanel id="pnlPageBlockSection3" >
+                                <apex:outputPanel id="pnlNumInvitesUsed" style="width:100%;" rendered="{!If(numberOfInvites != '0' && numberOfInvites!='' && numberOfInvitesUsed > -1, true, false)}">
+                                    <div class="slds-m-top_medium">
+                                        <span style="{!if (numberOfInvitesUsed >= VALUE(numberOfInvites),'color:red;','color:#099AD6;')}width:100%;"><apex:outputLabel id="lblNumberOfInvitesUsed" value="{!if (numberOfInvitesUsed >= VALUE(numberOfInvites), 'This host has used ALL (' + TEXT(numberOfInvitesUsed) + ') of their proposed invites.', 'This host has used ' + TEXT(numberOfInvitesUsed) + ' of ' + numberOfInvites + ' proposed invites.')}"></apex:outputLabel></span>                        
+                                        <apex:inputHidden id="hidNumberOfInvitesUsed" value="{!numberOfInvitesUsed}"/>
+                                        <apex:inputHidden id="hidNumberOfInvites" value="{!numberOfInvites}"/>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel id="pnlPageBlockSection4" >
+                                <div id="spinnerLoader">
+                                    <div class="slds-spinner_container">
+                                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <style>
+                                    @keyframes border-red-fade {
+                                    0%  { border-left: 1px solid rgb(237, 237, 237);}
+                                    0.1%   { border-left: 4px solid rgba(255, 0, 0, 1); }                                        
+                                    99.99%  { border-left: 4px solid rgba(255, 0, 0, 0);}
+                                    100%  { border-left: 1px solid rgb(237, 237, 237);}
+                                    }
+                                    
+                                    .invalidborder {                                        
+                                    animation: border-red-fade 1s;
+                                    animation-iteration-count: 1;
+                                    }
+                                </style>
+                                <script type="text/javascript">
+                                
+                                var numOfInvitesUsed = j$('[id$=hidNumberOfInvitesUsed]').val();
+                                var numOfInvites = 0;
+                                
+                                function checkAll(cb)
+                                {
+                                    console.log('checkAll Called');
+                                    var c = 0;
+                                    var ch = false;
+                                    numOfInvites = j$('[id$=hidNumberOfInvites]').val();                                    
+                                    var inputElem = j$('input[id$=chkImport]');
+                                    ch = j$(cb).prop('checked');
+                                    inputElem.each(function(){
+                                        
+                                        j$(this).prop('checked', j$(cb).prop('checked'));
+                                        if (j$(this).prop('checked') == true)
+                                        {
+                                            j$(this).parent().parent().parent().css('border-left','4px solid green');
+                                        }
+                                        else
+                                        {                               
+                                            j$(this).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');   
+                                        }
+                                        
+                                        if (j$(cb).prop('checked') == true)
+                                        {                                            
+                                            numOfInvitesUsed++;                                            
+                                        }
+                                        else 
+                                        {
+                                            
+                                            numOfInvitesUsed--;                                           
+                                        }
+                                    });
+                                    
+                                    if ((numOfInvitesUsed>=parseInt(numOfInvites)) && ch == true)
+                                    {                                        
+                                        j$('[id$=btnCreate]').prop('disabled',true);
+                                    }
+                                    else
+                                    {                                       
+                                        j$('[id$=btnCreate]').prop('disabled',false);
+                                    }  
+                                    j$('[id$=pnlNumInvitesUsed]').show();
+                                    if (numOfInvitesUsed>=parseInt(numOfInvites))
+                                    {
+                                        j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used ALL of their proposed invites.");
+                                    }
+                                    else
+                                    {
+                                        j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used " + numOfInvitesUsed + " of " + numOfInvites + " proposed invites.");
+                                    } 
+                                }
+                                
+                                function AddSelectedInvitees(obj)
+                                {    
+                                    console.log('AddSelectedInvitees Called');
+                                    if (j$('[id$=btnCreate]').is(':visible'))
+                                    {
+                                        numOfInvites = j$('[id$=hidNumberOfInvites]').val();
+                                        
+                                        if (j$(obj).prop('checked') == true)
+                                        {          
+                                            j$(obj).parent().parent().find('select').prop('required',true);
+                                            if ((parseInt(numOfInvitesUsed) < parseInt(numOfInvites)) && numOfInvitesUsed > -1)
+                                            {                                          
+                                                numOfInvitesUsed++;
+                                                j$(obj).parent().parent().parent().css('border-left','4px solid green');
+                                                j$('[id$=pnlNumInvitesUsed]').css('color','green');                                           
+                                                j$(obj).attr('checked','checked');
+                                            } 
+                                            else 
+                                            {   
+                                                j$(obj).parent().parent().parent().removeClass('invalidborder');
+                                                setTimeout(function(){j$(obj).parent().parent().parent().addClass('invalidborder');}, 100);                                          
+                                                
+                                                j$(obj).prop('checked', false);
+                                                j$(obj).attr('checked','');
+                                                j$(obj).val('');                                           
+                                            }
+                                        }
+                                        else 
+                                        {
+                                            j$(obj).parent().parent().find('select').prop('required',false);
+                                            if (numOfInvitesUsed > 0) numOfInvitesUsed--;
+                                            j$('[id$=pnlNumInvitesUsed]').css('color','#099AD6');
+                                            j$(obj).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');                                        
+                                        }
+                                        
+                                        j$('[id$=pnlNumInvitesUsed]').show();
+                                        if (numOfInvitesUsed>=numOfInvites)
+                                        {
+                                            j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used ALL of their proposed invites.");
+                                        }
+                                        else
+                                        {
+                                            j$('[id$=lblNumberOfInvitesUsed]').empty().append("This host has used " + numOfInvitesUsed + " of " + numOfInvites + " proposed invites.");
+                                        }   
+                                    } 
+                                    else 
+                                    {
+                                        if (j$(obj).prop('checked') == true)
+                                        {
+                                            j$(obj).parent().parent().parent().css('border-left','4px solid green');
+                                        }
+                                        else
+                                        {                               
+                                            j$(obj).parent().parent().parent().css('border-left','1px solid rgb(237, 237, 237)');   
+                                        }
+                                    }
+                                };
+                                </script>
+                                
+                                <div class="slds-m-top_medium slds-align_absolute-center">
+                                    <table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout" role="grid">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="slds-text-align_right" scope="col" style="width: 3.25rem;">
+                                                    <div class="slds-th__action slds-th__action_form">
+                                                        <span class="slds-checkbox">
+                                                            <input type="checkbox" name="options" id="checkbox-213" tabindex="-1" value="on" onclick="checkAll(this)" />
+                                                            <label class="slds-checkbox__label" for="checkbox-213">
+                                                                <span class="slds-checkbox_faux"></span>
+                                                                <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name" scope="col" style="">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="First Name">First Name</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Account Name" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Last Name">Last Name</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Close Date" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Company Name">Company Name</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Stage" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Job Title">Job Title</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Confidence" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Mobile">Mobile</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Amount" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Email">Email</span>
+                                                </th>
+                                                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Contact" scope="col">
+                                                    <span class="slds-assistive-text">Sort by: </span>
+                                                    <span class="slds-truncate" title="Possible Matches">Possible Matches</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <apex:repeat var="pd" value="{!DelegateWrappers}">
+                                                <tr class="slds-hint-parent">
+                                                    <td class="slds-text-align_right" role="gridcell">
+                                                        <span class="slds-checkbox">
+                                                            <apex:inputCheckbox value="{!pd.doImport}" onclick="javascript: AddSelectedInvitees(this);" id="chkImport"/>
+                                                            <apex:outputLabel styleClass="slds-checkbox__label" for="chkImport">
+                                                                <span class="slds-checkbox_faux"></span>
+                                                                <span class="slds-form-element__label slds-assistive-text">Select item</span>
+                                                            </apex:outputLabel>
+                                                        </span>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.FirstName}">{!pd.FirstName}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.LastName}">{!pd.LastName}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.CompanyName}">{!pd.CompanyName}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.JobTitle}">{!pd.JobTitle}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.MobilePhone}">{!pd.MobilePhone}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title="{!pd.Email}">{!pd.Email}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <apex:outputPanel layout="none" rendered="{!pd.hasPossibleMatches}">
+                                                            <apex:selectList value="{!pd.ActualMatch}" size="1" styleClass="slds-select" id="selAction">
+                                                                <apex:selectOptions value="{!pd.PossibleMatches}"></apex:selectOptions>
+                                                            </apex:selectList>  
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel layout="none" rendered="{!NOT(pd.hasPossibleMatches)}">
+                                                            <div class="slds-truncate" title="No Matches, Creating New Contact">No Matches, Creating New Contact</div>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                                            </apex:repeat>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-m-top_medium slds-align_absolute-center">
+                                    <apex:outputPanel id="pnlButtons">
+                                        <apex:commandButton action="{!removeDelegates}" reRender="pnlPageBlockSection4,pnlMessages" Value="Delete Selected Delegates" id="btnRemove" onclick="if(!confirm('Are you sure you want to DELETE the selected records?')){return false;} else {window.scrollTo(0,0);j$('[id$=divStatus]').show();j$('[id$=divStatusBackground]').show();};" styleClass="slds-button slds-button_destructive">                         
+                                        </apex:commandButton>                    
+                                        <apex:commandButton action="{!createDelegates}" reRender="pnlPageBlockSection4,pnlMessages" Value="Add Delegates" id="btnCreate" styleClass="slds-button slds-button_brand" onclick="javascript:window.scrollTo(0,0); j$('[id$=spinnerLoader]').show();" rendered="{!if(selectedEvent != '' && selectedTeamMember != null && selectedTeamMember != '' && selectedTeamMember != 'Select', true, false)}" />
+                                    </apex:outputPanel>
+                                </div>
+                                
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </div>
+                
+                
+            </apex:outputPanel>
+        </apex:form>  
+    </div>   
+    
+</apex:page>

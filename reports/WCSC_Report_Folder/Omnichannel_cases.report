@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>AgentWork$AssignedDateTime</field>
+    </columns>
+    <columns>
+        <field>AgentWork$AcceptDateTime</field>
+    </columns>
+    <columns>
+        <field>AgentWork$SpeedToAnswer</field>
+    </columns>
+    <columns>
+        <field>AgentWork$Status</field>
+    </columns>
+    <columns>
+        <field>AgentWork$CreatedBy</field>
+    </columns>
+    <columns>
+        <field>AgentWork$WorkItem</field>
+    </columns>
+    <columns>
+        <field>AgentWork$ActiveTime</field>
+    </columns>
+    <currency>ZAR</currency>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>AgentWork$User</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Omnichannel cases</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>omni_channel__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>AgentWork$AcceptDateTime</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

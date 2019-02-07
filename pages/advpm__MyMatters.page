@@ -1,0 +1,202 @@
+<apex:page controller="advpm.MyMattersController" tabStyle="My_Matters__tab" readOnly="true" cache="true" title="{!IF(ShowingHomePageView,'','Focus Matters')}" 
+           showHeader="{!!ShowingHomePageView}" sidebar="{!!ShowingHomePageView}">
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.11.1.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Migrate, 'js/jquery-migrate-1.2.1.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/css/jquery.dataTables.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/js/jquery.dataTables.min.js')}" />
+    <script type="text/javascript">
+        function setFocusOnLoad() {}
+    </script>
+    <script type="text/javascript">
+        var showingHomePageView = {!ShowingHomePageView};
+        var portalLoginConId = '{!portalLoginContactId}';
+        var commPath = '{!$Site.Prefix}';
+        var isSF1 = {!isSF1};
+        var isSF1M = {!isSFMobile};
+        var isLightning = {!isLightning};
+        var listViewEnabled = {!!isSFMobile} && {!!ShowingHomePageView};
+        var matUpdateAllowed = {!$ObjectType.advpm__Matter__c.Updateable};
+        var image_url = "{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/check_60.png')}";
+        var image_down = "{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/down_60.png')}";
+        var image_loading = "/img/loading32.gif";
+        var image_loading_le = "{!URLFOR($Resource.advpm__SLDS0202, '/assets/images/spinners/slds_spinner_brand.gif')}";
+        var tb_listId = '{!tbSettings.listId}';
+        var tb_iLength = '{!tbSettings.iLength}';
+        var tb_aaSorting = [[]];
+        <apex:repeat value="{!tbSettings.aaSorting}" var="a">
+            <apex:variable var="i" value="{!0}" />
+            <apex:repeat value="{!a}" var="b">
+                tb_aaSorting[0][{!i}] = '{!b}';
+                <apex:variable var="i" value="{!(i+1)}" />
+            </apex:repeat>
+        </apex:repeat>
+        var aoColumns = [];
+        var oTable;
+        var tableName = 'table';
+        var fields = [];
+        var fields2 = [''+(isLightning?'':'Action')+'', 'Id'];
+        var fieldTypes = new Array(); 
+        var whereClause = '';
+        var sessid = '{!$Api.Session_ID}';
+        
+        function initVars() {
+            aoColumns = [];
+            fields = [];
+            fields2 = [''+(isLightning?'':'Action')+'', 'Id'];
+            fieldTypes = new Array();
+            
+            <apex:repeat value="{!$ObjectType.advpm__Matter__c.FieldSets.advpm__fieldSet_MyMatters}" var="f" rendered="{!!isSFMobile && showingHomePageView}">
+            if('{!f}' == 'advpm__Matter_Last_Activity_Date__c') {
+                fields2.push('LastActivityDate');
+                fieldTypes['LastActivityDate'] = 'date';
+            }
+            else {
+                fields2.push('{!f}');
+                fieldTypes['{!f}'] = '{!LOWER(f.type)}';
+            }
+            </apex:repeat>
+            <apex:repeat value="{!1}" var="f" rendered="{!isSFMobile}">
+            fields2.push('Name');
+            fieldTypes['Name'] = 'text';
+            fields2.push('LastActivityDate');
+            fieldTypes['LastActivityDate'] = 'date';
+            </apex:repeat>
+            
+            $('.table_container').empty();
+            // Create the table and add columns
+            var table = $('<table id="table" class="list display slds-table" cellspacing="0" cellpadding="0" width="100%"></table>');
+            var thead = $('<thead></thead>');
+            var tbody = $('<tbody></tbody>');
+            var theadtr = $('<tr class="headerRow"></tr>');                 
+            table.appendTo('.table_container');                 
+            table.append(thead);
+            table.append(tbody);
+            thead.append(theadtr);
+            
+            theadtr.append($('<th class="slds-text-heading--label sorting_disabled '+(isLightning && showingHomePageView?" slds-hide ":"")+'">'+(isLightning?'':'Action')+'</th>'));
+            theadtr.append($('<th class="slds-text-heading--label">Id</th>'));
+            <apex:repeat value="{!$ObjectType.advpm__Matter__c.FieldSets.advpm__fieldSet_MyMatters}" var="f" rendered="{!!isSFMobile && showingHomePageView}">
+                if ({!f != 'advpm__Matter_Last_Activity_Date__c'})
+                    theadtr.append($('<th class="slds-text-heading--label slds-truncate">{!JSENCODE(IF(f=='LastActivityDate','Last Activity',f.label))}</th>'));
+            </apex:repeat>
+            <apex:repeat value="{!1}" var="f" rendered="{!isSFMobile}">theadtr.append($('<th class="slds-text-heading--label">Name</th>'));theadtr.append($('<th class="slds-text-heading--label">Last Activity</th>'));</apex:repeat>
+        }
+    </script>
+    <style type="text/css">
+        <apex:repeat value="{!1}" var="v" rendered="{!!showingHomePageView}">
+        .apexp {padding-top:4px}
+        </apex:repeat>
+        <apex:repeat value="{!1}" var="v" rendered="{!isSFMobile}">
+        .bEditBlock .pbHeader>table>tbody>tr>td, .bPageBlock .pbHeader>table>tbody>tr>td, .bLayoutBlock .pbHeader>table>tbody>tr>td, .bEditBlock .pbBottomButtons>table>tbody>tr>td, .bPageBlock .pbBottomButtons>table>tbody>tr>td, .bLayoutBlock .pbBottomButtons>table>tbody>tr>td {padding: 5px 5px}
+        .dataTables_length label, .dataTables_length span.divider {display:none}
+        </apex:repeat>
+        <apex:repeat value="{!1}" var="v" rendered="{!isSF1}">
+        .bPageBlock {border-top: 0px solid #1797c0 !important}
+        body {font-size: 78% !important;line-height: 16px !important}
+        </apex:repeat>
+        <apex:repeat value="{!1}" var="v" rendered="{!showingHomePageView}">
+        html, html .brandQuaternaryBgr {background: #ffffff!important;}
+        </apex:repeat>
+    </style>
+    <style type="text/css">
+        .sorting_asc {padding-right: 20px !important;background: #f2f3f3 url('{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/images/sortArrows_asc.png')}') no-repeat center right !important;}
+        .sorting_desc {padding-right: 20px !important;background: #f2f3f3 url('{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/images/sortArrows_desc.png')}') no-repeat center right !important;}
+        .slds .slds-is-open{display: block;}
+        .slds .slds-dropdown__item > a{display: block;}
+        .dataTables_processing {padding: 10px 0;}
+    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__StandardElements, 'css/31.0/chatterCore.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__My_Matters, 'css/my-matters-styles.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__My_Matters, 'js/my-matters-util.js')}" />
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+        <c:includeSLDS sldsV2="true" />
+        <style type="text/css">
+            .slds .slds-page-header {border-bottom: 0px solid #d8dde6;}
+            .slds .slds-table .slds-text-heading--label {
+                font-size: .75rem;
+                line-height: 1.25;
+                color: rgb(84, 105, 141);
+                text-transform: uppercase;
+                letter-spacing: .0625rem;
+            }
+            body .pbBody table.list tr.headerRow th {color: rgb(84, 105, 141);font-size: .75rem;}
+            .pbBody table.list td a {color: rgb(0, 112, 210)!important;}
+            .pbBody table.list tr.headerRow th {border-width: 0 0 1px 0px!important;}
+            .dataTables_scroll {margin-bottom: 0px;}
+            body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-top: 0px solid #e0e3e5!important;}
+            .pbBody table.list tr.headerRow th {border-width: 0 0 0px 0px!important;}
+            .dataTables_scrollHead {background: #fff;border-top: 1px solid #e0e3e5!important;border-bottom: 1px solid #e0e3e5!important;}
+            .dataTables_processing {padding: 10px 0!important;height: 40px;}
+            .slds ul li, .slds ol li {margin-left: 0em;padding-left: 0;}
+            .sorting_asc {padding-right: 0px !important;background: #ffffff url('{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/images/sortArrows_asc.png')}') no-repeat center right !important;}
+            .sorting_desc {padding-right: 0px !important;background: #ffffff url('{!URLFOR($Resource.advpm__jQuery_DataTables, 'DataTables-1.9.4/media/images/sortArrows_desc.png')}') no-repeat center right !important;}
+        </style>
+        <apex:outputPanel layout="none" rendered="{!ShowingHomePageView}">
+            <style type="text/css">
+                .slds .slds-page-header {padding: 0px 18px 0px 24px;background-color: white;}
+                .slds-page-header p.slds-text-heading--label {padding-top: 10px;font-size: 1em;}
+                body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {border-left: 0px solid #eaeaea;border-right: 0px solid #eaeaea;}
+            </style>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    
+    <input type="hidden" id="hdListId" value="{!tbSettings.listId}" />
+    
+    <apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+        <c:slds_pageheader pageHeaderType="OBJECT"
+                            headerTitle="{!IF(ShowingHomePageView,'','Focus Matters')}" 
+                            showMyMattersListViews="{!!ShowingHomePageView}" 
+                            showMyMattersSearchBox="true" />
+    </apex:outputPanel>
+    
+    <div class="{!IF(isLightning,'slds','')}">
+        <apex:pageBlock mode="detail" rendered="{!!isLightning}">
+            <apex:facet name="header">
+                <table border="0" cellpadding="0" cellspacing="0" class="slds-hide">
+                    <tbody><tr>
+                        <td class="pbTitle" nowrap="nowrap"><h3 class="mainTitle">Focus Matters</h3>&nbsp;<span id="selectListView"></span></td>
+                        <td style="float: right;" align="right">
+                            <div class="feedpage zen searchContainer" style="float:right;">
+                                <div class="feedcontainer">
+                                    <div class="comboMenu zen-line feedsupermenu">
+                                        <div class="zen-searchBox comboSearchMax feedSearch feedSearchOpen feedSearchActive">
+                                            <form class="feedSearchForm" onsubmit="return false;" _lpchecked="1">
+                                                <label for="searchInput" class="zen-assistiveText">Search here</label>
+                                                <input type="text" class="feedSearchTerm" id="searchInput" maxlength="100" placeholder="Search here..." aria-expanded="false" aria-haspopup="true" title="Search here..." alt="Search here" aria-controls="table" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr></tbody>
+                </table>
+            </apex:facet>
+            <div class="pbSubsection">
+            <table class="" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+            <tr>
+            <td class="table_container">
+            
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+        </apex:pageBlock>
+        <apex:pageBlock mode="detail" rendered="{!isLightning}">
+            <div class="pbSubsection">
+            <table class="" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+            <tr>
+            <td class="table_container">
+            
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+        </apex:pageBlock>
+    </div>
+</apex:page>

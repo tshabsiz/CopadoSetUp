@@ -1,0 +1,114 @@
+<apex:page controller="Legal_Quote_Bulk_Approval" action="{!actionLoadRecords}">
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <!-- / JS LIB -->
+    
+    <!-- JAVASCRIPT -->
+    <script>
+    
+    function selectAll()
+    {
+        if($('#checkAll').is(":checked"))
+        {
+            $('.checkSingle').attr('checked', true);
+        }
+        else
+        {
+           $('.checkSingle').attr('checked', false);
+        }  
+    }
+        
+    </script>
+    <!-- / JAVASCRIPT -->
+    
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Legal Quotes" subtitle="Bulk Quote Approval" />
+    
+    <!-- PANEL -->
+    <apex:outputPanel id="all">
+    
+        <!-- FORM --> 
+        <apex:form >
+            
+            <!-- PAGE BLOCK -->
+            <apex:pageBlock title="Legal Quotes for Approval"> 
+                
+                <!-- PAGE MESSAGES -->
+                <apex:pageMessages />
+                
+                <apex:pageBlockButtons rendered="{!NOT(hasError)}" >
+                    
+                    <!-- APPROVE -->
+                    <apex:commandButton value="Approve Selected" style="background:green; color:white" action="{!actionBulkUpdate}" rerender="all">
+                        <apex:param name="approvalMode" value="Approve" assignTo="{!bulkApprovalMode}" />
+                    </apex:commandButton>
+                    <!-- / APPROVE -->
+                    
+                    <!-- REJECT -->
+                    <apex:commandButton value="Reject Selected" style="background:red; color:white" action="{!actionBulkUpdate}" rerender="all">
+                        <apex:param name="approvalMode" value="Reject" assignTo="{!bulkApprovalMode}" />
+                    </apex:commandButton>
+                    
+                    <!-- REJECT -->
+                </apex:pageBlockButtons>
+                
+                <!-- PAGE BLOCK TABLE -->
+                <apex:pageBlockTable value="{!legalQuoteWrapper}" var="wrapperItem" summary="Test Summary" rendered="{!NOT(hasError)}"> 
+                    
+                    <apex:column >
+                        <apex:facet name="header"><input id="checkAll" type="checkbox" onclick="selectAll()" /></apex:facet>
+                        <apex:inputCheckbox value="{!wrapperItem.selected}" styleClass="checkSingle" />
+                    </apex:column>
+                    
+                    <apex:column value="{!wrapperItem.quote.Legal_Quote_Request__c}" />
+                    <apex:column >
+                        <apex:facet name="header">Legal Quote #</apex:facet>
+                        <apex:outputLink value="{!URLFOR($Action.Legal_Quote__c.View, wrapperItem.quote.Id)}" target="_top">{!wrapperItem.quote.Name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column value="{!wrapperItem.quote.Legal_Quote_Request__r.Matter__r.Name}" />
+                    <apex:column value="{!wrapperItem.quote.Legal_Quote_Request__r.Quote_Title__c}" />
+                    <apex:column value="{!wrapperItem.quote.Law_Firm__c}" />
+                    <apex:column value="{!wrapperItem.quote.Contact__c}" />
+                    <apex:column headerValue="Quote Amount">
+                        <apex:outputField value="{!wrapperItem.quote.Quote_Amount__c}" rendered="{!wrapperItem.quote.Quote_Amount__c != 0}" />
+                        <apex:outputField value="{!wrapperItem.quote.Quote_Amount_Rollup__c}" rendered="{!wrapperItem.quote.Quote_Amount_Rollup__c != 0}" />
+                    </apex:column>
+                    <apex:column value="{!wrapperItem.quote.Motivation_Comments__c}" />
+                    <apex:column >
+                        <apex:facet name="header">Approval Comment</apex:facet>
+                        <apex:inputTextArea value="{!wrapperItem.comment}" cols="50" rows="5" /> 
+                    </apex:column>
+                    
+                    <!-- ITEM LEVEL APPROVAL -->
+                    <apex:column >
+                        <apex:facet name="header">Approval Action</apex:facet>
+                        
+                        <!-- APPROVE -->
+                        <apex:commandButton value="Approve" style="background:green; color:white" action="{!approveSingleRow}" rerender="all">
+                            <apex:param name="singleRow" value="{!wrapperItem.quote.Id}" assignTo="{!singleRowId}" />
+                        </apex:commandButton>
+                        <!-- / APPROVE -->
+                        
+                        <!-- REJECT -->
+                        <apex:commandButton value="Reject" style="background:red; color:white" action="{!rejectSingleRow}" rerender="all">
+                            <apex:param name="singleRow" value="{!wrapperItem.quote.Id}" assignTo="{!singleRowId}" />
+                        </apex:commandButton>
+                        <!-- / REJECT -->
+                        
+                    </apex:column>
+                    <!-- / ITEM LEVEL APPROVAL -->
+                    
+                </apex:pageBlockTable>
+                <!-- / PAGE BLOCK TABLE -->
+            
+            </apex:pageBlock>
+            <!-- / PAGE BLOCK -->
+    
+        </apex:form>
+        <!-- / FORM -->
+            
+    </apex:outputPanel>
+    <!-- / PANEL -->
+
+</apex:page>

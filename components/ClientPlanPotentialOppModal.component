@@ -1,0 +1,330 @@
+<apex:component controller="ClientPlanPotentialOppModalController"> 
+    <script>
+        var isUpdate;
+        var isUnqualified;
+        
+        $('document').ready(function() {
+            addModalEvents();
+            addOnChangeListener();
+        });
+        
+        function addOnChangeListener() {
+            $('#unqOptyStage').change(function() {
+                changeProbUnqOpty();
+            });
+            $('#optyStage').change(function(){
+                changeProbOpty();
+            });
+        }
+
+        function changeProbUnqOpty() {
+            var unqOptyStageVal = $('#unqOptyStage option:selected').text();
+            var prob;
+
+            if(unqOptyStageVal == 'Potential Opportunity Identified') {
+                prob = 1;
+            } else if (unqOptyStageVal == 'Potential Opportunity Engaged') {
+                prob = 3;
+            } else {
+                prob = 5;
+            }
+            var probField = document.getElementById('unqOptyProbability');
+            probField.value = prob;
+        }
+
+        function changeProbOpty() {
+            var optyStageVal = $('#optyStage option:selected').text();
+            var prob;
+
+            if(optyStageVal == 'Opportunity Identified') {
+                prob = 10;
+            } else if (optyStageVal == 'Client Engaged') {
+                prob = 20;
+            } else if (optyStageVal == 'Needs Established') {
+                prob = 30;
+            } else if (optyStageVal == 'Initial Solution Proposed') {
+                prob = 40;
+            } else {
+                prob = 50;
+            }
+            var probField = document.getElementById('unqOptyProbability');
+            probField.value = prob;
+        }        
+
+        function addModalEvents() {
+            $('#addUnqOptyModal').on('hidden.bs.modal', function () {
+                $('#unqOptyNameFormGroup').removeClass(hasError);
+                $('#nameRequiredAlert').hide();
+                enableUnqOptyModalInputs();
+            });
+        }
+
+        function closeAddUnqOptyModal() {
+            $('#addUnqOptyModal').hide();
+        }
+
+        function onSaveButtonClicked(){
+            if(isUnqualified) {
+                onSaveUnqOptyButtonClicked();
+            } else {
+                onSaveOptyButtonClicked();
+            }
+        }
+        
+        function onSaveOptyButtonClicked() {
+            var dto = getDataFromOptyModal();
+            if (dto.name.trim() == '') {
+                $('#unqOptyNameFormGroup').addClass(hasError);
+                $('#nameRequiredAlert').show();
+            } else {
+                if(isUpdate) {
+                    onBeforeOptyEdited(dto);
+                } else {
+                    onBeforeOptyAdded(dto);
+                }
+            }
+        }
+        
+        function onSaveUnqOptyButtonClicked() {
+            var dto = getDataFromUnqOptyModal();
+            if (dto.name.trim() == '') {
+                $('#unqOptyNameFormGroup').addClass(hasError);
+                $('#nameRequiredAlert').show();
+            } else {
+                if(isUpdate) {
+                    onBeforeUnqOptyEdited(dto);
+                } else {
+                    onBeforeUnqOptyAdded(dto);
+                }
+            }
+        }
+        
+        function disableUnqOptyModalInputs() {
+            $('#addUnqOptyModal input').each( function() {
+                disableElem(this);
+            });
+            $('#addUnqOptyModal select').each( function() {
+                disableElem(this);
+            });
+        }
+        
+        function enableUnqOptyModalInputs() {
+            $('#addUnqOptyModal input').each( function() {
+                enableElem(this);
+            });
+            $('#addUnqOptyModal select').each( function() {
+                enableElem(this);
+            });
+        }
+        
+        function disableElem(elem) {
+            $(elem).prop('disabled', 'true');
+        }
+        
+        function enableElem(elem) {
+            $(elem).removeAttr('disabled');
+        }
+    
+        function clearAddUnqOptyModal() {
+            $('#convertOptyButton').prop('disabled', false);
+            $('#unqOptyName').val('');
+            $('#unqOptyCloseDate').val('');
+            $('#unqOptyProductWrapper').show();
+            $('#unqOptyProduct').val('');
+            $('.unqOptyModalProduct input').val('');
+            $('#unqOptyStage').prop('selectedIndex', 0);
+            $('#optyStage').prop('selectedIndex', 0);
+            $('#unqOptyStage').hide();
+            $('#optyStage').hide();
+            $('#unqOptyProbability').val('');
+            $('#unqOptyType').prop('selectedIndex', 0);
+            $('#unqOptyCountry').prop('selectedIndex', 0);
+            $('#unqOptyCountry').hide();
+            $('label[for=unqOptyCountry], input#unqOptyCountry').hide();
+        }
+        
+        function getDataFromOptyModal() {
+            var closeDateString = $('#unqOptyCloseDate').val();
+            var closeDateMillis = convertDateToTimestamp(closeDateString);
+            
+            var name = $('#unqOptyName').val();
+            var stage = $('#optyStage option:selected').text();
+            var type = $('#unqOptyType option:selected').text();
+            var country = $('#unqOptyCountry option:selected').val();
+            
+            var dto = {
+                closeDate: closeDateMillis,
+                name: name,
+                stage: stage,
+                type: type,
+                country: country
+            }
+            return dto;
+        }
+        
+        function getDataFromUnqOptyModal() {
+            var closeDateString = $('#unqOptyCloseDate').val();
+            var closeDateMillis = convertDateToTimestamp(closeDateString);
+            
+            var name = $('#unqOptyName').val();
+            
+            //var product = selectedClientPlanProduct == '' ? null : selectedClientPlanProduct ;
+            //If a product has been selected split the values
+            var selectedProductLevel = '';
+            var selectedProductId = '';
+
+            if(selectedProductLevelAndId != '') {
+                selectedProductLevel = selectedProductLevelAndId.substring(0, selectedProductLevelAndId.indexOf('||'));
+                selectedProductId = selectedProductLevelAndId.substring(selectedProductLevelAndId.indexOf('||') + 2);
+
+                console.log('Selected product [Level: ' + selectedProductLevel + ', Id: ' + selectedProductId + ']');
+            }
+
+            var stage = $('#unqOptyStage option:selected').text();
+            var type = $('#unqOptyType option:selected').text();
+            
+            var dto = {
+                closeDate: closeDateMillis,
+                name: name,
+                productLevel: selectedProductLevel,
+                productId: selectedProductId,
+                stage: stage,
+                type: type
+            }
+            
+            return dto;
+        }
+        
+        function convertDateToTimestamp(dateString) {
+            if (dateString === '') {
+                return 0;
+            }
+            
+            var dateSplit = dateString.split('/');
+            if (dateSplit.length != 3) {
+                return 0;
+            }
+            
+            var month = parseInt(dateSplit[1]) - 1;
+            
+            var timestamp = new Date(dateSplit[2], month, dateSplit[0]).getTime();
+            if (isNaN(timestamp)) {
+                return 0;
+            }
+            return timestamp;
+        }
+    
+    </script>
+
+    <div id="addUnqOptyModal" style="display:none;">
+      <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <div class="slds-modal__container">
+          <div class="slds-modal__header">
+            <h2 class="slds-text-heading--medium">{!$Label.lbl_AddOpportunity}</h2>
+            <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeAddUnqOptyModal();return false;">
+              <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+              </svg>
+            </button>
+          </div>
+          <div class="slds-modal__content">
+            <div class="slds-form--stacked">
+            
+              <div id="nameRequiredAlert" class="alert alert-danger" role="alert" style="display: none;">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <apex:outputText value="{!$Label.errMsg_NameRequired}" />
+              </div>
+            
+              <div id="unqOptyNameFormGroup" class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyName">
+                  <apex:outputText value="{!$Label.lbl_Name}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <input id="unqOptyName" class="slds-input" type="text" maxlength="80"/>
+                </div>
+              </div>
+              
+              <div id="unqOptyCloseDateFormGroup" class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyCloseDate">
+                  <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Close_Date__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <input id="unqOptyCloseDate" class="slds-input" type="text" value=""/>
+                </div>
+              </div>
+              
+              <div id="unqOptyProductWrapper" class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyProduct">
+                  <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Product__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <c:ClientPlanProductSearch identificator="unqOptyModalProduct" />
+                </div>
+              </div>
+              
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyStage">
+                  <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Stage__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <select id="unqOptyStage" class="slds-select" style="display:none;">
+                    <apex:repeat value="{!UnqOptyStageOptions}" var="option">
+                      <option>{!option}</option>
+                    </apex:repeat>
+                  </select>
+                  <select id="optyStage" class="slds-select" style="display:none;">
+                    <apex:repeat value="{!OptyStageOptions}" var="option">
+                      <option>{!option}</option>
+                    </apex:repeat>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyProbability">
+                  <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Probability__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <input id="unqOptyProbability" class="slds-input" type="text" maxlength="255" readonly="readonly"/>
+                </div>
+              </div>
+              
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyType">
+                  <apex:outputText value="{!$ObjectType.Potential_Opportunity__c.fields.Type__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <select id="unqOptyType" class="slds-select">
+                    <apex:repeat value="{!TypeOptions}" var="option">
+                      <option>{!option}</option>
+                    </apex:repeat>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="unqOptyCountry">
+                  <apex:outputText value="{!$ObjectType.Opportunity.fields.Opportunity_Country__c.Label}" />
+                </label>
+                <div class="slds-form-element__control">
+                  <select id="unqOptyCountry" class="slds-select" style="display:none;">
+                    <apex:repeat value="{!OptyCountryOptions}" var="option">
+                      <option value="{!option.value}">{!option.label}</option>
+                    </apex:repeat>
+                  </select>
+                </div>
+              </div>  
+                
+            </div>
+          </div>
+          <div class="slds-modal__footer">
+            <button id="showOptyButton" class="slds-button slds-button--neutral" style="display: none;" onclick="closeOptyModal();return false;">Show Opportunity</button>
+            <button id="convertOptyButton" class="slds-button slds-button--neutral slds-button--brand" style="display: none;" onclick="onBeforeConvertUnqOpty();return false;">Convert</button>
+            <button class="slds-button slds-button--neutral" onclick="closeAddUnqOptyModal();return false;">Cancel</button>
+            <button id="saveUnqOptyButton" class="slds-button slds-button--neutral slds-button--brand" onclick="onSaveButtonClicked();return false;">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+    </div>
+</apex:component>

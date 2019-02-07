@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Config object for DSA mobile app category button placement and background images</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Barclays_SA__Button_Text_Align__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Button Text Align</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Left</fullName>
+                    <default>true</default>
+                    <label>Left</label>
+                </value>
+                <value>
+                    <fullName>Center</fullName>
+                    <default>false</default>
+                    <label>Center</label>
+                </value>
+                <value>
+                    <fullName>Right</fullName>
+                    <default>false</default>
+                    <label>Right</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__CategoryBundleId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>ID for Content to use as Bundle for this category</description>
+        <externalId>false</externalId>
+        <label>Category Bundle Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__CategoryId__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Lookup field to link to Category</description>
+        <externalId>false</externalId>
+        <label>Category</label>
+        <referenceTo>Barclays_SA__Category__c</referenceTo>
+        <relationshipLabel>Category Mobile Configurations</relationshipLabel>
+        <relationshipName>Category_Mobile_Configurations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__ContentAttachmentId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Attachment Id for image to use as background for content list buttons</description>
+        <externalId>false</externalId>
+        <label>Content Background Attachment Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__ContentOverAttachmentId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Attachment Id to use as image for over/down state of Content button</description>
+        <externalId>false</externalId>
+        <label>Content Over Background Attachment Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__GalleryHeadingTextColor__c</fullName>
+        <defaultValue>&quot;FFFFFF&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Gallery/Subcategory Heading Text Color</label>
+        <length>6</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__GalleryHeadingText__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Gallery/Subcategory Heading Text</label>
+        <length>200</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__IsDefault__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Determines if this is the default for categories that do not have their own UI configs</description>
+        <externalId>false</externalId>
+        <label>IsDefault</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__IsDraft__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Is Draft</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__LandscapeAttachmentId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Attachment Id of image to use for background for category in Landscape mode</description>
+        <externalId>false</externalId>
+        <label>Landscape Background Attachment Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__LandscapeX__c</fullName>
+        <deprecated>false</deprecated>
+        <description>X coordinate to use for top level category in landscape mode</description>
+        <externalId>false</externalId>
+        <label>LandscapeX</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__LandscapeY__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Y coordinate to use for top level category button landscape mode</description>
+        <externalId>false</externalId>
+        <label>LandscapeY</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__MAC_in_Edit__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(Barclays_SA__MobileAppConfigurationId__r.Barclays_SA__inEdit__c , &quot;true&quot;, &quot;false&quot;)</formula>
+        <label>MAC In Edit</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__MobileAppConfigurationId__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Link to mobile application config to use these UI settings with</description>
+        <externalId>false</externalId>
+        <label>Mobile App Configuration</label>
+        <referenceTo>Barclays_SA__MobileAppConfig__c</referenceTo>
+        <relationshipLabel>Category Mobile Configurations</relationshipLabel>
+        <relationshipName>Category_Mobile_Configurations</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__OverlayBgAlpha__c</fullName>
+        <defaultValue>50</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Alpha for overlay background color, defaults to 50</description>
+        <externalId>false</externalId>
+        <label>Overlay Background Alpha</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__OverlayBgColor__c</fullName>
+        <defaultValue>&quot;000000&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Hex value for overlay background color, defaults to black (000000)</description>
+        <externalId>false</externalId>
+        <label>Overlay Background Color</label>
+        <length>6</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__OverlayTextColor__c</fullName>
+        <defaultValue>&quot;FFFFFF&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Hex value for text color for category details, defaults to white (FFFFFF)</description>
+        <externalId>false</externalId>
+        <label>Overlay Text Color</label>
+        <length>6</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__PortraitAttachmentId__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Attachment Id to be used for the background image in portrait mode for this category</description>
+        <externalId>false</externalId>
+        <label>Portrait Background Attachment Id</label>
+        <length>18</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__PortraitX__c</fullName>
+        <deprecated>false</deprecated>
+        <description>X coord for category button placement in Portrait Mode</description>
+        <externalId>false</externalId>
+        <label>PortraitX</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__PortraitY__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Coordinates for category button placement on top level in portrait mode</description>
+        <externalId>false</externalId>
+        <label>PortraitY</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Sub_Category_Background_Color__c</fullName>
+        <defaultValue>&quot;000000&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Sub-Category Background Color</label>
+        <length>6</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__Top_Level_Category__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Top Level Category</label>
+        <referenceTo>Barclays_SA__Category__c</referenceTo>
+        <relationshipLabel>Category Mobile Configurations (Top Level Category)</relationshipLabel>
+        <relationshipName>Category_Mobile_Configurations1</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Barclays_SA__UseCategoryBundle__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>UseCategoryBundle</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Category Mobile Configuration</label>
+    <listViews>
+        <fullName>Barclays_SA__draft_view</fullName>
+        <columns>NAME</columns>
+        <columns>Barclays_SA__IsDraft__c</columns>
+        <columns>Barclays_SA__CategoryId__c</columns>
+        <columns>Barclays_SA__LandscapeAttachmentId__c</columns>
+        <columns>CREATED_DATE</columns>
+        <columns>LAST_UPDATE</columns>
+        <columns>Barclays_SA__MobileAppConfigurationId__c</columns>
+        <columns>Barclays_SA__CategoryBundleId__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Barclays_SA__IsDraft__c</field>
+            <operation>equals</operation>
+            <value>1</value>
+        </filters>
+        <label>draft view</label>
+    </listViews>
+    <nameField>
+        <displayFormat>CMC-{00000000}</displayFormat>
+        <label>Category Mobile Config Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Category Mobile Configurations</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

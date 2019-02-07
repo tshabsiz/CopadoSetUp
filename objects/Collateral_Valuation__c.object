@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>Collateral_Valuation_Override</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>Collateral_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Used to schedule Collateral Valuations</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Agreement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Agreement</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Agreement__c.Matter_Deal__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Deal__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Agreement__c</referenceTo>
+        <relationshipLabel>Collateral Valuations</relationshipLabel>
+        <relationshipName>Collateral_Valuations</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Collateral__c</fullName>
+        <externalId>false</externalId>
+        <label>Collateral</label>
+        <referenceTo>Collateral__c</referenceTo>
+        <relationshipLabel>Collateral Valuations</relationshipLabel>
+        <relationshipName>Collateral_Valuations</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Create_Report_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Create Report Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Days</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Days Before</fullName>
+                    <default>false</default>
+                    <label>Days Before</label>
+                </value>
+                <value>
+                    <fullName>Days After</fullName>
+                    <default>false</default>
+                    <label>Days After</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Deal__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Deal</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Collateral Valuations</relationshipLabel>
+        <relationshipName>Collateral_Valuations</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Due_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Due Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Effective_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Agreement__c != null, Agreement__r.Effective_Date__c , null)</formula>
+        <label>Effective Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Finalised_Report_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Finalised Report Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Financial_Year_End__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JANUARY&quot;), 
+DATE( YEAR( TODAY() ), 01 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;FEBRUARY&quot;), 
+DATE( YEAR( TODAY() ), 02 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;MARCH&quot;), 
+DATE( YEAR( TODAY() ), 03 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;APRIL&quot;), 
+DATE( YEAR( TODAY() ), 04 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;MAY&quot;), 
+DATE( YEAR( TODAY() ), 05 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JUNE&quot;), 
+DATE( YEAR( TODAY() ), 06 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;JULY&quot;), 
+DATE( YEAR( TODAY() ), 07 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;AUGUST&quot;), 
+DATE( YEAR( TODAY() ), 08 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;SEPTEMBER&quot;), 
+DATE( YEAR( TODAY() ), 09 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;OCTOBER&quot;), 
+DATE( YEAR( TODAY() ), 10 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;NOVEMBER&quot;), 
+DATE( YEAR( TODAY() ), 11 + 1, 1 ) -1, IF(ISPICKVAL(Agreement__r.Client_Name__r.Financial_Year_End_Month__c, &quot;DECEMBER&quot;), 
+DATE( YEAR( TODAY() ), 12, 31 ), null) ) ) ) ) ) ) ) ) ) ) )</formula>
+        <label>Financial Year End</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Frequency__c</fullName>
+        <externalId>false</externalId>
+        <label>Frequency</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Once Off</fullName>
+                    <default>false</default>
+                    <label>Once Off</label>
+                </value>
+                <value>
+                    <fullName>Monthly</fullName>
+                    <default>false</default>
+                    <label>Monthly</label>
+                </value>
+                <value>
+                    <fullName>Quarterly</fullName>
+                    <default>false</default>
+                    <label>Quarterly</label>
+                </value>
+                <value>
+                    <fullName>Bi-Annually</fullName>
+                    <default>false</default>
+                    <label>Bi-Annually</label>
+                </value>
+                <value>
+                    <fullName>Annually</fullName>
+                    <default>false</default>
+                    <label>Annually</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Number_of_Days__c</fullName>
+        <externalId>false</externalId>
+        <label>Number of Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Other_Relative_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Other Relative Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Preparer_Name2__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Preparer Name</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Collateral_Valuations</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Preparer_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Preparer Name</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>advpm__Participant__c.advpm__Matter__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Deal__c</valueField>
+            </filterItems>
+            <filterItems>
+                <field>advpm__Participant__c.RecordType.DeveloperName</field>
+                <operation>equals</operation>
+                <value>Staff</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>advpm__Participant__c</referenceTo>
+        <relationshipLabel>Collateral Valuations (Preparer Name)</relationshipLabel>
+        <relationshipName>Collateral_Valuations1</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Relative_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Relative Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Frequency__c</controllingField>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Effective Date</fullName>
+                    <default>false</default>
+                    <label>Effective Date</label>
+                </value>
+                <value>
+                    <fullName>Signature Date</fullName>
+                    <default>false</default>
+                    <label>Signature Date</label>
+                </value>
+                <value>
+                    <fullName>Financial Year End</fullName>
+                    <default>false</default>
+                    <label>Financial Year End</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Effective Date</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Signature Date</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Financial Year End</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Monthly</controllingFieldValue>
+                <controllingFieldValue>Quarterly</controllingFieldValue>
+                <controllingFieldValue>Bi-Annually</controllingFieldValue>
+                <controllingFieldValue>Annually</controllingFieldValue>
+                <valueName>Other</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Review_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Review Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Reviewer_Name2__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Reviewer Name</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Collateral_Valuations1</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Reviewer_Name__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Reviewer Name</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>advpm__Participant__c.advpm__Matter__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.Deal__c</valueField>
+            </filterItems>
+            <filterItems>
+                <field>advpm__Participant__c.RecordType.DeveloperName</field>
+                <operation>equals</operation>
+                <value>Staff</value>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>advpm__Participant__c</referenceTo>
+        <relationshipLabel>Collateral Valuations</relationshipLabel>
+        <relationshipName>Collateral_Valuations</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Schedule_End_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Schedule End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Schedule_Start_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Schedule Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Signature_Date__c</fullName>
+        <externalId>false</externalId>
+        <formula>IF( Agreement__c != null, Agreement__r.Signature_Date__c , Collateral__r.Signature_Date__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Signature Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Start_Date_End_Date_Changed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Start Date End Date Changed</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Status_Change_Stamp__c</fullName>
+        <externalId>false</externalId>
+        <label>Status Change Stamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Not Scheduled</fullName>
+                    <default>false</default>
+                    <label>Not Scheduled</label>
+                </value>
+                <value>
+                    <fullName>Scheduled</fullName>
+                    <default>false</default>
+                    <label>Scheduled</label>
+                </value>
+                <value>
+                    <fullName>Report in Progress</fullName>
+                    <default>false</default>
+                    <label>Report in Progress</label>
+                </value>
+                <value>
+                    <fullName>Review in Progress</fullName>
+                    <default>false</default>
+                    <label>Review in Progress</label>
+                </value>
+                <value>
+                    <fullName>Reviewed</fullName>
+                    <default>false</default>
+                    <label>Reviewed</label>
+                </value>
+                <value>
+                    <fullName>Completed</fullName>
+                    <default>false</default>
+                    <label>Completed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Valuation_Date__c</fullName>
+        <externalId>false</externalId>
+        <label>Valuation Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Valuation_Product__c</fullName>
+        <externalId>false</externalId>
+        <label>Valuation Product</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <controllingField>Valuation_Type__c</controllingField>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Preference Shares</fullName>
+                    <default>false</default>
+                    <label>Preference Shares</label>
+                </value>
+                <value>
+                    <fullName>RF- BAU</fullName>
+                    <default>false</default>
+                    <label>RF- BAU</label>
+                </value>
+                <value>
+                    <fullName>RF - Pre</fullName>
+                    <default>false</default>
+                    <label>RF - Pre</label>
+                </value>
+                <value>
+                    <fullName>STCF - BAU</fullName>
+                    <default>false</default>
+                    <label>STCF - BAU</label>
+                </value>
+                <value>
+                    <fullName>STCF - Pre</fullName>
+                    <default>false</default>
+                    <label>STCF - Pre</label>
+                </value>
+            </valueSetDefinition>
+            <valueSettings>
+                <controllingFieldValue>Site</controllingFieldValue>
+                <valueName>RF- BAU</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Site</controllingFieldValue>
+                <valueName>RF - Pre</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Site</controllingFieldValue>
+                <valueName>STCF - BAU</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Site</controllingFieldValue>
+                <valueName>STCF - Pre</valueName>
+            </valueSettings>
+            <valueSettings>
+                <controllingFieldValue>Office</controllingFieldValue>
+                <valueName>Preference Shares</valueName>
+            </valueSettings>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Valuation_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Valuation Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Site</fullName>
+                    <default>false</default>
+                    <label>Site</label>
+                </value>
+                <value>
+                    <fullName>Office</fullName>
+                    <default>false</default>
+                    <label>Office</label>
+                </value>
+                <value>
+                    <fullName>Bonds</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Bonds</label>
+                </value>
+                <value>
+                    <fullName>Debtors</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Debtors</label>
+                </value>
+                <value>
+                    <fullName>Fixed Property</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Fixed Property</label>
+                </value>
+                <value>
+                    <fullName>Shares</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Shares</label>
+                </value>
+                <value>
+                    <fullName>Stocks</fullName>
+                    <default>false</default>
+                    <isActive>false</isActive>
+                    <label>Stocks</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Collateral Valuation</label>
+    <nameField>
+        <label>Collateral Valuation Name</label>
+        <trackHistory>true</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Collateral Valuations</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>Due_Date_In_The_Past</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND 
+( 
+ISCHANGED(Due_Date__c) 
+, 
+Due_Date__c &lt; TODAY() 
+,ISPICKVAL( Frequency__c , &apos;Once Off&apos;) 
+)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>You may not change a Once Off Collateral Valuation Due Date to be in the past.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_Required</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF( ISPICKVAL( Frequency__c , &apos;Once Off&apos;) &amp;&amp;  ISNULL( Due_Date__c ) , TRUE, FALSE)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>Due Date required for Once Off Collateral Valuation</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_Specified_On_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND
+(
+ISPICKVAL( Relative_Date__c ,&quot;Other&quot;),
+NOT(ISBLANK(Due_Date__c))
+)</errorConditionFormula>
+        <errorDisplayField>Due_Date__c</errorDisplayField>
+        <errorMessage>You may not specify a Due Date on a Collateral Valuation based on an Other relative date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_on_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(!ISPICKVAL(Frequency__c, &apos;Once Off&apos;) &amp;&amp;  !ISBLANK(Due_Date__c)  , True, False)</errorConditionFormula>
+        <errorMessage>Due Date can only be specified on Once Off Collateral Valuation</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Due_Date_or_Other_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISBLANK(Due_Date__c) = FALSE &amp;&amp;  ISBLANK(Other_Relative_Date__c) = FALSE, TRUE, FALSE)</errorConditionFormula>
+        <errorMessage>You may specify either a Due Date or a Other Relative Date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Other_Relative_Date_In_The_Past</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND 
+( 
+ISCHANGED(Other_Relative_Date__c ) == TRUE,
+NOT(ISBLANK( Other_Relative_Date__c )), 
+Other_Relative_Date__c &lt; TODAY()
+)</errorConditionFormula>
+        <errorDisplayField>Other_Relative_Date__c</errorDisplayField>
+        <errorMessage>Other Relative Date can not be in the past</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Other_Relative_Date_Not_Specified</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND
+(
+ISPICKVAL(Relative_Date__c,&quot;Other&quot;),
+ISBLANK(Other_Relative_Date__c)
+)</errorConditionFormula>
+        <errorDisplayField>Other_Relative_Date__c</errorDisplayField>
+        <errorMessage>You must specify an Other Relative Date for Collateral Valuation based on an Other relative date.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Relative_Date_Fields</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(
+NOT(ISBLANK(TEXT(Relative_Date__c))),
+OR(ISBLANK(TEXT(Days__c)),ISBLANK(TEXT( Frequency__c )),ISBLANK(Number_of_Days__c)))</errorConditionFormula>
+        <errorMessage>Relative Date Fields Required - You must provide values for Number of Days and Days</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Relative_Date_Required</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(!ISPICKVAL(Frequency__c, &apos;Once Off&apos;) &amp;&amp;  ISPICKVAL( Relative_Date__c , &apos;None&apos;), TRUE, FALSE)</errorConditionFormula>
+        <errorDisplayField>Relative_Date__c</errorDisplayField>
+        <errorMessage>Relative Date required for Collateral Valuation that&apos;s not Once Off</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Effective_Date_on_Agreement</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Effective Date&apos;) &amp;&amp;  ISBLANK(Effective_Date__c) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Collateral Valuation without a Effective Date on the Agreement</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Financial_Year_Date_on_Agreemen</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Financial Year End&apos;) &amp;&amp;  ISBLANK( Financial_Year_End__c ) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Collateral Valuation without a Financial Year End on the Deal</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Relative_Date</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND 
+( 
+NOT(ISPICKVAL(Relative_Date__c ,&quot;Other&quot;)), 
+NOT(ISBLANK( Other_Relative_Date__c )) 
+)</errorConditionFormula>
+        <errorMessage>You may not specify a Other Relative Date if Relative Date is not Other</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Validate_Signature_Date_on_Agreement</fullName>
+        <active>true</active>
+        <errorConditionFormula>IF(ISPICKVAL(Relative_Date__c, &apos;Signature Date&apos;) &amp;&amp;  ISBLANK(Signature_Date__c) == True , True, False)</errorConditionFormula>
+        <errorMessage>You are not allowed to schedule a Collateral Valuation without a Signature Date on the Agreement</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

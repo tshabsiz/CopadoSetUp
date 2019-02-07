@@ -1,0 +1,231 @@
+<!--
+ _____ _                 _ _____           _ _   _         
+/  __ \ |               | /  ___|         (_) | | |        
+| /  \/ | ___  _   _  __| \ `--. _ __ ___  _| |_| |__  ___ 
+| |   | |/ _ \| | | |/ _` |`--. \ '_ ` _ \| | __| '_ \/ __|
+| \__/\ | (_) | |_| | (_| /\__/ / | | | | | | |_| | | \__ \
+ \____/_|\___/ \__,_|\__,_\____/|_| |_| |_|_|\__|_| |_|___/
+ 
+ @author Peter Guest
+ 
+ *** CHANGE LOG ***
+ 
+  30/05/2017 - PG   - Create VF page.
+  20/06/2017 - PG   - Change section header title to "Condition".
+  21/06/2017 - PG   - Added "Condition Parties" related list.
+                    - Remove "Financial Year End" from page layout.
+                    - Added "Other Relative Date" to page.
+  22/06/2017 - PG    - Added Margin Rachet Field and "Last Chased Section" 
+                    - Fixed 2 fields that were meant to be "outputs" not inputs.
+  13/07/2017 - PG   - Removed "Notes and Attachments" section.
+  04/10/2017 - PG   - Added "Linked Margin Ratchets" related list on page. 
+  18/02/2018 - KK   - Changed iframe size and box background color. 
+  02/03/2018 - TdB  - Add Condition Clone functionality
+                                                           
+-->
+<apex:page standardController="Condition__c" extensions="Condition_Override" action="{!actionViewRoute}" sidebar="true"> 
+    
+    <!-- JS LIB -->
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    
+    <style>
+        .ratioSeperator {
+           font-weight:bold;
+           font-size: 20px;
+        }
+        .smallInput { 
+            width: 25px; 
+            margin-top:0px !important;
+            margin-bottom:5px !important;
+            padding: 0px 0px 0px 0px !important;
+        }
+        .dataCellStyle {
+            margin-top:0px !important;
+        }
+        .boxStyle .pbHeader{
+        background-color: #bf0202 !important;
+        color: white !important;         
+        font-size: 115% !important;
+        padding: 10px 6px 10px 6px !important;
+        }
+    </style>
+    
+    
+
+    <!-- PAGE HEADER -->
+    <apex:sectionHeader title="Condition" subtitle="{! IF(conditionObject.Id == null,'New Condition',conditionObject.Name) }"/>
+    
+    <chatter:feedWithFollowers entityId="{!conditionObject.Id}"/>
+    
+    <apex:form >
+        
+        <apex:actionFunction name="callBox" action="{!createBoxFolder}" rerender="out" oncomplete="createPermission();"/> 
+        <apex:actionFunction name="createPermission" action="{!createBoxPermission}" rerender="out"/> 
+        
+    <!-- PAGE BLOCK TABLE -->
+    <apex:pageBlock title="Condition Detail" mode="maindetail" id="thePage"> 
+        
+        <!-- BUTTONS -->
+        <apex:PageBlockButtons >
+            <apex:CommandButton value="Edit" action="{!edit}" /> 
+            <apex:CommandButton value="Delete" action="{!delete}" />
+           <apex:CommandButton action="{!cloneCondition}" value="Clone"/>
+        </apex:PageBlockButtons>
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="Condition Information">
+            <apex:outputField value="{!conditionObject.Name}" /> 
+            <apex:outputField value="{!conditionObject.Condition_No__c}" /> 
+            <apex:outputField value="{!conditionObject.Relationship__c}" /> 
+            <apex:outputField value="{!conditionObject.Active__c}" /> 
+            <apex:outputField value="{!conditionObject.Matter__c}" /> 
+            <apex:outputField value="{!conditionObject.OwnerId}" />
+            <apex:outputField value="{!conditionObject.Agreement__c}" /> 
+            <div></div>
+            <apex:outputField value="{!conditionObject.Related_Condition__c}" />
+            <div></div>
+            <!-- <apex:outputField value="{!conditionObject.Occurences__c}" /> -->
+            <div></div>
+            <apex:outputField value="{!conditionObject.Clause__c}" />
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="Condition Dates" columns="2">
+            <apex:outputField value="{!conditionObject.Recurrence__c}" />  
+            <apex:outputField value="{!conditionObject.Due_Date__c}" /> 
+            <apex:outputField value="{!conditionObject.Date__c}" />
+            <apex:outputField value="{!conditionObject.Other_Relative_Date__c}" />
+            <apex:outputField value="{!conditionObject.Number_Of_Days__c}" /> 
+            <apex:outputField value="{!conditionObject.Activation_Start__c}" /> 
+            <apex:outputField value="{!conditionObject.Days__c}" /> 
+            <apex:outputField value="{!conditionObject.Activation_End__c}" />
+            <apex:outputField value="{!conditionObject.Effective_Date__c}" /> 
+            <apex:outputField value="{!conditionObject.Signature_Date__c}" /> 
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- SECTION -->
+        <apex:pageBlockSection title="Financial Covenant Threshold Information" >
+
+            <apex:outputField value="{!conditionObject.Threshold_Type__c}" />
+            <apex:outputField value="{!conditionObject.Source__c}" />
+            <apex:outputField value="{!conditionObject.Threshold_Category__c}" />
+            <apex:outputField value="{!conditionObject.Margin_Ratchet__c}" />
+            <apex:outputField value="{!conditionObject.Threshold_Comparator__c}"  />
+            
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+        <!-- PANEL -->
+        <apex:outputPanel id="thresholdDetail" layout="none">
+            <br />
+            
+            <!-- BASE VALUES -->
+            <apex:pageBlockSection title="Required Base Values" id="baseSection" rendered="{!conditionObject.Threshold_Type__c = 'Base' && conditionObject.Threshold_Category__c != ''}">
+                
+                <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}">
+                    <apex:outputLabel value="Required Base Ratio" for="Required_Base_Ratio_From" />
+                    <apex:outputPanel >
+                            <apex:outputField value="{!conditionObject.Required_Base_Ratio_From__c}" styleClass="smallInput" id="Required_Base_Ratio_From" />
+                            <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                            <apex:outputField value="{!conditionObject.Required_Base_Ratio_To__c}" styleClass="smallInput"  />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:outputField value="{!conditionObject.Required_Base_Percentage__c}" rendered="{!conditionObject.Threshold_Category__c = 'Percentage'}" />
+                <apex:outputField value="{!conditionObject.Required_Base_Multiple__c}" rendered="{!conditionObject.Threshold_Category__c = 'Multiple'}" />
+
+                <!-- NUMBER -->
+                <apex:outputField value="{!conditionObject.Required_Base_Number__c}" rendered="{!conditionObject.Threshold_Category__c = 'Number'}" /> 
+
+                <!-- OTHER -->
+                <apex:outputField value="{!conditionObject.Other__c}" rendered="{!conditionObject.Threshold_Category__c = 'Other'}" />
+                
+            </apex:pageBlockSection>                        
+            
+            <!-- BASE RANGE VALUES -->
+            <apex:pageBlockSection title="Required Base Range Values" id="baseRangeSection" rendered="{!conditionObject.Threshold_Type__c = 'Base Range' && conditionObject.Threshold_Category__c != ''}">                
+                
+                <!-- RATIO - FROM -->
+                <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}">
+                    <apex:outputLabel value="Required Base Range Ratio From" for="Required_Base_Range_Ratio_From" />
+                    <apex:outputPanel >
+                        <apex:outputField value="{!conditionObject.Required_Base_Range_Ratio_From__c}" styleClass="smallInput" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}" id="Required_Base_Range_Ratio_From"  />
+                        <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                        <apex:outputField value="{!conditionObject.Required_Base_Range_Ratio_To__c}" styleClass="smallInput" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <!-- RATIO - TO -->
+                <apex:pageBlockSectionItem dataStyleClass="dataCellStyle" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}">
+                    <apex:outputLabel value="Required Base Range Ratio To" for="Required_Base_Range_Ratio_From2" />
+                    <apex:outputPanel >
+                        <apex:outputField value="{!conditionObject.Required_Base_Range_Ratio_From_Two__c}" styleClass="smallInput" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}" id="Required_Base_Range_Ratio_From2"  />
+                        <apex:outputText value="&nbsp; : &nbsp;" escape="false" styleClass="ratioSeperator" />
+                        <apex:outputField value="{!conditionObject.Required_Base_Range_Ratio_To_Two__c}" styleClass="smallInput" rendered="{!conditionObject.Threshold_Category__c = 'Ratio'}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <!-- PERCENTAGE -->
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Percentage_From__c}" rendered="{!conditionObject.Threshold_Category__c = 'Percentage'}" />
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Percentage_To__c}" rendered="{!conditionObject.Threshold_Category__c = 'Percentage'}" />
+                
+                <!-- MULTIPLE -->
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Multiple_Range_From__c}" rendered="{!conditionObject.Threshold_Category__c = 'Multiple'}" />
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Multiple_To__c}" rendered="{!conditionObject.Threshold_Category__c = 'Multiple'}" />
+
+                <!-- NUMBER -->
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Number_From__c}" rendered="{!conditionObject.Threshold_Category__c = 'Number'}" />
+                <apex:outputField value="{!conditionObject.Required_Base_Range_Number_To__c}" rendered="{!conditionObject.Threshold_Category__c = 'Number'}" />
+
+                <!-- OTHER -->
+                <apex:outputField value="{!conditionObject.Other__c}" rendered="{!conditionObject.Threshold_Category__c = 'Other'}" />
+                
+            </apex:pageBlockSection>
+        
+        </apex:outputPanel>
+        <!-- / PANEL -->
+        
+         <!-- SECTION -->
+        <apex:pageBlockSection title="Activity Information">
+            <apex:outputField value="{!conditionObject.Last_Chased_By__c}"  />
+            <apex:outputField value="{!conditionObject.Last_Chased_On__c}"  />
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+            
+        <!-- SECTION -->
+        <apex:pageBlockSection title="System Information">
+            <apex:outputField value="{!conditionObject.CreatedById}"  />
+            <apex:outputField value="{!conditionObject.RecordTypeId}"  />
+            <apex:outputField value="{!conditionObject.LastModifiedById}"  />
+            <apex:outputField value="{!conditionObject.Ready__c}"  />
+        </apex:pageBlockSection>
+        <!-- / SECTION -->
+        
+    </apex:pageBlock>
+    <!-- / PAGE BLOCK TABLE -->
+    
+    </apex:form>
+   
+    <div class="boxStyle">
+        <iframe id="boxIFrame" frameborder="0" height="500px" width="100%" src="/apex/BxdDocumentsFramed?Id={!$CurrentPage.Parameters.id}&IsFramed=1"></iframe>
+    </div>
+    <apex:relatedList list="Conditions_Due__r" />
+    <apex:relatedList list="Condition_Parties__r" />
+    <!--<apex:relatedList list="Margin_Ratchet_Conditions__r" />-->
+    <!--<apex:relatedList list="OpenActivities" />-->
+    <!--<apex:relatedList list="ActivityHistories" />-->
+    <apex:relatedList list="Conditions1__r" /> 
+
+    
+    <script>
+    j$ = jQuery.noConflict();
+    
+    j$(document).ready(function() {
+        console.log('-- Box Call --');
+        callBox();
+    });
+    </script>
+
+</apex:page>

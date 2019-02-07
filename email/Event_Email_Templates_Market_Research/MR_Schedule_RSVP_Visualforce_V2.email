@@ -1,0 +1,47 @@
+<messaging:emailTemplate subject="{!relatedTo.Email_Setup_To_Use__r.Email_Subject__c}" recipientType="Contact" relatedToType="Delegate__c">
+    <messaging:htmlEmailBody >
+        <body style="background-color: #c7c8ca">
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFF" align="center" style="font-family: Arial, sans-serif; font-size: 13px; color: {!relatedTo.Email_Setup_To_Use__r.Font_Color__c}; background-color: #FFF;">
+                <tr>
+                    <td>
+                        <a href="{!relatedTo.Event__r.Event_Configuration__r.RSVP_Page_URL__c}?delid={!relatedTo.Id}">
+                            <img width="600" src="{!relatedTo.Email_Setup_To_Use__r.Banner_URL__c}"/>
+                        </a>
+                    </td>
+                </tr>   
+                <tr>
+                    <td style="padding: 25px">
+                    
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Heading__c}" escape="false" />
+                        <apex:outputPanel rendered="{!relatedTo.Contact__r.Salutation == ''}" layout="none">
+                            Dear {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName},<br/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!relatedTo.Contact__r.Salutation != ''}" layout="none">
+                            Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},<br/>
+                        </apex:outputPanel>
+                        
+                        <apex:outputText value="{!SUBSTITUTE(relatedTo.Email_Setup_To_Use__r.Body__c, '<p><br></p>', '')}" escape="false" />
+
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Footer__c}" escape="false" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px; font-size: 12px;">
+                        <img width="560px" src="{!relatedTo.Email_Setup_To_Use__r.Disclaimer_Banner_URL__c}" />
+                        <apex:outputText value="{!relatedTo.Email_Setup_To_Use__r.Disclaimer__c}" escape="false" />
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td height="15">&nbsp;</td>
+                </tr>
+            </table>
+        </body>
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>

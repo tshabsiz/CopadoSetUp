@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify Client when IU Overdue</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Information Undertaking Overdue Email Notification</name>
+    <style>freeForm</style>
+    <subject>Information Undertaking Overdue</subject>
+    <textOnly>Dear {!Condition__c.00N9E000000hxXF}
+
+Please be aware that the following information undertaking was due on the {!Condition_Occurrence__c.Name}
+
+Deal name: {!Condition__c.Matter__c}
+Detail: {!Condition__c.00N9E000000hpgT}
+
+Please contact the Transaction Management team on {!User.Email}
+
+Regards
+The Transaction Management team
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

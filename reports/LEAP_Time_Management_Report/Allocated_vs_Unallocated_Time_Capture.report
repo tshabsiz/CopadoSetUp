@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <buckets>
+        <bucketType>text</bucketType>
+        <developerName>BucketField_99847769</developerName>
+        <masterLabel>Allocated vs Unallocated</masterLabel>
+        <nullTreatment>n</nullTreatment>
+        <sourceColumnName>Work_Category__c$Name</sourceColumnName>
+        <useOther>false</useOther>
+        <values>
+            <sourceValues>
+                <sourceValue>Citizenship &amp; Diversity and Inclusion</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Learning &amp; Development</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Team and Function Management</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Out of Office</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Legal Queries inside Legal function</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>Operational Activities</sourceValue>
+            </sourceValues>
+            <value>Unallocated</value>
+        </values>
+        <values>
+            <sourceValues>
+                <sourceValue>(IP01) - IP Matters</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>BA01  - Legal Transaction</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>BA02 -Low risk contracts, basic forms and precendents</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>BA03 - Legal technical advice</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>BA04 - Legal Queries associated to a product/business unit</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS01 - Client / Customer Management</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS02 - Product / Service Management</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS03 - Principal M&amp;A Work</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS05 - Internal/External Business Specific Committees</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS07 - Treasury Advisory</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS08 - General Advisory</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS09 - Competition/Antitrust</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>CS11 - Legal Copy Clearance</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>L100 - Case Development and Administration/ General Advice</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>L400 - Trial Preparation and Trial/Court Proceedings</sourceValue>
+            </sourceValues>
+            <sourceValues>
+                <sourceValue>RR01 - Regulatory guidance, engagements and advisory</sourceValue>
+            </sourceValues>
+            <value>Allocated</value>
+        </values>
+    </buckets>
+    <chart>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>VerticalColumnGrouped</chartType>
+        <enableHoverLabels>false</enableHoverLabels>
+        <expandOthers>true</expandOthers>
+        <groupingColumn>Work_Category__c.Time__r$advpm__Entry_Date__c</groupingColumn>
+        <legendPosition>Right</legendPosition>
+        <location>CHART_TOP</location>
+        <secondaryGroupingColumn>BucketField_99847769</secondaryGroupingColumn>
+        <showAxisLabels>true</showAxisLabels>
+        <showPercentage>false</showPercentage>
+        <showTotal>false</showTotal>
+        <showValues>false</showValues>
+        <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>Work_Category__c$Name</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>Allocated vs Unallocated Time Capture</description>
+    <filter>
+        <criteriaItems>
+            <column>BucketField_99847769</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Unallocated,Allocated</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Work_Category__c.Time__r$CreatedBy</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>Work_Category__c.Time__r$advpm__Entry_Date__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>BucketField_99847769</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Allocated vs Unallocated Time Capture</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>User_with_time_and_work_categories__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Work_Category__c.Time__r$advpm__Entry_Date__c</dateColumn>
+        <interval>INTERVAL_CURY</interval>
+    </timeFrameFilter>
+</Report>

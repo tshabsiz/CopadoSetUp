@@ -1,0 +1,44 @@
+<apex:page controller="advpm.ExportTemplateDataController" tabStyle="advpm__Export_Template__c">
+    
+    <apex:slds rendered="{!isLightning}" />
+    <apex:outputPanel layout="block" rendered="{!isLightning}">
+        <c:slds_pageheader pageHeaderType="RECORD"
+                            headerTitle="{!$ObjectType[sObjType].label}"
+                            headerSubTitle="Export" />
+        <style type="text/css">
+            .detailPage .bPageBlock, .editPage .bPageBlock {border-top-width: 0px!important;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:sectionHeader title="{!$ObjectType[sObjType].label}" subtitle="Export" rendered="{!!isLightning}" />
+    <script type="text/javascript">
+        function doRedirect() {
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                sforce.one.navigateToURL('#/sObject/{!sObjType}/list', true);
+            }
+        }
+    </script>
+    <apex:form >
+        <apex:pageMessages id="msg" />
+        <apex:pageBlock mode="edit">
+            <apex:pageBlockButtons location="bottom">
+				<apex:commandButton value="  Export to CSV  " action="{!doExportCSV}" disabled="{!selectedTemplate == ''}" styleClass="slds-button slds-button--brand" />
+				<apex:commandButton value="  Export to XLS  " action="{!doExportXLS}" disabled="{!selectedTemplate == ''}" styleClass="slds-button slds-button--brand" />
+				<apex:commandButton value="  Done  " immediate="true" action="{!done}" style="margin-left: 1em;" styleClass="slds-button slds-button--neutral" rendered="{!!isLightning}" />
+                <apex:commandButton value="  Done  " onclick="doRedirect();" style="margin-left: 1em;" styleClass="slds-button slds-button--neutral" rendered="{!isLightning}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" title="Export Data">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Select Export Template" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:selectList value="{!selectedTemplate}" size="1">
+                            <apex:selectOptions value="{!ExportTemplates}" />
+                            <apex:actionSupport event="onchange" action="{!ChangeTemplate}" />
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,162 @@
+<apex:component controller="ClientPlanHeaderController" >
+
+    <apex:includeScript value="{!$Resource.jquery_1_11}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+    
+    <script>
+    
+        $('document').ready(function() {
+            
+            //setting account link max width
+            var tabsLeftOffset = $('#headerTabs').offset().left;
+            var labelLeftOffset = $('#navbarBrandWrapper').offset().left;
+            
+            var brandBottomWidth = tabsLeftOffset - labelLeftOffset;
+            $('#navbarBrandBottom').css('max-width', brandBottomWidth);
+        });
+    
+        function selectLabel(index) {
+            var liElem = $('.slds-tabs--default__nav li:nth-child(' + index + ')');
+            $(liElem).addClass('slds-active');
+        }
+    
+    </script>
+    
+    <style>
+    
+        @media (max-height: 43em) {
+            #navbarBrandWrapper {                
+                padding: 0em;
+            }
+            
+            .slds-tabs--default__nav {
+                padding-top: 0em !important;
+            }
+        }
+    
+        @media (min-height: 43em) {
+            #navbarBrandWrapper {                
+                padding: 0.5em;
+            }
+            
+            .slds-tabs--default__nav {
+                padding-top: 1em !important;
+            }
+        }
+        
+        #navbarBrandBottom {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    
+        .slds-tabs--default {
+            border-bottom: 1px solid #d8dde6;
+        }
+        
+        .slds-tabs--default__nav {
+            border-bottom: 0px !important;
+            width: 920px;
+            margin: auto !important;
+        }
+        
+        .slds-tabs__item {
+            margin-left: 10px !important;
+        }
+        
+        #headerTabs .slds-text-heading--label {
+            text-transform: none !important;
+        }
+        
+        .slds-active {
+            font-size: 1.1em !important;
+            font-weight: bold;
+        }
+        
+        .slds a:link, 
+        .slds a:visited {
+            color: black;
+        }
+        
+        #navbarBrandWrapper {
+            position: absolute;
+        }
+        
+        #navbarBrandWrapper a:hover {
+            text-decoration: blink;
+        }
+        
+        #navbarBrandBottom {
+            font-size: 1.5em;
+        }
+    
+    </style>
+    
+    <div class="slds-tabs--default">
+        <div id="navbarBrandWrapper" title="{!orgName}">
+            <a href="/{!orgId}">
+                <div>
+                    <apex:outputText value="{!$Label.lbl_ClientPlan}" />
+                </div>
+                <div id="navbarBrandBottom">
+                    <apex:outputText value="{!orgName}" />
+                </div>
+            </a>
+        </div>
+    
+    
+      <ul id="headerTabs" class="slds-tabs--default__nav" role="tablist">
+      
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPlanDetails?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-1">
+                <apex:outputText value="{!$Label.lbl_TitlePage}" />
+            </a>
+        </li>
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientOverview?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2">
+                <apex:outputText value="{!$Label.lbl_Overview}" />
+            </a>
+        </li>
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientFinancials?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-3">
+                <apex:outputText value="{!$Label.lbl_Environment}" />
+            </a>
+        </li>
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPresence?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4">
+                <apex:outputText value="{!$Label.lbl_Presence}" />
+            </a>
+        </li>
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPlanStakeholders?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-5">
+                <apex:outputText value="{!$Label.lbl_Stakeholders}" />
+            </a>
+        </li>
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPlanStrategy?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-6">
+                <apex:outputText value="{!$Label.lbl_Strategy}" />
+            </a>
+        </li>
+        
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPlan?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-7">
+                <apex:outputText value="{!$Label.lbl_Plan}" />
+            </a>
+        </li>
+        
+        <li class="slds-tabs__item slds-text-heading--label" role="presentation">
+            <a href="/apex/ClientPlanSummary?planId={!planId}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-8">
+                <apex:outputText value="{!$Label.lbl_Summary}" />
+            </a>
+        </li>
+      </ul>
+    </div>
+    
+    <apex:outputPanel rendered="{!IF(planId == '', true, false)}">
+        <div class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"/>
+            <span><apex:outputText value="{!$Label.errMsg_PlanIdRequired}"/></span>
+        </div>
+    </apex:outputPanel>
+   
+</apex:component>

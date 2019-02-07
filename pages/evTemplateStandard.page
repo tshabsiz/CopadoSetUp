@@ -1,0 +1,338 @@
+<apex:page sidebar="false" showHeader="false" docType="html-5.0" standardStylesheets="false" applyHtmlTag="false" controller="evSiteTemplate_Controller" >
+
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /> <!-- Bootstrap CSS -->
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" /> <!-- Font Awesome Font Library -->
+        <apex:stylesheet value="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+        <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" /> <!-- JQUERY -->
+        <apex:includeScript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"/> <!-- Bootstrap JS -->
+         
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <apex:includeScript value="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" />
+            <style>
+                .container {
+                width: 1170px;
+                }
+                .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+                float: left;
+                }
+                .col-md-12 {
+                width: 100%;
+                }
+                .col-md-11 {
+                width: 91.66666667%;
+                }
+                .col-md-10 {
+                width: 83.33333333%;
+                }
+                .col-md-9 {
+                width: 75%;
+                }
+                .col-md-8 {
+                width: 66.66666667%;
+                }
+                .col-md-7 {
+                width: 58.33333333%;
+                }
+                .col-md-6 {
+                width: 50%;
+                }
+                .col-md-5 {
+                width: 41.66666667%;
+                }
+                .col-md-4 {
+                width: 33.33333333%;
+                }
+                .col-md-3 {
+                width: 25%;
+                }
+                .col-md-2 {
+                width: 16.66666667%;
+                }
+                .col-md-1 {
+                width: 8.33333333%;
+                }
+                .col-xs-9 {
+                margin-right: 0 !important; 
+                margin-left: 0 !important; 
+                }
+            </style>
+        <![endif]-->
+        <!--[if lt IE 10]>
+            <apex:includeScript value="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" />
+            <style>
+            .col-ie {
+            width: 100%;
+            margin-bottom: 30px;
+            }
+            </style>
+        <![endif]-->
+        
+        <!-- move to external - base stylesheet -->
+        <style>
+            
+            @media (min-width: 1200px) {
+            .container {
+            width: 970px;
+            }   
+            }
+            
+            h1, .h1 {
+                font-size: 32px;
+            }
+            
+            .btn {
+                border-radius: 0px;
+            }
+            
+            .btn-row {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .page-content {
+                padding: 25px 20px;
+            }
+            
+            .page-section {
+                margin-top: 30px;
+                margin-bottom: 30px;
+            }
+            
+            
+            .event-banner {
+                margin-top: 25px;
+            }
+            
+            .disclaimer {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                font-size: 10px;
+            }
+            
+            .status-msg {
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+            
+            .status-icon {
+                font-size: 25px;
+                vertical-align: middle;
+                margin-right: 10px;
+            }
+            
+            .green {
+                color: green;
+            }
+            
+            .red {
+                color: red;
+            }
+            
+            .well {
+                border: none;
+                border-radius: 0px;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+            }
+            
+            .help-block {
+                margin-bottom: -5px;
+            }
+            
+            .v-err {
+                font-size: small;
+            }
+            
+            .has-success .control-label {
+            	color: inherit;
+            }
+            /*
+			tr.border-btm td {
+            	border-bottom: 1px solid #ddd;
+            }
+            
+            table.dataTable thead th, table.dataTable thead td {
+            	padding: 10px 18px;
+            	border-bottom: 1px solid #ddd;
+            }
+            
+            table.dataTable.no-footer {
+            	border-bottom: 1px solid #ddd;
+            }
+            
+            table.dataTable thead th, table.dataTable thead td {
+            	background-color: #EC2027;
+            	color: white;
+            }
+            
+            table.dataTable tr.sub-head td {
+                background-color: #EAEAEA;
+                font-weight: bold;
+            }
+            */
+            
+            tr.no-bdr-btm td {
+                border-bottom: 1px solid white !important;
+            }
+            
+            #searchInput {
+                margin-bottom: 15px;
+            }
+            
+            #registerTable tr.header {
+              background-color: #f1f1f1;
+            }
+            
+            #registerTable tr.primary-header {
+            	background-color: #EC2027;
+            	color: white;
+            }
+            
+            .reg-icon {
+                display: inline-block;
+                padding: 5px 8px 4px 8px;
+                border-radius: 19px; 
+            	background-color: #eaeaea;
+            	color: #c1c1c1;
+                transition: all 0.3s ease-in-out;
+                -webkit-transition: all 0.3s ease-in-out;
+            }
+            
+            .reg-icon {
+            	cursor: pointer;
+            }
+            
+            .tick.active {
+                background-color: #5cb85c;
+                color: #FFFFFF;
+            }
+            
+            .cross.active {
+                background-color: #da2a2a;
+                color: #FFFFFF;
+            }
+            
+            .tick:hover {
+                background-color: #5cb85c;
+                color: #FFFFFF;
+            }
+            
+            .cross:hover {
+                background-color: #da2a2a;
+                color: #FFFFFF;
+            }
+            
+            .no-bdr-btm {
+            	border-bottom: none
+            }
+            
+            .ahov:hover {
+            text-decoration: none;
+            }
+            
+            .ev-details {
+            text-align: center;
+            margin-bottom: 30px;
+            }
+            
+            .del-acc {
+            	font-size: 20px;
+            	display: block;
+            }
+            
+            .ev-name {
+            	font-size: 20px;
+            	margin-top: 20px;
+            	display: block;
+            }
+            
+            .host-name {
+            	font-size: 14px;
+            	display: block;
+            }
+            
+            .ev-ven {
+                font-size: 14px;
+                margin-bottom: 0px;
+                display: block;
+            }
+            
+            .ev-date {
+                font-size: 20px;
+                margin-bottom: 20px;
+                display: block;
+            }
+            
+            .time {
+                font-size: 13px;
+            }
+
+        </style>
+        
+        <c:evThemeConfiguration /> 
+        
+        <apex:insert name="title"/>
+        
+    </head>
+    
+    <div class="container">
+        <div class="page-content">
+            
+            <!-- HEADER: Logos -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <img src="{!thisEvent.Theme__r.Primary_Logo__c}" />
+                </div>
+                <div class="col-sm-6 text-right">
+                    <img src="{!thisEvent.Theme__r.Secondary_Logo__c}" />
+                </div>
+            </div>
+            <!-- HEADER: Logos END -->
+
+            <hr/>
+            
+            <!-- BODY -->
+            <apex:insert name="body"/>
+            <!-- BODY END -->
+            
+        </div>  
+    </div>
+    
+    
+    <!-- FOOTER -->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 disclaimer">
+                <apex:outputText escape="false" value="{!thisEvent.Terms_and_Conditions__r.Disclaimer__c}" /> 
+            </div>
+        </div>
+    </div>
+    <!-- FOOTER END -->
+    
+    
+    <script>
+        function searchTable() {
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("registerTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    </script>
+    
+</apex:page>

@@ -1,0 +1,11 @@
+<apex:page standardController="Case" extensions="CSC_Inbox_Email_View_Cont" showHeader="false" sidebar="False" standardStylesheets="true" rendered="{!isNotEmpty}">
+    <style>
+        html, body { 
+        height: 100% 
+        }
+    </style>
+    <body style="margin:0px;padding:0px;overflow:auto;">
+	<apex:outputField value="{!em[0].TextBody}" rendered="{!IF(NOT(hasEmailBodyBlob),IF(em[0].HtmlBody == null,true,false),false)}" />
+    <iframe srcdoc="{!IF(hasEmailBodyBlob,bodyContent,IF(em[0].HtmlBody != null,em[0].HtmlBody,NULL))}" frameborder="0" scrolling="no" height="150%" width="150%" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:1000%;width:150%;position:absolute;top:0px;left:0px;right:0px;bottom:0px"></iframe>
+    </body>
+</apex:page>

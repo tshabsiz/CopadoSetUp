@@ -1,0 +1,46 @@
+<apex:page standardController="Contact" tabStyle="Contact" extensions="advpm.AssignmentTemplateSelectController" recordSetVar="allrecords">
+    
+    <apex:outputPanel layout="none" rendered="{!!isLightning && hasMessages}">    
+        <apex:sectionHeader title="{!$ObjectType.advpm__Assignment_Rule__c.label}" subtitle="Batch Assignment" />
+    </apex:outputPanel>
+    
+    <apex:slds rendered="{!isLightning && hasMessages}" />
+    
+    <apex:outputPanel layout="block" rendered="{!isLightning && hasMessages}">
+        <c:slds_pageheader pageHeaderType="BREADCRUMBS"
+                            headerTitle="Process Assignment" 
+                            parentEntity="{!JSINHTMLENCODE($ObjectType[sObjName].labelPlural)}" 
+                            parentEntityLink="{!$ObjectType[sObjName].keyPrefix}" 
+                            parentRecordName="Batch Assignment" 
+                            parentRecordID="{!$ObjectType[sObjName].keyPrefix}" />
+        <style type="text/css">
+            .message .messageTable tr td:first-child {width:40px;}
+        </style>
+    </apex:outputPanel>
+    
+    <apex:pageMessages />
+    
+    <apex:outputPanel layout="inline" rendered="{!!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            window.onload = function() {
+                window.top.location = '{!URLFOR($Page.advpm__AssignmentTemplateSelect,null,[records=JSENCODE(recordIdsStr),retURL=JSENCODE($CurrentPage.parameters.retURL)])}';
+            };
+        </script>
+    </apex:outputPanel>
+    <apex:outputPanel layout="inline" rendered="{!isLightning && !hasMessages}">
+        <script type="text/javascript">
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                window.onload = function() {
+                    sforce.one.navigateToURL('{!URLFOR($Page.advpm__AssignmentTemplateSelect,null,[records=JSENCODE(recordIdsStr),gotoURL=JSENCODE($CurrentPage.parameters.retURL)])}', false);
+                };
+            }
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form rendered="{!hasMessages}">
+        <center>
+            <apex:commandButton action="{!cancel}" value="  Go Back  " immediate="true" styleClass="slds-button slds-button--neutral" />
+        </center>
+    </apex:form>
+    
+</apex:page>

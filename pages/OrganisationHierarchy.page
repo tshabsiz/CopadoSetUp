@@ -1,0 +1,41 @@
+<apex:page standardController="Account" >
+
+    <apex:stylesheet value="{!URLFOR($Resource.easytabs, 'style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery, 'jquery-1.11.1.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.easytabs, 'jquery.easytabs.js')}"/>
+
+    <script type="text/javascript"> 
+        $(document).ready(function(){ $('#tab-container').easytabs(); });
+    </script> 
+    <apex:outputPanel rendered="{!Account.isRelationshipGroup__c}">
+        <c:RelationshipTreeView Checkboxes="false" />
+        <script type="text/javascript">
+            drawRelationshipTree('{!Account.Id}');
+        </script>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!NOT(Account.isRelationshipGroup__c)}">
+    <div id="tab-container" class="tab-container">
+        <ul class="tabs">
+            <li class="tab"><a href="#global-parent-hierarchy-tab">Relationship Hierarchy</a></li>
+            <li class="tab"><a href="#sds-hierarchy-tab">SDS Hierarchy</a></li>
+        </ul>
+        <div class='panel-container'>
+            <div id="global-parent-hierarchy-tab">
+                <apex:outputText style="color:blue" value="{!$Label.msg_NotAssignedToBuyingGroup}" rendered="{!ISNULL(Account.ParentId) && NOT(Account.Type = 'Global Parent')}"/>
+                <c:RelationshipTreeView Checkboxes="false"/>
+                <script type="text/javascript">
+                    drawRelationshipTree('{!Account.Id}');
+                </script>
+            </div>
+            <div id="sds-hierarchy-tab">
+                <c:HierarchyTreeView Checkboxes="false" />
+                <script type="text/javascript">
+                    drawSdsHierarchyTree('{!Account.Id}');
+                </script>
+            </div>
+        </div>
+    </div>
+    </apex:outputPanel>
+
+</apex:page>

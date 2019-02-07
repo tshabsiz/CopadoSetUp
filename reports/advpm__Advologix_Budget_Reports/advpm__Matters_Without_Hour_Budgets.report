@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.advpm__Matter_Number__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.advpm__Status__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.advpm__Type__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.advpm__Date_Filed__c</field>
+    </columns>
+    <crossFilters>
+        <criteriaItems>
+            <column>RecordType</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>advpm__Budget__c.advpm__Hours_Budget</value>
+        </criteriaItems>
+        <operation>without</operation>
+        <primaryTableColumn>CUST_ID</primaryTableColumn>
+        <relatedTable>advpm__Budget__c</relatedTable>
+        <relatedTableJoinColumn>advpm__Matter__c</relatedTableJoinColumn>
+    </crossFilters>
+    <format>Tabular</format>
+    <name>Matters Without Hour Budgets</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$advpm__Matter__c$advpm__Budget__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>false</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <sortColumn>CUST_NAME</sortColumn>
+    <sortOrder>Asc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

@@ -1,0 +1,125 @@
+<apex:page standardController="advpm__Matter__c" extensions="KnowledgeHandlerV2" sidebar="false"  >
+
+<!--
+<style type="text/css">
+
+table{border-collapse: collapse;}
+
+
+</style>
+-->
+
+<apex:form >
+  <table width="100%" border="0" >
+  <tr>
+  <td  >
+  <apex:outputpanel rendered="{!strRecordTypeName='Litigation Matter'}">
+ 
+      
+     <table width="100%" border="1" style="border-collapse: collapse;">
+          
+        <tr style="background-color:#99ccff;"><td colspan="2">General Matter Information</td></tr>
+         <tr><td>Matter Name </td><td><apex:outputField value="{!Matter.name}"  id="Name2"/></td></tr> 
+          
+        <tr><td>Engagement Date</td><td><apex:outputField value="{!Matter.advpm__Engagement_Date__c}"/></td></tr>
+          
+        <tr><td>Reputational Risk</td><td><apex:outputField value="{!Matter.Reputational_Risk__c}"/></td></tr>  
+          
+         <tr><td>Engagement Date</td><td><apex:outputField value="{!Matter.advpm__Engagement_Date__c}"/></td></tr>
+         
+         <tr><td>Cost Centre</td><td><apex:outputField value="{!Matter.Cost_Centre__c}"/></td></tr>
+         
+         <tr><td>Jurisdiction</td><td><apex:outputField value="{!Matter.Jurisdiction__c}"/></td></tr>
+         
+         <tr><td>Customer account number policy number</td><td><apex:outputField value="{!Matter.Customer_account_number_policy_number__c}"/></td></tr> 
+            
+         <tr><td>Litigation Status</td><td><apex:outputField value="{!Matter.Litigation_Status__c}"/></td></tr>
+            
+        <tr><td>Client Branch code</td><td><apex:outputField value="{!Matter.Client_Branch_code__c}"/></td></tr>
+            
+        <tr><td>Owner Name</td><td><apex:outputField label="Owner Name" value="{!Matter.Owner.Name}"/></td></tr>
+            
+        <tr><td>Summary</td><td><apex:outputField value="{!Matter.advpm__Description__c}"  id="Summary"/></td></tr> 
+            
+         <tr><td>Total Claim Percentage</td><td><apex:outputField value="{!Matter.Total_Claim_Percentage__c}"/></td></tr>
+            
+            
+      <tr style="background-color:#99ccff;"><td colspan="2">Categories and Records Management </td></tr>               
+        <tr><td>Type</td><td><apex:outputField value="{!Matter.Matter_Type__c}"  id="Type" /> </td></tr>
+          
+        <tr><td>Category</td><td><apex:outputField value="{!Matter.Category__c}" id="Category"/></td></tr> 
+          
+        <tr><td>Legal Hold</td><td><apex:outputField value="{!Matter.advpm__Legal_Hold__c}"/></td></tr>
+          
+          
+      <tr style="background-color:#99ccff;"><td colspan="2">Claim Value Information</td></tr> 
+       <tr><td>Claim By Against Barclays</td><td> <apex:outputField value="{!Matter.Claim_By_Against_Barclays__c}"/></td></tr>
+         
+       <tr><td>Reasonably Possible</td><td><apex:outputField value="{!Matter.Reasonably_Possible__c}"/></td></tr>
+          
+        <tr><td>Approval Status</td><td><apex:outputField value="{!Matter.Approval_Status__c}"/></td></tr>
+          
+       <tr><td>Probable For Approval</td><td><apex:outputField value="{!Matter.Probable_For_Approval__c}"/></td></tr>
+          
+      <tr><td>Financial Value Unknown</td><td><apex:outputField value="{!Matter.Financial_Value_Unknown__c}"/></td></tr>
+           
+      <tr><td>Matter Value</td><td><apex:outputField value="{!Matter.Matter_Value__c}"/></td></tr>    
+          
+      <tr><td>Attainable litigation objective</td><td><apex:outputField value="{!Matter.Attainable_litigation_objective__c}"/></td></tr> 
+          
+      <tr><td>Securitization value</td><td><apex:outputField value="{!Matter.Securitization_value__c}"/></td></tr>
+          
+      
+      <tr style="background-color:#99ccff;"><td colspan="2">Status History</td></tr>  
+       <tr><td>Current Status</td><td><apex:outputField value="{!Matter.Current_Status__c}"/></td></tr> 
+          
+       <tr><td>Notes</td><td><apex:outputField value="{!Matter.Notes__c}"  id="Notes"/></td></tr>
+          
+       <tr><td>Previous Current Status</td><td><apex:outputField value="{!Matter.Previous_current_status__c}"/></td></tr> 
+          
+          
+      <tr style="background-color:#99ccff;"><td colspan="2">Closure</td></tr>
+      <tr><td>Disposition Type</td><td><apex:outputField value="{!Matter.Disposition_Type__c}"/></td></tr>    
+          
+      <tr><td>Projected Date Of Closure</td><td><apex:outputField value="{!Matter.advpm__Projected_Date_Of_Closure__c}"/></td></tr>
+          
+      <tr><td>Disposition Description</td><td><apex:outputField value="{!Matter.Disposition_Description__c}"/></td></tr>
+          
+      <tr><td>Positive Outcome Before All Costs</td><td><apex:outputField value="{!Matter.Positive_Outcome_Before_All_Costs__c }"/></td></tr>
+          
+      <tr><td>Negative Outcome Before All Costs</td><td><apex:outputField value="{!Matter.Negative_Outcome_Before_All_Costs__c}"/></td></tr>
+          
+      <tr><td>Costs Awarded Against Barclays</td><td><apex:outputField value="{!Matter.Costs_Awarded_Against_Barclays__c}"/></td></tr> 
+          
+      <tr><td>Costs Actually Recovered</td><td><apex:outputField value="{!Matter.Costs_Actually_Recovered__c}"/></td></tr>
+    </table>
+      
+ </apex:outputpanel>
+ 
+ <apex:outputpanel rendered="{!strRecordTypeName='Legal'}">
+   
+  
+  <table width="100%" border="1" style="border-collapse: collapse;">
+  
+  <tr style="background-color:#99ccff;"><td colspan="2">General Matter Information</td></tr>
+      <tr><td>Matter Name</td><td><apex:outputField value="{!Matter.name}"  id="Name1"/></td></tr>
+     <tr><td>Owner Name</td><td><apex:outputField label="Owner Name" value="{!Matter.Owner.Name}"/></td></tr>
+        <tr><td>Lead Lawyer Office</td><td><apex:outputField value="{!Matter.Lead_Lawyer_Office__c}"/></td></tr>
+      <tr><td>Business Unit Cluster Segment</td><td><apex:outputField value="{!Matter.Business_Unit_Cluster_Segment__c}"  id="BusinessUnit"/></td></tr>
+      <tr><td>Status</td><td> <apex:outputField value="{!Matter.advpm__Status__c}"/></td></tr>
+      <tr><td>Jurisdiction</td><td><apex:outputField value="{!Matter.Jurisdiction__c}"/></td></tr>
+   <tr ><td colspan="2" style="background-color:#99ccff;">Client Detail</td></tr>
+      <tr><td>Date of Closure</td><td><apex:outputField value="{!Matter.Date_of_Closure__c}"/></td></tr>
+      <tr><td>Primary Account</td><td><apex:outputField value="{!Matter.advpm__Primary_Account__c}"/></td></tr>
+      <tr><td>Primary Contact</td><td><apex:outputField value="{!Matter.advpm__Primary_Contact__c}"/></td></tr>
+   <tr style="background-color:#99ccff;"><td colspan="2" >Additional Details</td></tr>  
+      <tr><td>RecordType</td><td><apex:outputField value="{!Matter.RecordType.Name}"/></td></tr>
+      <tr><td>Legal Hold</td><td><apex:outputField value="{!Matter.advpm__Legal_Hold__c}"/></td></tr>  
+      </table>    
+  
+      </apex:outputpanel>
+  </td>
+  </tr>
+  </table>
+  </apex:form>
+</apex:page>

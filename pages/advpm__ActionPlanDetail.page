@@ -1,0 +1,276 @@
+<apex:page id="detailPage" tabStyle="advpm__ActionPlan__c" standardController="advpm__ActionPlan__c" extensions="advpm.ActionPlanDetailController" sidebar="false">
+<apex:outputPanel rendered="{!isLightning}">
+    <script type="text/javascript">
+        var ur = '{!URLFOR($Page.advpm__ActionPlanDetailSLDS,advpm__ActionPlan__c.Id,[id=advpm__ActionPlan__c.Id])}';
+        if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToURL(ur, true);
+        }
+    </script>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!!isLightning}">
+	<apex:includeScript value="{!$Resource.advpm__ActionPlan_Utilities}" />
+    <apex:includeScript value="{!$Resource.advpm__ActionPlans_sortable}" />
+	<apex:includeScript value="{!$Resource.advpm__ActionPlan_ActionPlanDetailScripts}" />  
+	  
+    <apex:stylesheet value="{!$Resource.advpm__ActionPlan_ActionPlanDetailStyles}" />
+   	<style type="text/css">
+   		.detailList .helpOrb {position:relative;right: 0px}
+.sortable th.actTypeCol			{	width:6%;	}
+.sortable th.subjectCol			{	width:13%;	}
+.sortable th.dependencyColumn	{	width:13%;	}
+/**
+.sortable th.daysCol			{	width:7%;	}
+.sortable th.startTimeCol		{	width:6%;	}
+.sortable th.durationCol		{	width:8%;	}
+.sortable th.assigned_to_field	{	width:13%;	}
+.sortable th.typeCol			{	width:5%;	}
+.sortable th.priorityCol 		{ 	width:5%;	}
+.sortable th.statusCol			{	width:7%;	}
+.sortable th.sendMailCol 		{ 	width:5%;	}
+.sortable th.reminderCol 		{ 	width:6%;	}
+.sortable th.commentsCol 		{ 	width:6%;	}
+**/
+.sortable th.daysCol			{	width:auto !important;	}
+.sortable th.startTimeCol		{	width:auto !important;	}
+.sortable th.durationCol		{	width:auto !important;	}
+.sortable th.assigned_to_field	{	width:auto !important;	}
+.sortable th.typeCol			{	width:auto !important;	}
+.sortable th.priorityCol 		{ 	width:auto !important;	}
+.sortable th.statusCol			{	width:auto !important;	}
+.sortable th.sendMailCol 		{ 	width:auto !important;	}
+.sortable th.reminderCol 		{ 	width:auto !important;	}
+.sortable th.commentsCol 		{ 	width:auto !important;	}
+.sortable th.dateCol			{	width:auto !important;	}
+		.sortable th {vertical-align: bottom !important;}
+		.bPageBlock .detailList tr td{border-bottom: 0px solid #e3deb8;}
+   	</style>
+    
+    <apex:outputPanel layout="none" rendered="{!isLightning}">
+		<apex:stylesheet value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+		<style type="text/css">
+			.slds .slds-page-header {padding-left: 10px;}
+			.slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 8px;}
+			.detailPage .bPageBlock, .editPage .bPageBlock {border-top-width: 0px;}
+			body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {border-width: 0 0 1px 1px;}
+			body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th {background: #ffffff;border-width: 0 0 1px 1px;padding: 8px;}
+			body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-left-width: 0px!important;border-right-width: 0px!important;}
+			body .pbBody table.list tr.headerRow th:first-child {border-left-width: 0px!important;}
+			body .bRelatedList .pbBody table.list, body .apexp .pbBody table.list {border-top-width: 0px;}
+			.slds tr.headerRow th, .slds tr.headerRow th.headerRow {font-weight: normal!important;}
+			.weekend-table td:first-child{width:20px;}
+			.slds .slds-text-heading--medium {font-weight: 400;font-size: 1.25rem;}
+			.slds .slds-page-header {padding: 14px 24px 12px;}
+			.slds .slds-button-group .slds-button:first-child {border-radius: 4px 0 0 4px;}
+			.slds h3 {display: inline;} 
+		</style>
+		<script type="text/javascript">
+			function editAP() {
+				//location.href = '{!$Site.Prefix}/apex/advpm__ActionPlanCreation?id={!actionPlan.Id}&sl=1';
+				doEdit();
+			}
+			function deleteAP() {
+				if (confirm('{!$Label.ap_AreYouSureAsk}')) {
+					doDelete();
+				}
+			}
+		</script>
+	</apex:outputPanel>
+	
+	<apex:sectionHeader title="{!$Label.advpm__ap_action_plan}" subtitle="{!actionPlan.Name}" help="{!URLFOR($Page.advpm__HelpActionPlan)}" printUrl="{!$Site.Prefix}/apex/advpm__ActionPlanPrint?id={!actionPlan.Id}" rendered="{!!isLightning}" />
+    
+   	<apex:outputPanel layout="block" styleClass="slds" rendered="{!isLightning}">
+		<div class="slds-page-header" role="banner">
+			<div class="slds-grid">
+				<div class="slds-col slds-has-flexi-truncate">
+			      	<div class="slds-media">
+			        	<div class="slds-media__figure">
+			        		<apex:image styleClass="slds-icon slds-icon-custom-11" value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/icons/action/new_custom11_120.png')}" style="padding:0.5rem;width:36px;height:36px" />
+			        	</div>
+			        	<div class="slds-media__body">
+			        		<p class="slds-text-heading--label">{!$ObjectType.advpm__ActionPlan__c.label}</p>
+			        		<div class="slds-grid">
+			        			<h1 class="slds-text-heading--medium slds-m-right--small slds-truncate slds-align-middle" title="{!actionPlan.Name}">{!actionPlan.Name}</h1>
+			        			<div class="slds-col slds-shrink-none">
+					              	
+					            </div>
+			        		</div>
+			        	</div>
+		        	</div>
+		        </div>
+		        <div class="slds-col slds-no-flex slds-align-bottom">
+			      	<div class="slds-button-group demo-space" role="group">
+					  	<button class="slds-button slds-button--neutral" id="edit" onclick="editAP(); return false;">{!$Label.advpm__ap_edit}</button>
+					  	<button class="slds-button slds-button--neutral slds-button--last" id="delete" onclick="deleteAP(); return false;">{!$Label.advpm__ap_delete}</button>
+					</div>
+		   		</div>
+		   	</div>
+		</div>
+	</apex:outputPanel>
+	
+	<apex:form id="apForm" styleClass="{!IF(isLightning,'slds','')}">
+		<apex:actionFunction name="doDelete" action="{!delete}" />
+		<apex:actionFunction name="doEdit" action="{!edit}" />
+        <apex:pageBlock id="detailBlock" title="{!IF(isLightning,'',$Label.advpm__ap_actionplandetails)}" mode="maindetail">
+        	<apex:pageMessages />
+        	<!-- PAGE BUTTONS -->
+            <apex:pageBlockButtons id="buttons" rendered="{!!isLightning}">
+                <apex:commandButton styleClass="slds-button slds-button--neutral" id="edit" action="{!$Site.Prefix}/apex/advpm__ActionPlanCreation?id={!actionPlan.Id}&sl=1" value="{!$Label.advpm__ap_edit}"/>
+                <apex:commandButton styleClass="slds-button slds-button--neutral" id="delete" action="{!delete}" value="{!$Label.advpm__ap_delete}" onclick="return confirm('{!$Label.advpm__ap_areyousureask}');" />
+                <!-- <apex:commandButton styleClass="slds-button slds-button--neutral" id="share" action="/p/share/CustomObjectSharingDetail?parentId={!actionPlan.Id}" value="{!$Label.ap_Sharing}"/> -->
+            </apex:pageBlockButtons>
+            <!-- END PAGE BUTTTONS -->
+            
+            <!-- INFORMATION SECTION -->
+            <apex:pageBlockSection title="{!$Label.advpm__ap_information}" columns="1">
+                <apex:panelGrid columns="5" id="theGrid" style="width:100%" columnClasses="labelCol, dataCol, spacerCol, labelCol, dataCol">
+                    <apex:outputText value="{!$Label.advpm__ap_action_plan} {!$Label.advpm__ap_name}" />
+                    <apex:outputText value="{!actionPlan.Name}" />
+                    <apex:outputText >&nbsp;</apex:outputText>
+                    <apex:outputText value="{!$Label.advpm__ap_action_plan_template}" rendered="{!(ActionPlan.advpm__Action_Plan_Template__c != null)}"/>
+                    <apex:outputText rendered="{!(ActionPlan.advpm__Action_Plan_Template__c != null)}">
+                        <apex:outputLink value="{!$Site.Prefix}/apex/advpm__ActionPlanTemplateDetail?Id={!ActionPlan.advpm__Action_Plan_Template__c}">{!ActionPlan.Action_Plan_Template__r.Name}</apex:outputLink>
+                        <!-- <apex:outputText rendered="{!IF(Version == true, true, false)}"><br/><span style="color:#cc0000"><strong>{!$Label.ap_Note}:</strong> {!$Label.ap_APModifyError}</span></apex:outputText> -->
+                    </apex:outputText>
+                    
+                    <apex:outputText value="{!$Label.advpm__ap_planstartdate}" />
+                    <apex:outputText >
+                    	<apex:pageBlockSectionItem >
+                    		<apex:outputField value="{!actionPlan.advpm__StartDate__c}" />
+                    	</apex:pageBlockSectionItem>
+                    </apex:outputText>
+                    <apex:outputText >&nbsp;</apex:outputText>
+                    <apex:outputText value="{!$Label.advpm__ap_owner}" />
+                    <apex:outputText >{!actionPlan.Owner.Name}&nbsp;[<apex:outputLink value="/{!actionPlan.Id}/a?retURL={!$CurrentPage.URL}">{!$Label.advpm__ap_change}</apex:outputLink>]</apex:outputText>
+                    
+                    <apex:outputText value="{!$Label.advpm__ap_related_to}" />
+                    <apex:outputText >
+                        <apex:outputField value="{!actionPlan.advpm__Account__c}" 		rendered="{!(actionPlan.advpm__Account__c != null)}" />
+                        <apex:outputField value="{!actionPlan.advpm__Contact__c}" 		rendered="{!(actionPlan.advpm__Contact__c != null)}" />
+                        <apex:outputField value="{!actionPlan.advpm__Matter__c}" 		rendered="{!(actionPlan.advpm__Matter__c != null)}" />
+                    </apex:outputText>
+                    <apex:outputText >&nbsp;</apex:outputText>
+                    <apex:outputText value="{!$Label.advpm__ap_status}" />
+                    <apex:outputText >{!Completed} {!$Label.advpm__ap_of} {!TaskSize} {!$Label.advpm__ap_taskscomplete}</apex:outputText>
+                </apex:panelGrid>
+            </apex:pageBlockSection>
+            <!-- END INFORMATION SECTION -->
+            
+            <!-- TASKS SECTION -->
+            <apex:pageBlockSection id="taskSection" title="{!$Label.advpm__ap_taskheadersortable}" columns="1">
+            	<apex:panelGrid columns="2" styleClass="weekend-table">
+                    <apex:outputText >
+                    	<apex:inputCheckbox value="{!ActionPlan.advpm__SkipWeekends__c}"  disabled="true" id="skipWeekendCheckbox" style="margin:0px;{!IF(isLightning,'margin-top:3px;','')}"/>
+                    </apex:outputText>
+                    <apex:outputLabel value="{!$Label.advpm__ap_skipweekendswhen}" for="skipWeekendCheckbox" />
+                    
+                </apex:panelGrid>
+                
+                <apex:panelGrid columns="3" columnClasses="labelCol1, dataCol1, spacerCol" rendered="{!(ActionPlan.advpm__SkipDay__c != null && ActionPlan.advpm__SkipWeekends__c == true)}">
+                    <apex:outputText >{!$Label.advpm__ap_defaultweekendduedates} <strong>{!actionPlan.advpm__SkipDay__c}</strong></apex:outputText>
+                </apex:panelGrid>
+                
+                <br />
+                <apex:dataTable value="{!wrappedTasks}" var="ap" id="theTable" styleClass="sortable">
+                    <apex:column id="columnOne" headerClass="actTypeCol slds-text-heading--label" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Activity_Type__c.label}">
+                    	<apex:outputText id="activity_type">{!ap.task.advpm__Activity_Type__c}</apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Subject__c.label}" headerClass="subjectCol slds-text-heading--label">
+                    	<apex:outputLink rendered="{!ap.linkedRecId != ''}" value="/{!ap.linkedRecId}">{!ap.task.advpm__Subject__c}</apex:outputLink>
+                    	<apex:outputPanel rendered="{!ap.linkedRecId == ''}">{!ap.task.advpm__Subject__c}</apex:outputPanel>
+                    </apex:column>
+                    <apex:column id="dependency" headerClass="dependencyColumn slds-text-heading--label" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__APTaskTemplate__c.label}">
+                    	<apex:outputText >{!ap.task.APTaskTemplate__r.advpm__Subject__c}</apex:outputText>
+                    </apex:column>
+                    <apex:column value="{!ap.task.advpm__DaysFromStart__c}" headerClass="daysCol slds-text-heading--label">
+						<apex:facet name="header">
+							<div>Days Before<br/>or After<!-- <img class="helpOrb" title="{!$Label.ap_days_after_msg}" src="/s.gif"/> --></div>
+						</apex:facet>
+                   	</apex:column>
+                    <apex:column headerClass="dateCol slds-text-heading--label" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__ActivityDate__c.label}">
+                        <span style="color:#cc0000"><apex:outputField value="{!ap.task.advpm__ActivityDate__c}" rendered="{!IF( (!ISNULL(ap.task.advpm__ActivityDate__c) && ap.task.advpm__ActivityDate__c < TODAY()) && ap.task.advpm__Status__c != 'Completed' && ap.task.advpm__Activity_Type__c == 'Task', true, false)}" /></span>
+                        <apex:outputField value="{!ap.task.advpm__ActivityDate__c}" rendered="{!IF((!ISNULL(ap.task.advpm__ActivityDate__c) && ap.task.advpm__ActivityDate__c >= TODAY()) || ap.task.advpm__Status__c == 'Completed' || ap.task.advpm__Activity_Type__c == 'Event', true, false)}" />
+                    </apex:column>
+                    <apex:column styleClass="Start_Time_Display_field" headerClass="startTimeCol slds-text-heading--label">
+                    	<apex:facet name="header">Start<br/>Time</apex:facet>
+                    	<apex:outputField value="{!ap.task.advpm__Start_Time_Display__c}"  rendered="{!ap.task.advpm__Activity_Type__c == 'Event'}" />
+                    </apex:column>
+                    <apex:column styleClass="DurationInMinutes_field" headerClass="durationCol slds-text-heading--label">
+                    	<apex:facet name="header"><div>Duration<br/>(in minutes)</div></apex:facet>
+                    	<apex:outputPanel rendered="{!ap.task.advpm__Activity_Type__c == 'Event'}">
+                    		<apex:outputField value="{!ap.task.advpm__DurationInMinutes__c}"  />
+                    	</apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__User__c.label}" styleClass="assigned_to_field" headerClass=" slds-text-heading--label">
+                    	<apex:outputField rendered="{!ap.task.advpm__User_Type__c != 'SourceUserFields'}" value="{!ap.task.advpm__User__c}"  /> 
+                    	<apex:outputPanel rendered="{!ap.task.advpm__User_Type__c == 'SourceUserFields'}">[<strong>{!map_objFields[ap.task.advpm__User_Source_Field__c]}</strong>]</apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Type__c.label}" styleClass="type_field" headerClass="typeCol slds-text-heading--label">
+                    	<apex:outputField value="{!ap.task.advpm__Type__c}" />
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Priority__c.label}" styleClass="Priority_field" headerClass="priorityCol slds-text-heading--label">
+                    	<apex:outputField value="{!ap.task.advpm__Priority__c}" rendered="{!ap.task.advpm__Activity_Type__c == 'Task'}" />
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Status__c.label}" headerClass="statusCol slds-text-heading--label">
+                    	<apex:outputField value="{!ap.task.advpm__Status__c}" rendered="{!ap.task.advpm__Activity_Type__c == 'Task'}" />
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Reminder__c.label}" headerClass="reminderCol slds-text-heading--label" >
+                    	<apex:outputPanel layout="block" >
+                    		<apex:outputField value="{!ap.task.advpm__Reminder__c}" />
+                    		<apex:outputField value="{!ap.task.advpm__Time_Reminder__c}" />
+						</apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Comments__c.label}" headerClass="commentsCol slds-text-heading--label">
+                    	
+                    	<apex:outputPanel id="commentPanel" style="display:none" >
+                       		<div id="commentContainer" onmouseout="javascript:ActionPlanDetailScripts.hideComments('{!$Component.theTable.columnOne}');">
+                        		<div class="hd">
+                        			<div class="hd-left">{!$Label.ap_Comments}</div>
+                        			<div class="hd-right"></div>
+                        		</div>
+                        		<div class="bd">
+                        			<textarea readonly="true" id="Comments">{!ap.task.Comments__c}</textarea>
+                        		</div>
+                       		</div>
+                       	</apex:outputPanel>
+                       	
+						<apex:outputPanel rendered="{!ap.task.advpm__Comments__c != null}">(<a onmouseover="javascript:ActionPlanDetailScripts.showComments('{!$Component.theTable.columnOne}');" style="text-decoration:underline">...</a>)</apex:outputPanel>
+                    </apex:column>
+                </apex:dataTable>
+                
+            </apex:pageBlockSection>
+            <!-- END TASKS SECTION -->
+            
+            <!-- GANTT VIEW SECTION -->
+            <apex:pageBlockSection title="Gantt View" columns="1">
+            	<iframe id="frame-gantt-ap" frameborder="0" scrolling="no" title="Action Plan Activities" width="100%" src="{!$Site.Prefix}/apex/advpm__ActionPlanGantt?id={!ActionPlan__c.Id}"></iframe>
+            	<script type="text/javascript">
+					function AdjustIframeHeightOnLoad() { document.getElementById("frame-gantt-ap").style.height = document.getElementById("frame-gantt-ap").contentWindow.document.body.scrollHeight + "px"; }
+					function AdjustIframeHeight(i) { document.getElementById("frame-gantt-ap").style.height = parseInt(i) + "px"; }
+				</script>
+            </apex:pageBlockSection>
+            <!-- END GANTT VIEW SECTION -->
+            
+            <!-- SYSTEM INFORMATION SECTION -->
+            <apex:pageBlockSection title="System Information" columns="1">
+	            <apex:panelGrid columns="7" columnClasses="labelCol, dataCol2, dataCol2, spacerCol, labelCol, dataCol2, dataCol2">
+		            <apex:outputText value="{!$Label.advpm__ap_createdby}" />
+		            <apex:outputField value="{!ActionPlan.CreatedById}" />
+		            <apex:outputField value="{!ActionPlan.CreatedDate}" />
+		            <apex:outputText />
+		            <apex:outputText value="{!$Label.advpm__ap_lastmodifiedby}" />
+		            <apex:outputField value="{!ActionPlan.LastModifiedById}" />
+		            <apex:outputField value="{!ActionPlan.LastModifiedDate}" />
+	            </apex:panelGrid>
+           	</apex:pageBlockSection>
+           	<!-- END SYSTEM INFORMATION SECTION -->
+           	
+        </apex:pageBlock>        
+        
+    </apex:form>
+    
+    <script>
+        ActionPlanDetailScripts.formatFields();
+        ActionPlanDetailScripts.removeHover();
+    </script>
+</apex:outputPanel>
+</apex:page>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email template to Notify queue members that a new case is in the queue</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - Legal Request (CIB - Banking) Auto-response email</name>
+    <style>freeForm</style>
+    <subject>CIB (Banking) - Case #{!Case.CaseNumber}: {!Case.Subject}</subject>
+    <textOnly>Dear {!Case.hOwnerQueueName__c} Members
+
+Kindly note that a New - Legal Request is available for your attention in the CIB - Banking Queue.
+
+Case subject: {!Case.Subject}
+Case priority: {!Case.Priority}
+Case status: {!Case.Status}
+Case number: #{!Case.CaseNumber}
+
+
+Thank you
+Salesforce Team</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Legal Request for Service Notification</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>LEAP - BAGL (OLD) Legal Request for Service</name>
+    <style>freeForm</style>
+    <subject>BAGL Legal: Request for Service</subject>
+    <textOnly>Dear {!Legal_Quote__c.Law_Firm__c}
+
+Barclays Africa would like to invite you to provide a quotation for service/instruction on:
+
+Quote Title: {!Legal_Quote_Request__c.Quote_Title__c}
+
+Quote Description: {!Legal_Quote_Request__c.Quote_Description__c}
+
+We would like to request the service of the following Preferred Counsel: {!Legal_Quote__c.External_Counsel_Name__c}
+
+Requestor information:
+
+Requestor Name:
+
+{!Legal_Quote_Request__c.OwnerFullName}
+
+Requestor Email:
+
+{!Legal_Quote_Request__c.OwnerEmail}
+
+Requestor Contact Number:
+
+{!Legal_Quote_Request__c.OwnerPhone}
+
+
+Attachments: (attachments as per upload by Requestor)
+
+Please click the following link to complete quote details and upload relevant quotation:
+
+
+
+Legal Quote Request for Law Firm to view any attachments: {!Legal_Quote_Request__c.Box_Quote_Request_Link__c}
+
+Legal Quote - Law Firm upload response: {!Legal_Quote__c.Box_Document_Link__c}
+
+
+
+If you experience any technical problems or have any questions please contact Dudu Langa (Dudu.Langa@absa.co.za).</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

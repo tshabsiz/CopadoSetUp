@@ -1,0 +1,288 @@
+<apex:page controller="advpm.RateController" tabStyle="advpm__Rate__c" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStyleSheets="true" >
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+	<title>Add Rates |	{!MatName}</title>
+	<c:includeSLDS />
+    <style type="text/css">
+		body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock {border-bottom:1px;}
+		body .apexp .pbBody table.list {border-top: 1px solid #e0e3e5;}
+		.gt-timeline {font-family: "Salesforce Sans", Arial, sans-serif;}
+		.slds .slds-modal--large .slds-modal__container{width:90%;min-width:640px;}
+		.slds #editModal .slds-pill{display:block;}
+		.slds #editModal .slds-pill:hover{background-color:#fff;}
+		.slds #editModal .slds-pill__label{max-width:15.5rem;}
+		.requiredBlock {display:none;}
+		.slds, .slds h1,.slds h2,.slds h3,.slds h4,.slds h5,.slds h6 {font-family:"Salesforce Sans", Arial, sans-serif;}
+		.slds .slds-form-element__static {line-height: 1.75;}
+		.slds .slds-form-element__static,.sfdc_richtext{font-family:"Salesforce Sans", Arial, sans-serif;font-size:.875rem;color:#16325C;line-height:normal;font-weight:400;}
+		.slds .sfdc_richtext ul{margin:1em;margin-left:40px;list-style-type:disc;}
+		.modal-icon-close {width: 2rem;height: 2rem;fill: white;}
+		.slds-modal__close {right: -.8rem;}
+		.frm-sec-header {color: rgb(22, 50, 92);font-size: 1rem;line-height: 1;margin: 0;padding: 1rem 0.8rem 0.75rem;}
+		.lookupIcon, .lookupIconOn {display: inline-block !important;width: 1rem!important;height: 1rem!important;line-height: 1rem!important;vertical-align: middle !important;background-image: url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/search_60.png')}") !important;background-repeat: no-repeat !important;margin-left: -1.5rem!important;background-size: 1rem!important;}
+        .lookupInput input {padding-right:1.5rem!important;}
+        .dateOnlyInput input {width:100%;}
+        .dateFormat {display:none;}
+		.date-picker-icon {position: absolute;vertical-align: middle;right: 20px;top: 30px;width: 15px;height: 15px;background:url("{!URLFOR($Resource.advpm__SLDS0202, 'assets/icons/utility/monthlyview_60.png')}") no-repeat 0 0;background-size: 15px;}
+		.datePicker, .autoCompleteBox, .autoCompleteBoxScrolling {z-index:999999;}
+		input[type=checkbox]{clear: both;display: block;}
+		.uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {border-color: rgb(21, 137, 238);box-shadow: 0 0 3px #0070d2;}
+		.uiInput--checkbox input[type=checkbox]:checked, input.uiInput--checkbox[type=checkbox]:checked {background-color: rgb(21, 137, 238);background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTQyLjYgNzFjLTEuMiAwLTIuNC0wLjUtMy4zLTEuNGwtMTguNy0xOC43Yy0wLjgtMC44LTAuOC0yIDAtMi44bDMuNy0zLjdjMC44LTAuOCAyLTAuOCAyLjggMGwxNS41IDE1LjQgMzAuMy0zMC4zYzAuOC0wLjggMi0wLjggMi44IDBsMy43IDMuN2MwLjggMC44IDAuOCAyIDAgMi44bC0zMy42IDMzLjZjLTAuOSAwLjktMiAxLjQtMy4yIDEuNHoiPjwvcGF0aD48L3N2Zz4=");background-size: cover;border-color: rgb(21, 137, 238);}
+		.uiInput--checkbox input, input.uiInput--checkbox {display: block;-webkit-appearance: none;-moz-appearance: none;appearance: none;width: 1rem;height: 1rem;vertical-align: -.25em;border: 1px solid rgb(216, 221, 230);border-radius: .125rem;background: rgb(255, 255, 255);-webkit-transition: .5s ease all;transition: .5s ease all;}
+		.lookup-input input {width: 100%; vertical-align: initial;}
+		select:-internal-list-box optgroup option::before {content: ""!important;}
+		.slds-input {margin-bottom: 15px; width:188px !important ;}
+		.tertiaryPalette {background-color:#f3f3ec !important;}
+		.quickCreateModule img {vertical-align:middle !important;}
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+            border-left: 0px solid #eaeaea;
+            border-right: 0px solid #eaeaea;
+        }
+        .slds .slds-form-element__static a, a.slds-changeLink {color: #16325C;}
+        .bPageBlock .detailList .data2Col {padding-left: 0px;}
+        .slds-checkbox [type="checkbox"][disabled] + .slds-checkbox--faux:after, .slds-checkbox [type="checkbox"][disabled] ~ .slds-checkbox--faux:after {border-color: #a8b7c7;}
+        .taskTable th {border-bottom: 1px solid #ccc !important;}
+        .slds .slds-table .slds-cell-wrap {font-family: "Salesforce Sans", Arial, sans-serif;color: #16325C;}
+        .slds .slds-table tr > th:first-child, .slds .slds-table tr > td:first-child {padding-left: 0px;}
+        #editPage .pbSubsection, .editPage .pbSubsection {margin-top: 0px;padding: 0px;}
+        .taskTable th {vertical-align: bottom !important;}
+        img {max-width: auto;}
+        .taskTable .slds-input {margin-bottom: 0px; padding: 0 1rem 0 0.45rem;}
+        .slds-table th, .slds-table td {padding: 0.20rem!important;padding-top: 0.50rem!important;padding-bottom: 0.50rem!important;}
+        .slds-panel__section {padding-bottom: 0px;}
+        .pbBottomButtons {border-top:none !important;}
+        .slds-checkbox {margin-left: 20px !important;}
+        .slds-table th.action-col, .slds-table td.action-col {padding-left: 24px!important;}
+        .slds-table th.action-col-add, .slds-table td.action-col-add {width: 30px!important;}
+        .slds .slds-card {margin: 20px;}
+	</style>
+	<apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <script type="text/javascript">
+		$j = jQuery.noConflict();
+		$j(document).ready(function(){
+		   	fixControls();
+		});
+		function fixControls() {
+			$j('.slds-form-element .lookupInput a').removeClass('slds-input');
+			$j('.slds-form-element .multiSelectPicklistTable img').removeClass('slds-input');
+			$j('.slds-form-element .multiSelectPicklistTable').css('width','initial');
+			
+			$j('.slds-form-element .lookup-input select').addClass('slds-select');
+			$j('.slds-form-element .lookup-input .lookupInput input[type=text]').addClass('slds-input');
+			$j('.slds-form-element .lookup-input').removeClass('slds-input');
+		}
+    </script>
+    <script type="text/javascript">
+        function selectAllCheckboxes(obj,receivedInputID){
+            var inputCheckBox = document.getElementsByTagName("input");                  
+            for(var i=0; i<inputCheckBox.length; i++){          
+                if(inputCheckBox[i].id.indexOf(receivedInputID)!=-1){                                     
+                    inputCheckBox[i].checked = obj.checked;
+                    activateEvent(inputCheckBox[i], 'change');
+                }
+            }
+        }
+        function selectDefault(obj, defObjId) {
+        	var defCheckbox = document.getElementById(defObjId);
+        	defCheckbox.checked = obj.checked;
+        }
+        function activateEvent(item, actionShortName) {
+		    if (document.createEventObject){    // dispatch for IE
+		        item.fireEvent("on" + actionShortName); 
+		    }
+		    else {  // dispatch for firefox + others
+		        var evt = document.createEvent("HTMLEvents");
+		        evt.initEvent(actionShortName, true, true); // event type,bubbling,cancelable
+		        item.dispatchEvent(evt);
+		    }
+		}
+    </script>
+</head>
+<body>
+	<apex:form styleClass="slds" >
+		<apex:actionFunction name="doCancel" action="{!cancel}" />
+        
+  		<c:slds_pageheader pageHeaderType="BREADCRUMBS"
+     					   headerTitle="Add Rates"
+     					   parentEntity="{!JSINHTMLENCODE($ObjectType.advpm__Rate__c.labelPlural)}" 
+	                       parentEntityLink="{!$ObjectType.advpm__Rate__c.keyPrefix}" 
+    					   parentRecordName="{!MatName}"
+                           parentRecordID="{!MatId}">
+			<!-- <div class="slds-no-flex" role="group">
+                <input type="button" class="slds-button slds-button--neutral" value="  Done  " onClick="doCancel();return false;" />
+            </div> -->
+     	</c:slds_pageheader>
+        
+     	<div class="slds-page-header" role="banner" style="padding-top:10px;">
+            <div class="">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-no-space slds-grow">
+                        <div class="slds-media__body">
+                            <h2 class="slds-text-heading--small slds-truncate">Filter Rates</h2>
+                        </div>
+			        </div>
+			    </div>
+				<div class="slds-col slds-no-flex slds-grid slds-align-top">
+				    <div class="slds-form--inline">
+				  		<div class="slds-form-element">
+				    		<label class="slds-form-element__label" for="rateGroup">Rate Group</label>
+				   			<div class="slds-form-element__control">
+				      			<apex:selectList size="1" id="rateGroup" styleClass="slds-input" value="{!selectedRateGroup}" >
+                                    <apex:selectOptions value="{!RateGroups}" />
+				                </apex:selectList>
+				    		</div>
+				  		</div>
+					    <div class="slds-form-element">
+					    <label class="slds-form-element__label" for="Matter">Matter</label>
+						    <div class="slds-form-element__control">
+                                <apex:inputField styleClass="slds-input" value="{!ProxyRate.advpm__Matter__c}"  />
+						    </div>
+					    </div>
+						<div class="slds-form-element">
+						    <apex:outputPanel layout="block">
+				            	<apex:commandButton value="  Search  " action="{!FetchRateRecords}" rerender="thePage" status="loadingItems" oncomplete="fixControls();" styleClass="slds-button slds-button--neutral"  />
+					            <apex:actionstatus id="loadingItems">
+						            <apex:facet name="start">
+						            	<apex:image value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+						            </apex:facet>
+					            </apex:actionstatus>
+				            </apex:outputPanel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+			
+        <apex:outputPanel id="thePage"  layout="block">
+            <apex:outputPanel id="secSelect" layout="block">
+				<div class="slds-card">
+                    <div class="slds-card__header slds-grid">
+    				    <div class="slds-card__header slds-grid">
+    				        <div class="slds-media slds-media--center slds-has-flexi-truncate">
+    				            <div class="slds-media__body">
+    				                <h2 class="slds-text-heading--small slds-truncate">Select Rates to add to Matter</h2>
+    				            </div>
+    				        </div>
+    				    </div>
+                    </div>
+				    <div class="slds-card__body">
+				        <apex:outputPanel layout="block" rendered="{!RateRecords.size > 0}" style="padding-left:30px">
+				            <img class="checkArrow" src="/sfc/images/checkbox_arrow.png" alt="" style="padding-right: 14px;" />
+				            <apex:commandButton action="{!Add}" value=" Add " style="line-height: 24px;margin-bottom: 5px;" styleClass="slds-button slds-button--brand" rerender="thePage" status="loadingAddItems" oncomplete="fixControls();" />
+			                <apex:actionstatus id="loadingAddItems">
+			                    <apex:facet name="start">
+			                        <apex:image value="{!URLFOR($Resource.advpm__SLDS0112, 'assets/images/spinners/slds_spinner_brand.gif')}" alt="Processing..." width="24" height="24" />
+			                    </apex:facet>
+			                </apex:actionstatus>
+			            </apex:outputPanel>
+			      		<apex:dataTable value="{!RateRecords}" var="r" id="theRateTable" rendered="{!RateRecords.size > 0}" styleClass="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-row-hover">
+                            <apex:column headerClass="slds-text-heading--label action-col-add" styleClass="action-col-add">
+                                <div class="slds-form-element"> 
+			                        <label class="slds-checkbox">
+							        	<apex:inputCheckbox id="checkedRate" value="{!r.selected}" onchange="selectDefault(this,'{!$Component.theRateTable.checkedDefault}');" />
+			                			<span class="slds-checkbox--faux"></span>
+				    				</label>
+                                </div>
+                                <apex:facet name="header">
+	                        	    <apex:outputPanel styleClass="slds-form-element" layout="block">
+					           			<label class="slds-checkbox">
+											<apex:inputCheckbox onclick="selectAllCheckboxes(this,'checkedRate')" />
+					     					<span class="slds-checkbox--faux"></span>
+					    				</label>
+					               	</apex:outputPanel>
+	                            </apex:facet>
+                            </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label"  headerValue="Rate" >
+		                        <div class="slds-form-element" >
+		                        	<apex:inputField value="{!r.rate.advpm__Rate__c}" styleClass="slds-input" />
+		                        </div>
+		                    </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label" headerValue="Rate Name">
+		                        <div class="slds-form-element" >
+		                        	<apex:inputField value="{!r.rate.Name}" styleClass="slds-input" />
+		                        </div>
+		                    </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label" headerValue="Charged Per">
+		                        <div class="slds-form-element" >
+		                        	<apex:inputField value="{!r.rate.advpm__Charged_Per__c}" styleClass="slds-input" />
+		                        </div>
+		                    </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label"  headerValue="Rate Type">
+		                        <div class="slds-form-element" >
+		                        	<apex:inputField value="{!r.rate.advpm__Rate_Type__c}" styleClass="slds-input" />
+		                        </div>
+		                    </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label" headerValue="Default">
+		                        <div class="slds-form-element" >
+			               			<label class="slds-checkbox">
+							    		<apex:inputField value="{!r.rate.advpm__Default__c}" style="margin-left: 20px;" id="checkedDefault" />
+			     						<span class="slds-checkbox--faux"></span>
+				    				</label>
+				                </div>
+		                    </apex:column>
+		                    <apex:column headerClass="slds-text-heading--label" value="{!r.rate.advpm__Rate_Group__c}" headerValue="Rate Group" />
+		                    <apex:column headerClass="slds-text-heading--label" value="{!r.rate.advpm__Matter__c}" headerValue="Matter" />
+		                    <apex:column headerClass="slds-text-heading--label" headerValue="Timekeeper" >
+                                <apex:outputField value="{!r.rate.advpm__Timekeeper__c}" />
+		                   	</apex:column>
+                        </apex:dataTable>
+                        <apex:outputPanel layout="none" rendered="{!(RateRecords.size == 0)}">
+                            <div class="slds-text-heading--small slds-p-top--small slds-p-bottom--small" style="text-align:center;">
+                                No records to display. Try filtering by selecting either Rate Group or Matter or Both to display records for selected Rate Group and Matter.
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                    <div class="slds-card__footer"></div>
+                </div>
+            </apex:outputPanel>
+			<div class="slds-card">
+                <div class="slds-card__header slds-grid">
+                    <div class="slds-card__header slds-grid">
+                        <div class="slds-media slds-media--center slds-has-flexi-truncate">
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-heading--small slds-truncate">Existing Matter Rates</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<div class="slds-card__body">
+				    <apex:dataTable value="{!ExistingMatterRates}" var="e" id="theRateApplyExistingTable" rendered="{!NOT(ISNULL(ExistingMatterRates))}" styleClass="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                        <apex:column headerValue="Action" headerClass="slds-text-heading--label action-col" styleClass="action-col">
+                           <apex:outputLink styleClass="actionLink" value="{!URLFOR($Action.advpm__Rate__c.Edit,e.Id,[retURL=URLFOR($Page.advpm__RateApplyExisting,e.Id,[matid=MatId,matname=MatName,retURL=MatId],false)],false)}">Edit</apex:outputLink>
+                           |&nbsp;                 
+                           <apex:outputLink styleClass="actionLink" value="{!URLFOR($Action.advpm__Rate__c.Delete,e.Id,[retURL=URLFOR($Page.advpm__RateApplyExisting,e.Id,[matid=MatId,matname=MatName,retURL=MatId],false)],false)}"
+                                            onclick="return confirmDelete();">Del</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Rate Name">
+                           <apex:outputLink value="/{!e.Id}">{!e.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Rate">
+                        	<apex:outputField value="{!e.advpm__Rate__c}"/>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Charged Per">
+                        	<apex:outputField value="{!e.advpm__Charged_Per__c}"/>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Rate Type">
+                        	<apex:outputField value="{!e.advpm__Rate_Type__c}"/>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Default">
+                        	<apex:outputField value="{!e.advpm__Default__c}"/>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Rate Group">
+                        	<apex:outputField value="{!e.advpm__Rate_Group__c}"/>
+                        </apex:column>
+                        <apex:column headerClass="slds-text-heading--label" headerValue="Timekeeper">
+                        	<apex:outputField value="{!e.advpm__Timekeeper__c}" />
+                        </apex:column>
+                    </apex:dataTable>
+                    <apex:outputPanel layout="none" rendered="{!(ISNULL(ExistingMatterRates))}">
+                        <div class="slds-text-heading--small slds-p-top--small slds-p-bottom--small" style="text-align:center;">No records to display</div>
+                    </apex:outputPanel>
+                </div>
+				<div class="slds-card__footer"></div>
+			</div>
+		</apex:outputPanel>
+   </apex:form>
+</body>
+</html>
+</apex:page>

@@ -1,0 +1,35 @@
+<!--/**
+* @author       ModelMetrics		
+* @date 		11/13/2013
+* @description 	SHown as a Related list on the Categories Detail Page
+				Queries the lists of content files that are currently associated with a Caetgory .
+				
+*    -----------------------------------------------------------------------------
+*    Developer					Date				Description
+*    -----------------------------------------------------------------------------
+*
+*	 Raj Avirneni				01/03/2013			Modifed to Add Few more Comments. 
+*    
+*/ -->
+<apex:page standardController="Barclays_SA__Category__c" extensions="Barclays_SA.ContentDisplayController" sidebar="false" showHeader="false">
+    <apex:pageBlock >
+	    <apex:pageBlockTable value="{!content}" var="con">
+	        <apex:column headerValue="Title">
+	            <apex:outputlink value="/{!con.Id}" target="_blank">{!con.Title}</apex:outputlink>
+	        </apex:column>
+	        <apex:column headerValue="Owner">
+	            {!con.Owner.Name}
+	        </apex:column>
+	        <apex:column headerValue="File Type">
+	            {!con.FileType}
+	        </apex:column>
+	        <apex:column headerValue="Document Type">
+	            {!con.Barclays_SA__Document_Type__c}
+	        </apex:column>  
+	        <apex:column >
+	        	{!con.VersionNumber}
+	        </apex:column> 
+	   
+	    </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

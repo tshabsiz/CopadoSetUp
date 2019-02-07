@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Configurations relating to Event including Badges and Themes</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Active__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Active indicates that this config can be select for new events.  Inactive configs may remain linked to exsiting events.</inlineHelpText>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Agenda_Logo__c</fullName>
+        <externalId>false</externalId>
+        <label>Agenda Logo</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Badge_Font_Family__c</fullName>
+        <externalId>false</externalId>
+        <label>Badge Font Family</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Badge_Gutter__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The gutter margin between the two areas of a double sided badge</inlineHelpText>
+        <label>Badge Gutter</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Badge_Optional__c</fullName>
+        <externalId>false</externalId>
+        <label>Badge Optional</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Badge_Title__c</fullName>
+        <externalId>false</externalId>
+        <label>Badge Title</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Badge_Width__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The width of the printable area of the badge</inlineHelpText>
+        <label>Badge Width</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Badge_X__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The X co-ordinate of the top left of the printable area on the badge</inlineHelpText>
+        <label>Badge X</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Badge_Y__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The Y co-ordinate of the top left of the printable area on the badge</inlineHelpText>
+        <label>Badge Y</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Booking_Page_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>Booking Page Name</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Booking_Page_URL__c</fullName>
+        <externalId>false</externalId>
+        <formula>Event_Site_Root_URL__c + &quot;/&quot; +  Booking_Page_Name__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Booking Page URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Default__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicate if this is the default record for its record type</inlineHelpText>
+        <label>Default</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Disclaimer__c</fullName>
+        <externalId>false</externalId>
+        <label>Disclaimer</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Html</type>
+        <visibleLines>25</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Event_Site_Root_URL__c</fullName>
+        <externalId>false</externalId>
+        <label>Event Site Root URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Hyperlink_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Hyperlink Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Button_Background_Color_Hover__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Button Background Color - Hover</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Button_Background_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Button Background Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Button_Sample__c</fullName>
+        <externalId>false</externalId>
+        <formula>IMAGE(&quot;https://dummyimage.com/150x30/&quot;+  SUBSTITUTE(Primary_Button_Background_Color__c, &quot;#&quot;, &quot;&quot;)   +&quot;/&quot;+  SUBSTITUTE(Primary_Button_Text_Color__c, &quot;#&quot;, &quot;&quot;)  +&quot;.png&amp;text=Button&quot;, &quot;Click Here&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Primary Button Sample</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Button_Text_Color_Hover__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Button Text Color - Hover</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Button_Text_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Button Text Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Logo_Sample__c</fullName>
+        <externalId>false</externalId>
+        <formula>IMAGE( Primary_Logo__c, &quot;&lt;no logo&gt;&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Primary Logo Sample</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Logo__c</fullName>
+        <externalId>false</externalId>
+        <label>Primary Logo URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>RSVP_Accepted_Page_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>RSVP Accepted Page Name</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RSVP_Declined_Page_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>RSVP Declined Page Name</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RSVP_Landing_Page_Name__c</fullName>
+        <externalId>false</externalId>
+        <label>RSVP Landing Page Name</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RSVP_Page_URL__c</fullName>
+        <externalId>false</externalId>
+        <formula>Event_Site_Root_URL__c + &quot;/&quot; +  RSVP_Landing_Page_Name__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>RSVP Page URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Secondary_Logo_Sample__c</fullName>
+        <externalId>false</externalId>
+        <formula>IMAGE( Secondary_Logo__c , &quot;&lt;no logo&gt;&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Secondary Logo Sample</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Secondary_Logo__c</fullName>
+        <externalId>false</externalId>
+        <label>Secondary Logo URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Template__c</fullName>
+        <externalId>false</externalId>
+        <label>Template</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Social</fullName>
+                    <default>false</default>
+                    <label>Social</label>
+                </value>
+                <value>
+                    <fullName>Cloudsmiths</fullName>
+                    <default>false</default>
+                    <label>Cloudsmiths</label>
+                </value>
+                <value>
+                    <fullName>SocialV2</fullName>
+                    <default>false</default>
+                    <label>SocialV2</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Web_Pages_Background_Color__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Hex Color Code eg. #000000 of #f0f0f0</inlineHelpText>
+        <label>Web Pages Background Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Web_Pages_Font_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Web Pages Font Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Web_Pages_Foreground_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Web Pages Foreground Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Web_Pages_Heading_Font_Color__c</fullName>
+        <externalId>false</externalId>
+        <label>Web Pages Heading Font Color</label>
+        <length>7</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Web_Pages_Heading_Sample__c</fullName>
+        <externalId>false</externalId>
+        <formula>IMAGE(&quot;https://dummyimage.com/200x40/&quot;+  SUBSTITUTE(  Web_Pages_Foreground_Color__c , &quot;#&quot;, &quot;&quot;)   +&quot;/&quot;+  SUBSTITUTE( Web_Pages_Heading_Font_Color__c , &quot;#&quot;, &quot;&quot;)  +&quot;.png&amp;text=SAMPLE HEADING&quot;, &quot;invalid parameters&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Web Pages Heading Sample</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Website_Privacy_Policy__c</fullName>
+        <externalId>false</externalId>
+        <label>Website_Privacy Policy</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>15</visibleLines>
+    </fields>
+    <label>Event Configuration</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>RECORDTYPE</columns>
+        <columns>NAME</columns>
+        <columns>Active__c</columns>
+        <columns>Default__c</columns>
+        <columns>CREATED_DATE</columns>
+        <columns>CREATEDBY_USER</columns>
+        <columns>LAST_UPDATE</columns>
+        <columns>UPDATEDBY_USER</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Event Configuration Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Event Configurations</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>Event_Agenda</fullName>
+        <active>true</active>
+        <label>Event Agenda</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event_Badges</fullName>
+        <active>true</active>
+        <description>Badges Associated to the Event -  Do not change Label as it is used in evTestDataGenerator</description>
+        <label>Event Badges</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event_Basics</fullName>
+        <active>true</active>
+        <description>Basics Associated to the Event</description>
+        <label>Event Basics</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event_Config</fullName>
+        <active>true</active>
+        <description>Technical event configuration parameters</description>
+        <label>Event Config</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event_Disclaimer</fullName>
+        <active>true</active>
+        <label>Event Disclaimer</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Event_Themes</fullName>
+        <active>true</active>
+        <description>Themes Associated to the Event</description>
+        <label>Event Themes</label>
+        <picklistValues>
+            <picklist>Template__c</picklist>
+            <values>
+                <fullName>Cloudsmiths</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Social</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>SocialV2</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <customTabListAdditionalFields>Active__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Default__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>RECORDTYPE</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CREATEDBY_USER</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CREATED_DATE</customTabListAdditionalFields>
+        <customTabListAdditionalFields>UPDATEDBY_USER</customTabListAdditionalFields>
+        <customTabListAdditionalFields>LAST_UPDATE</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>Run_Email_Sender_Now</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Run Email Sender Now</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <url>/apex/evEmailBatchRunner?action=runEventEmails&amp;id={! EM_Event_Email_Configuration__c.Id }</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Run_Event_Emails_Batch_Job_Now</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>Run Event Emails Batch Job Now</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>true</requireRowSelection>
+        <url>/apex/evEmailBatchRunner?action=runEventEmails&amp;id={!Event__c.Id}</url>
+    </webLinks>
+</CustomObject>

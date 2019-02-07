@@ -1,0 +1,144 @@
+<apex:page standardController="Case" extensions="CSC_Quick_Action_Link_Case_Cont" sidebar="false" showHeader="false" standardStylesheets="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <!--<apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />-->
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS, 'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+            <style type="text/css">
+                div#pop{
+                	font-family:Verdana, 
+                    Arial, Helvetica, 
+                    sans-serif; 
+                    font-size:11px;
+                 	z-index:99999;
+                }
+                a:hover {
+                    background:#ffffff; 
+                    text-decoration:none;
+                }
+                a.tooltip div#pop {
+                    display:none; 
+                    padding:2px 3px; 
+                    margin-left: 0px;
+                    margin-top: -80px;
+                    width:350px;
+                }
+                a.tooltip:hover div#pop{
+                    display:inline; 
+                    position:absolute; 
+                    border:1px solid #00ccff; 
+                    background:#ffffff; 
+                    color:#6c6c6c;
+                    z-index:99999;
+                }
+            </style>
+        </head>
+        <div class="slds">
+            <apex:form id="actionFormLinkCase">
+                <div class="slds-scrollable--x" id="caselist">
+                    <table width="100%" id="relatedcases" class="slds-table slds-table--bordered ">
+                        <tr class="slds-text-heading--label">
+                            <th class="slds-cell-shrink">&nbsp;</th>
+                            <th class="slds-cell-shrink">Cases Number</th>
+                            <th class="slds-cell-shrink">Cases Owner</th>
+                            <th class="slds-cell-shrink">Status</th>
+                            <th class="slds-cell-shrink">Subject</th>
+                            <th class="slds-cell-shrink">Open Date</th>
+                        </tr>
+                        <apex:repeat value="{!lstCaseWrapper}" var="rc" >
+                            <tr class="slds-hint-parent slds-is-selected">
+                                <td class="slds-cell-shrink" data-label="Select Row">
+                                    <label class="slds-checkbox">
+                                        <apex:inputCheckbox value="{!rc.IsChecked}" />
+                                        <span class="slds-checkbox--faux"></span>
+                                    </label>
+                                </td>
+                                <td class="slds-cell-shrink" >
+                                    <a href="#" class="tooltip" onclick="caseSubTab('{!rc.wCase.Id}','{!rc.wCase.CaseNumber}');return false;">{!rc.wCase.CaseNumber}
+                                        <div id="pop">
+                                            <table width="50%">
+                                                <tr><td width="50%" style="font-size:10pt;font-weight:bold">{!rc.wCase.CaseNumber}</td><td  width="50%" >&nbsp;</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Case Owner</td><td style="font-size:8pt;" align="left">{!rc.wCase.Owner.Name}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Subject</td><td style="font-size:8pt;" align="left">{!rc.wCase.Subject}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Department</td><td style="font-size:8pt;" align="left">{!rc.wCase.Department__c}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Service Type</td><td style="font-size:8pt;" align="left">{!rc.wCase.Service_Type__c}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Service Category</td><td style="font-size:8pt;" align="left">{!rc.wCase.Service_Category__c}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Contact Name</td><td style="font-size:8pt;" align="left">{!rc.wCase.Contact.Name}</td></tr>
+                                                <tr><td align="right" style="font-size:8pt;font-weight:bold">Contact Email</td><td style="font-size:8pt;" align="left">{!rc.wCase.Contact.Email}</td></tr>
+                                            </table>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td class="slds-cell-shrink"><apex:outputField value="{!rc.wCase.Owner.Name}" /></td>
+                                <td class="slds-cell-shrink"><apex:outputField value="{!rc.wCase.Status}" /></td>
+                                <td class="slds-cell-shrink"><apex:outputField value="{!rc.wCase.Subject}" /></td>
+                                <td class="slds-cell-shrink"><apex:outputField value="{!rc.wCase.CreatedDate}" /></td>
+                            </tr>
+                        </apex:repeat>
+                    </table>
+                    <br/>
+                    <div class="slds-form-element slds-float--left">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="slds-form-element__label">Case Number</label>
+                                    <apex:inputText id="searchnr" value="{!searchCaseNumber}" styleclass="slds-input" title="Case Number"/>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>
+                                     <label class="slds-form-element__label">Subject</label>
+                                    <apex:inputText id="searchsub" value="{!searchSubject}" styleclass="slds-input" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="slds-form-element slds-float--right">
+                        <br/>
+                         <button class="slds-button slds-button--brand" type="button" onclick="searchNow();" >
+                            Search Cases
+                        </button>
+                        <button class="slds-button slds-button--brand" type="button" onclick="link2Case();" >
+                            Link to Selected Case(s)
+                        </button>
+                    </div>
+                </div>
+                <apex:actionFunction action="{!searchCases}" name="searchCase"/>
+                <apex:actionFunction action="{!linkEmailToCase}" name="linkEmail2Case" />
+            </apex:form>
+        </div>
+        
+        <apex:includeScript value="/support/console/35.0/integration.js"/>
+        <script type="text/javascript">
+        
+        function searchNow(){            
+            searchCase();
+        }
+        
+        function link2Case() {            
+            linkEmail2Case();
+            setTimeout(link2Case, 5000);
+            
+            sforce.console.getFocusedPrimaryTabId(closetab);
+            sforce.console.refreshNavigationTab();
+            sforce.console.focusNavigationTab();
+        }
+        
+        var closetab = function closetab(result) {
+            //Now that we have the tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+        };
+        
+        var cId;
+        var cnr;
+        function caseSubTab(id,nr) {
+            cId = id;
+            cnr = nr;
+            sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+        }
+        var primaryTabId2 = function primaryTabId2(result2) {
+            sforce.console.openSubtab(result2.id , '/' + cId, true, cnr, null);
+        };
+        
+        </script>
+    </html>
+</apex:page>

@@ -1,0 +1,39 @@
+<aura:component controller="ClientPlanStrategyControllerMobile">
+	
+    <aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="strategyId" type="Id" required="true" />
+    <aura:attribute name="showProgressBar" type="Boolean" required="false" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+        
+        <aura:if isTrue="{!v.showProgressBar}">
+            <c:ProgressBarLightningMobile />
+            
+            <aura:set attribute="else">
+                
+                <div id="pageLabel">Link existing opportunity</div>
+                
+                <div id="wholePage">
+                    <aura:iteration items="{!v.optys}" var="opty">
+                        <div class="marginBottom1em" >
+                            <ui:inputCheckbox class="{!'optyCheckbox opty-' + opty.Id}" value="false" change="{!c.onCheck}"/>
+                            <span>{!opty.Name}</span>
+                        </div>
+                    </aura:iteration>
+                    
+                    <aura:if isTrue="{!empty(v.optys)}">
+                    	<div>There is no opportunity to link.</div>
+                    </aura:if>
+                    
+                    <div id="buttonsWrapper">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.moveBack}">Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.onBeforeLinkOptys}">Save</button>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+    
+</aura:component>

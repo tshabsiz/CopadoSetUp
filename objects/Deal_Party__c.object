@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <customHelpPage>General_Deal_Management</customHelpPage>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Asset_Manager__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL(Deal__r.Relationship_Type_picklist__c, &quot;Asset Manager&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Asset Manager?</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Collective_Investment_Scheme_Manager__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL(Deal__r.Relationship_Type_picklist__c, &quot;Collective Investment Scheme Manager&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Collective Investment Scheme Manager?</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Conditions_Monitored_By__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Conditions Monitored By</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>$Source.Deal__c</field>
+                <operation>equals</operation>
+                <valueField>advpm__Participant__c.advpm__Matter__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>advpm__Participant__c</referenceTo>
+        <relationshipLabel>Deal Parties</relationshipLabel>
+        <relationshipName>Deal_Parties</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Counterparty__c</fullName>
+        <externalId>false</externalId>
+        <formula>ISPICKVAL(Deal__r.Relationship_Type_picklist__c, &quot;Counterparty&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Counterparty?</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Deal__c</fullName>
+        <externalId>false</externalId>
+        <label>Deal</label>
+        <referenceTo>advpm__Matter__c</referenceTo>
+        <relationshipLabel>Deal Parties</relationshipLabel>
+        <relationshipName>Deal_Parties</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>ExternalDealPartyId__c</fullName>
+        <externalId>true</externalId>
+        <label>ExternalDealPartyId</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fund_Managers__c</fullName>
+        <externalId>false</externalId>
+        <label># Fund Managers</label>
+        <summaryFilterItems>
+            <field>Hedge_Fund_Party__c.Hedge_Fund_Party_Type__c</field>
+            <operation>equals</operation>
+            <value>Fund Manager</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Hedge_Fund_Party__c.Deal_Party__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Investment_Managers__c</fullName>
+        <externalId>false</externalId>
+        <label># Investment Managers</label>
+        <summaryFilterItems>
+            <field>Hedge_Fund_Party__c.Hedge_Fund_Party_Type__c</field>
+            <operation>equals</operation>
+            <value>Investment Manager</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Hedge_Fund_Party__c.Deal_Party__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Party_B__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Party B</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Party_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Party Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Agent</fullName>
+                    <default>false</default>
+                    <label>Agent</label>
+                </value>
+                <value>
+                    <fullName>Borrower</fullName>
+                    <default>false</default>
+                    <label>Borrower</label>
+                </value>
+                <value>
+                    <fullName>Carrier</fullName>
+                    <default>false</default>
+                    <label>Carrier</label>
+                </value>
+                <value>
+                    <fullName>Collateral Manager</fullName>
+                    <default>false</default>
+                    <label>Collateral Manager</label>
+                </value>
+                <value>
+                    <fullName>Director</fullName>
+                    <default>false</default>
+                    <label>Director</label>
+                </value>
+                <value>
+                    <fullName>ECA</fullName>
+                    <default>false</default>
+                    <label>ECA</label>
+                </value>
+                <value>
+                    <fullName>Forward Sale Purchaser</fullName>
+                    <default>false</default>
+                    <label>Forward Sale Purchaser</label>
+                </value>
+                <value>
+                    <fullName>Guarantor</fullName>
+                    <default>false</default>
+                    <label>Guarantor</label>
+                </value>
+                <value>
+                    <fullName>Investor</fullName>
+                    <default>false</default>
+                    <label>Investor</label>
+                </value>
+                <value>
+                    <fullName>Lender</fullName>
+                    <default>false</default>
+                    <label>Lender</label>
+                </value>
+                <value>
+                    <fullName>Parent</fullName>
+                    <default>false</default>
+                    <label>Parent</label>
+                </value>
+                <value>
+                    <fullName>Rating Agency</fullName>
+                    <default>false</default>
+                    <label>Rating Agency</label>
+                </value>
+                <value>
+                    <fullName>Relevant Party</fullName>
+                    <default>false</default>
+                    <label>Relevant Party</label>
+                </value>
+                <value>
+                    <fullName>Seller</fullName>
+                    <default>false</default>
+                    <label>Seller</label>
+                </value>
+                <value>
+                    <fullName>Storage Operator</fullName>
+                    <default>false</default>
+                    <label>Storage Operator</label>
+                </value>
+                <value>
+                    <fullName>Trustee</fullName>
+                    <default>false</default>
+                    <label>Trustee</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Receive_Notification__c</fullName>
+        <externalId>false</externalId>
+        <formula>Conditions_Monitored_By__r.Receive_Notifications__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Receive Notifications</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Relationship_SDS_ID__c</fullName>
+        <externalId>false</externalId>
+        <formula>Relationship__r.SDS__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Relationship SDS ID</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Relationship_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Relationship Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>3rd Party Guarantor</fullName>
+                    <default>false</default>
+                    <label>3rd Party Guarantor</label>
+                </value>
+                <value>
+                    <fullName>Asset Manager</fullName>
+                    <default>false</default>
+                    <label>Asset Manager</label>
+                </value>
+                <value>
+                    <fullName>Bank Branch</fullName>
+                    <default>false</default>
+                    <label>Bank Branch</label>
+                </value>
+                <value>
+                    <fullName>Collective Investment Scheme Manager</fullName>
+                    <default>false</default>
+                    <label>Collective Investment Scheme Manager</label>
+                </value>
+                <value>
+                    <fullName>Counterparty</fullName>
+                    <default>false</default>
+                    <label>Counterparty</label>
+                </value>
+                <value>
+                    <fullName>Counterparty Branch</fullName>
+                    <default>false</default>
+                    <label>Counterparty Branch</label>
+                </value>
+                <value>
+                    <fullName>Cross Guarantor</fullName>
+                    <default>false</default>
+                    <label>Cross Guarantor</label>
+                </value>
+                <value>
+                    <fullName>Custodian</fullName>
+                    <default>false</default>
+                    <label>Custodian</label>
+                </value>
+                <value>
+                    <fullName>Disclosed Principal</fullName>
+                    <default>false</default>
+                    <label>Disclosed Principal</label>
+                </value>
+                <value>
+                    <fullName>Qualified Investor Hedge Fund</fullName>
+                    <default>false</default>
+                    <label>Qualified Investor Hedge Fund</label>
+                </value>
+                <value>
+                    <fullName>Retail Hedge Fund</fullName>
+                    <default>false</default>
+                    <label>Retail Hedge Fund</label>
+                </value>
+                <value>
+                    <fullName>Security Provider</fullName>
+                    <default>false</default>
+                    <label>Security Provider</label>
+                </value>
+                <value>
+                    <fullName>Specified Entity Bank</fullName>
+                    <default>false</default>
+                    <label>Specified Entity Bank</label>
+                </value>
+                <value>
+                    <fullName>Specified Entity Counterparty</fullName>
+                    <default>false</default>
+                    <label>Specified Entity Counterparty</label>
+                </value>
+                <value>
+                    <fullName>Trustee</fullName>
+                    <default>false</default>
+                    <label>Trustee</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Relationship__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Relationship</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Deal Parties</relationshipLabel>
+        <relationshipName>Deal_Parties</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Source_System__c</fullName>
+        <externalId>false</externalId>
+        <label>Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Source_User__c</fullName>
+        <externalId>false</externalId>
+        <label>Source User</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Supporting_Agreement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Supporting Agreement</label>
+        <referenceTo>Supporting_Agreement__c</referenceTo>
+        <relationshipLabel>Deal Parties</relationshipLabel>
+        <relationshipName>Deal_Parties</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>hAuto_Created__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Auto Created?</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Deal Party</label>
+    <nameField>
+        <displayFormat>DP-{00000}</displayFormat>
+        <label>Deal Party #</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Deal Parties</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>CNSG_Deal_Party</fullName>
+        <active>true</active>
+        <description>Record Type used for CNSG Deal Parties</description>
+        <label>CNSG Deal Party</label>
+        <picklistValues>
+            <picklist>Party_Type__c</picklist>
+            <values>
+                <fullName>Agent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Borrower</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Carrier</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Collateral Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Director</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>ECA</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Forward Sale Purchaser</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Investor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Lender</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Parent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rating Agency</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Relevant Party</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Seller</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Storage Operator</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trustee</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Relationship_Type__c</picklist>
+            <values>
+                <fullName>3rd Party Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Asset Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bank Branch</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Collective Investment Scheme Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Counterparty</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Counterparty Branch</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cross Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Custodian</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Disclosed Principal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Qualified Investor Hedge Fund</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Retail Hedge Fund</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Security Provider</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Specified Entity Bank</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Specified Entity Counterparty</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trustee</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>TMG_Deal_Party</fullName>
+        <active>true</active>
+        <description>Record Type used for TMG Deal Parties</description>
+        <label>TMG Deal Party</label>
+        <picklistValues>
+            <picklist>Party_Type__c</picklist>
+            <values>
+                <fullName>Agent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Borrower</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Carrier</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Collateral Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Director</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>ECA</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Forward Sale Purchaser</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Investor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Lender</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Parent</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rating Agency</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Relevant Party</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Seller</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Storage Operator</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trustee</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Relationship_Type__c</picklist>
+            <values>
+                <fullName>3rd Party Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Asset Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Bank Branch</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Collective Investment Scheme Manager</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Counterparty</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Counterparty Branch</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Cross Guarantor</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Custodian</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Disclosed Principal</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Qualified Investor Hedge Fund</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Retail Hedge Fund</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Security Provider</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Specified Entity Bank</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Specified Entity Counterparty</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Trustee</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Deal__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Party_Type__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Relationship__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Conditions_Monitored_By__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Conditions_Monitored_By__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Deal__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Party_Type__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Relationship__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Conditions_Monitored_By__c</searchFilterFields>
+        <searchFilterFields>Deal__c</searchFilterFields>
+        <searchFilterFields>Party_Type__c</searchFilterFields>
+        <searchFilterFields>Relationship__c</searchFilterFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>ECA_Part_Type_Validation</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(ISPICKVAL( Party_Type__c , &quot;ECA&quot;),
+ Deal__r.ECA_backed__c = FALSE)</errorConditionFormula>
+        <errorMessage>Please ensure that ECA Party Type can only be selected if the ECA Backed is checked on the Deal.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>LIBRA_No_CounterP_or_CISC_Added</fullName>
+        <active>true</active>
+        <description>Limits CNSG Team from adding a Counterparty and Collective Investment Scheme Manager as a Deal Party excluding the auto-created Deal Parties from Matter creation</description>
+        <errorConditionFormula>IF(NOT(ISCHANGED(Relationship__c)), AND((Deal__r.Count_Collective_Investment_Scheme_Man__c = 1 ||  Deal__r.Count_Counterparty__c = 1 ||  Deal__r.Count_Asset_Manager__c = 1), ISPICKVAL(Relationship_Type__c, &quot;Counterparty&quot;) || ISPICKVAL(Relationship_Type__c, &quot;Collective Investment Scheme Manager&quot;)), false)</errorConditionFormula>
+        <errorMessage>You are not allowed to add an additional Counterparty or Collective Investment Scheme Manager</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Libra_Counterparty_Branch_Validation</fullName>
+        <active>true</active>
+        <description>Validation to limit users from linking counterparty branches when the market transaction relationship type = &quot;collective scheme investment manager&quot; or &quot;asset manager&quot;</description>
+        <errorConditionFormula>AND(ISPICKVAL(Relationship_Type__c, &quot;Counterparty Branch&quot;) , ISPICKVAL(Deal__r.Relationship_Type_picklist__c, &quot;Asset Manager&quot;) || ISPICKVAL(Deal__r.Relationship_Type_picklist__c,&quot;Collective Investment Scheme Manager&quot;))</errorConditionFormula>
+        <errorMessage>A Deal Party of this type cannot be added to an Agreement created for an Asset Manager or a Collective Investment Scheme Manager</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Libra_Counterparty_Deal_P</fullName>
+        <active>true</active>
+        <description>Validation to limit users from a adding a disclosed principal deal party when the matter relationship is of counterparty relationship type</description>
+        <errorConditionFormula>AND(Counterparty__c = TRUE, ISPICKVAL(Relationship_Type__c ,&quot;Disclosed Principal&quot;))</errorConditionFormula>
+        <errorMessage>You cannot add a Disclosed Principal as a deal party to a Counterparty relationship.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Libra_Hedge_Funds_Validation_for_MT</fullName>
+        <active>true</active>
+        <description>Validation to limit users from linking retail hedge fund and qualified investor hedge funds when the market transaction relationship type = &quot;counterparty&quot; or &quot;asset manager&quot;.</description>
+        <errorConditionFormula>AND(ISPICKVAL(Relationship_Type__c, &quot;Retail Hedge Fund&quot;) || ISPICKVAL(Relationship_Type__c, &quot;Qualified Investor Hedge Fund&quot;), ISPICKVAL(Deal__r.Relationship_Type_picklist__c, &quot;Asset Manager&quot;) || ISPICKVAL(Deal__r.Relationship_Type_picklist__c,&quot;Counterparty&quot;))</errorConditionFormula>
+        <errorMessage>You cannot add Asset Manager or Counterparty relationship to this type of Deal Party.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Libra_Only_One_Fund_Manager_Allowed</fullName>
+        <active>true</active>
+        <errorConditionFormula>Fund_Managers__c &gt; 1</errorConditionFormula>
+        <errorMessage>You are only allowed to link one Fund Manager to the Deal Party</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Libra_Validate_Hedge_Fund_Parties</fullName>
+        <active>true</active>
+        <description>Only allowed to add Hedge Fund Parties to Deal Parties of type &quot; Qualified Investor Hedge Fund&quot; and &quot;Retail Hedge Fund&quot;</description>
+        <errorConditionFormula>IF(AND(ISPICKVAL(Relationship_Type__c , &apos;Qualified Investor Hedge Fund&apos;) == FALSE , ISPICKVAL(Relationship_Type__c , &apos;Retail Hedge Fund&apos;)== FALSE ,OR( Fund_Managers__c &gt; 0,  Investment_Managers__c  &gt; 0)), TRUE, FALSE)</errorConditionFormula>
+        <errorMessage>You are not allowed to link a Hedge Fund Party to this Deal Party, please contact your Salesforce Administrator</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>TMG_Must_be_a_TA_or_TM_role</fullName>
+        <active>true</active>
+        <errorConditionFormula>AND(
+    NOT(ISBLANK(Conditions_Monitored_By__c)),
+   Deal__r.RecordType.DeveloperName = &quot;Deal&quot;,
+   NOT(  
+      INCLUDES(Conditions_Monitored_By__r.advpm__Role__c, &quot;Transaction Administration&quot;)
+      ),
+    NOT(  
+      INCLUDES(Conditions_Monitored_By__r.advpm__Role__c, &quot;Transaction Management&quot;)
+      ),
+ NOT(  
+      INCLUDES(Conditions_Monitored_By__r.advpm__Role__c, &quot;Agency&quot;)
+      ),
+    NOT(  
+      INCLUDES(Conditions_Monitored_By__r.advpm__Role__c, &quot;SPV&quot;)
+      )
+)</errorConditionFormula>
+        <errorDisplayField>Conditions_Monitored_By__c</errorDisplayField>
+        <errorMessage>You must select a participant with the role of &quot;Transaction Management&quot; or &quot;Transaction Administration&quot; or &quot;SPV&quot; or &quot;Agency&quot; to monitor conditions for a borrower.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+    <webLinks>
+        <fullName>New_Deal_Party</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>New Deal Party</masterLabel>
+        <openType>sidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/apex/dealPartyOverride?matterId={!advpm__Matter__c.Id}</url>
+    </webLinks>
+</CustomObject>

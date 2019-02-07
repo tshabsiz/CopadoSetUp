@@ -1,0 +1,79 @@
+<apex:page controller="BoxDocumentDetailController" tabStyle="BoxDocument__c" showHeader="false" sidebar="false" action="{!actionBoxCreateFolder}">
+    <head>
+        <style type="text/css">
+            .custom-block-button {
+            	min-width: 75px;
+            }
+            .bPageBlock
+            {
+            	border-top-width: 4px !important;
+            }
+            .pbHeader {
+                background-color: #bf0202 !important;
+                color:white !important;         
+                font-size:115% !important;
+                padding: 10px 6px 10px 6px !important;
+            }
+            .center-pills {
+                display: flex;
+                justify-content: center;
+            }
+            
+            /*push nav tabs closer to header, override*/
+            .page-header {
+                margin: 0px;
+                padding: 4px 0px 1px;
+            }
+        </style>
+    </head> 
+    <!-- LIBS -->
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_resources, 'bootstrapsf1/css/bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.BoxUploader, 'uploader.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CloudSmiths_Resources,'js/jquery-3.2.1.min.js')}" />
+    <!-- / LIBS -->
+    <script>
+    function confirmCancel() {
+        var isCancel = confirm("Are you sure you wish to cancel?");
+        if (isCancel) return true;
+        
+        return false;
+    } 
+    </script>
+    <apex:form id="mainForm">
+        <apex:pageBlock title="Box Documents" mode="edit">
+            <apex:facet name="header"><b>Box Documents Upload</b></apex:facet>
+            <apex:outputPanel id="header">
+                <div class="page-header">
+                    <!-- Nav tabs -->    
+                    <ul class="nav nav-tabs" id="navTabs">      
+                        <li class="active"><a data-toggle="tab">{!pageTitle}</a></li>
+                    </ul>
+                </div>
+            </apex:outputPanel>
+            <apex:pageBlockButtons >
+                <div class="btn-group pull-right">
+                    <apex:commandLink action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" styleClass="btn btn-primary btn-lg" style="text-decoration:none;padding:4px 19px 4px 19px;"/>
+                    <apex:commandLink action="{!previous}" value="Previous" styleClass="btn btn-primary btn-lg" style="text-decoration:none;padding:4px 14px 4px 14px;"/>
+                    <apex:commandLink action="{!next}" value="Next" styleClass="btn btn-primary btn-lg" style="text-decoration:none;padding:4px 24px 4px 24px;"/>
+                </div>
+            </apex:pageBlockButtons>
+            <apex:outputPanel id="theLinkListPanel">
+                <apex:pageBlockTable value="{!supportingDocuments}" var="helper">
+                    <apex:column headerValue="Document Name">
+                        <apex:outputText value="{!helper.boxDocument.Name}"/>                          
+                    </apex:column> 
+                    <apex:column headerValue="Document Type">
+                        <apex:outputText value="{!helper.boxDocument.Type__c}"/>                       
+                    </apex:column> 
+                    <apex:column headerValue="Select File">
+                        <apex:actionRegion >
+                            <apex:selectList multiselect="false" size="1" value="{!helper.selected}" label="File:">
+                                <apex:selectOptions value="{!UploadedDocuments}"/>
+                            </apex:selectList>
+                        </apex:actionRegion>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,105 @@
+<aura:component controller="ClientPlanPreseceControllerMobile">
+    
+	<aura:attribute name="planId" type="Id" required="true" />
+    <aura:attribute name="timestamp" type="Integer" required="true" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    <aura:handler event="aura:locationChange" action="{!c.update}"/>
+    
+    <ltng:require styles="/resource/jquery_vector_map_mobile/jqvmap.css"/>
+    <ltng:require scripts="/resource/jquery_1_11,/resource/jquery_vector_map_mobile/jquery.vmap.js,/resource/jquery_vector_map_mobile/jquery.vmap.world.js" />
+    
+    <div class="slds">
+        <div id="{!v.timestamp}">
+            
+            <c:ClientPlanHeader tabId="4" planId="{!v.planId}"/>
+            
+            <div id="wholePage">
+            
+                <div id="mapLabel" class="sectionLabel" onclick="{!c.onMapLabelClicked}">
+                    Map
+                </div>
+                <div aura:id="map" class="section">
+                    <aura:if isTrue="{!and(v.mapDataLoaded, v.mapMetadataLoaded)}">
+                        <div id="vectorMapWrapper">
+                            <div id="vectorMap" style="height:300px;width:100%;"/>
+                        </div>
+                        
+                        <div id="mapButtons">
+                            <div id="organogramButtonsTop" class="mapArrowKeyWrapper">
+                                <button class="slds-button slds-button--neutral floatRight" onclick="{!c.moveUp}">
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronup" />
+                                </button>
+                            </div>
+                            <div id="mapButtonsMiddle">
+                                <button class="slds-button slds-button--neutral" onclick="{!c.zoomIn}">
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#zoomin" />
+                                </button>
+                                <button class="slds-button slds-button--neutral" onclick="{!c.zoomOut}">
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#zoomout" />
+                                </button>
+                                <div class="floatRight">
+                                    <button class="slds-button slds-button--neutral " onclick="{!c.moveLeft}">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronleft" />
+                                    </button>
+                                    <button class="slds-button slds-button--neutral" onclick="{!c.moveRight}">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronright" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="mapButtonsBottom" class="mapArrowKeyWrapper">
+                                <button class="slds-button slds-button--neutral floatRight" onclick="{!c.moveDown}">
+                                    <c:SVG class="slds-button__icon slds-button__icon--large"
+                                           svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevrondown" />
+                                </button>
+                            </div>
+                        </div>
+                    </aura:if>
+                </div>
+                
+                <div id="countriesListLabel" class="sectionLabel" onclick="{!c.onCountriesListLabelClicked}">
+                    <span class="slds-align-middle">List of countries</span>
+                    <div aura:id="countriesListMenu" class="slds-dropdown-trigger slds-float--right toggle">
+                        <button class="slds-button slds-button--icon-bare" aria-haspopup="true" onclick="{!c.stopPropagation}">
+                            <c:SVG class="slds-button__icon slds-button__icon--large"
+                                   svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#down" />
+                        </button>
+                        <div class="slds-dropdown slds-dropdown--right slds-dropdown--menu">
+                            <ul class="slds-dropdown__list" role="menu">
+                                <li class="slds-dropdown__item" onclick="{!c.onAddCountryClicked}">
+                                    <a href="javascript:void(0)" role="menuitem">
+                                        <p class="slds-truncate">Add</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div aura:id="countriesList" class="section toggle">
+                    
+                    <aura:iteration items="{!v.mapData}" var="country">
+                        <div id="{!country.Id}" class="slds-tile slds-hint-parent item" onclick="{!c.onCountryClicked}">
+                            <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                <p class="slds-tile__title slds-truncate">{!country.Banking_Country__c}</p>
+                                <div class="slds-dropdown-trigger">
+                                    <button class="slds-button slds-button--icon-container" onclick="return false;">
+                                        <c:SVG class="slds-button__icon slds-button__icon--large"
+                                               svgPath="/resource/SLDS/assets/icons/utility-sprite/svg/symbols.svg#chevronright" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:iteration>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

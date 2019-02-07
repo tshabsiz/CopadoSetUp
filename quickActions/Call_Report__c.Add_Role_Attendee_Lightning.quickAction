@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Replaces the Lightning button on the related list on Wealth &amp; EDC Call Report Pages</description>
+    <fieldOverrides>
+        <field>Call_Report__c</field>
+        <formula>Call_Report__c.Id</formula>
+    </fieldOverrides>
+    <label>Add Role Attendee</label>
+    <optionsCreateFeedItem>true</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>Call_Report__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>Wealth_Attendee__c</field>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+        <quickActionLayoutColumns/>
+    </quickActionLayout>
+    <targetObject>Attendee__c</targetObject>
+    <targetParentField>Call_Report__c</targetParentField>
+    <targetRecordType>Attendee__c.Wealth_Attendee</targetRecordType>
+    <type>Create</type>
+</QuickAction>

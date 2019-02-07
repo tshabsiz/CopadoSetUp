@@ -1,0 +1,4 @@
+<apex:page standardController="User" tabStyle="User" cache="false" readOnly="true" sidebar="false" showHeader="{!NOT(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1')}" title="{!IF(JSINHTMLENCODE($CurrentPage.parameters.fw)!='1','','Participation Map: '+User.Name)}">
+    <apex:outputField value="{!User.Name}" rendered="false" />
+    <c:ParticipationMap recordId="{!User.Id}" recordName="{!User.Name}" fieldName="advpm__Staff__c" />
+</apex:page>

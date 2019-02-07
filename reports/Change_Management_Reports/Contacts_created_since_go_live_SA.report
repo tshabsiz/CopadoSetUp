@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Contact$Name</field>
+    </columns>
+    <columns>
+        <field>Contact$Owner.CountryCode</field>
+    </columns>
+    <currency>ZAR</currency>
+    <filter>
+        <criteriaItems>
+            <column>Contact$Owner.CountryCode</column>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>ZA</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Contacts created since go live SA</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Contacts_with_Owner__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Contact$CreatedDate</dateColumn>
+        <endDate>2015-08-13</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2015-03-31</startDate>
+    </timeFrameFilter>
+</Report>

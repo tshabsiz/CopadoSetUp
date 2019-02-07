@@ -1,0 +1,62 @@
+<apex:page standardController="advpm__Matter__c" sidebar="false" showHeader="{!IF(JSINHTMLENCODE($CurrentPage.parameters.nohead)=='1','false','true')}" cache="true" title="Matter Gantt">
+
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQueryZip, 'js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_Cookie, 'js/jquery.cookie.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_UI_Custom, 'js/jquery-ui-1.8.24.custom.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__jQuery_UI_Custom, 'css/smoothness/jquery-ui-1.8.24.custom.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_TouchUI, 'js/jquery.ui.touch-punch.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'js/bootstrap.2.3.2.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__MBView_Bootstrap, 'css/bootstrap.2.3.2.css')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_NiceScroll, 'jquery.nicescroll.js')}" />
+    
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jQuery_BubblePopup, 'Install/jquery-bubble-popup-v3.FIXED.js')}" /> -->
+    <!-- <apex:stylesheet value="{!URLFOR($Resource.jQuery_BubblePopup, 'Install/jquery-bubble-popup-v3.css')}" /> -->
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_GanttView, 'date.js')}" />
+    <c:GanttView_CSS />
+    
+    <apex:includeScript value="/soap/ajax/25.0/connection.js" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_ScrollTo, 'js/jquery.scrollTo-1.4.3.1.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.advpm__jQuery_SerialScroll, 'jquery.serialScroll-1.2.4/jquery.serialScroll.js')}" />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/css/font-awesome.min.css')}" />
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/css/font-awesome-ie7.min.css')}" />
+    <![endif]-->
+    
+    <apex:includeScript value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/js/bootstrap-checkbox-custom-varun.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.advpm__Bootstrap_Checkbox_Custom, 'montrezorro-bootstrap-checkbox-3c0b667/css/bootstrap-checkbox-custom-varun.css')}" />
+    
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jQuery_DotDotDot, 'jQuery.dotdotdot/src/js/jquery.dotdotdot.min.js')}" /> -->
+    
+    <style type="text/css">
+        @font-face {
+          font-family: 'FontAwesome';
+          src: url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.eot?v=3.2.1')}");
+          src: url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.eot?#iefix&v=3.2.1')}") format('embedded-opentype'), url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.woff?v=3.2.1')}") format('woff'), url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.ttf?v=3.2.1')}") format('truetype'), url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1')}") format('svg');
+          font-weight: normal;
+          font-style: normal;
+        }
+        @media screen and (-webkit-min-device-pixel-ratio:0) {
+            @font-face {
+                font-family: 'FontAwesome';
+                src: url("{!URLFOR($Resource.advpm__FontAwesome, 'font-awesome-3.2.1/font/fontawesome-webfont.svg?v=3.2.1#fontawesomeregular')}") format('svg');
+            }
+        }
+        h1, h2 { line-height: 20px; }
+        body .bodyDiv { margin: 0;overflow: hidden !important; }
+        html body.sfdcBody {min-height: 400px;}
+    </style>
+    
+    <apex:form >
+        <apex:sectionHeader title="Gantt View" subtitle="{!advpm__Matter__c.Name}" rendered="{!(JSINHTMLENCODE($CurrentPage.parameters.p) == '1' && JSINHTMLENCODE($CurrentPage.parameters.cardwall) != '1')}" />
+        <apex:outputLink target="_top" value="/{!advpm__Matter__c.Id}" rendered="{!(JSINHTMLENCODE($CurrentPage.parameters.p) == '1' && JSINHTMLENCODE($CurrentPage.parameters.cardwall) != '1')}">?Back to matter</apex:outputLink>
+        
+        <c:GanttView matid="{!advpm__Matter__c.Id}" fullViewLink="{!(JSINHTMLENCODE($CurrentPage.parameters.p) != '1' && JSINHTMLENCODE($CurrentPage.parameters.cardwall) != '1')}" />
+    </apex:form>
+</apex:page>

@@ -1,0 +1,65 @@
+<messaging:emailTemplate subject="New BIO SM loaded" recipientType="Contact" relatedToType="Case">
+ <messaging:htmlEmailBody >
+     <body>   
+        <table width="640" style="font-family: Arial" align="center">      
+           <tr>
+             <td width="640"><img src="https://absa1--dev2--c.cs107.content.force.com/servlet/servlet.ImageServer?id=0151q000000A9qh&oid=00D1q0000008aSu"/></td>
+          </tr>
+          <tr>
+             <td>
+                <h4 style="color:#dc0032; font-size: 15px;">
+                   Your request Case #{!relatedTo.CaseNumber} was proudly processed by {!relatedTo.Capturer__r.Name} and {!relatedTo.Approver__r.Name} 
+                   from the Absa Electronic Banking Support Team
+                </h4>
+            </td>
+          </tr>
+             <br></br>
+             <br></br>
+           <tr width="640"> 
+               <td align="left">
+                   <img width="200" height="200" src="{!relatedTo.Capturer_Photo__c}"/>&nbsp;&nbsp;&nbsp;
+                   <img width="200" height="200" src="{!relatedTo.Approver_Photo__c}"/>
+              </td>
+           </tr>
+              <br></br>
+              <br></br>
+       <tr>
+         <td width="640" style="font-size: 12px">
+           BI Online Profile Code:  CFXXXXX – XXX – NAME <br></br>
+           <br></br>
+           Should you not have received your password and/or enrolment code within the next 24 hours,
+           kindly contact the Electronic Banking Support Centre at 0860 227 232 or email absaeb@absa.co.za 
+           and use the above case number as a reference.<br></br>
+           <br></br>
+           To enrol for a certificate:
+           <ol>
+             <li>Your certificate enrolment code will be provided to you by SMS.</li>
+             <li> Once your enrolment code has been received, you may proceed to download your digital certificate
+                  via our Absa.co.za website. Please refer to steps below: 
+                  Select Corporate and Investment Banking > Banking Service> Our domestic banking Solutions > Enroll Soft Certificate
+             </li>
+           </ol>
+           <ul>
+                <li>Enter your Business Integrator Online User id and Click Continue</li>
+                <li>Enter the Enrolment code received via SMS and Click Continue</li>
+                <li>Confirmation is screen displayed  and Click Continue if the information provided is correct</li>
+                <li>Click Install Certificate</li>
+                <li>Your Certificate is successfully installed</li>
+                <li>Login to Business Integrator Online following the Absa.co.za website, Select Corporate and Investment Banking > Banking > Service > Our domestic banking Solutions > Business Integrator Online</li>
+          </ul>
+          <br></br>
+          Please contact the Electronic Banking Helpdesk on 0860 227 232 should you require any further assistance.
+          <p style="color:#dc0032"> Please take a minute to rate our service </p>
+          Survey link for our clients:
+         <br>https://www.surveymonkey.com/r/V293VYH</br>
+         <br>Survey link for our internal colleagues:</br>
+         <br>https://www.surveymonkey.com/r/VLPHBSF</br>
+      </td> 
+    </tr>
+     <br></br>
+      <tr><td witdth="640"> <img src="https://absa1--dev2--c.cs107.content.force.com/servlet/servlet.ImageServer?id=0151q000000AA1Q&oid=00D1q0000008aSu"/></td></tr>    
+   
+   </table>
+  </body>   
+ </messaging:htmlEmailBody>
+</messaging:emailTemplate>

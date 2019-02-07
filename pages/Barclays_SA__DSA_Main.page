@@ -1,0 +1,59 @@
+<apex:page docType="html-5.0" controller="Barclays_SA.DSARemoter" extensions="Barclays_SA.DSARemoterCategoryExtension,Barclays_SA.DSARemoterPlaylistExtension,Barclays_SA.DSARemoterContentItemExtension,Barclays_SA.DSARemoterSearchExtension,Barclays_SA.DSARemoterInfoExtension,Barclays_SA.DSARemoterMobileAppConfigExtension" sidebar="false" showHeader="false" standardStylesheets="false">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"></meta>
+        <apex:stylesheet value="{!URLFOR($Resource.Barclays_SA__SF1_DSA, 'css/app.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Barclays_SA__SF1_DSA,'js/vendor.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.Barclays_SA__SF1_DSA,'js/app.js')}"/>
+    </head>
+    <!-- REPLACE FROM LOCAL -->
+    <!-- COPY TO REMOTE -->
+  <body>
+    <script>
+    var packageName = "{!packageName}";
+    </script>
+    <div ng-app="dsaApp">
+      <div ng-controller="appController">
+      <div ng-include="loadingTemplate"></div>
+      <div id="navbar-wrapper" ng-controller="navbarMenuController">
+        <nav class="navbar navbar-default navbar-fixed-top {{internalOnlyMode ? 'internal-mode-navbar' : ''}}" role="navigation">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu-collapse" ng-click="resizeNavbarCollapseHeight()">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggle-text">MENU</span><span class="fa fa-navicon"></span>
+              </button>
+              <button type="button" id="navbar-back-link-wrapper" ng-if="displayBackButton" ng-click="goBack()">
+                  <span class="navbar-back-link-icon fa fa-caret-left"></span><span class="navbar-back-link-text">BACK</span>
+              </button>
+              <div id="navbar-brand-wrapper" class="{{internalOnlyMode ? 'internal-mode-navbar-brand-wrapper' : ''}}"><a class="navbar-brand" ng-click="goHome()"><img class="app-icon" ng-src="{{appIconUrl}}"/><span class="app-name" ng-bind="appName"></span></a></div>
+            </div>
+            <div class="collapse navbar-collapse" id="menu-collapse">
+              <span ng-if="desktop" ng-include="templates.wide"></span>
+              <div ng-if="mobile" ng-include="templates.narrow"></div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div ng-controller="ngViewController" class="ng-view"></div>
+      <div ng-if="mobile" class="mobilePlaylistListContainer expand-playlist-list" ng-controller="playlistListController" ng-include="templates.playlistList"></div>
+      <div ng-if="mobile" class="mobileContentListContainer expand-content-list" ng-controller="contentListController" ng-include="templates.contentList"></div>
+      <div class="preference-menu-container" ng-controller="preferencesController" ng-include="templates.menu"></div>
+      </div>
+    </div>
+    <script>
+      var resourceUrl = "{!$Resource.SF1_DSA}";
+      if (Visualforce && Visualforce.remoting) {
+        Visualforce.remoting.timeout = 120000;
+      }
+    </script>
+  </body>
+    <!-- /COPY TO REMOTE -->
+    <!-- /REPLACE FROM LOCAL -->
+    <!--<apex:includeScript value="{!$Resource.mostatsjs}"/>
+    <script>
+        var pagename="{!$CurrentPage.Name}"
+        var session = "{!$Api.Session_ID}";
+        U.$();
+    </script>-->
+    <script src="/soap/ajax/30.0/connection.js" type="text/javascript"></script>
+</apex:page>

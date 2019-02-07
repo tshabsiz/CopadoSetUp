@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>advpm__Matter__c$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Name</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Master_Agreement_Name__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Agreement_Status__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$Active__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c.Agreements1__r$Master_Agreement_Type__c</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$CreatedBy</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$CreatedDate</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$LastModifiedBy</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$LastModifiedDate</field>
+    </columns>
+    <columns>
+        <field>advpm__Matter__c$RecordType</field>
+    </columns>
+    <currency>ZAR</currency>
+    <description>Libra Agreement Status Monitoring</description>
+    <filter>
+        <criteriaItems>
+            <column>advpm__Matter__c.Agreements1__r$Agreement_Status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Not Started,In Process,Confirmed/Completed,Amended,Cancelled/Terminated</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>advpm__Matter__c$RecordType</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>advpm__Matter__c.Market_Transaction,advpm__Matter__c.Market_Transaction_Prime_Services,advpm__Matter__c.Market_Transaction_Locked</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Libra Agreement Status Monitoring</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Matter_with_Agreements__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>advpm__Matter__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

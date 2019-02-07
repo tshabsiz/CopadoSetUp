@@ -1,0 +1,103 @@
+<apex:page id="printPage" tabStyle="advpm__ActionPlan__c" standardController="advpm__ActionPlan__c" extensions="advpm.ActionPlanDetailController" showheader="false" sidebar="false">
+
+	<apex:includeScript value="{!$Resource.advpm__ActionPlan_Utilities}" />
+	<apex:includeScript value="{!$Resource.advpm__ActionPlan_ActionPlanPrintScripts}" />   
+	
+	<apex:stylesheet value="{!$Resource.advpm__ActionPlan_ActionPlanDetailStyles}" />
+	
+    <div style="margin: 10px; text-align: right;"><a href="javascript:window.print();">{!$Label.advpm__ap_print}</a></div>
+	    
+    <apex:form id="apForm">
+		<apex:pageBlock id="detailBlock" title="{!$Label.advpm__ap_actionplandetails}" mode="detail">
+		<!-- INFORMATION SECTION -->
+	    	<apex:pageBlockSection title="{!$Label.advpm__ap_information}" columns="1">
+	        	<apex:panelGrid columns="5" id="theGrid" style="width:100%" columnClasses="labelCol, dataCol, spacerCol, labelCol, dataCol">
+	               <apex:outputText value="{!$Label.advpm__ap_owner}" />
+	               <apex:outputText > {!actionPlan.Owner.Name}</apex:outputText>
+	               <apex:outputText >&nbsp;</apex:outputText>
+	               <apex:outputText value="{!$Label.advpm__ap_related_to}" />
+	               <apex:outputText >{!RelatedObjectName}</apex:outputText>
+	               
+	               <apex:outputText value="{!$Label.advpm__ap_action_plan} {!$Label.advpm__ap_name}" />
+	               <apex:outputText value="{!actionPlan.Name}" />
+	               <apex:outputText >&nbsp;</apex:outputText>
+	               <apex:outputText value="{!$Label.advpm__ap_status}" />
+	               <apex:outputText >{!Completed} {!$Label.advpm__ap_of} {!TaskSize} {!$Label.advpm__ap_taskscomplete}</apex:outputText>
+	               
+	               <apex:outputText value="{!$Label.advpm__ap_planstartdate}" />
+	               <apex:outputText >
+	               	<apex:pageBlockSectionItem >
+	               		<apex:outputField value="{!actionPlan.advpm__StartDate__c}" />
+	               	</apex:pageBlockSectionItem>
+	               </apex:outputText>
+	               <apex:outputText >&nbsp;</apex:outputText>
+	               <apex:outputText value="" />
+	               <apex:outputText value="" />  
+	           </apex:panelGrid>
+	       </apex:pageBlockSection>
+	       <!-- END INFORMATION SECTION -->
+	       
+	       <!-- TASKS SECTION -->
+	       <apex:pageBlockSection id="taskSection" title="{!$Label.advpm__ap_tasks}" columns="1">
+	           <apex:panelGrid columns="5" columnClasses="labelCol, dataCol, spacerCol, labelCol, dataCol">
+	               <apex:outputText value="{!$ObjectType.advpm__ActionPlan__c.fields.advpm__SkipWeekends__c.label}"/>
+	               <apex:outputText ><apex:inputCheckbox value="{!ActionPlan.advpm__SkipWeekends__c}" disabled="true" /></apex:outputText>
+	               <apex:outputText ></apex:outputText>
+	               <apex:outputText value="{!$Label.advpm__ap_action_plan_template}" rendered="{!(ActionPlan.advpm__Action_Plan_Template__c != null)}"/>
+                    <apex:outputText rendered="{!(ActionPlan.advpm__Action_Plan_Template__c != null)}">
+                        <apex:outputText >{!ActionPlan.Action_Plan_Template__r.Name}</apex:outputText>
+                    </apex:outputText>
+	           </apex:panelGrid>
+	           
+	           <apex:panelGrid columns="3" columnClasses="labelCol, dataCol, spacerCol"rendered="{!(ActionPlan.advpm__SkipDay__c != null && ActionPlan.advpm__SkipWeekends__c == true)}">
+	               <apex:outputText value="{!$ObjectType.advpm__ActionPlan__c.fields.advpm__SkipDay__c.label}"/>
+	               <apex:outputField value="{!actionPlan.advpm__SkipDay__c}" />
+	           </apex:panelGrid>
+	            
+	           <apex:dataTable value="{!tasks}" var="task" id="theTable" styleClass="sortable">
+				   <apex:column id="columnOne" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Subject__c.label}" >
+				   		<apex:outputText id="subject">{!task.advpm__Subject__c}</apex:outputText>
+				   </apex:column>
+	               <apex:column id="dependency" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__APTaskTemplate__c.label}" headerClass="dependencyColumn">
+	               		<apex:outputText >{!task.APTaskTemplate__r.advpm__Subject__c}</apex:outputText>
+	               </apex:column>
+	               <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__ActivityDate__c.label}" >
+	                   <span style="color:#cc0000"><apex:outputField value="{!task.advpm__ActivityDate__c}" rendered="{!IF(task.advpm__ActivityDate__c < TODAY() && task.advpm__Status__c != 'Completed' && task.advpm__Activity_Type__c == 'Task', true, false)}" /></span>
+	                   <apex:outputField value="{!task.advpm__ActivityDate__c}" rendered="{!IF(task.ActivityDate__c >= TODAY() || task.Status__c == 'Completed' || task.Activity_Type__c == 'Event', true, false)}" />
+	               </apex:column>
+	               <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__User__c.label}">
+	               		<apex:outputText >{!task.User__r.Name}</apex:outputText>
+	               </apex:column>
+	               <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Type__c.label}" value="{!task.advpm__Type__c}" />
+	               <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Status__c.label}" value="{!task.advpm__Status__c}" />
+	               <apex:column headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Priority__c.label}" value="{!task.advpm__Priority__c}" />
+	               <apex:column id="comment" headerValue="{!$ObjectType.advpm__APTaskTemplate__c.fields.advpm__Comments__c.label}" >
+	               		<apex:outputText >{!task.advpm__Comments__c}</apex:outputText>
+	               </apex:column>
+	           </apex:dataTable>
+	           
+	       </apex:pageBlockSection>
+	       <!-- END TASKS SECTION -->
+	       
+	       <!-- SYSTEM INFORMATION SECTION -->
+	       <apex:pageBlockSection title="System Information" columns="1">
+	        	<apex:panelGrid columns="7" columnClasses="labelCol, dataCol2, dataCol2, spacerCol, labelCol, dataCol2, dataCol2">
+					<apex:outputText value="{!$Label.advpm__ap_createdby}" />
+					<apex:outputText >{!CreatedBy}</apex:outputText>
+					<apex:outputField value="{!ActionPlan.CreatedDate}" />
+					<apex:outputText />
+					<apex:outputText value="{!$Label.advpm__ap_lastmodifiedby}" />
+					<apex:outputText >{!LastModifiedBy}</apex:outputText>
+					<apex:outputField value="{!ActionPlan.LastModifiedDate}" />
+	        	</apex:panelGrid>
+	      	</apex:pageBlockSection>
+	      	<!-- END SYSTEM INFORMATION SECTION -->
+	      	
+	   </apex:pageBlock>
+	</apex:form>
+	
+	<script>
+        ActionPlanPrintScripts.formatFields();
+    </script>
+    
+</apex:page>

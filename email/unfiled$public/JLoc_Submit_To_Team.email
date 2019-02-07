@@ -1,0 +1,20 @@
+<messaging:emailTemplate subject="{!RelatedTo.Name} {!RelatedTo.JLOC_Status__c} {!RelatedTo.Organisation__r.Name}" recipientType="User" relatedToType="JLOC__c">
+<messaging:htmlEmailBody >
+ <body style="font-family:Arial;">
+<apex:image url="https://barclaysafrica--c.eu5.content.force.com/servlet/servlet.ImageServer?id=01524000001uPz6&oid=00D9E0000000Yvc"/>
+<p  >Dear Team,
+<br/><br/>
+Please review JLOC attached 
+
+</p>
+<p>
+JLOC Owner : {!RelatedTo.Owner.Name}
+</p>
+
+<p>
+Closed JLOC: {!IF(RelatedTo.Is_this_a_closed_JLOC__c,'Yes','No')} 
+</p>
+
+</body>
+</messaging:htmlEmailBody>
+</messaging:emailTemplate>

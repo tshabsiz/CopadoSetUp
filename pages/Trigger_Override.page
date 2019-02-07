@@ -1,0 +1,66 @@
+<!-- 
+*** CHANGE LOG ***
+
+21/11/2017 - TdB   - Created VF page.
+				   - Fields, add Page Block Sections for Participanys and Groups
+
+-->
+<apex:page standardController="Trigger__c" extensions="Trigger_Override" showHeader="true" sidebar="true">
+    <apex:sectionHeader title="Trigger Edit" subtitle="New Trigger" />
+    <apex:form id="theForm">
+        <apex:pageBlock id="pblock" >
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="pblocksecA" title="Information" columns="2">         
+                <apex:inputField value="{!triggerRecord.Name}" required="true"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Deal" for="deal_field"/>
+                    <apex:actionRegion >
+                        <apex:inputField style="" label="Deal" value="{!triggerRecord.Deal__c}" required="true" id="deal_field">
+                            <apex:actionSupport event="onchange" rerender="pblocksecC" action="{!DealParticipants}"/>
+                        </apex:inputField> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!triggerRecord.Person_Responsible__c}"  />
+                <apex:inputField value="{!triggerRecord.Agreement__c}"  required="true"/>
+                <apex:inputField value="{!triggerRecord.Reviewer__c}"/>
+                <apex:outputText ></apex:outputText>
+                <apex:inputField value="{!triggerRecord.Description__c}" required="true"/>    
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksecB" title="Scheduling Information (optional)" >
+                <apex:inputField value="{!triggerRecord.Frequency__c}" />
+                <apex:inputField id="DueDate" value="{!triggerRecord.Due_Date__c}" />
+                <apex:inputField value="{!triggerRecord.Relative_Date__c}" />
+                <apex:inputField value="{!triggerRecord.Other_Relative_Date__c}" />
+                <apex:inputField value="{!triggerRecord.Number_of_Days__c}" />
+                <apex:outputText ></apex:outputText>  
+                <apex:inputField value="{!triggerRecord.Days__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="pblocksecC" title="Notification Participants" columns="1">
+                <apex:pageBlockTable value="{!participantsWrapper}" var="participantWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!participantWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!participantWrapper.participant.Name}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__c}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Staff__r.Email}" />
+                    <apex:column value="{!participantWrapper.participant.advpm__Role__c}" /> 
+                </apex:pageBlockTable> 
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection id="pblocksecD" title="Notification Groups" columns="1">
+                <apex:pageBlockTable value="{!distroGroupsWrapper}" var="distroGroupWrapper">
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!distroGroupWrapper.selected}" />
+                    </apex:column>
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Name}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Description__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Email_Address__c}" />
+                    <apex:column value="{!distroGroupWrapper.distroGroup.Group_Type__c}" />  
+                </apex:pageBlockTable> 
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,201 @@
+<apex:page standardController="Case" extensions="Payments_QA_Statements_Ext" showHeader="false" sidebar="false">
+    <head>
+        <apex:stylesheet value="{!URLFOR($Resource.LDS2, 'assets/styles/salesforce-lightning-design-system.min.css')}" />
+    </head>
+    <apex:form id="mainFrm" >
+        <div class="slds" style="padding:10px;width:50%">
+            <div class="slds-form--stacked" id="cnumb">
+                <div class="slds-form-element" id="divcnumb">
+                    <label class="slds-form-element__label">Vostro Bic / Customer Number</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputText id="cnumbval" value="{!custNumber}" styleclass="slds-input"></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form--stacked" id="curr">
+                <div class="slds-form-element" id="divcurr">
+                    <label class="slds-form-element__label">Currency</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputText id="currval" value="{!curr}" styleclass="slds-input" ></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form--stacked" id="acc">
+                <div class="slds-form-element" id="divacc">
+                    <label class="slds-form-element__label">Account</label>
+                    <div class="slds-form-element__control">
+                        <apex:inputText id="accval" value="{!accNumber}" styleclass="slds-input" ></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form--stacked" id="seqn" >
+                <div class="slds-form-element" id="seqndate" style="width:50%">
+                    <label class="slds-form-element__label">Sequence Number</label>
+                    <div class="slds-form-element__control" style="width:50%">
+                        <apex:inputText id="seqnval" value="{!seqNr}" styleclass="slds-input" style="width:100%"></apex:inputText>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form--stacked" id="fdate" >
+                <div class="slds-form-element" id="divfdate" style="width:50%">
+                    <label class="slds-form-element__label">From Date</label>
+                    <div class="slds-form-element__control" style="width:50%">
+                        <apex:inputField id="fdateval" value="{!fromDate.Incident_Date__c}" styleclass="slds-input" style="width:100%"></apex:inputField>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form--stacked" id="tdate" >
+                <div class="slds-form-element" id="divtdate" style="width:50%">
+                    <label class="slds-form-element__label">To Date</label>
+                    <div class="slds-form-element__control" style="width:50%">
+                        <apex:inputField id="tdateval" value="{!toDate.Incident_Date__c}" styleclass="slds-input" style="width:100%"></apex:inputField>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form-element" id="mtype">
+                    <label class="slds-form-element__label">Statement Type</label>
+                    <div class="slds-form-element__control">
+                        <apex:selectList size="1" value="{!selectedType}" id="selectLst" styleclass="slds-select">
+                            <apex:selectOptions value="{!typeOptions}"/>
+                        </apex:selectList>
+                    </div>
+                </div>
+            <br/>
+            <div class="slds-form-element slds-float--right">
+                 <apex:actionFunction name="reqAction" action="{!requestStatement}" reRender="src" status="searchSta" />
+                <span id="newMsg">
+                <button id="btn" class="slds-button slds-button--brand" type="button" onclick="request();" >
+                    Submit Request
+                </button>
+                </span>
+            </div>
+        </div>
+        
+        <br/><br/>
+            <apex:outputPanel id="src" >
+            <apex:pageMessages id="showmsg"></apex:pageMessages>
+            <apex:actionStatus startText="Busy Searching...." stopText="" id="searchSta" startStyle="color: grey;font-weight: bold;font-size:large;"/>    
+            <div class="slds-form--stacked" id="openbal">
+                <div class="slds-form-element" id="divopenbal" style="width:50%">
+                    <label class="slds-form-element__label">OPENING BALANCE</label>
+                    <div class="slds-form-element__control" style="width:50%">
+                        <apex:outputText id="openbalval" value="{!openingBal}" styleclass="slds-input" style="width:100%"></apex:outputText>
+                    </div>
+                </div>
+            </div>
+                <br/>
+                <apex:outputPanel id="S" rendered="{!showS}" layout="block" style="overflow:auto;width:800px;height:250px">
+                <table width="100%" id="Shead" class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-cell-shrink">Value</th>
+                        <th class="slds-cell-shrink">Posting</th>
+                        <th class="slds-cell-shrink">Payment Ref</th>
+                        <th class="slds-cell-shrink">Deal No</th>
+                        <th class="slds-cell-shrink">Movement Amount</th>
+                        <th class="slds-cell-shrink">Account Balance</th>
+                        <th class="slds-cell-shrink">Reference 1</th>
+                    </tr>
+                    <apex:repeat value="{!stateList.DETAILLINE}" var="rc" id="Slst">
+                        <tr class="slds-hint-parent slds-is-selected">
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STVDAT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPDAT}" /></td>
+                            
+                            <td class="slds-cell-shrink">
+                                <a href="#" class="tooltip" onclick="openSubTab('{!rc.STPREF}');return false;">
+                                <apex:outputText value="{!rc.STPREF}" />
+                                </a>
+                            </td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STDLNO}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPAMT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STBAMT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STREF1}" /></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+               </apex:outputPanel>
+                <apex:outputPanel id="I" rendered="{!showI}" layout="block" style="overflow:auto;width:800px;height:250px">
+                <table width="100%" id="Ihead" class="slds-table slds-table--bordered ">
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-cell-shrink">Value</th>
+                        <th class="slds-cell-shrink">Posting</th>
+                        <th class="slds-cell-shrink">Type</th>
+                        <th class="slds-cell-shrink">Interest Amount</th>
+                        <th class="slds-cell-shrink">Interest Rate</th>
+                        <th class="slds-cell-shrink">Outstanding Interest Balance</th>
+                        <th class="slds-cell-shrink">Account Balance</th>
+                    </tr>
+                    <apex:repeat value="{!stateList.DETAILLINE}" var="rc" id="Ilst">
+                        <tr class="slds-hint-parent slds-is-selected">
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STVDAT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPDAT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STITYP}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPAMT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STBRAT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STBIBL}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STBAMT}" /></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+               </apex:outputPanel>
+               <apex:outputPanel id="B" rendered="{!showB}" layout="block" style="overflow:auto;width:800px;height:250px">
+                <table width="100%" id="Bhead" class="slds-table slds-table--bordered ">
+                    <tr class="slds-text-heading--label">
+                        <th class="slds-cell-shrink">Value</th>
+                        <th class="slds-cell-shrink">Posting</th>
+                        <th class="slds-cell-shrink">Payment Ref</th>
+                        <th class="slds-cell-shrink">Deal No</th>
+                        <th class="slds-cell-shrink">Desc</th>
+                        <th class="slds-cell-shrink">Interest Amount</th>
+                        <th class="slds-cell-shrink">Account Balance</th>
+                        <th class="slds-cell-shrink">Reference 1</th>
+                    </tr>
+                    <apex:repeat value="{!stateList.DETAILLINE}" var="rc" id="Blst">
+                        <tr class="slds-hint-parent slds-is-selected">
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STVDAT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPDAT}" /></td>
+                            
+                            <td class="slds-cell-shrink">
+                                <a href="#" class="tooltip" onclick="openSubTab('{!rc.STPREF}');return false;">
+                                <apex:outputText value="{!rc.STPREF}" />
+                                </a>
+                            </td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STDLNO}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPNAR}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STPAMT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STBAMT}" /></td>
+                            <td class="slds-cell-shrink"><apex:outputText value="{!rc.STREF1}" /></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+               </apex:outputPanel>
+            </apex:outputPanel>
+    </apex:form> 
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+    var dealref = '';
+    function request(){
+        //alert(document.getElementById('{!$Component.mainFrm.fdateval}').value);
+        reqAction();
+        //openSubTab();
+    };
+    function openSubTab(deal) {
+        dealref = deal;
+        sforce.console.getFocusedPrimaryTabId(primaryTabId2);
+    };
+    var primaryTabId2 = function primaryTabId2(result2) {
+        sforce.console.openSubtab(result2.id , '/apex/Payments_Deal_View?custKey=' + dealref, true, dealref, null);
+    };    
+    function RefreshPrimaryTab(){
+        if (sforce.console.isInConsole()){
+            sforce.console.getFocusedPrimaryTabId(showTabId);
+        }else{
+            window.top.location.href = '/' + consoleCaseId;
+        }
+    };
+        
+    var showTabId = function showTabId(result){
+        var tabId = result.id;
+        sforce.console.refreshPrimaryTabById(tabId, true);
+    };
+    </script>
+</apex:page>

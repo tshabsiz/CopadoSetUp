@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>true</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Junction object for badges and users.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>trailheadapp__Archived__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The record has been archived and is no longer available.</inlineHelpText>
+        <label>Archived</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Assigned_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Represents the date the badge is assigned for the purposes of tracking a user&apos;s activity before they start working on it.</inlineHelpText>
+        <label>Assigned On Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Assigned_to_Complete__c</fullName>
+        <deprecated>false</deprecated>
+        <description>If assigned date is not null, use the difference between assigned date and finished date. If assigned date is null, use the difference between first attempted date and finished date. If finished date is null, don&apos;t show anything.</description>
+        <externalId>false</externalId>
+        <formula>IF(ISNULL(trailheadapp__Assigned_Date__c),trailheadapp__Finished_Date__c - trailheadapp__First_Attempted_Date__c , trailheadapp__Finished_Date__c - trailheadapp__Assigned_Date__c  )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>How long it took to complete from when it was first assigned or first attempted if not assigned.</inlineHelpText>
+        <label>Duration to Complete (Days)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Badge_Icon__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(ISNULL(trailheadapp__Finished_Date__c), &quot;Keep Trying&quot;,trailheadapp__Badge__r.trailheadapp__Badge_Icon__c )</formula>
+        <label>Badge Icon</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Badge__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Badge</label>
+        <referenceTo>trailheadapp__Badge__c</referenceTo>
+        <relationshipLabel>User Badge</relationshipLabel>
+        <relationshipName>User_Badges</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Due_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Represents the date the badge is due for the purposes of tracking the time left for a user to complete the badge.</inlineHelpText>
+        <label>Due Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__External_ID__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>External ID</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Finished_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Finished Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__First_Attempted_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The date the badge was attempted.</description>
+        <externalId>false</externalId>
+        <label>First Attempted Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Last_Attempted_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Date the badge was last attempted.</description>
+        <externalId>false</externalId>
+        <label>Last Attempted Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__Status__c</fullName>
+        <defaultValue>&quot;Assigned&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Three types of status, &quot;Assigned&quot;, &quot;In Progress&quot;, or &quot;Completed&quot; are available to represent the status of a user&apos;s badge. While we always expect a value, this is not a required field to enable FLS for badge assigners.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Three types of status, &quot;Assigned&quot;, &quot;In Progress&quot;, or &quot;Completed&quot; are available to represent the status of a user&apos;s badge.</inlineHelpText>
+        <label>Status</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__URL__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>trailheadapp__Badge__r.trailheadapp__URL__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>trailheadapp__User__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>User</label>
+        <referenceTo>User</referenceTo>
+        <relationshipName>Trailhead_User_Badges</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <label>User Badge</label>
+    <listViews>
+        <fullName>trailheadapp__All</fullName>
+        <columns>NAME</columns>
+        <columns>trailheadapp__User__c</columns>
+        <columns>trailheadapp__Badge__c</columns>
+        <columns>trailheadapp__Status__c</columns>
+        <columns>trailheadapp__Assigned_Date__c</columns>
+        <columns>trailheadapp__First_Attempted_Date__c</columns>
+        <columns>trailheadapp__Last_Attempted_Date__c</columns>
+        <columns>trailheadapp__Finished_Date__c</columns>
+        <columns>trailheadapp__Assigned_to_Complete__c</columns>
+        <columns>trailheadapp__Badge_Icon__c</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>BADGE-{0000}</displayFormat>
+        <label>User Badge ID</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>User Badges</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>trailheadapp__User__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__Badge__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__Status__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__Finished_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__First_Attempted_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__Last_Attempted_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>trailheadapp__Archived__c</customTabListAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>trailheadapp__User_Is_Required</fullName>
+        <active>true</active>
+        <errorConditionFormula>ISBLANK(  trailheadapp__User__c )</errorConditionFormula>
+        <errorDisplayField>trailheadapp__User__c</errorDisplayField>
+        <errorMessage>A user must exist.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>trailheadapp__Validate_Status</fullName>
+        <active>true</active>
+        <description>Ensures that only possible values are entered.</description>
+        <errorConditionFormula>AND(trailheadapp__Status__c != &apos;Assigned&apos;,
+trailheadapp__Status__c != &apos;In-Progress&apos;, 
+trailheadapp__Status__c != &apos;Completed&apos;)</errorConditionFormula>
+        <errorDisplayField>trailheadapp__Status__c</errorDisplayField>
+        <errorMessage>Not a valid status.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,30 @@
+<!-- 
+*** CHANGE LOG ***
+
+16/11/2017 - TdB    - Create VF page.  
+					- Link Financial Covenenats (Conditions)  to Margin Ratchet
+06/12/2017 - TdB 	- Add rendered on Saven Button
+-->
+
+<apex:page Controller="Margin_Ratchet_Conditions_Bulk">
+    <apex:sectionHeader title="Financial Convenants Edit" subtitle="New Financial Convenants"/>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveRecord}" rendered="{!activeConditions}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!FinancialCovenantConditionWrapper }" var="financialCovenantWrapper" rendered="{!activeConditions}">                   
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!financialCovenantWrapper.selected}" />
+                </apex:column>
+                <apex:column value="{!financialCovenantWrapper.financialCovenant.Name}" />
+                <apex:column value="{!financialCovenantWrapper.financialCovenant.Clause__c}" />
+                <apex:column value="{!financialCovenantWrapper.financialCovenant.Recurrence__c}" />
+                <apex:column value="{!financialCovenantWrapper.financialCovenant.Due_Date__c}" />
+                <apex:column value="{!financialCovenantWrapper.financialCovenant.Active__c}" />               
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form> 
+</apex:page>

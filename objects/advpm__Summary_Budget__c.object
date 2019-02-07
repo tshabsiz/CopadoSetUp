@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>advpm__Amount__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Budget__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Budget</label>
+        <referenceTo>advpm__Budget__c</referenceTo>
+        <relationshipLabel>Summary Budgets</relationshipLabel>
+        <relationshipName>Summary_Budgets</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>advpm__Hours__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Hours</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Is_Expense__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( MID( TEXT( advpm__UTBMS_Code__c ) , 1, 1) == &quot;E&quot; , &quot;Yes&quot; , &quot;No&quot; )</formula>
+        <label>Is Expense?</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter_Budget_Lock__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>advpm__Budget__r.advpm__Matter_Budget_Lock__c</formula>
+        <label>Matter Budget Lock</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Matter_Legal_Hold__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF ( advpm__Budget__r.advpm__Matter__r.advpm__Legal_Hold__c , &quot;Yes&quot;, &quot;No&quot; )</formula>
+        <label>Matter Legal Hold</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>advpm__Timekeeper__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Timekeeper</label>
+        <referenceTo>advpm__Timekeeper__c</referenceTo>
+        <relationshipLabel>Summary Budgets</relationshipLabel>
+        <relationshipName>Summary_Budgets</relationshipName>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>advpm__Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Fee</fullName>
+                    <default>false</default>
+                    <label>Fee</label>
+                </value>
+                <value>
+                    <fullName>Expense</fullName>
+                    <default>false</default>
+                    <label>Expense</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>advpm__UTBMS_Code__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>UTBMS Code</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>B100 Administration</fullName>
+                    <default>false</default>
+                    <label>B100 Administration</label>
+                </value>
+                <value>
+                    <fullName>B110 Case Administration</fullName>
+                    <default>false</default>
+                    <label>B110 Case Administration</label>
+                </value>
+                <value>
+                    <fullName>B120 Asset Analysis and Recovery</fullName>
+                    <default>false</default>
+                    <label>B120 Asset Analysis and Recovery</label>
+                </value>
+                <value>
+                    <fullName>B130 Asset Disposition</fullName>
+                    <default>false</default>
+                    <label>B130 Asset Disposition</label>
+                </value>
+                <value>
+                    <fullName>B160 Fee/Employment Applications</fullName>
+                    <default>false</default>
+                    <label>B160 Fee/Employment Applications</label>
+                </value>
+                <value>
+                    <fullName>B170 Fee/Employment Objections</fullName>
+                    <default>false</default>
+                    <label>B170 Fee/Employment Objections</label>
+                </value>
+                <value>
+                    <fullName>B180 Avoidance Action Analysis</fullName>
+                    <default>false</default>
+                    <label>B180 Avoidance Action Analysis</label>
+                </value>
+                <value>
+                    <fullName>B190 Other Contested Matters</fullName>
+                    <default>false</default>
+                    <label>B190 Other Contested Matters</label>
+                </value>
+                <value>
+                    <fullName>B195 Non-Working Travel</fullName>
+                    <default>false</default>
+                    <label>B195 Non-Working Travel</label>
+                </value>
+                <value>
+                    <fullName>B200 Operations</fullName>
+                    <default>false</default>
+                    <label>B200 Operations</label>
+                </value>
+                <value>
+                    <fullName>B210 Business Operations</fullName>
+                    <default>false</default>
+                    <label>B210 Business Operations</label>
+                </value>
+                <value>
+                    <fullName>B220 Employee Benefits/Pensions</fullName>
+                    <default>false</default>
+                    <label>B220 Employee Benefits/Pensions</label>
+                </value>
+                <value>
+                    <fullName>B230 Financing/Cash Collections</fullName>
+                    <default>false</default>
+                    <label>B230 Financing/Cash Collections</label>
+                </value>
+                <value>
+                    <fullName>B240 Tax Issues</fullName>
+                    <default>false</default>
+                    <label>B240 Tax Issues</label>
+                </value>
+                <value>
+                    <fullName>B250 Real Estate</fullName>
+                    <default>false</default>
+                    <label>B250 Real Estate</label>
+                </value>
+                <value>
+                    <fullName>B260 Board of Directors Matters</fullName>
+                    <default>false</default>
+                    <label>B260 Board of Directors Matters</label>
+                </value>
+                <value>
+                    <fullName>B300 Claims and Plan</fullName>
+                    <default>false</default>
+                    <label>B300 Claims and Plan</label>
+                </value>
+                <value>
+                    <fullName>B400 Bankruptcy-Related Advice</fullName>
+                    <default>false</default>
+                    <label>B400 Bankruptcy-Related Advice</label>
+                </value>
+                <value>
+                    <fullName>B420 Restructurings</fullName>
+                    <default>false</default>
+                    <label>B420 Restructurings</label>
+                </value>
+                <value>
+                    <fullName>C100 Fact Gathering</fullName>
+                    <default>false</default>
+                    <label>C100 Fact Gathering</label>
+                </value>
+                <value>
+                    <fullName>C200 Researching Law</fullName>
+                    <default>false</default>
+                    <label>C200 Researching Law</label>
+                </value>
+                <value>
+                    <fullName>C300 Analysis and Advice</fullName>
+                    <default>false</default>
+                    <label>C300 Analysis and Advice</label>
+                </value>
+                <value>
+                    <fullName>C400 Third Party Communication</fullName>
+                    <default>false</default>
+                    <label>C400 Third Party Communication</label>
+                </value>
+                <value>
+                    <fullName>E101 Copying</fullName>
+                    <default>false</default>
+                    <label>E101 Copying</label>
+                </value>
+                <value>
+                    <fullName>E102 Outside printing</fullName>
+                    <default>false</default>
+                    <label>E102 Outside printing</label>
+                </value>
+                <value>
+                    <fullName>E103 Word processing</fullName>
+                    <default>false</default>
+                    <label>E103 Word processing</label>
+                </value>
+                <value>
+                    <fullName>E104 Facsimile</fullName>
+                    <default>false</default>
+                    <label>E104 Facsimile</label>
+                </value>
+                <value>
+                    <fullName>E105 Telephone</fullName>
+                    <default>false</default>
+                    <label>E105 Telephone</label>
+                </value>
+                <value>
+                    <fullName>E106 Online research</fullName>
+                    <default>false</default>
+                    <label>E106 Online research</label>
+                </value>
+                <value>
+                    <fullName>E107 Delivery services/messengers</fullName>
+                    <default>false</default>
+                    <label>E107 Delivery services/messengers</label>
+                </value>
+                <value>
+                    <fullName>E108 Postage</fullName>
+                    <default>false</default>
+                    <label>E108 Postage</label>
+                </value>
+                <value>
+                    <fullName>E109 Local travel</fullName>
+                    <default>false</default>
+                    <label>E109 Local travel</label>
+                </value>
+                <value>
+                    <fullName>E110 Out-of-town travel</fullName>
+                    <default>false</default>
+                    <label>E110 Out-of-town travel</label>
+                </value>
+                <value>
+                    <fullName>E111 Meals</fullName>
+                    <default>false</default>
+                    <label>E111 Meals</label>
+                </value>
+                <value>
+                    <fullName>E112 Court fees</fullName>
+                    <default>false</default>
+                    <label>E112 Court fees</label>
+                </value>
+                <value>
+                    <fullName>E113 Subpoena fees</fullName>
+                    <default>false</default>
+                    <label>E113 Subpoena fees</label>
+                </value>
+                <value>
+                    <fullName>E114 Witness fees</fullName>
+                    <default>false</default>
+                    <label>E114 Witness fees</label>
+                </value>
+                <value>
+                    <fullName>E115 Deposition transcripts</fullName>
+                    <default>false</default>
+                    <label>E115 Deposition transcripts</label>
+                </value>
+                <value>
+                    <fullName>E116 Trial transcripts</fullName>
+                    <default>false</default>
+                    <label>E116 Trial transcripts</label>
+                </value>
+                <value>
+                    <fullName>E117 Trial exhibits</fullName>
+                    <default>false</default>
+                    <label>E117 Trial exhibits</label>
+                </value>
+                <value>
+                    <fullName>E118 Litigation support vendors</fullName>
+                    <default>false</default>
+                    <label>E118 Litigation support vendors</label>
+                </value>
+                <value>
+                    <fullName>E119 Experts</fullName>
+                    <default>false</default>
+                    <label>E119 Experts</label>
+                </value>
+                <value>
+                    <fullName>E120 Private investigators</fullName>
+                    <default>false</default>
+                    <label>E120 Private investigators</label>
+                </value>
+                <value>
+                    <fullName>E121 Arbitrators/mediators</fullName>
+                    <default>false</default>
+                    <label>E121 Arbitrators/mediators</label>
+                </value>
+                <value>
+                    <fullName>E122 Local counsel</fullName>
+                    <default>false</default>
+                    <label>E122 Local counsel</label>
+                </value>
+                <value>
+                    <fullName>E123 Other professionals</fullName>
+                    <default>false</default>
+                    <label>E123 Other professionals</label>
+                </value>
+                <value>
+                    <fullName>E124 Other</fullName>
+                    <default>false</default>
+                    <label>E124 Other</label>
+                </value>
+                <value>
+                    <fullName>L120 Analysis/Strategy</fullName>
+                    <default>false</default>
+                    <label>L120 Analysis/Strategy</label>
+                </value>
+                <value>
+                    <fullName>L130 Experts/Consultants</fullName>
+                    <default>false</default>
+                    <label>L130 Experts/Consultants</label>
+                </value>
+                <value>
+                    <fullName>L140 Document/File Management</fullName>
+                    <default>false</default>
+                    <label>L140 Document/File Management</label>
+                </value>
+                <value>
+                    <fullName>L150 Budgeting</fullName>
+                    <default>false</default>
+                    <label>L150 Budgeting</label>
+                </value>
+                <value>
+                    <fullName>L210 Pleadings</fullName>
+                    <default>false</default>
+                    <label>L210 Pleadings</label>
+                </value>
+                <value>
+                    <fullName>L230 Court Mandated Conferences</fullName>
+                    <default>false</default>
+                    <label>L230 Court Mandated Conferences</label>
+                </value>
+                <value>
+                    <fullName>L240 Dispositive Motions</fullName>
+                    <default>false</default>
+                    <label>L240 Dispositive Motions</label>
+                </value>
+                <value>
+                    <fullName>L310 Written Discovery</fullName>
+                    <default>false</default>
+                    <label>L310 Written Discovery</label>
+                </value>
+                <value>
+                    <fullName>L320 Document Production</fullName>
+                    <default>false</default>
+                    <label>L320 Document Production</label>
+                </value>
+                <value>
+                    <fullName>L330 Depositions</fullName>
+                    <default>false</default>
+                    <label>L330 Depositions</label>
+                </value>
+                <value>
+                    <fullName>L340 Expert Discovery</fullName>
+                    <default>false</default>
+                    <label>L340 Expert Discovery</label>
+                </value>
+                <value>
+                    <fullName>L350 Discovery Motions</fullName>
+                    <default>false</default>
+                    <label>L350 Discovery Motions</label>
+                </value>
+                <value>
+                    <fullName>L390 Other Discovery</fullName>
+                    <default>false</default>
+                    <label>L390 Other Discovery</label>
+                </value>
+                <value>
+                    <fullName>L410 Fact Witnesses</fullName>
+                    <default>false</default>
+                    <label>L410 Fact Witnesses</label>
+                </value>
+                <value>
+                    <fullName>L420 Expert Witnesses</fullName>
+                    <default>false</default>
+                    <label>L420 Expert Witnesses</label>
+                </value>
+                <value>
+                    <fullName>L450 Trial and Hearing Attendance</fullName>
+                    <default>false</default>
+                    <label>L450 Trial and Hearing Attendance</label>
+                </value>
+                <value>
+                    <fullName>L470 Enforcement</fullName>
+                    <default>false</default>
+                    <label>L470 Enforcement</label>
+                </value>
+                <value>
+                    <fullName>L520 Appellate Briefs</fullName>
+                    <default>false</default>
+                    <label>L520 Appellate Briefs</label>
+                </value>
+                <value>
+                    <fullName>L530 Oral Argument</fullName>
+                    <default>false</default>
+                    <label>L530 Oral Argument</label>
+                </value>
+                <value>
+                    <fullName>P100 Project Administration</fullName>
+                    <default>false</default>
+                    <label>P100 Project Administration</label>
+                </value>
+                <value>
+                    <fullName>P210 Corporate Review</fullName>
+                    <default>false</default>
+                    <label>P210 Corporate Review</label>
+                </value>
+                <value>
+                    <fullName>P220 Tax</fullName>
+                    <default>false</default>
+                    <label>P220 Tax</label>
+                </value>
+                <value>
+                    <fullName>P230 Environmental</fullName>
+                    <default>false</default>
+                    <label>P230 Environmental</label>
+                </value>
+                <value>
+                    <fullName>P240 Real and Personal Property</fullName>
+                    <default>false</default>
+                    <label>P240 Real and Personal Property</label>
+                </value>
+                <value>
+                    <fullName>P250 Employee/Labor</fullName>
+                    <default>false</default>
+                    <label>P250 Employee/Labor</label>
+                </value>
+                <value>
+                    <fullName>P260 Intellectual Property</fullName>
+                    <default>false</default>
+                    <label>P260 Intellectual Property</label>
+                </value>
+                <value>
+                    <fullName>P270 Regulatory Reviews</fullName>
+                    <default>false</default>
+                    <label>P270 Regulatory Reviews</label>
+                </value>
+                <value>
+                    <fullName>P280 Other</fullName>
+                    <default>false</default>
+                    <label>P280 Other</label>
+                </value>
+                <value>
+                    <fullName>P300 Structure/Strategy/Analysis</fullName>
+                    <default>false</default>
+                    <label>P300 Structure/Strategy/Analysis</label>
+                </value>
+                <value>
+                    <fullName>P600 Completion/Closing</fullName>
+                    <default>false</default>
+                    <label>P600 Completion/Closing</label>
+                </value>
+                <value>
+                    <fullName>P700 Post-Completion/Post-Closing</fullName>
+                    <default>false</default>
+                    <label>P700 Post-Completion/Post-Closing</label>
+                </value>
+                <value>
+                    <fullName>P800 Maintenance and Renewal</fullName>
+                    <default>false</default>
+                    <label>P800 Maintenance and Renewal</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>Summary Budget</label>
+    <nameField>
+        <displayFormat>SB-{0000000}</displayFormat>
+        <label>Summary Budget ID</label>
+        <trackHistory>true</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Summary Budgets</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

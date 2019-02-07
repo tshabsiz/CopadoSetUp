@@ -1,0 +1,860 @@
+<apex:component controller="ClientPlanOrgStructureController" allowDML="true">
+    <apex:attribute name="planId" description="Client Plan Id" type="string" required="true"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jquery_ui, '/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.primitives, 'primitives/primitives.latest.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.primitives, 'primitives/primitives.latest.css')}"/>
+
+    <script>
+        var structureItemParentId;
+        var structureItemId;
+        var isUpdate;
+        var departmentContent;
+        var orgStructurePlaceholderBackup;
+        var isFirstOrLastItem;
+        var isDiagramCreated;
+        
+        var plusTemplate = 'plusTemplate';
+        var itemTemplate = 'itemTemplate';
+        
+
+        $(window).load(function () {
+            onWindowLoad();
+        });
+        
+        function onWindowLoad() {
+            if('{!plan.Org_Structure_Image_ID__c}' == '') {
+                createOrgStructureDiagram();
+            } else {
+                backUpPlaceholder();
+                $('#orgStructurePlaceholderWrapper').width('100%');
+            }
+        }
+
+        //image functions
+        function showImageModal() {
+            $('#imageModal').show();
+        }
+        
+        function closeImageModal() {
+            $('#imageModal').hide();
+        }
+        
+        function onBeforeDeleteImage(e) {
+            var proceed = confirm('{!$Label.msg_DiscardUnsaved} {!$Label.msg_DeleteImageConfirm}');
+            if (!proceed) {
+                e.preventDefault();
+            }
+        }
+        
+        //diagram rendering functions
+        function createOrgStructureDiagram() {
+            startLoading('{!$Label.lbl_Loading}');
+            setStructureDiagramWidth();
+            
+            var options = new primitives.orgdiagram.Config();
+            
+            options.buttons = [];
+            options.templates = [getPlusTemplate(),getItemTemplate()];
+            options.onItemRender = onTemplateRender;
+            options.hasButtons = primitives.common.Enabled.False;
+            options.hasSelectorCheckbox = primitives.common.Enabled.False;
+            options.leavesPlacementType = primitives.orgdiagram.ChildrenPlacementType.Matrix;
+            options.pageFitMode = primitives.common.PageFitMode.None;
+            options.orientationType = primitives.common.OrientationType.Top;
+            options.horizontalAlignment = primitives.common.HorizontalAlignmentType.Center;
+            options.onButtonClick = function (e, data) {
+                switch (data.name) {
+                    case "delete":
+                        var proceed = confirm('{!$Label.msg_DeleteItemConfirm}');
+                        if (proceed) {
+                            startLoading('{!$Label.lbl_RemovingItem}');
+                            removeItem(data.context.id);
+                        }
+                        break;
+                    case "add":
+                        showStructureItemModal(data.context.id);
+                        break;
+                }
+            };
+            
+            var items = new Array();
+            
+            ClientPlanOrgStructureController.getData('{!planId}', function(result, event) {
+                if (result.length > 0) {
+                    isDiagramCreated = true;
+                    $('#diagram').show();
+                
+                    backUpPlaceholder();
+                
+                    var arrayElements = JSON.parse(result);
+                    arrayElements = addPlusesToElements(arrayElements);
+                    
+                    for (var i = 0; i < arrayElements.length; i++) {
+                        var el = arrayElements[i];
+                        
+                        items.push(new primitives.orgdiagram.ItemConfig({
+                            id: el.id,
+                            parent: el.parent,
+                            description: el.description,
+                            templateName: el.template
+                        }));
+                    }
+                    
+                    options.items = items;
+                    $('#diagram').orgDiagram(options);
+                } else {
+                    isFirstOrLastItem = true;
+                    isDiagramCreated = false;
+                }
+                endLoading();
+            },
+            { escape: false });
+        }
+        
+        function backUpPlaceholder() {
+            orgStructurePlaceholderBackup = $('#orgStructurePlaceholder').html();
+            $('#orgStructurePlaceholder').remove();
+        }
+        
+        function addPlusesToElements(elems) {
+            var pluses = new Array();
+            var elem;
+            
+            for (var i = 0; i < elems.length; i++) {
+                elem = elems[i];
+                elem.template = itemTemplate;
+                
+                //plus above root element
+                if (elem.parent == null) {
+                    var plusAbove = {};
+                    plusAbove.parent = null;
+                    plusAbove.id = 'above-' + elem.id;
+                    plusAbove.template = plusTemplate;
+                    plusAbove.description = '';
+                    pluses.push(plusAbove);
+                    
+                    elem.parent = plusAbove.id;
+                }
+                pluses.push(elem);
+                
+                var plus = {};
+                plus.parent = elem.id;
+                plus.id = 'sub-' + elem.id;
+                plus.template = plusTemplate;
+                plus.description = '';
+                pluses.push(plus);
+            }
+            return pluses;
+        }
+        
+        function setStructureDiagramWidth() {
+            var width = $(window).width();
+            //width -= 45;
+            width -= 400;
+            $('#orgStructure').width(width + 'px');
+        }
+        
+        function getItemTemplate() {
+            var result = new primitives.orgdiagram.TemplateConfig();
+            result.name = itemTemplate;
+            result.itemSize = new primitives.common.Size(250, 45);
+            result.minimizedItemSize = new primitives.common.Size(0,0,0,0);
+            result.highlightPadding = new primitives.common.Thickness(0,0,0,0);
+            result.cursorPadding = new primitives.common.Thickness(0,0,0,0);
+            
+            var template = jQuery(
+                '<div class="bp-item bp-corner-all bt-item-frame" style="overflow: visible;background-color: white;">'
+                + '<div style="width: 210px;height: 100%;display: inline-block;">'
+                +   '<div class="orgItemDescription" style="position: absolute;top: 7px;left: 2px;width: 210px;color: #0070D2;font-size: 90%;"/>'
+                + '</div>'
+                +  '<div class="slds-dropdown-trigger" style="display: inline-block;vertical-align: top;position: absolute;top: 8px;">'
+                +    '<button class="slds-button slds-button--neutral scoreOptionsButton">'
+                +        '<svg aria-hidden="true" class="slds-button__icon">'
+                +            '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>'
+                +        '</svg>'
+                +    '</button>'
+                +    '<div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">'
+                +        '<ul class="slds-dropdown__list" role="menu">'
+                +            '<li id="menu-27-0" href="#" class="slds-dropdown__item">'
+                +                '<a class="slds-truncate" role="menuitem">{!$Label.lbl_Edit}</a>'
+                +            '</li>'
+                +            '<li id="menu-27-1" href="#" class="slds-dropdown__item">'
+                +                '<a class="slds-truncate" role="menuitem">{!$Label.lbl_Remove}</a>'
+                +            '</li>'
+                +        '</ul>'
+                +    '</div>'
+                + '</div>'
+                + '</div>'
+                ).css({
+                    width: result.itemSize.width + "px",
+                    height: result.itemSize.height + "px"
+                }).addClass("bp-item bp-corner-all bt-item-frame");
+                
+            result.itemTemplate = template.wrap('<div>').parent().html();
+            
+            return result;
+        }
+        
+        function getPlusTemplate() {
+            var result = new primitives.orgdiagram.TemplateConfig();
+            result.name = plusTemplate;
+            result.itemSize = new primitives.common.Size(35, 35);
+            result.minimizedItemSize = new primitives.common.Size(0,0,0,0);
+            result.highlightPadding = new primitives.common.Thickness(0,0,0,0);
+            result.cursorPadding = new primitives.common.Thickness(0,0,0,0);
+            
+            var itemTemplate = jQuery(
+                '<div class="bp-item bp-corner-all bt-item-frame" style="border-radius: 50%;background-color: #F4F6F9;">'
+                +    '<button class="slds-button" style="left: 6px;">'
+                +        '<svg aria-hidden="true" class="slds-icon slds-icon--small slds-icon-text-default" style="fill: #0070d2;">'
+                +            '<use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#add')}"></use>'
+                +        '</svg>'
+                +    '</button>'
+                + '</div>'
+                ).css({
+                    width: result.itemSize.width + "px",
+                    height: result.itemSize.height + "px"
+                }).addClass("bp-item bp-corner-all bt-item-frame");
+                
+            result.itemTemplate = itemTemplate.wrap('<div>').parent().html();
+            
+            return result;
+        }
+        
+        function onTemplateRender(event, data) {
+            var itemConfig = data.context;
+            var id = itemConfig['id'];
+            
+            if (data.templateName == itemTemplate) {
+                var element = data.element.find('.orgItemDescription');
+                element.text(itemConfig['description']);
+                element.attr('id', id);
+                
+                var editButton = data.element.find('#menu-27-0');
+                editButton.attr('onclick', 'showOrgItemEditModal(\'' + id +'\');return false;');
+                
+                var removeButton = data.element.find('#menu-27-1');
+                removeButton.attr('onclick', 'removeItem(\'' + id +'\');return false;');
+            } else {
+                var button = data.element.find('button');
+                button.attr('onclick', 'showOrgItemAddModal(\'' + id + '\');return false;');
+            }
+        }
+        
+        function refreshOrgStructure() {
+            ClientPlanOrgStructureController.getData('{!planId}', function(result, event) {
+                var items = new Array();
+                
+                if (result.length > 0) {
+                    $('#diagram').show();
+                
+                    var arrayElements = JSON.parse(result);
+                    arrayElements = addPlusesToElements(arrayElements);
+                    
+                    for (var i = 0; i < arrayElements.length; i++) {
+                        var el = arrayElements[i];
+                        
+                        items.push(new primitives.orgdiagram.ItemConfig({
+                            id: el.id,
+                            parent: el.parent,
+                            description: el.description,
+                            templateName: el.template
+                        }));
+                    }
+                    
+                    jQuery("#diagram").orgDiagram({
+                        items: items,
+                    });
+                    jQuery("#diagram").orgDiagram("update", primitives.common.UpdateMode.Refresh);
+                    
+                } else {
+                    isFirstOrLastItem = true;
+                    
+                    //removing items from diagram and hiding
+                    jQuery("#diagram").orgDiagram({
+                        items: items,
+                    });
+                    jQuery("#diagram").orgDiagram("update", primitives.common.UpdateMode.Refresh);
+                    $('#diagram').hide();
+                    
+                    $('#orgStructurePlaceholderWrapper').append('<div id="orgStructurePlaceholder"/>');
+                    $('#orgStructurePlaceholder').html(orgStructurePlaceholderBackup);
+                }
+                endLoading();
+            },
+            { escape: false });
+        }
+        
+        //functions for updating items
+        function showOrgItemEditModal(id) {
+            structureItemId = id;
+            isUpdate = true;
+            onBeforeAnyAction();
+            setOrgItemModalLabel('{!$Label.lbl_EditDepartment}');
+            
+            var content = $('#' + id).text().trim();
+            $('#orgItemName').val(content);
+            
+            $('#orgItemModal').show();
+        }
+        
+        function onStructureItemEdited(result, event) {
+            if (result == null || result == false) {
+                showAlert('{!$Label.errMsg_ErrorDuringSaving}');
+            } else {
+                $('#' + structureItemId).text(departmentContent);
+            }
+            endLoading();
+        }
+        
+        
+        //functions for removing items
+        var itemsToDelete;
+        var items;
+        
+        function removeItem(itemId) {
+            var proceed = confirm('{!$Label.msg_DeleteItemConfirm}');
+            if (!proceed) {
+                return;
+            }
+        
+            onBeforeAnyAction();
+            items = $("#diagram").orgDiagram("option", "items");
+            
+            itemsToDelete = [itemId];
+            getSubordinateItems(itemId);
+            
+            startLoading('{!$Label.lbl_RemovingItem}');
+            ClientPlanOrgStructureController.removeStructureItem(itemsToDelete, onItemsDeleted);
+        }
+        
+        function onItemsDeleted(result, event) {
+            if (result == null || result == false) {
+                showAlert('{!$Label.errMsg_ErrorDuringDelOfItems}');
+                endLoading();
+            } else {
+                refreshOrgStructure();
+            }
+        }
+        
+        function getSubordinateItems(itemId) {
+            for (var i = 0; i < items.length; i++) {
+            
+                var item = items[i];
+                if (item.parent == itemId) {
+                    itemsToDelete.push(item.id);
+                    getSubordinateItems(item.id);
+                }
+            }
+        }
+        
+        
+        //functions for adding items
+        
+        function showOrgItemAddModal(parentId) {
+            structureItemParentId = parentId;
+            isUpdate = false;
+            onBeforeAnyAction();
+            setOrgItemModalLabel('{!$Label.lbl_AddDepartment}');
+            $('#orgItemModal').show();
+        }
+        
+        function onBeforeModifyStructureItem() {
+            departmentContent = $('#orgItemName').val().trim();
+            
+            if (departmentContent.length == 0 || departmentContent.length > 255) {
+                showToast('{!$Label.lbl_WrongDepartmentNameLength}');
+                return;
+            }
+            
+            $('#orgItemName').val('');
+            closeOrgItemModal();
+            
+            if (isUpdate) {
+                startLoading('{!$Label.lbl_EditingItem}');
+                ClientPlanOrgStructureController.editStructureItem(structureItemId, departmentContent, onStructureItemEdited);
+            } else {
+                startLoading('{!$Label.lbl_AddingItem}');
+                
+                var isBelow = true;
+                if (structureItemParentId.indexOf('sub-') == 0) {
+                    structureItemParentId = structureItemParentId.substring(4);
+                } else if (structureItemParentId.indexOf('above-') == 0) {
+                    structureItemParentId = structureItemParentId.substring(6);
+                    isBelow = false;
+                }
+                
+                ClientPlanOrgStructureController.addOrgItem('{!planId}', structureItemParentId, isBelow, departmentContent, onStructureItemAdded);
+            }
+        }
+        
+        function onStructureItemAdded(result, event) {
+            if (result == null || result == false) {
+                showAlert('{!$Label.errMsg_ErrorDuringSaving}');
+                endLoading();
+            } else {
+                if (!isDiagramCreated) {
+                    isFirstOrLastItem = false;
+                    createOrgStructureDiagram();
+                } else if (isFirstOrLastItem) {
+                    isFirstOrLastItem = false;
+                    $('#orgStructurePlaceholder').remove();
+                    refreshOrgStructure();
+                } else {
+                    refreshOrgStructure();
+                }
+            }
+        }
+        
+        function onBeforeAnyAction() {
+            closeAlert();
+        }
+        
+        //org item modal functions
+        function closeOrgItemModal() {
+            closeToast();
+            $('#orgItemModal').hide();
+        }
+        
+        function setOrgItemModalLabel(label) {
+            $('#orgItemModalHeaderLabel').text(label);
+        }
+
+        //Borrower & Guarantor Modal methods
+        function showBorrowerGuarantorModal(type, id) {
+            if(id == '') {
+                cleanBorrowerGuarantorModal(type);
+            } else {
+                fillBorrowerGuarantorModal(type, id);
+            }
+
+            closeAlert();
+            $('#borrowerGuarantorModal').show();
+        }
+
+        function closeBorrowerGuarantorModal() {
+            closeToast();
+            $('#borrowerGuarantorModal').hide();
+        }
+
+        function cleanBorrowerGuarantorModal(type) {
+            $('#borrowerGuarantorModalHeader').text(type);
+            $('#borrowerGuarantorId').val('');
+            $('#borrowerGuarantorType').val(type);
+            $('#borrowerGuarantorValue').val('');
+        }
+
+        function fillBorrowerGuarantorModal(type, id) {
+            $('#borrowerGuarantorModalHeader').text(type);
+            $('#borrowerGuarantorId').val(id);
+            $('#borrowerGuarantorType').val(type);
+
+            var borrowerGuarantorValue = $('#' + id + ' .borrowerGuarantorValue').text().trim();
+            $('#borrowerGuarantorValue').val(borrowerGuarantorValue);
+        }
+
+        function onBeforeModifyBorrowerGuarantor() {
+            var borrowerGuarantorId = $('#borrowerGuarantorId').val();
+            var borrowerGuarantorType = $('#borrowerGuarantorType').val();
+            var borrowerGuarantorValue = $('#borrowerGuarantorValue').val();
+
+            if(borrowerGuarantorValue.trim() == '') {
+                showToast('Please make sure that a Name has been entered');
+                return;
+            }
+            
+            closeBorrowerGuarantorModal();
+            startLoading('{!$Label.lbl_Saving}' + ' ' + borrowerGuarantorType);            
+
+            modifyBorrowerGuarantor(borrowerGuarantorId, borrowerGuarantorType, borrowerGuarantorValue);
+        }
+
+        function onBeforeRemoveBorrowerGuarantor(type, id) {
+            var borrowerGuarantorId = id;
+            var borrowerGuarantorType = type;
+
+            closeBorrowerGuarantorModal();
+            startLoading('{!$Label.lbl_Removing}' + ' ' + borrowerGuarantorType);
+
+            removeBorrowerGuarantor(borrowerGuarantorId, borrowerGuarantorType);
+        }
+    </script>
+    
+    <style>
+        @media (min-width: 48em) {
+            #orgItemModal .slds-modal__container {
+                width: 30em;
+            }
+            
+            #imageModal .slds-modal__container {
+                width: 30em;
+            }
+        }
+    
+        #orgStructure {
+            border: 2px solid #ddd;
+            min-height: 30em;
+            width: 100%;
+        }
+        
+        #diagram {
+            width: 100%;
+            height: 30em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        #structureItemArea {
+            width: 100%;
+            height: 10em;
+            resize: none;
+            border-color: #DDDDDD;
+        }
+        
+        #organisationStructureAlert .glyphicon {
+            margin-right: 1em;
+        }
+        
+        .orgItemDescription {
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 5px;
+            word-wrap: break-word;
+        }
+        
+        #orgStructurePlaceholderWrapper {
+            margin: auto;
+            margin-top: 3em;
+            width: 22em;
+            text-align: center;
+        }
+        
+        #orgStructurePlaceholderWrapperLabel {
+            margin-bottom: 2em;
+            font-size: 1.5em;
+            color: rgba(22, 50, 92, 0.59);
+        }
+        
+        #orgStructurePlaceholder {
+            background-color: white;
+            padding: 2em;
+            margin-bottom: 10em;
+            border-radius: 4px;
+        }
+        
+        #orgStructurePlaceholder svg {
+            fill: #DDDDDD;
+        }
+        
+        #orgStructurePlaceholderLabel {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 0.5em;
+            margin-bottom: 2em;
+        }
+        
+        #orgStructurePlaceholder button {
+            width: 12em;
+        }
+        
+        .buttonWrapper {
+            margin-top: 1em;
+        }
+        
+        .scoreOptionsButton {
+            padding-left: 0.5em !important;
+            padding-right: 0.4em !important;
+            padding-top: 0.3em !important;
+            padding-bottom: 0.4em !important;
+        }
+        
+        .orgItemDescription {
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+        }
+        
+        #imageWrapper {
+            text-align: center;
+            padding-bottom: 1em;
+        }
+        
+        .deleteImageForm {
+            padding-top: 1em;
+            padding-right: 1em;
+            text-align: right;
+        }
+        
+        .marginTop15em {
+            margin-top: 1.5em !important;
+        }
+
+        #borrowers, #guarantors {
+            width: 48%;
+            vertical-align: top;
+        }
+
+        #borrowers {
+            margin-right: 3%;
+        }
+        .jloc-reference
+            {
+                border-style: ridge;
+                border-color: #960528;
+                border-width: 1px
+            }
+    </style>
+
+    <apex:outputPanel id="BorrowerAndGuarantorPanel" rendered="{!relationship != null}" styleClass="pageCenter scorePanel marginTop30">
+        <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <br/>
+
+            <div>
+                <h2 id="pageLabel" class="bold marginBottom1em"><apex:outputText value="{!$Label.lbl_BorrowersGuarantors}" /></h2>
+            </div> 
+            <div>
+    
+            
+            <div id="borrowers" class="inline">
+                <span class="slds-icon__container">
+                    <svg id="strengthsIcon" aria-hidden="true" class="slds-icon">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/standard-sprite/svg/symbols.svg#people')}"></use>
+                    </svg>
+                </span>
+                <span class="marginLeft1em">
+                    <apex:outputText value="{!$Label.lbl_Borrowers}" />
+                </span>
+                
+                <apex:repeat value="{!Borrowers}" var="b">
+                    <div id="{!b.Id}" class="score jloc-reference">
+                        <div>
+                            <div class="bold inline borrowerGuarantorValue">{!b.Value__c}</div>
+                            <div class="inline floatRight">
+                                <div class="slds-dropdown-trigger">
+                                    <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                        <svg aria-hidden="true" class="slds-button__icon">
+                                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                        </svg>
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                <a onclick="showBorrowerGuarantorModal('{!$Label.lbl_Borrower}', '{!b.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                    <apex:outputText value="{!$Label.lbl_Edit}" />
+                                                </a>
+                                            </li>
+                                            <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                <a onclick="onBeforeRemoveBorrowerGuarantor('{!$Label.lbl_Borrower}', '{!b.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                    <apex:outputText value="{!$Label.lbl_Remove}" />
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </apex:repeat>
+                
+                <div class="{!IF(Borrowers.Empty,'jloc-reference','')}">
+                    <button class="slds-button" onclick="showBorrowerGuarantorModal('{!$Label.lbl_Borrower}', '');return false;"><apex:outputText value="{!$Label.lbl_AddBorrower}" /></button>
+                </div>
+            </div>
+
+            <div id="guarantors" class="inline">
+                <span class="slds-icon__container">
+                    <svg id="strengthsIcon" aria-hidden="true" class="slds-icon">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/standard-sprite/svg/symbols.svg#client')}"></use>
+                    </svg>
+                </span>
+                <span class="marginLeft1em">
+                    <apex:outputText value="{!$Label.lbl_Guarantors}" />
+                </span>
+
+                <apex:repeat value="{!Guarantors}" var="g">
+                    <div id="{!g.Id}" class="score jloc-reference">
+                        <div>
+                            <div class="bold inline borrowerGuarantorValue">{!g.Value__c}</div>
+                            <div class="inline floatRight">
+                                <div class="slds-dropdown-trigger">
+                                    <button class="slds-button scoreOptionsButton" onclick="return false;">
+                                        <svg aria-hidden="true" class="slds-button__icon">
+                                            <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#settings')}"></use>
+                                        </svg>
+                                    </button>
+                                    <div class="slds-dropdown slds-dropdown--right slds-dropdown--nubbin-top slds-dropdown--menu">
+                                        <ul class="slds-dropdown__list" role="menu">
+                                            <li id="menu-27-0" href="#" class="slds-dropdown__item">
+                                                <a onclick="showBorrowerGuarantorModal('{!$Label.lbl_Guarantor}', '{!g.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                    <apex:outputText value="{!$Label.lbl_Edit}" />
+                                                </a>
+                                            </li>
+                                            <li id="menu-27-1" href="#" class="slds-dropdown__item">
+                                                <a onclick="onBeforeRemoveBorrowerGuarantor('{!$Label.lbl_Guarantor}', '{!g.Id}');return false;" class="slds-truncate" role="menuitem">
+                                                    <apex:outputText value="{!$Label.lbl_Remove}" />
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </apex:repeat>
+                
+                <div class="{!IF(Guarantors.Empty,'jloc-reference','')}">
+                    <button class="slds-button" onclick="showBorrowerGuarantorModal('{!$Label.lbl_Guarantor}', '');return false;"><apex:outputText value="{!$Label.lbl_AddGuarantor}" /></button>
+                </div>
+            </div>
+    </div>
+        </div>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="borrowerGuarantorModalPanel">
+        <div id="borrowerGuarantorModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium" id="borrowerGuarantorModalHeader">&nbsp;</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeBorrowerGuarantorModal();return false;">
+                            <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slds-modal__content">
+                        <input type="hidden" id="borrowerGuarantorId" />
+                        <input type="hidden" id="borrowerGuarantorType" />
+
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" />
+                        </div>
+                        <div class="slds-form-element__control">
+                            <input type="text" class="slds-input" id="borrowerGuarantorValue"/>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeBorrowerGuarantorModal();return false;">{!$Label.lbl_Cancel}</button>
+                        <button id="editStrategyButton" class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyBorrowerGuarantor(); return false;">{!$Label.lbl_Save}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+
+    <div class="jloc-reference">
+        <br/>
+    <apex:outputPanel id="orgStructurePanel" >
+        
+            
+        
+        <div id="orgStructure">
+            <div id="orgStructurePlaceholderWrapper">
+                <div id="orgStructurePlaceholderWrapperLabel">{!$Label.lbl_CompanyOrganogram}</div>
+                
+                <div id="orgStructurePlaceholder" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <svg aria-hidden="true" class="slds-slds-icon slds-icon--large">
+                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#company')}"></use>
+                    </svg>
+                    <div id="orgStructurePlaceholderLabel">{!$Label.lbl_Organogram}</div>
+                    <div class="buttonWrapper">
+                        <button class="slds-button slds-button--brand" onclick="showImageModal();return false;">{!$Label.lbl_UploadImage}</button>
+                    </div>
+                    <div class="buttonWrapper">
+                        <button class="slds-button slds-button--brand" onclick="showOrgItemAddModal('');return false;">{!$Label.lbl_CreateHierarchy}</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="imageWrapper">
+                <apex:image url="/servlet/servlet.FileDownload?file={!plan.Org_Structure_Image_ID__c}" rendered="{!plan.Org_Structure_Image_ID__c != null}"/>
+                <apex:form styleClass="deleteImageForm">
+                    <apex:commandButton value="{!$Label.lbl_DeleteImage}" action="{!deleteImage}" onclick="onBeforeDeleteImage(event);" styleClass="slds-button slds-button--brand" rendered="{!plan.Org_Structure_Image_ID__c != null}"/>
+                </apex:form>
+            </div>
+
+            <div id="diagram" style="display: none;"/>
+        </div>
+            
+    </apex:outputPanel>
+    </div>
+    <apex:outputPanel id="orgItemModalPanel">
+        <div id="orgItemModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 id="orgItemModalHeaderLabel" class="slds-text-heading--medium" />
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeOrgItemModal();return false;">
+                            <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="slds-form--stacked">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label bold">
+                                    <apex:outputText value="{!$Label.lbl_DepartmentName}" />
+                                </label>
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                    <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default" onclick="hidePrimaryBankText();return false;">
+                                        <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                                    </svg>
+                                    <input id="orgItemName" class="slds-input" type="text" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="closeOrgItemModal();return false;">{!$Label.lbl_Cancel}</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="onBeforeModifyStructureItem();return false;">{!$Label.lbl_Save}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+    
+    <apex:form >
+        <apex:actionFunction action="{!modifyBorrowerGuarantor}" name="modifyBorrowerGuarantor" oncomplete="endLoading();location.reload(true)" reRender="BorrowerAndGuarantorPanel">
+            <apex:param name="borrowerGuarantorId" assignTo="{!borrowerGuarantorId}" value="" />
+            <apex:param name="borrowerGuarantorType" assignTo="{!borrowerGuarantorType}" value="" />
+            <apex:param name="borrowerGuarantorValue" assignTo="{!borrowerGuarantorValue}" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!removeBorrowerGuarantor}" name="removeBorrowerGuarantor" oncomplete="endLoading();location.reload(true)" reRender="BorrowerAndGuarantorPanel">
+            <apex:param name="borrowerGuarantorId" assignTo="{!borrowerGuarantorId}" value="" />
+            <apex:param name="borrowerGuarantorType" assignTo="{!borrowerGuarantorType}" value="" />
+        </apex:actionFunction>
+    </apex:form> 
+
+    <apex:outputPanel id="imageModalPanel">
+        <div id="imageModal" style="display:none;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">{!$Label.lbl_UploadImage}</h2>
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="closeImageModal();return false;">
+                            <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                <use xlink:href="{!URLFOR($Resource.SLDS092, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <apex:form styleClass="imageForm">
+                        <div class="slds-modal__content">
+                            <h2>* {!$Label.msg_DiscardUnsaved}</h2>
+                            <h2>* {!$Label.msg_ImageSizeLimit}</h2>
+                            <apex:inputFile contentType="{!imageContentType}" value="{!imageBody}" fileName="{!imageName}" styleclass="marginTop15em"/>
+                        </div>
+
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button--neutral" onclick="closeImageModal();return false;">{!$Label.lbl_Cancel}</button>
+                            <apex:commandButton value="{!$Label.lbl_UploadImage}" action="{!uploadImage}" styleClass="slds-button slds-button--brand"/>
+                        </div>
+                    </apex:form>
+                </div>
+            </div>
+            <div class="slds-modal-backdrop slds-modal-backdrop--open"></div>
+        </div>
+    </apex:outputPanel>
+</apex:component>

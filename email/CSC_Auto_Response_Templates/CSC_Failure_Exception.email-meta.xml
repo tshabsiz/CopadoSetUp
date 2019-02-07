@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Used for CSC Failure notifications to the internal SF team</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>CSC Failure Exception</name>
+    <style>none</style>
+    <subject>CSC Process : {!CSC_Exception_Audit_Trail__c.Severity__c} : {!CSC_Exception_Audit_Trail__c.Exception_DateTime__c}</subject>
+    <textOnly>{!CSC_Exception_Audit_Trail__c.Exception_Message__c}
+
+{!CSC_Exception_Audit_Trail__c.Method_Name__c}
+
+{!CSC_Exception_Audit_Trail__c.Developer_Notes__c}</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

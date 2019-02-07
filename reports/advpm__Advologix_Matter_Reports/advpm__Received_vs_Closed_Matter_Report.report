@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <block>
+        <blockInfo>
+            <blockId>B0</blockId>
+            <joinTable>x</joinTable>
+        </blockInfo>
+        <columns>
+            <field>CUST_NAME</field>
+        </columns>
+        <columns>
+            <field>advpm__Matter__c.advpm__Matter_Number__c</field>
+        </columns>
+        <columns>
+            <field>advpm__Matter__c.advpm__Type__c</field>
+        </columns>
+        <format>Summary</format>
+        <name>Matters Received</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>CustomEntity$advpm__Matter__c</reportType>
+        <scope>organization</scope>
+        <showGrandTotal>true</showGrandTotal>
+        <showSubTotals>true</showSubTotals>
+        <timeFrameFilter>
+            <dateColumn>CUST_CREATED_DATE</dateColumn>
+            <interval>INTERVAL_CUSTOM</interval>
+        </timeFrameFilter>
+    </block>
+    <block>
+        <blockInfo>
+            <blockId>B1</blockId>
+            <joinTable>x</joinTable>
+        </blockInfo>
+        <columns>
+            <field>CUST_NAME</field>
+        </columns>
+        <columns>
+            <field>advpm__Matter__c.advpm__Closed_Date__c</field>
+        </columns>
+        <columns>
+            <field>advpm__Matter__c.advpm__Matter_Age__c</field>
+        </columns>
+        <filter>
+            <criteriaItems>
+                <column>advpm__Matter__c.advpm__Status__c</column>
+                <isUnlocked>false</isUnlocked>
+                <operator>equals</operator>
+                <value>Lost,Settled,Won</value>
+            </criteriaItems>
+        </filter>
+        <format>Summary</format>
+        <name>Matters Closed</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>CustomEntityCustomEntity$advpm__Matter__c$advpm__Participant__c</reportType>
+        <scope>organization</scope>
+        <showGrandTotal>true</showGrandTotal>
+        <showSubTotals>true</showSubTotals>
+        <timeFrameFilter>
+            <dateColumn>CUST_CREATED_DATE</dateColumn>
+            <interval>INTERVAL_CUSTOM</interval>
+        </timeFrameFilter>
+    </block>
+    <blockInfo>
+        <blockId xsi:nil="true"/>
+        <joinTable>x</joinTable>
+    </blockInfo>
+    <format>MultiBlock</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>advpm__Matter__c.advpm__Status__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>CUST_CREATED_DATE</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Received vs Closed Matter Report</name>
+    <reportType>CustomEntity$advpm__Matter__c</reportType>
+    <showDetails>true</showDetails>
+</Report>

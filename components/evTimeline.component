@@ -1,0 +1,113 @@
+<apex:component controller="evTimeLine_Controller">
+    <apex:stylesheet value="{!URLFOR($Resource.Vis, '/vis.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Vis, '/vis-timeline-graph2d.min.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Vis, 'vis.js')}"/>
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"/>
+    
+    <title>Timeline | Basic demo</title>
+    
+    <style type="text/css">
+        body, html {
+        font-family: sans-serif;
+        }
+        
+        .vis-item.vis-background.thisevent {
+        background-color: #d5ddf6;
+            border-color: #97b0f8;
+        border-style: solid;
+    border-radius: 2px;
+    box-sizing: border-box;
+        }
+
+        .vis-item.vis-range.otherevent {
+        background-color: rgba(255, 255, 255, 1);	
+        }
+        
+        .vis-item .vis-item-overflow {
+        overflow: visible;
+        }
+    </style>
+    
+    <div id="visualization"></div>
+    <div id="loading">Loading timeline...</div>  
+    
+    <script type="text/javascript">
+    // load data via an ajax request. When the data is in, load the timeline
+    $(document).ready(function testcal() {
+        
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.evTimeLine_Controller.getTimeLine}', 
+            '{!$CurrentPage.parameters.id}',
+            function(timeline, event)
+            {
+                result = timeline.items;
+                if(timeline.items[0]) 
+                {
+                    //window.alert('Cal Remote Function Finished' );
+                    //console.log('result[0] :'+ result[0]);  
+                    //console.log('result[0].start :'+ result[0].start);  
+                    //console.log('result[0].content :'+result[0].content); 
+                    
+                    var newitems=[];
+                    for (var item in timeline.items) {
+                        console.log('item: '+item);
+                        //console.log('item: '+result[item]);
+                        console.log('item.group_x: '+timeline.items[item].group_x);
+                        
+                        if (item != 'remove') {
+                            var newitem = {id:"", content:"", start:"", end:"", type:"", group:"", className:""};
+                            newitem.id = timeline.items[item].id;
+                            newitem.content = timeline.items[item].content;
+                            newitem.start = timeline.items[item].start;
+                            newitem.end = timeline.items[item].end_x;
+                            newitem.type = timeline.items[item].type_x;
+                            newitem.group = timeline.items[item].group_x;
+                            newitem.className = timeline.items[item].className;
+                            newitems.push(newitem);
+                            console.log('newitem: '+newitem.content+', '+newitem.start+'-'+newitem.end+', '+newitem.type+', '+newitem.group);
+                        }
+                    }
+                    
+                    //console.log('newresult[0] :'+ newresult[0]);  
+                    //console.log('newresult[0].start :'+ newresult[0].start);  
+                    //console.log('newresult[0].content :'+newresult[0].content); 
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // DOM element where the Timeline will be attached
+                    var container = document.getElementById('visualization');
+                    
+                    // Create a DataSet (allows two way data-binding)
+                    //var items = new vis.DataSet(newresult);
+                    
+                    for (var i in timeline.groups) {
+                        if (i != 'remove') {
+                            //console.log(timeline.groups[i].content);
+		                    timeline.groups[i].content = timeline.groups[i].content.replace('\n', '<br>');
+                            }
+                        }
+
+                    //console.log(timeline.groups[0].content);
+                    
+                    //var groups = new vis.DataSet([
+                    //    {id: 0, content: 'This<br>Event'},
+                    //    {id: 1, content: 'Other<br>Events'},
+                    //    {id: 2, content: 'Scheduled<br>Messages'}
+                    //]);
+                    
+                    // Configuration for the Timeline
+                    //var options = {orientation: {axis: 'top'}};
+                    
+                    // Create a Timeline
+                    var timeline = new vis.Timeline(container, newitems, timeline.groups, timeline.options);                    
+                } 
+            }, 
+            {escape: true}
+        )
+    });
+    
+    </script>     
+    
+    
+    
+</apex:component>

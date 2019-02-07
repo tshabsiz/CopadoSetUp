@@ -1,0 +1,17 @@
+<apex:component controller="NewsletterController" access="global">
+    <apex:attribute name="nlId" type="String" description="Id of the newsletter to get information from" assignTo="{! newsletterId }" />
+    <h1>{! newsletterDetails.newsletter.name }</h1>
+    <p>{! newsletterDetails.newsletter.Editorial__c }</p>
+
+    <apex:repeat var="group" value="{! newsletterDetails.groupsDetailsAndQuestions }">
+        <h2>{! group.groupName }</h2>
+		    <apex:repeat var="question" value="{! group.questions }">
+                <apex:outputPanel rendered="{! question.isSelected }">
+                    <img alt="news picture" title="news" src="{! question.pictureUrl }" width="120" />
+                    <a href="{! linksBaseUrl }{! question.id }"><h4>{! question.title }</h4></a>
+                    {! question.body }
+                    <hr/>
+                </apex:outputPanel>
+		    </apex:repeat>
+    </apex:repeat>
+</apex:component>

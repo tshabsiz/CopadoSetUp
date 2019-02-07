@@ -1,0 +1,10 @@
+<apex:page sidebar="false" tabStyle="Matter_Gantt__tab" title="Matter Gantt">
+    <style type="text/css">
+        html body.sfdcBody {padding: 0px;}
+    </style>
+    <apex:iframe src="{!$Page.advpm__MatterGanttView}{!IF(JSINHTMLENCODE($CurrentPage.parameters.isdtp)!='','?isdtp='+JSINHTMLENCODE($CurrentPage.parameters.isdtp),'')}" scrolling="false" frameborder="false" width="100%" id="iframe_panel" />
+    <script type="text/javascript">
+        function AdjustIframeHeightOnLoad() { document.getElementById("iframe_panel").style.height = document.getElementById("iframe_panel").contentWindow.document.body.scrollHeight + "px"; }
+        function AdjustIframeHeight(i) { document.getElementById("iframe_panel").style.height = parseInt(i) + "px"; }
+    </script>
+</apex:page>

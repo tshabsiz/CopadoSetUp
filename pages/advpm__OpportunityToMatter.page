@@ -1,0 +1,79 @@
+<apex:page standardController="advpm__Matter__c" tabstyle="advpm__Matter__c" extensions="advpm.OpportunityToMatterController">
+    <style>
+		.FormDataABiggerA {width:70%;}
+		.FormDataA {width:70%;}
+	</style>
+    <apex:Form >
+		<apex:sectionHeader title="Convert Opportunity To Matter" subtitle="{!advpm__Matter__c.Name}" />
+		<apex:outputPanel rendered="{!isConvertedOpportunity}">
+		    <div class="message infoM2">
+		        <table cellspacing="0" cellpadding="0" border="0" style="padding:0px;margin:0px;" class="messageTable">
+		            <tbody>
+		            	<tr valign="top">
+			                <td>
+			                    <img title="info" src="/s.gif" class="msgIcon" alt="info" />
+			                </td>
+			                <td class="messageCell">
+			                	<div class="messageText">
+			                		<span>
+			                        	<h4></h4>
+			                        </span>
+			                        Opportunity has already been converted into a Matter. To view the Matter <a href="/{!JSINHTMLENCODE($Currentpage.parameters.oppid)}" target="_top">click here</a>
+			                	</div>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td></td>
+			                <td></td>
+			            </tr>
+			        </tbody>
+		       </table>
+    		</div>
+    	</apex:outputPanel>
+	    <apex:outputPanel layout="block" style="text-align:center;" rendered="{!isConvertedOpportunity}">
+	    	<apex:commandButton value="Go back" action="{!cancel}" />
+	    </apex:outputPanel>
+		<apex:pageblock title="Matter Edit" mode="edit" rendered="{!!isConvertedOpportunity}">
+			<apex:pageMessages />
+	        <apex:pageBlockButtons location="both">
+	            <apex:commandButton value=" Save " action="{!save}" />
+	            <apex:commandButton value="Cancel" action="{!cancel}"/>
+	        </apex:pageBlockButtons>
+	        <apex:pageBlockSection title="Information" columns="1">
+	        	<apex:inputField value="{!advpm__Matter__c.Name}" required="true" styleClass="FormDataABiggerA" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Matter_Number__c}" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Description__c}" styleClass="FormDataABiggerA" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Opportunity__c}" />
+	        </apex:pageBlockSection>
+	        <apex:pageBlockSection showHeader="false">
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Status__c}" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Internal_Dept_Owner__c}" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Type__c}" />
+	        	<apex:inputField value="{!advpm__Matter__c.advpm__Parent_Matter__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Details">
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Engagement_Date__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Projected_Date_Of_Closure__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Potential_Plea_Settlement_Offer_Scenario__c}" styleClass="FormDataABiggerA" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Summary_Of_Case_Strategy__c}" styleClass="FormDataABiggerA" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Analysis_Narrative__c}" styleClass="FormDataABiggerA" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Win_Loss_Reason__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Dates">
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Date_Filed__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Closed_Date__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Date_Responded__c}"  />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Trial_Date__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Financial Information">
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Expected_Billings__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Budget__c}"  />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Expected_Total_Annual_Billing__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Estimated_Settlement__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Expected_Settlement_Date__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Estimated_Cost__c}" />
+            	<apex:inputField value="{!advpm__Matter__c.advpm__Worst_Case_Settlement_Amount__c}" />
+            </apex:pageBlockSection>
+		</apex:pageblock>
+    </apex:Form>
+</apex:page>

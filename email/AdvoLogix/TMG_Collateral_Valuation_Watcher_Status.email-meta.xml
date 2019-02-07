@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <letterhead>Blank_Letterhead</letterhead>
+    <name>TMG - Collateral Valuation Watcher Status</name>
+    <style>freeForm</style>
+    <subject>{!Collateral_Valuation__c.Name} is in {!Watcher__c.Watcher_Status__c} for {!Collateral_Valuation__c.Deal__c}</subject>
+    <textOnly>Good day,
+
+
+
+{!Collateral_Valuation__c.Name} is in {!Collateral_Valuation__c.Status__c} for {!Collateral_Valuation__c.Deal__c}.
+
+Comments: {!Watcher__c.Comments__c}
+
+
+Collateral Name : {!Collateral_Valuation__c.Collateral__c}
+
+Collateral Group : {!Collateral__c.Collateral_Group__c}
+
+Collateral Type : {!Collateral__c.Collateral_Type1__c}
+
+
+
+
+Deal Name :  {!Collateral_Valuation__c.Deal__c}
+
+Agreement Name :  {!Collateral_Valuation__c.Agreement__c}
+
+Collateral Valuation Name : {!Collateral_Valuation__c.Name}
+
+Valuation Type : {!Collateral_Valuation__c.Valuation_Type__c}
+
+Valuation Product : {!Collateral_Valuation__c.Valuation_Product__c}
+
+Collateral Valuation Status : {!Watcher__c.Watcher_Status__c}
+
+Collateral Valuation Due Date : {!Watcher__c.Due_Date__c}
+
+
+Click on the below link to view the collateral valuation:
+
+{!Collateral_Valuation__c.Link}
+
+
+Kind regards,
+
+Transaction Management Group
+
+
+
+Auto generated email , please do not reply to this email.</textOnly>
+    <type>html</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
