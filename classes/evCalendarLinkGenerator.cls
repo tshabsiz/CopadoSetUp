@@ -98,7 +98,7 @@ public class evCalendarLinkGenerator {
         }
         
         //Build calendar link.
-        String linkUrl = 'http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]='+calendarStart+'&e[0][date_end]='+calendarEnd+'&e[0][timezone]=Africa%2FJohannesburg&e[0][title]='+delegate.Event__r.Name+'&e[0][description]=&e[0][location]='+delegate.Event__r.Venue__r.Name + ' ('+delegate.Event__r.Venue__r.Address__c+')'+'&e[0][organizer]='+delegate.Event__r.Calendar_Organiser_Name__c+'&e[0][organizer_email]='+delegate.Event__r.Calendar_Organiser_Email__c+'&e[0][privacy]=public';
+        String linkUrl = 'http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]='+calendarStart+'&e[0][date_end]='+calendarEnd+'&e[0][timezone]=Africa%2FJohannesburg&e[0][title]='+delegate.Event__r.Name+'&e[0][description]=&e[0][location]='+delegate.Event__r.Venue__r.Name + '&e[0][organizer]='+delegate.Event__r.Calendar_Organiser_Name__c+'&e[0][organizer_email]='+delegate.Event__r.Calendar_Organiser_Email__c+'&e[0][privacy]=public';
         
         return linkUrl;
     }
