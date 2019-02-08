@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#EA0004</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Console view of a agile project management app by Salesforce.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>Agile Console</label>
+    <navType>Console</navType>
+    <tabs>agf__ADM_Work__c</tabs>
+    <tabs>agf__Work_Manager</tabs>
+    <tabs>agf__ADM_Sprint__c</tabs>
+    <tabs>agf__ADM_Scrum_Team__c</tabs>
+    <tabs>agf__ADM_Kanban_Board</tabs>
+    <tabs>agf__ADM_Product_Tag__c</tabs>
+    <tabs>agf__ADM_Epic__c</tabs>
+    <tabs>agf__ADM_Theme__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>Agile_Console_UtilityBar</utilityBar>
+    <workspaceConfig>
+        <mappings>
+            <tab>agf__ADM_Epic__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Kanban_Board</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Product_Tag__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Scrum_Team__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Sprint__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Theme__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__ADM_Work__c</tab>
+        </mappings>
+        <mappings>
+            <tab>agf__Work_Manager</tab>
+        </mappings>
+        <mappings>
+            <tab>standard-Dashboard</tab>
+        </mappings>
+        <mappings>
+            <tab>standard-report</tab>
+        </mappings>
+    </workspaceConfig>
+</CustomApplication>

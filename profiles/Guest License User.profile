@@ -21478,11 +21478,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>OpportunityLineItem.Number_of_Devices__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>OpportunityLineItem.OpportunityCountry__c</field>
         <readable>false</readable>
     </fieldPermissions>

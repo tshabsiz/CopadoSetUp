@@ -21478,11 +21478,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>OpportunityLineItem.Number_of_Devices__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>OpportunityLineItem.OpportunityCountry__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -39370,7 +39365,7 @@
     <layoutAssignments>
         <layout>knowledge_Ownership_Assignment__mdt-knowledge Ownership Assignment Layout</layout>
     </layoutAssignments>
-    <loginHours/>
+    <loginHours />
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
